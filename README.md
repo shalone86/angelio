@@ -22,3 +22,22 @@ npm install
 npm test
 npx wrangler deploy
 ```
+
+## Run your own copy
+
+This is open source (MIT). You don't need to code to use it, just visit [angelio.org](https://angelio.org).
+If you do code and want your own copy, or want to change it for your class:
+
+```bash
+git clone https://github.com/shalone86/angelio.git && cd angelio
+npm install
+npm test
+npx wrangler deploy                       # optional: your own Cloudflare Worker with the nicer voice
+```
+
+Before deploying your own copy, change `"name"` in `wrangler.jsonc` and remove the `routes` and
+`vars` lines (those belong to angelio.org). Building a new app? Start from
+[shalone86/app-template](https://github.com/shalone86/app-template). Fixes and question corrections
+are welcome, see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+The code is MIT licensed ([LICENSE](LICENSE)). The name "Angelio" and its logo are not part of the license.
