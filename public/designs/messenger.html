@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Angelio · Messenger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Nunito:wght@400;700;800&display=swap">
+<style>
+/* Design 2 · Messenger: an illuminated manuscript. Angels carry messages; each game is a sealed letter. */
+:root { --parch: #f6ecd6; --parch-2: #efe0bf; --ink: #2a1d12; --muted: #6b5640; --red: #9b1c1c; --gold: #b8860b; --blue: #1e3a8a; }
+* { box-sizing: border-box; }
+body { margin: 0; color: var(--ink); font: 17px/1.6 Nunito, system-ui, sans-serif;
+  background: var(--parch) radial-gradient(circle at 20% 10%, #fff8e7 0, transparent 50%), var(--parch);
+  background-image: radial-gradient(circle at 20% 10%, #fff8e7, transparent 50%), radial-gradient(circle at 90% 90%, #e8d3a8, transparent 50%); }
+main { max-width: 900px; margin: 0 auto; padding: 0 16px 56px; }
+header { display: flex; align-items: center; gap: 10px; padding: 18px 0; border-bottom: 2px solid var(--gold); }
+.brand { font: 700 1.6rem "Cormorant Garamond", serif; letter-spacing: .04em; }
+.brand::first-letter { color: var(--red); }
+nav { margin-left: auto; display: flex; gap: 14px; } nav a { color: var(--muted); text-decoration: none; font-weight: 700; }
+.hero { display: grid; grid-template-columns: auto 1fr; gap: 18px; align-items: start; padding: 40px 0 10px; }
+.initial { font: 700 7.5rem/0.82 "Cormorant Garamond", serif; color: var(--red); background: linear-gradient(135deg, #fff3cf, #f0d68a); border: 3px double var(--gold);
+  padding: 14px 18px 4px; border-radius: 6px; box-shadow: inset 0 0 0 6px var(--parch), 0 4px 0 #d9c48f; }
+h1 { font: 700 clamp(2rem, 7vw, 3.1rem)/1.1 "Cormorant Garamond", serif; margin: 0 0 12px; }
+h1 em { color: var(--blue); font-style: italic; }
+.lede { color: var(--muted); font-size: 1.08rem; margin: 0 0 16px; }
+.cta { display: inline-block; background: var(--red); color: #fff8e7; font-weight: 800; padding: 11px 24px; border-radius: 8px; text-decoration: none; box-shadow: 0 4px 0 #6b1010; }
+.subject h2 { font: 700 1.6rem "Cormorant Garamond", serif; margin: 40px 0 12px; display: flex; align-items: center; gap: 10px; }
+.subject h2::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--gold), transparent); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.letter { position: relative; display: block; padding: 18px 18px 18px 86px; min-height: 108px; text-decoration: none; color: var(--ink);
+  background: #fffaf0; border: 1px solid #e2cfa4; border-radius: 4px; box-shadow: 0 2px 0 #e2cfa4, 0 10px 24px rgb(80 50 10 / .08); transition: transform .2s; }
+.letter::before { content: ""; position: absolute; inset: 6px; border: 1px dashed #e7d6ae; border-radius: 2px; pointer-events: none; }
+a.letter:hover { transform: rotate(-.6deg) translateY(-3px); }
+.seal { position: absolute; left: 16px; top: 18px; width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; overflow: hidden;
+  background: radial-gradient(circle at 35% 30%, #c53030, #7f1515); box-shadow: 0 0 0 4px #b91c1c33, inset 0 -3px 6px #0004; }
+.seal img { width: 38px; height: 38px; border-radius: 10px; }
+.seal .em { font-size: 1.7rem; }
+.letter small { font: 800 .72rem Nunito, sans-serif; color: var(--gold); text-transform: uppercase; letter-spacing: .1em; }
+.letter b { display: block; font: 700 1.35rem "Cormorant Garamond", serif; }
+.letter p { margin: 2px 0 0; color: var(--muted); font-size: .92rem; line-height: 1.35; }
+.letter.soon { opacity: .55; background: transparent; box-shadow: none; }
+.letter.soon .seal { background: radial-gradient(circle at 35% 30%, #c7b07a, #8d7646); }
+.panel { margin-top: 40px; padding: 22px 24px; background: #fffaf0; border: 3px double var(--gold); border-radius: 6px; }
+.panel h2 { font: 700 1.6rem "Cormorant Garamond", serif; margin: 0 0 6px; }
+.panel h2::first-letter { color: var(--red); font-size: 1.3em; }
+.duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.duo div { border-left: 3px solid var(--red); padding: 0 12px; }
+.note { text-align: center; color: var(--muted); font-size: .8rem; margin-top: 30px; }
+@media (max-width: 520px) { .hero { grid-template-columns: 1fr; } .initial { justify-self: start; font-size: 5.5rem; }
+.initial::after { content: "✦"; font-size: .22em; color: var(--gold); position: relative; top: -2.6em; left: -.3em; } }
+</style>
+</head>
+<body>
+<main>
+  <header><span class="brand">Angelio</span><nav><a href="#apps">Games</a><a href="#about">About</a><a href="#support">Support</a></nav></header>
+  <section class="hero">
+    <div class="initial" aria-hidden="true">A</div>
+    <div>
+      <h1>A good word for every <em>young learner</em>.</h1>
+      <p class="lede">The word "angel" means messenger. Angelio delivers small lessons, one at a time: math you can touch, grammar you can see, everything read aloud. Free, no ads, no accounts.</p>
+      <a class="cta" href="#apps">Open a letter ✉</a>
+    </div>
+  </section>
+  <div id="apps"></div>
+  <section id="about" class="panel"><h2>About Angelio</h2>
+    <p>Angels are God's messengers, and guardians for the little ones. We wanted games in that spirit: patient, encouraging, and good news for children who find school hard.</p>
+    <p>We're a Catholic family; every game is tried at our own table first. Your child's progress stays on your device.</p></section>
+  <section id="support" class="panel"><h2>Free for every family</h2>
+    <div class="duo"><div><h3>Donate</h3><p>Help keep the letters coming for every family. Coming soon.</p></div>
+    <div><h3>Pro voices & speech checks</h3><p>A natural reading voice and "say it out loud" checking. Coming soon.</p></div></div></section>
+  <p class="note">Design preview 2 · Messenger · <a href="./" style="color:var(--red)">all designs</a></p>
+</main>
+<script type="module">
+import { render, esc } from "./shared.js";
+render((a) => a.path
+  ? `<a class="letter" href="/${a.path}/"><span class="seal"><img src="/${a.path}/icon.svg" alt=""></span><small>${esc(a.grades)}</small><b>${esc(a.name)}</b><p>${esc(a.blurb)}</p></a>`
+  : `<div class="letter soon"><span class="seal"><span class="em">${a.emoji}</span></span><small>${esc(a.grades)} · on its way</small><b>${esc(a.name)}</b><p>${esc(a.blurb)}</p></div>`);
+</script>
+</body>
+</html>
