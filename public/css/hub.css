@@ -12,7 +12,11 @@ header { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; pad
 nav { margin-left: auto; display: flex; gap: 6px; }
 nav a { color: #fff; text-decoration: none; font-weight: 800; background: rgb(255 255 255 / .25); padding: 6px 12px; border-radius: 999px; white-space: nowrap; }
 nav a:hover { background: rgb(255 255 255 / .4); }
-@media (max-width: 560px) { nav { margin-left: 0; width: 100%; justify-content: space-between; } nav a { font-size: .9rem; padding: 6px 10px; } }
+/* Phones: three equal buttons that always fit (they wrap their text if the phone uses big fonts). */
+@media (max-width: 560px) {
+  nav { margin-left: 0; width: 100%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  nav a { font-size: .88rem; padding: 6px 4px; text-align: center; white-space: normal; line-height: 1.15; display: flex; align-items: center; justify-content: center; }
+}
 .hero { text-align: center; padding: 22px 0 56px; position: relative; }
 .hero > * { position: relative; z-index: 1; }
 .sun { position: absolute !important; z-index: 0 !important; right: 4%; top: 0; width: 90px; height: 90px; border-radius: 50%; background: var(--sun); box-shadow: 0 0 0 14px rgb(255 201 60 / .25), 0 0 60px var(--sun); }
@@ -24,8 +28,15 @@ h1 { font: 800 clamp(2.4rem, 9vw, 4rem)/1 "Baloo 2", sans-serif; color: #fff; te
 .cta:active { transform: translateY(4px); box-shadow: none; }
 .cloud { position: absolute; background: #fff; border-radius: 999px; opacity: .9; }
 .cloud::before, .cloud::after { content: ""; position: absolute; background: #fff; border-radius: 50%; }
-.c1 { width: 140px; height: 44px; left: -30px; top: 290px; } .c1::before { width: 60px; height: 60px; left: 22px; top: -30px; } .c1::after { width: 44px; height: 44px; left: 70px; top: -20px; }
-.c2 { width: 110px; height: 36px; right: -10px; top: 370px; } .c2::before { width: 48px; height: 48px; left: 18px; top: -24px; } .c2::after { width: 34px; height: 34px; left: 58px; top: -16px; }
+/* The sky spans the whole window (not just the centered column), clouds drift at the edges. */
+body { position: relative; }
+.sky { position: absolute; left: 0; right: 0; top: 0; height: 640px; overflow: hidden; pointer-events: none; z-index: 0; }
+main { z-index: 1; }
+.c1 { width: 140px; height: 44px; left: 3%; top: 300px; } .c1::before { width: 60px; height: 60px; left: 22px; top: -30px; } .c1::after { width: 44px; height: 44px; left: 70px; top: -20px; }
+.c2 { width: 110px; height: 36px; right: 4%; top: 380px; } .c2::before { width: 48px; height: 48px; left: 18px; top: -24px; } .c2::after { width: 34px; height: 34px; left: 58px; top: -16px; }
+.c3 { width: 170px; height: 52px; left: 14%; top: 120px; opacity: .7; } .c3::before { width: 70px; height: 70px; left: 30px; top: -36px; } .c3::after { width: 50px; height: 50px; left: 90px; top: -24px; }
+.c4 { width: 150px; height: 46px; right: 16%; top: 210px; opacity: .75; } .c4::before { width: 62px; height: 62px; left: 26px; top: -32px; } .c4::after { width: 44px; height: 44px; left: 80px; top: -20px; }
+@media (max-width: 700px) { .c3, .c4 { display: none; } }
 .subject h2 { font: 800 1.6rem "Baloo 2", sans-serif; margin: 34px 0 12px; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; }
 .cardc { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; padding: 22px 16px 18px; border-radius: 36px 36px 28px 28px; text-decoration: none; color: var(--ink);
