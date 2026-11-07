@@ -9,7 +9,8 @@
     { "binding": "REGROUP", "service": "regroup" },
     { "binding": "SNAP", "service": "snap-split" },
     { "binding": "DOUBLES", "service": "doubles" },
-    { "binding": "GRAMMAR", "service": "grammar" }
+    { "binding": "GRAMMAR", "service": "grammar" },
+    { "binding": "ARTICULATE", "service": "articulation" }
   ],
   "observability": { "enabled": true },
   "workers_dev": true,

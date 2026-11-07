@@ -12,6 +12,8 @@ export const APPS = {
   snap: "SNAP", // Snap & Split (snap-split Worker)
   doubles: "DOUBLES", // Doubles (doubles Worker)
   grammar: "GRAMMAR", // Grammar (grammar Worker)
+  // Articulate also keeps its own address (articulate.shalonely.com): both work, no redirect.
+  articulate: "ARTICULATE", // Articulate (articulation Worker)
 };
 
 export default {

@@ -7,7 +7,7 @@ import fs from "node:fs";
 const fakeApp = (name) => ({ seen: [], async fetch(req) { this.seen.push(new URL(req.url).pathname + new URL(req.url).search); return new Response(`${name}:${new URL(req.url).pathname}`); } });
 const env = () => ({
   ASSETS: { fetch: async (req) => new Response(`hub:${new URL(req.url).pathname}`) },
-  REGROUP: fakeApp("regroup"), SNAP: fakeApp("snap"), DOUBLES: fakeApp("doubles"), GRAMMAR: fakeApp("grammar"),
+  REGROUP: fakeApp("regroup"), SNAP: fakeApp("snap"), DOUBLES: fakeApp("doubles"), GRAMMAR: fakeApp("grammar"), ARTICULATE: fakeApp("articulate"),
 });
 const get = (e, path) => worker.fetch(new Request(`https://angelio.org${path}`), e);
 

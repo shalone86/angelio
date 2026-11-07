@@ -11,6 +11,7 @@ voice; donations welcome; a paid Pro voice (natural Cloudflare voice) with an ac
 | Regroup! | /regroup/ | 1–3 | shalone86/regroup |
 | Doubles | /doubles/ | 1–3 | not on GitHub yet |
 | Grammar! | /grammar/ | 1–3 | not on GitHub yet |
+| Articulate | /articulate/ (and articulate.shalonely.com, kept on purpose: a friend uses it) | All ages | shalone86/articulation |
 
 ## Next apps
 
@@ -21,7 +22,8 @@ voice; donations welcome; a paid Pro voice (natural Cloudflare voice) with an ac
 - **Catholic history**: saints, the early Church, councils and great moments on drag-and-drop timelines; maps of missions and pilgrimages.
 - **World history**: build timelines and maps yourself (drag events, place civilizations), memory games.
 - **U.S. history**: interactive maps and timelines from the first peoples to today.
-- Possibly on the hub later: **Articulation** (speech practice, articulate.shalonely.com) and **Hablar** (Spanish, hablar.shalonely.com).
+- Possibly on the hub later: **Hablar** (Spanish, hablar.shalonely.com).
+- **Articulate keeps both addresses**: articulate.shalonely.com must keep working (no redirect). Don't set HOME_URL for it.
 
 ## Platform
 

@@ -24,6 +24,10 @@ export const APP_LIST = [
     name: "Grammar!", path: "grammar", subject: "language", grades: "Grades 1–3", emoji: "✏️",
     blurb: "Capitals, spaces, end marks, commas, and the parts of speech with Montessori symbols.",
   },
+  {
+    name: "Articulate", path: "articulate", subject: "language", grades: "All ages", emoji: "🗣️",
+    blurb: "Speech practice: say the word, hear it back, and see which sounds came through.",
+  },
   // Coming soon (see ROADMAP.md)
   { name: "Phonics & Reading", subject: "language", grades: "PreK–2", emoji: "🔤", blurb: "Sounds, blending and reading out loud, with a friendly listener." },
   { name: "Writing Skills", subject: "language", grades: "Grades 1–4", emoji: "📝", blurb: "From sentences to paragraphs: build, fix and grow your writing." },
