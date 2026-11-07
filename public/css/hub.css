@@ -4,7 +4,8 @@
 html { scroll-behavior: smooth; scroll-padding-top: 12px; }
 body { margin: 0; color: var(--ink); font: 17px/1.55 Nunito, system-ui, sans-serif; background: linear-gradient(#7cc4ff 0, #bfe3ff 420px, #f2f9ff 900px) #f2f9ff no-repeat; min-height: 100vh; overflow-x: hidden; }
 a { color: #2a6db3; }
-main { max-width: 920px; margin: 0 auto; padding: 0 16px 40px; position: relative; }
+main { max-width: 920px; margin: 0 auto; padding: 0 16px 40px; position: relative; overflow-x: clip; }
+html { overflow-x: clip; }
 header { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; padding: 14px 0; position: relative; z-index: 1; }
 .brand { display: flex; align-items: center; gap: 8px; font: 800 1.5rem "Baloo 2", sans-serif; color: #fff; text-shadow: 0 2px 0 #3a8fd9; text-decoration: none; }
 .brand img { border-radius: 10px; box-shadow: 0 2px 0 #3a8fd9; }
