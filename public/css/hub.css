@@ -1,0 +1,32 @@
+/* Angelio hub: base.css look, with a deep blue and gold palette. */
+:root { --accent: #1e3a8a; --accent-strong: #172c6b; --gold: #f59e0b; --bg: #fbf8f1; --surface-2: #f3eee2; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent: #93b4ff; --accent-strong: #b9cdff; --accent-ink: #0f1530; --gold: #fbbf24; --bg: #10142a; --surface: #1a2040; --surface-2: #232a52; --border: #2e3766; } }
+.logo { background-image: url("../icon.svg"); transform: none; }
+.hub-hero { text-align: center; padding: 36px 0 10px; }
+.hub-hero h1 { font-size: clamp(2.1rem, 8vw, 3.3rem); margin: 0 0 10px; color: var(--accent); }
+.glow { color: var(--gold); }
+.lede { max-width: 36em; margin: 0 auto 14px; }
+.badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 0; }
+.badges span { background: var(--surface); border: 2px solid var(--border); border-radius: 999px; padding: 4px 12px; font-weight: 800; font-size: .9rem; }
+.subject h2 { margin-top: 1.6em; }
+.app-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 12px; }
+.app-card {
+  display: flex; align-items: center; gap: 14px; padding: 14px; border-radius: var(--radius); text-decoration: none; color: var(--text);
+  background: var(--surface); border: 2px solid var(--border); box-shadow: var(--shadow); transition: transform .12s;
+}
+a.app-card:hover { transform: translateY(-2px); border-color: var(--gold); }
+a.app-card:active { transform: translateY(3px); box-shadow: none; }
+.app-card.soon { opacity: .62; box-shadow: none; border-style: dashed; }
+.app-icon { width: 64px; height: 64px; border-radius: 16px; flex: none; }
+.app-icon.emoji { display: grid; place-items: center; font-size: 2.2rem; background: var(--surface-2); }
+.app-text { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+.app-name { font: 800 1.2rem var(--font-display); }
+.app-grades { font-size: .8rem; font-weight: 800; color: var(--gold); text-transform: uppercase; letter-spacing: .05em; }
+.app-blurb { font-size: .95rem; color: var(--muted); line-height: 1.35; }
+.app-go { font-size: 1.3rem; color: var(--accent); }
+.about, .support { margin-top: 28px; }
+.support-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.support-opt { background: var(--surface-2); border-radius: 16px; padding: 4px 14px 10px; }
+.support-opt h3 { margin: 10px 0 4px; }
+.support-opt p { margin: 4px 0; }
+.hub-footer { text-align: center; margin: 32px 0 8px; }

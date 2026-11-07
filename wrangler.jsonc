@@ -1,0 +1,17 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "angelio",
+  "main": "worker/index.js",
+  "compatibility_date": "2025-09-01",
+  "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": true },
+  // Each app is its own Worker; the hub forwards angelio.org/<path>/ to it.
+  "services": [
+    { "binding": "REGROUP", "service": "regroup" },
+    { "binding": "SNAP", "service": "snap-split" },
+    { "binding": "DOUBLES", "service": "doubles" },
+    { "binding": "GRAMMAR", "service": "grammar" }
+  ],
+  "observability": { "enabled": true },
+  "workers_dev": true,
+  "routes": [{ "pattern": "angelio.org", "custom_domain": true }]
+}
