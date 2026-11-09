@@ -16,13 +16,22 @@ voice; donations welcome; a paid Pro voice (natural Cloudflare voice) with an ac
 ## Backburner (remind the owner after each new thing we finish)
 
 **Paid speech checks.** Reading aloud stays free (device voice). "Say it out loud" checking costs
-real money (Whisper on Workers AI), so it needs a key:
-- A parent pays (Stripe, or Ko-fi / Buy Me a Coffee memberships) and gets a short code by email.
-- They enter it once on the hub; all apps share angelio.org, so every app sees it (e.g. localStorage `angelio:key`).
-- Each app's Worker checks the key before `/api/transcribe` and keeps a monthly count per key (KV or D1) to cap costs.
-- A small free daily sample (say 10 checks) so parents can try it.
-- Without a key, the mic button hides or falls back to "listen and compare" (Articulate already has it).
-- Not urgent: the owner isn't sharing Angelio widely yet.
+real money (Whisper on Workers AI), so it needs a family code.
+
+Phase 1 (done, free codes, no payments):
+- Codes live in the shared KV store `angelio-codes` (binding `CODES`); logic in `worker/codes.js`
+  (same file in app-template and every app). The owner makes codes at angelio.org/admin/
+  (needs the `ADMIN_KEY` secret on the angelio Worker).
+- Parents enter a code once on the hub (localStorage `angelio:code`); every app on angelio.org sends
+  it as header `x-angelio-code`. Articulate's Settings has its own box for articulate.shalonely.com.
+- With var `REQUIRE_CODE = "true"`, an app's Worker allows `FREE_PER_DAY` (3) free checks a day per
+  network, then needs a code with checks left this month. `SPEECH_DAILY_CAP` (500) and
+  `TTS_DAILY_CAP` (3000, live in every game now) are site-wide safety caps per day.
+- Articulate: code support is in the repo but not deployed/on yet. Planned for Friday: owner makes
+  codes, adds `"REQUIRE_CODE": "true"` to articulation's vars, deploys.
+
+Phase 2 (when sharing publicly): payments (Stripe or Lemon Squeezy) that create a code automatically
+and email it, plus terms and a refund policy.
 
 ## Next apps
 

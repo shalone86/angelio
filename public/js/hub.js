@@ -25,3 +25,31 @@ document.querySelector("[data-copy]")?.addEventListener("click", async (e) => {
   try { await navigator.clipboard.writeText("https://angelio.org"); b.textContent = "✅ Copied: angelio.org"; }
   catch { b.textContent = "angelio.org"; }
 });
+
+// Family code for speech checks: saved on this device (localStorage "angelio:code"); every game on
+// angelio.org sends it with a speech check (header x-angelio-code), see worker/codes.js.
+const codeForm = document.getElementById("code-form"), codeIn = document.getElementById("code-in"), codeStatus = document.getElementById("code-status");
+const getCode = () => { try { return localStorage.getItem("angelio:code") || ""; } catch { return ""; } };
+async function showCode(code, { fresh = false } = {}) {
+  if (!code) { codeStatus.className = "code-status"; codeStatus.textContent = ""; codeForm.hidden = false; return; }
+  codeStatus.className = "code-status"; codeStatus.textContent = "Checking…";
+  try {
+    const r = await (await fetch(`/api/code?c=${encodeURIComponent(code)}`)).json();
+    if (!r.valid) {
+      codeStatus.className = "code-status bad";
+      codeStatus.textContent = r.revoked ? "That code has been turned off." : "That code doesn't work. Check the letters and try again.";
+      if (!fresh) { try { localStorage.removeItem("angelio:code"); } catch { /* ignore */ } }
+      codeForm.hidden = false;
+      return;
+    }
+    try { localStorage.setItem("angelio:code", code); } catch { /* ignore */ }
+    codeForm.hidden = true;
+    codeStatus.className = "code-status ok";
+    codeStatus.innerHTML = `✅ Code on for the ${esc(r.name)}: ${r.left} of ${r.limit} speech checks left this month. <button type="button" data-forget>Remove</button>`;
+    codeStatus.querySelector("[data-forget]").onclick = () => { try { localStorage.removeItem("angelio:code"); } catch { /* ignore */ } codeIn.value = ""; showCode(""); };
+  } catch {
+    codeStatus.className = "code-status bad"; codeStatus.textContent = "Couldn't check the code right now. Try again in a minute.";
+  }
+}
+codeForm?.addEventListener("submit", (e) => { e.preventDefault(); showCode(codeIn.value.trim().toUpperCase(), { fresh: true }); });
+if (codeForm) showCode(getCode());

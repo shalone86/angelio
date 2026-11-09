@@ -17,9 +17,12 @@ export const APPS = {
   articulate: "ARTICULATE", // Articulate (articulation Worker)
 };
 
+import { normalizeCode, newCode, codeStatus, day, month } from "./codes.js";
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    if (url.pathname.startsWith("/api/")) return api(request, url, env).catch((e) => json({ error: String(e?.message ?? e) }, 500));
     const [, first = "", ...rest] = url.pathname.split("/");
     const binding = APPS[first.toLowerCase()];
 
@@ -44,3 +47,67 @@ export default {
     return env.ASSETS.fetch(request);
   },
 };
+
+// ───────── family codes (worker/codes.js) ─────────
+//   GET  /api/code?c=CODE            → { valid, name, limit, left }   (the parent's code box)
+//   Admin, header x-admin-key = secret ADMIN_KEY (the page at /admin/):
+//   GET  /api/admin/codes            → { codes: [{ code, name, limit, used, revoked, created }], today }
+//   POST /api/admin/codes            { name, limit } → { code }
+//   POST /api/admin/codes/update     { code, limit?, revoked? }
+
+const json = (body, status = 200) => new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json", "cache-control": "no-store" } });
+
+async function sameSecret(a, b) {
+  const enc = new TextEncoder(), h = async (x) => new Uint8Array(await crypto.subtle.digest("SHA-256", enc.encode(String(x ?? ""))));
+  const [x, y] = await Promise.all([h(a), h(b)]);
+  return !!b && x.every((v, i) => v === y[i]);
+}
+
+async function api(request, url, env) {
+  if (!env.CODES) return json({ error: "codes aren't set up" }, 503);
+  const route = `${request.method} ${url.pathname}`;
+  if (route === "GET /api/code") {
+    const st = await codeStatus(env, url.searchParams.get("c"));
+    return json(st.valid ? { valid: true, name: st.name, limit: st.limit, left: st.left } : { valid: false, revoked: !!st.revoked });
+  }
+  if (!url.pathname.startsWith("/api/admin/")) return json({ error: "not found" }, 404);
+  if (!(await sameSecret(request.headers.get("x-admin-key"), env.ADMIN_KEY))) {
+    await new Promise((r) => setTimeout(r, 800)); // slow down guessing
+    return json({ error: "wrong admin key" }, 401);
+  }
+  const kv = env.CODES;
+  if (route === "GET /api/admin/codes") {
+    const codes = [];
+    let cursor;
+    do {
+      const page = await kv.list({ prefix: "code:", cursor });
+      for (const k of page.keys) {
+        const code = k.name.slice(5), rec = (await kv.get(k.name, "json")) ?? {};
+        codes.push({ code, ...rec, used: Number((await kv.get(`use:${code}:${month()}`)) ?? 0) });
+      }
+      cursor = page.list_complete ? null : page.cursor;
+    } while (cursor);
+    codes.sort((a, b) => (b.created ?? 0) - (a.created ?? 0));
+    const today = { speech: Number((await kv.get(`cap:speech:${day()}`)) ?? 0), tts: Number((await kv.get(`cap:tts:${day()}`)) ?? 0) };
+    return json({ codes, today, month: month() });
+  }
+  const body = await request.json().catch(() => ({}));
+  if (route === "POST /api/admin/codes") {
+    const name = String(body.name ?? "").trim().slice(0, 60) || "Family";
+    const limit = Math.max(1, Math.min(10000, Math.round(Number(body.limit) || 300)));
+    let code;
+    do code = newCode(); while (await kv.get(`code:${code}`));
+    await kv.put(`code:${code}`, JSON.stringify({ name, limit, created: Date.now() }));
+    return json({ code, name, limit });
+  }
+  if (route === "POST /api/admin/codes/update") {
+    const code = normalizeCode(body.code);
+    const rec = code && (await kv.get(`code:${code}`, "json"));
+    if (!rec) return json({ error: "no such code" }, 404);
+    if (body.limit != null) rec.limit = Math.max(1, Math.min(10000, Math.round(Number(body.limit))));
+    if (body.revoked != null) rec.revoked = !!body.revoked;
+    await kv.put(`code:${code}`, JSON.stringify(rec));
+    return json({ code, ...rec });
+  }
+  return json({ error: "not found" }, 404);
+}

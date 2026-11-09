@@ -13,6 +13,9 @@
     { "binding": "FRACTIONS", "service": "fractions" },
     { "binding": "ARTICULATE", "service": "articulation" }
   ],
+  // Family codes and daily safety caps, shared with the app Workers (worker/codes.js).
+  // The admin page (/admin/) needs a secret: npx wrangler secret put ADMIN_KEY
+  "kv_namespaces": [{ "binding": "CODES", "id": "a39d9bda676b420394c3eaba35975dec" }],
   "observability": { "enabled": true },
   "workers_dev": true,
   "routes": [{ "pattern": "angelio.org", "custom_domain": true }]

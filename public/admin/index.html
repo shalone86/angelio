@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Angelio codes</title>
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <style>
+    :root { --ink: #183153; --muted: #4b6584; --line: #cfe6fb; --sun: #ffc93c; --bad: #e5484d; --good: #16a34a; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 16px/1.45 Nunito, system-ui, sans-serif; color: var(--ink); background: #f2f9ff; }
+    main { max-width: 760px; margin: 0 auto; padding: 16px; }
+    h1 { font-size: 1.5rem; margin: 6px 0 2px; } h2 { font-size: 1.15rem; margin: 0 0 8px; }
+    .card { background: #fff; border-radius: 18px; padding: 14px 16px; margin: 12px 0; box-shadow: 0 4px 0 var(--line); }
+    label { display: block; font-weight: 700; margin: 6px 0 2px; }
+    input { font: inherit; width: 100%; padding: 10px 12px; border: 2px solid var(--line); border-radius: 12px; }
+    .row { display: flex; gap: 8px; align-items: end; flex-wrap: wrap; } .row > * { flex: 1 1 140px; }
+    button { font: inherit; font-weight: 800; border: 0; border-radius: 12px; padding: 10px 16px; background: var(--sun); color: #4a3300; cursor: pointer; }
+    button.ghost { background: #eef6ff; color: var(--ink); } button.small { padding: 6px 10px; font-size: .85rem; }
+    .muted { color: var(--muted); font-size: .9rem; }
+    .new { font: 800 1.6rem ui-monospace, monospace; letter-spacing: .06em; background: #fff4cc; border-radius: 12px; padding: 10px; text-align: center; margin: 8px 0; }
+    .code { font: 700 1rem ui-monospace, monospace; }
+    .item { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; padding: 10px 0; border-top: 1px solid var(--line); }
+    .item.revoked { opacity: .5; }
+    .bar { height: 8px; background: #eef6ff; border-radius: 4px; overflow: hidden; } .bar i { display: block; height: 100%; background: var(--good); }
+    .err { color: var(--bad); font-weight: 700; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>🪽 Angelio family codes</h1>
+  <p class="muted">Make a code for a family, read it to them or write it down. They type it once on <b>angelio.org</b> (Free for every family → Speech checks). Codes are free for now; selling them comes later.</p>
+
+  <section class="card" id="login">
+    <h2>Admin key</h2>
+    <form id="login-form" class="row">
+      <div><label for="key">Your admin key</label><input id="key" type="password" autocomplete="current-password" required></div>
+      <button>Open</button>
+    </form>
+    <label style="font-weight:400"><input type="checkbox" id="remember" style="width:auto"> Remember on this device</label>
+    <p class="err" id="login-err" hidden></p>
+  </section>
+
+  <div id="panel" hidden>
+    <section class="card">
+      <h2>New code</h2>
+      <form id="make" class="row">
+        <div><label for="name">Family name (for you)</label><input id="name" placeholder="e.g. Garcia family" maxlength="60" required></div>
+        <div><label for="limit">Speech checks a month</label><input id="limit" type="number" min="1" max="10000" value="300"></div>
+        <button>Make code</button>
+      </form>
+      <div id="made" hidden><div class="new" id="made-code"></div><p class="muted" id="made-note"></p><button class="ghost small" id="copy">📋 Copy</button></div>
+    </section>
+    <section class="card">
+      <h2>Today</h2>
+      <p id="today" class="muted"></p>
+    </section>
+    <section class="card">
+      <h2>Codes <span class="muted" id="month"></span></h2>
+      <div id="list"></div>
+      <p><button class="ghost small" id="logout">Forget admin key on this device</button></p>
+    </section>
+  </div>
+</main>
+<script type="module">
+  const $ = (s) => document.querySelector(s);
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  let key = (() => { try { return localStorage.getItem("angelio:admin") || sessionStorage.getItem("angelio:admin") || ""; } catch { return ""; } })();
+
+  async function call(path, body) {
+    const r = await fetch(path, { method: body ? "POST" : "GET", headers: { "x-admin-key": key, ...(body ? { "content-type": "application/json" } : {}) }, body: body ? JSON.stringify(body) : undefined });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw Object.assign(new Error(j.error || `error ${r.status}`), { status: r.status });
+    return j;
+  }
+
+  async function load() {
+    const d = await call("/api/admin/codes");
+    $("#login").hidden = true; $("#panel").hidden = false;
+    $("#month").textContent = `(use this month, ${d.month})`;
+    $("#today").textContent = `Speech checks: ${d.today.speech} · New voice clips: ${d.today.tts} (the daily safety caps stop new ones past their limit)`;
+    $("#list").innerHTML = d.codes.length ? d.codes.map((c) => `
+      <div class="item ${c.revoked ? "revoked" : ""}">
+        <div><b>${esc(c.name)}</b> <span class="code">${esc(c.code)}</span>${c.revoked ? " · <b>turned off</b>" : ""}
+          <div class="muted">${c.used} of ${c.limit} speech checks used this month</div>
+          <div class="bar"><i style="width:${Math.min(100, (100 * c.used) / c.limit)}%"></i></div></div>
+        <div>
+          <button class="ghost small" data-limit="${esc(c.code)}" data-cur="${c.limit}">Limit</button>
+          <button class="ghost small" data-toggle="${esc(c.code)}" data-off="${c.revoked ? "1" : ""}">${c.revoked ? "Turn on" : "Turn off"}</button>
+        </div>
+      </div>`).join("") : `<p class="muted">No codes yet.</p>`;
+    document.querySelectorAll("[data-limit]").forEach((b) => b.onclick = async () => {
+      const v = prompt(`Speech checks a month for ${b.dataset.limit}:`, b.dataset.cur);
+      if (v) { await call("/api/admin/codes/update", { code: b.dataset.limit, limit: Number(v) }); load(); }
+    });
+    document.querySelectorAll("[data-toggle]").forEach((b) => b.onclick = async () => {
+      const off = !b.dataset.off;
+      if (off && !confirm(`Turn off ${b.dataset.toggle}? That family's speech checks stop until you turn it back on.`)) return;
+      await call("/api/admin/codes/update", { code: b.dataset.toggle, revoked: off }); load();
+    });
+  }
+
+  $("#login-form").onsubmit = async (e) => {
+    e.preventDefault();
+    key = $("#key").value.trim();
+    try {
+      await load();
+      try { ($("#remember").checked ? localStorage : sessionStorage).setItem("angelio:admin", key); } catch { /* ignore */ }
+    } catch (err) { $("#login-err").hidden = false; $("#login-err").textContent = err.status === 401 ? "That admin key isn't right." : err.message; }
+  };
+  $("#make").onsubmit = async (e) => {
+    e.preventDefault();
+    const r = await call("/api/admin/codes", { name: $("#name").value, limit: Number($("#limit").value) });
+    $("#made").hidden = false; $("#made-code").textContent = r.code;
+    $("#made-note").textContent = `For ${r.name}: ${r.limit} speech checks a month.`;
+    $("#name").value = ""; load();
+  };
+  $("#copy").onclick = () => navigator.clipboard?.writeText($("#made-code").textContent);
+  $("#logout").onclick = () => { try { localStorage.removeItem("angelio:admin"); sessionStorage.removeItem("angelio:admin"); } catch { /* ignore */ } location.reload(); };
+  if (key) load().catch(() => {});
+</script>
+</body>
+</html>
