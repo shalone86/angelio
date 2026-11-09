@@ -10,6 +10,7 @@
     { "binding": "SNAP", "service": "snap-split" },
     { "binding": "DOUBLES", "service": "doubles" },
     { "binding": "GRAMMAR", "service": "grammar" },
+    { "binding": "FRACTIONS", "service": "fractions" },
     { "binding": "ARTICULATE", "service": "articulation" }
   ],
   "observability": { "enabled": true },

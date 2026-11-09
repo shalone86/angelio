@@ -28,10 +28,13 @@ export const APP_LIST = [
     name: "Articulate", path: "articulate", subject: "language", grades: "All ages", emoji: "🗣️",
     blurb: "Speech practice: say the word, hear it back, and see which sounds came through.",
   },
+  {
+    name: "Fraction Feast", path: "fractions", subject: "math", grades: "Grades 1–3", emoji: "🥧",
+    blurb: "Fair shares, halves to eighths, the number line, equal fractions and comparing.",
+  },
   // Coming soon (see ROADMAP.md)
   { name: "Phonics & Reading", subject: "language", grades: "PreK–2", emoji: "🔤", blurb: "Sounds, blending and reading out loud, with a friendly listener." },
   { name: "Writing Skills", subject: "language", grades: "Grades 1–4", emoji: "📝", blurb: "From sentences to paragraphs: build, fix and grow your writing." },
-  { name: "Fractions", subject: "math", grades: "Grades 2–4", emoji: "🍕", blurb: "Cut, share and compare: see fractions with your own eyes." },
   { name: "Catholic History", subject: "history", grades: "All ages", emoji: "⛪", blurb: "Saints, the early Church and the great moments, on drag-and-drop timelines." },
   { name: "World History", subject: "history", grades: "All ages", emoji: "🌍", blurb: "Timelines and maps you build yourself, to remember who, where and when." },
   { name: "U.S. History", subject: "history", grades: "All ages", emoji: "🗽", blurb: "Interactive maps and timelines from the first people to today." },

@@ -28,7 +28,7 @@ real money (Whisper on Workers AI), so it needs a key:
 
 - **Phonics & reading** (PreK–2): sounds, blending, Elkonin boxes, letter tiles, decodable sentences, read-aloud checked with voice recordings (reuse articulation's recorder and Whisper scoring; whole words work better than single sounds for young voices).
 - **Writing skills** (1–4): build and expand sentences ("The dog ran." → "The big dog ran fast."), fix run-ons, order sentences into a paragraph, topic sentences.
-- **Fractions** (2–4): cut bars and circles into equal parts, shade, compare, equivalent fractions by animation (cut each half into 2 → 4 quarters).
+- ~~**Fractions**~~: live as **Fraction Feast** (angelio.org/fractions/). Next ideas: animate equivalent fractions (cut each half into 2 → 4 quarters), fractions greater than 1, grade 4.
 - **Multiplication & division beyond Doubles** (3–4): arrays → area model, dealing into groups, remainders.
 - **Catholic history**: saints, the early Church, councils and great moments on drag-and-drop timelines; maps of missions and pilgrimages.
 - **World history**: build timelines and maps yourself (drag events, place civilizations), memory games.
