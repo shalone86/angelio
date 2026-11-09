@@ -71,7 +71,6 @@ function render() {
       <div class="scene" data-scene="${scene.id}">
         <svg viewBox="0 0 400 250" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${scene.svg}</svg>
         <div class="items">${placed.map((p, i) => itemHtml(p, i)).join("")}</div>
-        <div class="lid" style="--c:${scene.color}"><span>${scene.emoji}</span><b>${scene.name}</b></div>
       </div>
       <div class="tray">
         <div class="tabs" role="tablist">
@@ -168,12 +167,19 @@ function wire(scene, placed) {
   }
 }
 
-/** The playset lid swings open, like opening a toy compact. */
+/** The playset lid swings open, like opening a toy compact. Only when a playset opens: after that
+ * the lid is gone, so redrawing the scene (adding or moving stickers) never covers it again. */
 function openLid(withSound) {
-  const lid = $(".lid", app);
-  if (!lid) return;
+  const sceneEl = $(".scene", app), scene = sceneById(world.scene);
+  if (!sceneEl) return;
+  const lid = document.createElement("div");
+  lid.className = "lid";
+  lid.style.setProperty("--c", scene.color);
+  lid.innerHTML = `<span>${scene.emoji}</span><b>${scene.name}</b>`;
+  sceneEl.append(lid);
   if (withSound) playJingle("stickers");
   requestAnimationFrame(() => setTimeout(() => lid.classList.add("open"), 120));
+  setTimeout(() => lid.remove(), 1200);
 }
 
 // Sound toggle and "how to play"
