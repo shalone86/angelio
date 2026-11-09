@@ -64,3 +64,17 @@ footer { text-align: center; color: var(--muted); font-size: .85rem; margin-top:
   .cardc.soon { background: rgb(28 43 69 / .55); border-color: #2b4470; }
 }
 @media (prefers-reduced-motion: reduce) { .feather { animation: none; } html { scroll-behavior: auto; } }
+
+/* ".org" on the logo, so nobody types .com by mistake */
+.brand .tld { font-size: .95rem; margin-left: 1px; align-self: flex-end; margin-bottom: 6px; color: #fff7d6; }
+.only-org { margin-top: 12px; background: #fff7d6; border: 2px solid var(--sun); border-radius: 18px; padding: 4px 14px 12px; }
+.copy-addr { font: 800 1rem Nunito, sans-serif; border: 0; border-radius: 999px; padding: 8px 16px; background: var(--sun); color: #4a3300; box-shadow: 0 4px 0 #d99a12; cursor: pointer; }
+.copy-addr:active { transform: translateY(3px); box-shadow: none; }
+/* Sticker World banner */
+.world-banner { position: relative; z-index: 1; display: flex; align-items: center; gap: 14px; margin: 0 auto 6px; max-width: 760px; padding: 14px 18px; border-radius: 28px;
+  background: linear-gradient(135deg, #fff, #fff4cc); color: var(--ink); text-decoration: none; box-shadow: 0 8px 0 #f1d27a, 0 16px 30px rgb(170 120 40 / .15); }
+.world-banner b { font: 800 1.35rem "Baloo 2", sans-serif; }
+.wb-em { font-size: 2.8rem; animation: drift 5s ease-in-out infinite; }
+.wb-go { margin-left: auto; font-size: 1.4rem; background: var(--sun); border-radius: 50%; width: 46px; height: 46px; flex: none; display: grid; place-items: center; color: #4a3300; }
+.world-banner:active { transform: translateY(4px); box-shadow: 0 4px 0 #f1d27a; }
+@media (prefers-color-scheme: dark) { .only-org { background: #3a3213; } .world-banner { background: linear-gradient(135deg, #1c2b45, #3a3213); } }

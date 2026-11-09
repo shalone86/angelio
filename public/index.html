@@ -10,6 +10,12 @@
   <link rel="icon" href="icons/icon-192.png" type="image/png" sizes="192x192">
   <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
   <meta name="apple-mobile-web-app-title" content="Angelio">
+  <link rel="canonical" href="https://angelio.org/">
+  <meta property="og:site_name" content="Angelio">
+  <meta property="og:title" content="Angelio · free learning games at angelio.org">
+  <meta property="og:description" content="Free learning games for kids, read aloud. No ads, no accounts. Our only address is angelio.org.">
+  <meta property="og:url" content="https://angelio.org/">
+  <meta property="og:image" content="https://angelio.org/icons/icon-512.png">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,7 +26,7 @@
 <div class="sky" aria-hidden="true"><div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div><div class="cloud c4"></div></div>
 <main>
   <header>
-    <a class="brand" href="/"><img src="icon.svg" alt="" width="34" height="34">Angelio</a>
+    <a class="brand" href="/" aria-label="Angelio, angelio.org"><img src="icon.svg" alt="" width="34" height="34">Angelio<span class="tld">.org</span></a>
     <nav aria-label="Subjects">
       <a href="#math">🔢 Math</a>
       <a href="#language">📖 Reading &amp; Writing</a>
@@ -34,16 +40,25 @@
     <p class="lede">Math blocks that move, words that light up, and a friendly voice that reads everything out loud. Free for every family. No ads, no accounts.</p>
     <a class="cta" href="#math">Let's play! ▶</a>
   </section>
+  <a class="world-banner" href="/stickers/">
+    <span class="wb-em" aria-hidden="true">🌍</span>
+    <span><b>Sticker World</b><br>Play with the stickers you earn in every game. More stickers open more playsets!</span>
+    <span class="wb-go" aria-hidden="true">▶</span>
+  </a>
   <div id="apps"></div>
   <section id="about" class="panel"><h2>About Angelio</h2>
     <p>Angelio is named for the angels, God's messengers and every child's guardian. Our games try to be like that: always nearby, always kind, always ready with a hint.</p>
-    <p>We're a Catholic family, and every game is tested by our own kids first. Nothing to install (you can add any game to your home screen), no sign-up, and your child's progress stays on your device.</p></section>
+    <p>We're a Catholic family, and every game is tested by our own kids first. Nothing to install (you can add any game to your home screen), no sign-up, and your child's progress stays on your device.</p>
+    <div class="only-org">
+      <p><b>Our only address is angelio.org</b> (dot <b>o-r-g</b>). Angelio never asks for money, passwords or downloads in a pop-up. <b>angelio.com is not us</b>: it's someone else's site, so please don't go there or click anything on it.</p>
+      <button type="button" class="copy-addr" data-copy>📋 Copy our address to share</button>
+    </div></section>
   <section id="support" class="panel"><h2>Free for every family</h2>
     <div class="duo"><div><h3>💛 Donate</h3><p>Help us build more games. Coming soon.</p></div>
     <div><h3>🎙️ Pro voices &amp; speech checks</h3><p>A natural reading voice and "say it out loud" checking. Coming soon.</p></div></div></section>
   <footer>
     <p><a href="#about">About</a> · <a href="#support">Support</a> · <a href="https://github.com/shalone86/angelio">The code is open</a></p>
-    <p>Angelio · angelio.org · Progress is saved in your browser only. When the Cloudflare voice reads a sentence, that sentence is sent to Cloudflare to be spoken and isn't stored.</p>
+    <p>Angelio lives only at <b>angelio.org</b> (not .com) · Progress is saved in your browser only. When the Cloudflare voice reads a sentence, that sentence is sent to Cloudflare to be spoken and isn't stored.</p>
   </footer>
 </main>
 <script type="module" src="js/hub.js"></script>
