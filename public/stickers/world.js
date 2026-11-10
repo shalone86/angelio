@@ -7,6 +7,11 @@ import { loadStickers, pointsFor, loadWorld, saveWorld } from "./data.js";
 import { jingleOnce, playJingle } from "../js/jingle.js";
 
 const $ = (s, el = document) => el.querySelector(s);
+// Stickers are emoji, or our own drawings saved as "art:mary" (art/mary.svg), sized like emoji.
+const ART_NAMES = { mary: "Mary", "baby-jesus": "Baby Jesus", "sacred-heart": "Sacred Heart", chalice: "Chalice", monstrance: "Monstrance", bible: "Holy Bible", lily: "Lily" };
+const art = (e) => (String(e).startsWith("art:") && ART_NAMES[e.slice(4)]
+  ? `<img class="art-sticker" src="art/${e.slice(4)}.svg" alt="${ART_NAMES[e.slice(4)]}" draggable="false">`
+  : String(e).replace(/[<>&"]/g, ""));
 const stickers = loadStickers();
 const points = pointsFor(stickers);
 const world = loadWorld();
@@ -80,7 +85,7 @@ function render() {
         </div>
         <div class="pieces">
           ${tab === "mine"
-            ? (stickers.length ? stickers.map((s) => `<button class="piece ${s.big ? "big" : "mini"}${usedHere.has(s.key) ? " used" : ""}" data-k="s:${s.key}" title="${s.big ? "Giant" : "Mini"} sticker from ${s.game}">${s.e}</button>`).join("")
+            ? (stickers.length ? stickers.map((s) => `<button class="piece ${s.big ? "big" : "mini"}${usedHere.has(s.key) ? " used" : ""}" data-k="s:${s.key}" title="${s.big ? "Giant" : "Mini"} sticker from ${s.game}">${art(s.e)}</button>`).join("")
               : `<p class="empty">Finish a level in any <a href="/">Angelio game</a> to earn stickers. No mistakes makes a giant one!</p>`)
             : props.map((e) => `<button class="piece prop" data-k="p:${e}">${e}</button>`).join("") + (nextProps ? `<p class="next-up">🔒 ${nextProps.items.join(" ")} at ${nextProps.need} ⭐</p>` : "")}
         </div>
@@ -95,7 +100,7 @@ function itemHtml(p, i) {
   const s = p.k.startsWith("s:") ? stickers.find((x) => x.key === p.k.slice(2)) : null;
   const e = s ? s.e : p.k.slice(2);
   const base = s ? (s.big ? 11 : 7) : 9;
-  return `<span class="item${p.flip ? " flip" : ""}" data-i="${i}" style="left:${p.x}%;top:${p.y}%;--size:${(base * (0.7 + p.y / 160)).toFixed(2)};z-index:${Math.round(p.y)}">${e}</span>`;
+  return `<span class="item${p.flip ? " flip" : ""}" data-i="${i}" style="left:${p.x}%;top:${p.y}%;--size:${(base * (0.7 + p.y / 160)).toFixed(2)};z-index:${Math.round(p.y)}">${art(e)}</span>`;
 }
 
 function wire(scene, placed) {
@@ -111,7 +116,7 @@ function wire(scene, placed) {
   // Tray pieces: drag into the scene, or tap to drop one in a free-ish spot.
   app.querySelectorAll(".piece").forEach((el) => el.addEventListener("pointerdown", (e) => {
     if (el.classList.contains("used")) { sfx.locked(); say("That sticker is already in this playset."); return; }
-    drag(e, el.textContent, (x, y, moved) => {
+    drag(e, el.innerHTML, (x, y, moved) => {
       if (!moved) { x = 15 + Math.random() * 70; y = 45 + Math.random() * 45; }
       else if (x == null) return;
       placed.push({ k: el.dataset.k, x, y });
@@ -125,7 +130,7 @@ function wire(scene, placed) {
   app.querySelectorAll(".item").forEach((el) => el.addEventListener("pointerdown", (e) => {
     const i = +el.dataset.i;
     el.classList.add("lifted");
-    drag(e, el.textContent, (x, y, moved, overTray) => {
+    drag(e, el.innerHTML, (x, y, moved, overTray) => {
       el.classList.remove("lifted");
       if (!moved) {
         const d = DANCES[Math.floor(Math.random() * DANCES.length)];
@@ -157,7 +162,7 @@ function wire(scene, placed) {
       if (ev.pointerId !== e.pointerId) return;
       if (!moved && Math.hypot(ev.clientX - start.x, ev.clientY - start.y) > 8) {
         moved = true; sfx.pick();
-        ghost = document.createElement("div"); ghost.className = "ghost"; ghost.textContent = emoji; document.body.append(ghost);
+        ghost = document.createElement("div"); ghost.className = "ghost"; ghost.innerHTML = emoji; document.body.append(ghost);
         if (source) source.style.opacity = "0.25";
       }
       if (ghost) { ghost.style.left = `${ev.clientX}px`; ghost.style.top = `${ev.clientY}px`; }

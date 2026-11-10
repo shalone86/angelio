@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><title>Holy Bible</title>
+<path d="M12 8h36a4 4 0 0 1 4 4v42H16a4 4 0 0 1-4-4z" fill="#8b2c2c" stroke="#5a1a1a" stroke-width="2" stroke-linejoin="round"/>
+<path d="M16 54h36v4H16a2 2 0 0 1 0-4z" fill="#fff8e6" stroke="#5a1a1a" stroke-width="2" stroke-linejoin="round"/>
+<path d="M18 50h34" stroke="#e8d9b5" stroke-width="2"/>
+<path d="M33 16v24M26 23h14" stroke="#f2c230" stroke-width="4" stroke-linecap="round"/>
+<path d="M44 54v8l3-3 3 3v-8" fill="#2e7d4f" stroke="#1d5233" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M16 12h2v38h-2" fill="#a83a3a"/>
+</svg>

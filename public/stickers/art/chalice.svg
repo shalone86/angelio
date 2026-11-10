@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><title>Chalice and host</title>
+<g stroke="#ffd54a" stroke-width="2" stroke-linecap="round" opacity=".8"><path d="M32 2v4M18 6l3 3M46 6l-3 3M12 16h4M48 16h4"/></g>
+<circle cx="32" cy="17" r="10" fill="#fffdf2" stroke="#d8c690" stroke-width="2"/>
+<path d="M32 11v12M27 16h10" stroke="#d8b84a" stroke-width="2" stroke-linecap="round"/>
+<path d="M16 26h32c0 10-7 17-16 17s-16-7-16-17z" fill="#f2c230" stroke="#b8860b" stroke-width="2" stroke-linejoin="round"/>
+<path d="M20 30q4 7 10 9" stroke="#fff3b0" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+<path d="M29 43h6v8h-6z" fill="#e3ad1f" stroke="#b8860b" stroke-width="2"/>
+<ellipse cx="32" cy="47" rx="5" ry="2" fill="#f2c230" stroke="#b8860b" stroke-width="1.5"/>
+<path d="M20 59c0-5 5-8 12-8s12 3 12 8z" fill="#f2c230" stroke="#b8860b" stroke-width="2" stroke-linejoin="round"/>
+</svg>

@@ -92,3 +92,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 0 12px 16px; }
   .tab small { display: inline-block; }
   .piece { width: 54px; height: 54px; }
 }
+
+/* Our own drawn stickers size like emoji. */
+.art-sticker { width: 1em; height: 1em; display: block; pointer-events: none; -webkit-user-drag: none; }
+.piece .art-sticker { margin: auto; }

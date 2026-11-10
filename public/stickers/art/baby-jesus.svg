@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><title>Baby Jesus in the manger</title>
+<path d="M32 4l2 6 6 1-6 2-2 6-2-6-6-2 6-1z" fill="#ffe27a" stroke="#e0b62c" stroke-width="1"/>
+<path d="M8 36h48l-6 16H14z" fill="#a8743f" stroke="#6b4423" stroke-width="2" stroke-linejoin="round"/>
+<path d="M14 52l-4 8M50 52l4 8" stroke="#6b4423" stroke-width="3" stroke-linecap="round"/>
+<path d="M7 36q6-6 12-1 6-6 13-1 7-5 13 1 6-5 12 1" fill="#f2d27a" stroke="#c9a03c" stroke-width="1.5"/>
+<path d="M18 33q14-10 30 0-14 6-30 0z" fill="#fff" stroke="#c9d6e8" stroke-width="1.5"/>
+<circle cx="22" cy="28" r="9" fill="#ffd54a" opacity=".5"/>
+<circle cx="22" cy="28" r="5.5" fill="#f7d1b0" stroke="#c99a76" stroke-width="1.2"/>
+<path d="M20 28.5q.7.6 1.4 0M23 28.5q.7.6 1.4 0" stroke="#5a3b2a" stroke-width="1" fill="none" stroke-linecap="round"/>
+</svg>

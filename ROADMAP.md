@@ -51,6 +51,46 @@ and email it, plus terms and a refund policy.
 - Possibly on the hub later: **Hablar** (Spanish, hablar.shalonely.com).
 - **Articulate keeps both addresses**: articulate.shalonely.com must keep working (no redirect). Don't set HOME_URL for it.
 
+## Ideas from the owner's workbooks (Nov 2026)
+
+Topics only: we write all our own sentences, pictures and wording.
+
+**Grammar! (existing app): new levels**
+- **Proofreading marks** (grades 2–3), a good "editor" level: tap a mistake, choose the real mark, and see it
+  drawn on the sentence: ≡ capitalize, ⊙ add a period, ? add a question mark, ∧ add a word, the loop to take
+  out, a circle for spelling, ¶ indent, and quotation marks. A final "fix this paragraph" round uses them all.
+- **Usage pairs** (grades 1–2): is/are, was/were, see/sees/saw, run/runs/ran, give/gives/gave, do/does,
+  has/have/had, I/me, we/us, a/an. Quick two-choice taps, sung-out "sounds right?" read aloud.
+- **Verbs**: helping verbs, verbs that don't show action (is, am, are, was), adding -ed/-ing with spelling changes
+  (hop → hopped, make → making), irregular verbs (already partly there).
+- **Sentences**: naming part and action part (subject and predicate), kinds of sentences (telling, asking,
+  exclaiming, commanding), joining two sentences with *and*/*but*, adding describing words, beginning
+  sentences in different ways, writing clear sentences.
+- **Mechanics**: initials, titles of respect (Mr., Mrs., Dr., Fr., Sr.), names of places, days, months and
+  holidays (with feast days: All Saints' Day, Christmas, Easter), titles of books and songs, commas in place
+  names and dates, apostrophes.
+- **Words** (maybe its own "Word Workshop" app): rhyming words, synonyms and antonyms, homographs, homophones
+  (Articulate already has a homophone list), troublesome words (to/too/two, their/there/they're), compound
+  words, prefixes and suffixes.
+- **Research skills**: ABC order (to the 1st, 2nd letter), dictionary guide words, parts of a book (title page,
+  table of contents, glossary), fact or fantasy.
+
+**Writing Skills (planned app): the writing units, in order**
+- Grade 1: words → what is a sentence → a sentence about a picture → writing and completing sentences →
+  writing a paragraph → writing a letter.
+- Grade 2: a sentence about a picture → a personal story → a friendly letter (and addressing an envelope) →
+  a paragraph that describes → a story (beginning, middle, end) → a how-to paragraph (first, next, then, last).
+- Grade 3: main idea and supporting details, order in a paragraph, personal narrative, a poem, an information
+  paragraph, a book report, a persuading paragraph.
+- How it could work: a picture scene and a word bank → build the sentence by tapping words → the voice reads it
+  back → proofread it with the marks from Grammar!. Natural faith touches: a thank-you letter to a grandparent
+  or godparent, a how-to paragraph ("how to set the table for Sunday dinner"), a story about a saint.
+
+**Math (from the math workbook cover)**
+- Telling time and metric units → the Measurement app above.
+- Problem solving → word problems in Regroup! and Doubles ("12 children came to Mass, then 9 more…"), read aloud,
+  with the blocks to model them.
+
 ## Platform
 
 - **Catholic words and themes** in questions across all apps (counting rosary beads, saints' names in grammar sentences, feast days in the calendar questions). Plan: keep each app's question banks in data files so a "Catholic" set can be swapped in.
