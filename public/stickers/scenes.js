@@ -50,6 +50,23 @@ export const SCENES = [
       <path d="M0 200 Q140 175 260 198 T400 190 V250 H0Z" fill="#1f2f5c"/>`,
   },
   {
+    id: "nativity", name: "Bethlehem", emoji: "🌟", need: 12, color: "#3b3f7a",
+    svg: `${sky("b", "#1b2160", "#5a4f8f")}${stars(40, 7)}
+      <g transform="translate(300 42)">
+        <path d="M0 -26 L5 -5 L26 0 L5 5 L0 26 L-5 5 L-26 0 L-5 -5Z" fill="#fff3b0"/>
+        <circle r="7" fill="#fff"/>
+        <path d="M0 0 L-120 150" stroke="#fff3b0" stroke-width="3" opacity=".35"/>
+      </g>
+      <path d="M0 150 Q90 120 180 140 T400 130 V250 H0Z" fill="#3e4a7a"/>
+      <g transform="translate(120 112)">
+        <path d="M-20 34 L80 -6 L180 34Z" fill="#8a5a2b" stroke="#6b4423" stroke-width="3" stroke-linejoin="round"/>
+        <rect x="-8" y="34" width="10" height="72" fill="#7a4e26"/><rect x="158" y="34" width="10" height="72" fill="#7a4e26"/>
+        <rect x="2" y="34" width="156" height="72" fill="#4a3424" opacity=".55"/>
+        <path d="M60 106 h40 l-6 -20 h-28z" fill="#a8743f"/><path d="M62 88 q18 -10 36 0" stroke="#f2d27a" stroke-width="5" fill="none"/>
+      </g>
+      <path d="M0 218 H400 V250 H0Z" fill="#c9a25c"/><path d="M0 218 q40 -8 80 0 t80 0 t80 0 t80 0 t80 0" stroke="#e6c47a" stroke-width="4" fill="none"/>`,
+  },
+  {
     id: "town", name: "Little Town", emoji: "⛪", need: 15, color: "#e0803a",
     svg: `${sky("t", "#9fdcff", "#f2fbff")}${cloud(100, 36)}${cloud(300, 50, .8)}
       <g transform="translate(250 58)">
@@ -77,7 +94,9 @@ export const PROPS = [
   { need: 0, items: ["🌳", "🌷", "🏠", "☁️"] },
   { need: 2, items: ["🌲", "🌻", "🪨", "🍄"] },
   { need: 4, items: ["⛲", "🛝", "🚲", "🎈"] },
+  { need: 5, items: ["✝️", "🕯️", "🔔", "🌹"] },
   { need: 7, items: ["🚗", "🚂", "⛵", "🐚"] },
+  { need: 9, items: ["🐂", "🫏", "🐑", "👼"] }, // for the manger scene
   { need: 11, items: ["🏰", "⛪", "🌈", "⭐"] },
   { need: 16, items: ["🎡", "🎠", "🌙", "🎄"] },
   { need: 22, items: ["🚀", "🛸", "🐉", "👑"] },

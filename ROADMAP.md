@@ -39,6 +39,12 @@ and email it, plus terms and a refund policy.
 - **Writing skills** (1–4): build and expand sentences ("The dog ran." → "The big dog ran fast."), fix run-ons, order sentences into a paragraph, topic sentences.
 - ~~**Fractions**~~: live as **Fraction Feast** (angelio.org/fractions/). Next ideas: animate equivalent fractions (cut each half into 2 → 4 quarters), fractions greater than 1, grade 4.
 - **Multiplication & division beyond Doubles** (3–4): arrays → area model, dealing into groups, remainders.
+- **Measurement** (K–3, from the owner's list): drag a ruler to measure (start at 0, not at the end!), inches and
+  centimeters, longer/shorter; liquids: pour between cups and jugs to compare and measure capacity (cups,
+  quarts, liters); weight on a balance scale; reading clocks could live here too.
+- **Maps & grids** (K–3): left/right/above/below, follow directions on a grid ("3 steps right, 2 up"), find
+  things by row and column (A3, B5), then simple coordinates; read a map with a key and compass rose (N, S, E, W).
+  Pairs well with the history apps' maps later.
 - **Catholic history**: saints, the early Church, councils and great moments on drag-and-drop timelines; maps of missions and pilgrimages.
 - **World history**: build timelines and maps yourself (drag events, place civilizations), memory games.
 - **U.S. history**: interactive maps and timelines from the first peoples to today.

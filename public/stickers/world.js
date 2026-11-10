@@ -50,6 +50,7 @@ const sfx = {
   away: () => blip(700, { to: 250, dur: 0.18, type: "sine" }),
   locked: () => blip(200, { dur: 0.15, type: "square", vol: 0.05 }),
 };
+let dragging = false;
 const DANCES = ["dance-hop", "dance-spin", "dance-wiggle"];
 
 // ───────── screen ─────────
@@ -139,6 +140,9 @@ function wire(scene, placed) {
 
   function drag(e, emoji, done, source = null) {
     e.preventDefault();
+    if (dragging) return; // one drag at a time (a second finger is ignored)
+    dragging = true;
+    document.querySelectorAll(".ghost").forEach((g) => g.remove());
     const start = { x: e.clientX, y: e.clientY };
     let ghost = null, moved = false;
     const pos = (ev) => {
@@ -150,6 +154,7 @@ function wire(scene, placed) {
         y: inside ? Math.min(96, Math.max(8, ((ev.clientY - r.top) / r.height) * 100)) : null, overTray };
     };
     const move = (ev) => {
+      if (ev.pointerId !== e.pointerId) return;
       if (!moved && Math.hypot(ev.clientX - start.x, ev.clientY - start.y) > 8) {
         moved = true; sfx.pick();
         ghost = document.createElement("div"); ghost.className = "ghost"; ghost.textContent = emoji; document.body.append(ghost);
@@ -158,8 +163,11 @@ function wire(scene, placed) {
       if (ghost) { ghost.style.left = `${ev.clientX}px`; ghost.style.top = `${ev.clientY}px`; }
     };
     const up = (ev) => {
+      if (ev.pointerId !== e.pointerId) return;
       removeEventListener("pointermove", move); removeEventListener("pointerup", up); removeEventListener("pointercancel", up);
       ghost?.remove(); if (source) source.style.opacity = "";
+      dragging = false;
+      if (ev.type === "pointercancel") { if (source) render(); return; } // interrupted: leave everything where it was
       const p = pos(ev);
       done(p.x, p.y, moved, p.overTray);
     };
