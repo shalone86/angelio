@@ -55,13 +55,18 @@ const sfx = {
   away: () => blip(700, { to: 250, dur: 0.18, type: "sine" }),
   locked: () => blip(200, { dur: 0.15, type: "square", vol: 0.05 }),
 };
-let dragging = false;
+let dragging = false, cancelDrag = null, pinching = null;
+let selected = null; // index of the tapped sticker in this playset: it shows ➖ ➕ ↔
+const MIN_S = 0.4, MAX_S = 2.2;
+const clampS = (v) => Math.min(MAX_S, Math.max(MIN_S, v));
 const DANCES = ["dance-hop", "dance-spin", "dance-wiggle"];
 
 // ───────── screen ─────────
 
 const app = $("#world");
+let offWindow = null, wheelSave = 0, hintSaid = false;
 function render() {
+  offWindow?.(); offWindow = null;
   const scene = sceneById(world.scene);
   const placed = (world.placed[scene.id] ??= []);
   const usedHere = new Set(placed.filter((p) => p.k.startsWith("s:")).map((p) => p.k.slice(2)));
@@ -77,6 +82,8 @@ function render() {
       <div class="scene" data-scene="${scene.id}">
         <svg viewBox="0 0 400 250" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${scene.svg}</svg>
         <div class="items">${placed.map((p, i) => itemHtml(p, i)).join("")}</div>
+        ${selected != null && placed[selected] ? `<div class="tools" style="left:clamp(84px, ${placed[selected].x}%, calc(100% - 84px));top:max(64px, calc(${placed[selected].y}% - ${(sizeOf(placed[selected]) * (placed[selected].s ?? 1) * 0.9).toFixed(1)}cqw))">
+          <button data-tool="smaller" aria-label="Smaller">➖</button><button data-tool="bigger" aria-label="Bigger">➕</button><button data-tool="flip" aria-label="Turn around">↔️</button></div>` : ""}
       </div>
       <div class="tray">
         <div class="tabs" role="tablist">
@@ -89,18 +96,20 @@ function render() {
               : `<p class="empty">Finish a level in any <a href="/">Angelio game</a> to earn stickers. No mistakes makes a giant one!</p>`)
             : props.map((e) => `<button class="piece prop" data-k="p:${e}">${e}</button>`).join("") + (nextProps ? `<p class="next-up">🔒 ${nextProps.items.join(" ")} at ${nextProps.need} ⭐</p>` : "")}
         </div>
-        <p class="tip">Drag or tap to add · tap to dance · drag back here to put away</p>
+        <p class="tip">Drag or tap to add · tap a sticker to dance and resize (or pinch it) · drag back here to put away</p>
       </div>
     </div>`;
   wire(scene, placed);
 }
 
 /** Lower on the screen = closer = bigger, like a real playset. */
+const stickerOf = (p) => (p.k.startsWith("s:") ? stickers.find((x) => x.key === p.k.slice(2)) : null);
+/** Size in % of the playset's width (before the child's own resizing). */
+const sizeOf = (p) => { const s = stickerOf(p); return (s ? (s.big ? 11 : 7) : 9) * (0.7 + p.y / 160); };
 function itemHtml(p, i) {
-  const s = p.k.startsWith("s:") ? stickers.find((x) => x.key === p.k.slice(2)) : null;
+  const s = stickerOf(p);
   const e = s ? s.e : p.k.slice(2);
-  const base = s ? (s.big ? 11 : 7) : 9;
-  return `<span class="item${p.flip ? " flip" : ""}" data-i="${i}" style="left:${p.x}%;top:${p.y}%;--size:${(base * (0.7 + p.y / 160)).toFixed(2)};z-index:${Math.round(p.y)}">${art(e)}</span>`;
+  return `<span class="item${p.flip ? " flip" : ""}${i === selected ? " sel" : ""}" data-i="${i}" style="left:${p.x}%;top:${p.y}%;--size:${sizeOf(p).toFixed(2)};--s:${(p.s ?? 1).toFixed(2)};z-index:${Math.round(p.y)}">${art(e)}</span>`;
 }
 
 function wire(scene, placed) {
@@ -108,7 +117,7 @@ function wire(scene, placed) {
     const s = sceneById(b.dataset.set);
     if (!unlocked(s)) { sfx.locked(); say(`${s.name} opens when you have ${s.need} stars. Keep playing to earn stickers!`); return; }
     if (s.id === world.scene) return;
-    world.scene = s.id; saveWorld(world); render(); openLid(true);
+    world.scene = s.id; selected = null; saveWorld(world); render(); openLid(true);
   });
   app.querySelectorAll("[data-tab]").forEach((b) => b.onclick = () => { tab = b.dataset.tab; sfx.pick(); render(); });
   const sceneEl = $(".scene", app), tray = $(".tray", app);
@@ -133,19 +142,87 @@ function wire(scene, placed) {
     drag(e, el.innerHTML, (x, y, moved, overTray) => {
       el.classList.remove("lifted");
       if (!moved) {
-        const d = DANCES[Math.floor(Math.random() * DANCES.length)];
-        el.classList.remove(...DANCES); void el.offsetWidth; el.classList.add(d); sfx.dance();
+        // Tap: a little dance, and the ➖ ➕ ↔ buttons appear next to it.
+        const first = selected == null;
+        selected = i; render();
+        const it = app.querySelector(`.item[data-i="${i}"]`);
+        it?.classList.add(DANCES[Math.floor(Math.random() * DANCES.length)]); sfx.dance();
+        if (first && !hintSaid) { hintSaid = true; say("Make it bigger or smaller with the buttons. You can pinch it too!"); }
         return;
       }
-      if (overTray || x == null) { placed.splice(i, 1); sfx.away(); }
-      else { Object.assign(placed[i], { x, y, flip: x < placed[i].x ? true : x > placed[i].x ? false : placed[i].flip }); sfx.drop(); }
+      if (overTray || x == null) { placed.splice(i, 1); selected = null; sfx.away(); }
+      else { selected = i; Object.assign(placed[i], { x, y, flip: x < placed[i].x ? true : x > placed[i].x ? false : placed[i].flip }); sfx.drop(); }
       saveWorld(world); render();
     }, el);
   }));
 
+  // ➖ ➕ ↔ buttons for the tapped sticker
+  app.querySelectorAll("[data-tool]").forEach((b) => b.addEventListener("pointerdown", (ev) => {
+    ev.stopPropagation(); ev.preventDefault();
+    const p = placed[selected];
+    if (!p) return;
+    const t = b.dataset.tool;
+    if (t === "flip") { p.flip = !p.flip; sfx.pick(); }
+    else {
+      const next = clampS((p.s ?? 1) * (t === "bigger" ? 1.25 : 0.8));
+      if (next === (p.s ?? 1)) { sfx.locked(); return; }
+      p.s = next; t === "bigger" ? blip(500, { to: 900, dur: 0.12 }) : blip(700, { to: 350, dur: 0.12 });
+    }
+    saveWorld(world); render();
+  }));
+  // Tap the background: put the buttons away
+  sceneEl.addEventListener("pointerdown", (ev) => {
+    if (selected != null && !ev.target.closest(".item, .tools") && !pinching) { selected = null; render(); }
+  });
+
+  // Pinch a sticker with two fingers to resize it
+  const pts = new Map();
+  const dist = () => { const [a, b] = [...pts.values()]; return Math.hypot(a.x - b.x, a.y - b.y) || 1; };
+  sceneEl.addEventListener("pointerdown", (ev) => {
+    pts.set(ev.pointerId, { x: ev.clientX, y: ev.clientY, target: ev.target });
+    if (pts.size !== 2) return;
+    const firstTarget = [...pts.values()][0].target.closest?.(".item");
+    const i = firstTarget ? +firstTarget.dataset.i : selected;
+    if (i == null || !placed[i]) return;
+    cancelDrag?.();
+    const el = app.querySelector(`.item[data-i="${i}"]`);
+    pinching = { i, el, d0: dist(), s0: placed[i].s ?? 1, s: placed[i].s ?? 1 };
+    app.querySelector(".tools")?.remove();
+  }, true);
+  const pinchMove = (ev) => {
+    if (!pts.has(ev.pointerId)) return;
+    pts.set(ev.pointerId, { ...pts.get(ev.pointerId), x: ev.clientX, y: ev.clientY });
+    if (!pinching || pts.size < 2) return;
+    pinching.s = clampS(pinching.s0 * (dist() / pinching.d0));
+    pinching.el?.style.setProperty("--s", pinching.s.toFixed(2));
+  };
+  const pinchEnd = (ev) => {
+    pts.delete(ev.pointerId);
+    if (!pinching || pts.size >= 2) return;
+    const { i, s } = pinching;
+    pinching = null;
+    if (placed[i]) { placed[i].s = s; selected = i; saveWorld(world); blip(600, { to: 800, dur: 0.1 }); }
+    render();
+  };
+  addEventListener("pointermove", pinchMove, true);
+  addEventListener("pointerup", pinchEnd, true);
+  addEventListener("pointercancel", pinchEnd, true);
+  offWindow = () => { removeEventListener("pointermove", pinchMove, true); removeEventListener("pointerup", pinchEnd, true); removeEventListener("pointercancel", pinchEnd, true); };
+
+  // Mouse wheel over a sticker: bigger or smaller
+  sceneEl.addEventListener("wheel", (ev) => {
+    const it = ev.target.closest(".item");
+    if (!it) return;
+    ev.preventDefault();
+    const i = +it.dataset.i, p = placed[i];
+    p.s = clampS((p.s ?? 1) * (ev.deltaY < 0 ? 1.1 : 0.9));
+    it.style.setProperty("--s", p.s.toFixed(2));
+    clearTimeout(wheelSave); wheelSave = setTimeout(() => { selected = i; saveWorld(world); render(); }, 250);
+  }, { passive: false });
+
   function drag(e, emoji, done, source = null) {
     e.preventDefault();
-    if (dragging) return; // one drag at a time (a second finger is ignored)
+    if (dragging || pinching) return; // one drag at a time (a second finger pinches instead)
     dragging = true;
     document.querySelectorAll(".ghost").forEach((g) => g.remove());
     const start = { x: e.clientX, y: e.clientY };
@@ -160,6 +237,7 @@ function wire(scene, placed) {
     };
     const move = (ev) => {
       if (ev.pointerId !== e.pointerId) return;
+      if (pinching) return;
       if (!moved && Math.hypot(ev.clientX - start.x, ev.clientY - start.y) > 8) {
         moved = true; sfx.pick();
         ghost = document.createElement("div"); ghost.className = "ghost"; ghost.innerHTML = emoji; document.body.append(ghost);
@@ -167,11 +245,15 @@ function wire(scene, placed) {
       }
       if (ghost) { ghost.style.left = `${ev.clientX}px`; ghost.style.top = `${ev.clientY}px`; }
     };
+    const stop = () => {
+      removeEventListener("pointermove", move); removeEventListener("pointerup", up); removeEventListener("pointercancel", up);
+      ghost?.remove(); if (source) { source.style.opacity = ""; source.classList.remove("lifted"); }
+      dragging = false; cancelDrag = null;
+    };
+    cancelDrag = stop; // a second finger turns the drag into a pinch
     const up = (ev) => {
       if (ev.pointerId !== e.pointerId) return;
-      removeEventListener("pointermove", move); removeEventListener("pointerup", up); removeEventListener("pointercancel", up);
-      ghost?.remove(); if (source) source.style.opacity = "";
-      dragging = false;
+      stop();
       if (ev.type === "pointercancel") { if (source) render(); return; } // interrupted: leave everything where it was
       const p = pos(ev);
       done(p.x, p.y, moved, p.overTray);
@@ -202,7 +284,7 @@ $("[data-sound]").onclick = (e) => {
   e.currentTarget.textContent = soundOn ? "🔊" : "🔇";
   try { localStorage.setItem("angelio:world-sound", soundOn ? "on" : "off"); } catch { /* ignore */ }
 };
-const HOW = "Welcome to Sticker World! Drag your stickers into the playset, or just tap one. Tap a sticker to make it dance. Drag it back down to put it away. The more stickers you earn, the more playsets open up!";
+const HOW = "Welcome to Sticker World! Drag your stickers into the playset, or just tap one. Tap a sticker to make it dance, and use the plus and minus buttons to make it bigger or smaller. Drag it back down to put it away. The more stickers you earn, the more playsets open up!";
 $("[data-how]").onclick = () => say(HOW);
 $("[data-count]").innerHTML = `${points} <span aria-hidden="true">⭐</span>`;
 
