@@ -23,17 +23,32 @@ let soundOn = (() => { try { return localStorage.getItem("angelio:world-sound") 
 
 // ───────── voice and sounds ─────────
 
-let voiceAudio = null;
+let voiceAudio = null, saySeq = 0;
 async function say(text) {
+  const seq = ++saySeq;
+  try {
+    speechSynthesis.cancel();
+    if (voiceAudio) {
+      voiceAudio.pause();
+      voiceAudio.currentTime = 0;
+      voiceAudio = null;
+    }
+  } catch { /* ignore */ }
   if (!soundOn) return;
-  try { speechSynthesis.cancel(); voiceAudio?.pause(); } catch { /* ignore */ }
   try {
     // The games' read-aloud voice (same website), else the device's own voice.
     const r = await fetch(`/regroup/api/tts?voice=helena&text=${encodeURIComponent(text)}`);
     if (!r.ok) throw new Error();
-    voiceAudio = new Audio(URL.createObjectURL(await r.blob()));
-    await voiceAudio.play();
+    if (seq !== saySeq) return;
+    const blob = await r.blob();
+    if (seq !== saySeq) return;
+    const url = URL.createObjectURL(blob);
+    const audio = new Audio(url);
+    audio.onended = () => URL.revokeObjectURL(url);
+    voiceAudio = audio;
+    await audio.play();
   } catch {
+    if (seq !== saySeq) return;
     try { const u = new SpeechSynthesisUtterance(text); u.rate = 0.95; speechSynthesis.speak(u); } catch { /* no voice */ }
   }
 }
@@ -142,11 +157,23 @@ function wire(scene, placed) {
     drag(e, el.innerHTML, (x, y, moved, overTray) => {
       el.classList.remove("lifted");
       if (!moved) {
-        // Tap: a little dance, and the ➖ ➕ ↔ buttons appear next to it.
+        // Tap: dance! (and show ➖ ➕ ↔ buttons if not already selected)
+        const danceCls = DANCES[Math.floor(Math.random() * DANCES.length)];
+        const triggerDance = (node) => {
+          if (!node) return;
+          node.classList.remove(...DANCES);
+          void node.offsetWidth;
+          node.classList.add(danceCls);
+        };
         const first = selected == null;
-        selected = i; render();
-        const it = app.querySelector(`.item[data-i="${i}"]`);
-        it?.classList.add(DANCES[Math.floor(Math.random() * DANCES.length)]); sfx.dance();
+        if (selected !== i) {
+          selected = i;
+          render();
+          requestAnimationFrame(() => triggerDance(app.querySelector(`.item[data-i="${i}"]`)));
+        } else {
+          triggerDance(el);
+        }
+        sfx.dance();
         if (first && !hintSaid) { hintSaid = true; say("Make it bigger or smaller with the buttons. You can pinch it too!"); }
         return;
       }
