@@ -1,3 +1,4 @@
+import { MORE_SCENES, MORE_PROPS } from "./scenes-more.js";
 // Sticker World playsets: each is a little scene (SVG) that unlocks as kids earn stickers.
 // Points: a giant sticker counts 2, a mini sticker 1.
 
@@ -8,7 +9,7 @@ const stars = (n, seed = 3) => Array.from({ length: n }, (_, i) => {
   return `<circle cx="${x}" cy="${y}" r="${r}" fill="#fff" opacity="${0.5 + ((i * 13) % 5) / 10}"/>`;
 }).join("");
 
-export const SCENES = [
+const BASE_SCENES = [
   {
     id: "meadow", name: "Sunny Meadow", emoji: "🌼", need: 0, color: "#5cc46a",
     svg: `${sky("m", "#8fd3ff", "#e6f7ff")}
@@ -90,7 +91,7 @@ export const SCENES = [
 ];
 
 // Things kids can add as many times as they like, unlocked by points too.
-export const PROPS = [
+const BASE_PROPS = [
   { need: 0, items: ["🌳", "🌷", "🏠", "☁️"] },
   { need: 2, items: ["🌲", "🌻", "🪨", "🍄"] },
   { need: 4, items: ["⛲", "🛝", "🚲", "🎈"] },
@@ -101,3 +102,6 @@ export const PROPS = [
   { need: 16, items: ["🎡", "🎠", "🌙", "🎄"] },
   { need: 22, items: ["🚀", "🛸", "🐉", "👑"] },
 ];
+
+export const SCENES = [...BASE_SCENES, ...MORE_SCENES].sort((a, b) => a.need - b.need);
+export const PROPS = [...BASE_PROPS, ...MORE_PROPS].sort((a, b) => a.need - b.need);

@@ -91,6 +91,46 @@ Topics only: we write all our own sentences, pictures and wording.
 - Problem solving → word problems in Regroup! and Doubles ("12 children came to Mass, then 9 more…"), read aloud,
   with the blocks to model them.
 
+## Catechism with the game styles we already have (owner's idea, Nov 2026)
+
+Each idea reuses a piece that already works, so they're cheaper to build than new game types. A natural
+anchor: **First Reconciliation and First Communion prep (grade 2)**, plus the Montessori-based
+**Catechesis of the Good Shepherd**, which fits the Montessori colors and materials already in Grammar!.
+
+| Game style we have | Catechism version |
+|---|---|
+| Sentence order (Grammar!) | **Prayer Builder**: put the lines of the Sign of the Cross, Glory Be, Our Father, Hail Mary, Apostles' Creed in order, read aloud |
+| Fill the blank (Grammar!) | **Finish the prayer** line by line; later, short Bible verses |
+| Sort into groups (Montessori classify) | Seven sacraments (initiation, healing, service), works of mercy (corporal or spiritual), virtues (theological or cardinal), commandments (love God or love neighbor) |
+| Colors and symbols (Montessori colors) | **Liturgical colors**: purple for Advent and Lent, white for Christmas and Easter, green for Ordinary Time, red for Pentecost and martyrs; "what color will Father wear?" |
+| Drag-and-drop timeline (planned for history) | The **Church year** wheel; the **parts of the Mass** in order; salvation history (Creation, Noah, Abraham, Moses, David, Jesus, Pentecost) |
+| Bead bars and counting (Doubles!) | **Rosary**: count a decade (10 Hail Marys), 5 decades, the 4 sets of mysteries and their days |
+| Speech checks (Articulate) | **Say the prayer** and see each word light up; memorize a verse. A good reason for family codes |
+| Sticker World playsets | **Build the sanctuary**: place the altar, tabernacle, ambo, crucifix, candles and font, each named and explained (like the atrium model in Good Shepherd) |
+| Q and A choice (Sense modes) | Simple catechism questions ("Who made you? God made me.") and **saints and their symbols** (St. Peter's keys, St. Francis's animals, St. Patrick's shamrock) |
+
+Content needs care: follow the Catechism and a children's catechism (for example the Baltimore No. 1
+questions, public domain), and ideally have a priest or catechist look it over.
+
+## Civics (owner's idea, Nov 2026): "how our government works", nonpartisan
+
+- **Three branches** (a tree with three branches): sort jobs into legislative (makes laws), executive
+  (carries them out), judicial (decides what laws mean); checks and balances as a see-saw.
+- **How a bill becomes a law**: an idea → a bill → the House and the Senate vote → the President signs or
+  vetoes → it becomes a law. Drag the steps along a path, like a board game.
+- **Voting**: a class election (vote for the class pet's name), secret ballots, counting with tally
+  marks (a math tie-in), majority wins; who can vote, how to register, why every vote counts.
+- **Forms of government**: monarchy, democracy (direct), republic (representatives), dictatorship;
+  "who decides?" scenarios to match.
+- **History of democracy** (on the history timeline): Athens, the Roman Republic, Magna Carta, the
+  Mayflower Compact, the Declaration of Independence, the Constitution and Bill of Rights, women's
+  suffrage, the Voting Rights Act.
+- **Local government**: mayor, city council, school board, fire and police; "who do we call?" (a
+  pothole, a new park); a Sticker World **"Build your town"** playset.
+- **Symbols and rights**: the flag, the Capitol, the White House, the Liberty Bell; rights and
+  responsibilities. A natural tie-in with Catholic social teaching: the common good, the dignity of
+  every person, and subsidiarity (solve things at the most local level first).
+
 ## Platform
 
 - **Catholic words and themes** in questions across all apps (counting rosary beads, saints' names in grammar sentences, feast days in the calendar questions). Plan: keep each app's question banks in data files so a "Catholic" set can be swapped in.

@@ -90,9 +90,15 @@ function render() {
   const nextProps = PROPS.find((p) => points < p.need);
   app.innerHTML = `
     <nav class="sets" aria-label="Playsets">
-      ${SCENES.map((s) => `<button class="set${s.id === scene.id ? " on" : ""}${unlocked(s) ? "" : " locked"}" data-set="${s.id}" style="--c:${s.color}">
+      ${(() => {
+        // Every unlocked playset, then the next three to earn, then how many more are waiting.
+        const open = SCENES.filter(unlocked), locked = SCENES.filter((x) => !unlocked(x));
+        const shown = [...open, ...locked.slice(0, 3)];
+        return shown.map((s) => `<button class="set${s.id === scene.id ? " on" : ""}${unlocked(s) ? "" : " locked"}" data-set="${s.id}" style="--c:${s.color}">
         <span class="em">${unlocked(s) ? s.emoji : "🔒"}</span><span>${s.name}</span>
-        ${unlocked(s) ? "" : `<small>${s.need - points} more ⭐</small>`}</button>`).join("")}
+        ${unlocked(s) ? "" : `<small>${s.need - points} more ⭐</small>`}</button>`).join("")
+          + (locked.length > 3 ? `<span class="set more-sets" aria-label="${locked.length - 3} more playsets to discover"><span class="em">🎁</span><span>+${locked.length - 3} more</span><small>keep learning!</small></span>` : "");
+      })()}
     </nav>
     <div class="stage">
       <div class="scene" data-scene="${scene.id}">
