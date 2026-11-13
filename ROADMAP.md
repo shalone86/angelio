@@ -35,7 +35,7 @@ and email it, plus terms and a refund policy.
 
 ## Next apps
 
-- **Phonics & reading** (PreK–2): sounds, blending, Elkonin boxes, letter tiles, decodable sentences, read-aloud checked with voice recordings (reuse articulation's recorder and Whisper scoring; whole words work better than single sounds for young voices).
+- ~~**Phonics & reading, PreK–K**~~: live as **Letter Lane** (angelio.org/letters/), Nov 2026. Next: more letter groups (j v w x y z qu, digraphs sh ch th), sight words, short decodable sentences, letter tracing; real recorded letter sounds instead of the voice; then **Reading Aloud (grades 1–2)** with speech checks (reuse Articulate's recorder; family codes are now on).
 - **Writing skills** (1–4): build and expand sentences ("The dog ran." → "The big dog ran fast."), fix run-ons, order sentences into a paragraph, topic sentences.
 - ~~**Fractions**~~: live as **Fraction Feast** (angelio.org/fractions/). Next ideas: animate equivalent fractions (cut each half into 2 → 4 quarters), fractions greater than 1, grade 4.
 - **Multiplication & division beyond Doubles** (3–4): arrays → area model, dealing into groups, remainders.

@@ -11,6 +11,7 @@
     { "binding": "DOUBLES", "service": "doubles" },
     { "binding": "GRAMMAR", "service": "grammar" },
     { "binding": "FRACTIONS", "service": "fractions" },
+    { "binding": "LETTERS", "service": "letters" },
     { "binding": "ARTICULATE", "service": "articulation" }
   ],
   // Family codes and daily safety caps, shared with the app Workers (worker/codes.js).

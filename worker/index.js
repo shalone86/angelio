@@ -13,6 +13,7 @@ export const APPS = {
   doubles: "DOUBLES", // Doubles (doubles Worker)
   grammar: "GRAMMAR", // Grammar (grammar Worker)
   fractions: "FRACTIONS", // Fraction Feast (fractions Worker)
+  letters: "LETTERS", // Letter Lane (letters Worker)
   // Articulate also keeps its own address (articulate.shalonely.com): both work, no redirect.
   articulate: "ARTICULATE", // Articulate (articulation Worker)
 };
