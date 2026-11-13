@@ -34,10 +34,13 @@ export const APP_LIST = [
   },
   {
     name: "Letter Lane", path: "letters", subject: "language", grades: "PreK–K", emoji: "🔤",
-    blurb: "Letters and their sounds, first sounds, rhymes, beats, and blending your very first words.",
+    blurb: "Letters and their sounds, rhymes, beats, blending your first words, and sh, ch, th in little sentences.",
+  },
+  {
+    name: "Read Aloud", path: "read", subject: "language", grades: "Grades 1–3", emoji: "📖",
+    blurb: "Sound out words chunk by chunk (sh, igh, ar, magic e, -tion), then read sentences that grow with each grade.",
   },
   // Coming soon (see ROADMAP.md)
-  { name: "Reading Aloud", subject: "language", grades: "Grades 1–2", emoji: "🔤", blurb: "Read words and sentences out loud, with a friendly listener that checks each word." },
   { name: "Writing Skills", subject: "language", grades: "Grades 1–4", emoji: "📝", blurb: "From sentences to paragraphs: build, fix and grow your writing." },
   { name: "Catholic History", subject: "history", grades: "All ages", emoji: "⛪", blurb: "Saints, the early Church and the great moments, on drag-and-drop timelines." },
   { name: "World History", subject: "history", grades: "All ages", emoji: "🌍", blurb: "Timelines and maps you build yourself, to remember who, where and when." },

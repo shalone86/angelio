@@ -11,6 +11,8 @@ voice; donations welcome; a paid Pro voice (natural Cloudflare voice) with an ac
 | Regroup! | /regroup/ | 1–3 | shalone86/regroup |
 | Doubles | /doubles/ | 1–3 | not on GitHub yet |
 | Grammar! | /grammar/ | 1–3 | not on GitHub yet |
+| Letter Lane | /letters/ | PreK–K | shalone86/letterlane |
+| Read Aloud | /read/ | 1–3 | shalone86/readaloud |
 | Articulate | /articulate/ (and articulate.shalonely.com, kept on purpose: a friend uses it) | All ages | shalone86/articulation |
 
 ## Backburner (remind the owner after each new thing we finish)
@@ -35,7 +37,8 @@ and email it, plus terms and a refund policy.
 
 ## Next apps
 
-- ~~**Phonics & reading, PreK–K**~~: live as **Letter Lane** (angelio.org/letters/), Nov 2026. Next: more letter groups (j v w x y z qu, digraphs sh ch th), sight words, short decodable sentences, letter tracing; real recorded letter sounds instead of the voice; then **Reading Aloud (grades 1–2)** with speech checks (reuse Articulate's recorder; family codes are now on).
+- ~~**Phonics & reading, PreK–K**~~: live as **Letter Lane** (angelio.org/letters/), Nov 2026, with Kindergarten sh/ch/th and three-word sentences. Next: more letter groups (j v w x y z qu), sight words, letter tracing; real recorded letter sounds instead of the voice.
+- ~~**Reading, grades 1–3**~~: live as **Read Aloud** (angelio.org/read/), Nov 2026: phonics chunks (blends, magic e, vowel teams, bossy r, tch/dge, syllables, silent letters, -tion/-ture/-le) in words and sentences, sharing `phonics.js` with Letter Lane. Next: **say it out loud** checks on the sentences (reuse Articulate's recorder; family codes are on), sight words, short stories with comprehension questions.
 - **Writing skills** (1–4): build and expand sentences ("The dog ran." → "The big dog ran fast."), fix run-ons, order sentences into a paragraph, topic sentences.
 - ~~**Fractions**~~: live as **Fraction Feast** (angelio.org/fractions/). Next ideas: animate equivalent fractions (cut each half into 2 → 4 quarters), fractions greater than 1, grade 4.
 - **Multiplication & division beyond Doubles** (3–4): arrays → area model, dealing into groups, remainders.

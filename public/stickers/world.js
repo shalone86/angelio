@@ -104,8 +104,8 @@ function render() {
       <div class="scene" data-scene="${scene.id}">
         <svg viewBox="0 0 400 250" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${scene.svg}</svg>
         <div class="items">${placed.map((p, i) => itemHtml(p, i)).join("")}</div>
-        ${selected != null && placed[selected] ? `<div class="tools" style="left:clamp(84px, ${placed[selected].x}%, calc(100% - 84px));top:max(64px, calc(${placed[selected].y}% - ${(sizeOf(placed[selected]) * (placed[selected].s ?? 1) * 0.9).toFixed(1)}cqw))">
-          <button data-tool="smaller" aria-label="Smaller">➖</button><button data-tool="bigger" aria-label="Bigger">➕</button><button data-tool="flip" aria-label="Turn around">↔️</button></div>` : ""}
+        ${selected != null && placed[selected] ? `<div class="tools" style="left:clamp(112px, ${placed[selected].x}%, calc(100% - 112px));top:max(64px, calc(${placed[selected].y}% - ${(sizeOf(placed[selected]) * (placed[selected].s ?? 1) * 0.9).toFixed(1)}cqw))">
+          <button data-tool="smaller" aria-label="Smaller">➖</button><button data-tool="bigger" aria-label="Bigger">➕</button><button data-tool="flip" aria-label="Turn around">↔️</button><button data-tool="dance" aria-label="Dance">💃</button></div>` : ""}
       </div>
       <div class="tray">
         <div class="tabs" role="tablist">
@@ -196,6 +196,13 @@ function wire(scene, placed) {
     const p = placed[selected];
     if (!p) return;
     const t = b.dataset.tool;
+    if (t === "dance") {
+      // Dance without redrawing (a redraw would stop the dance).
+      const it = app.querySelector(`.item[data-i="${selected}"]`);
+      if (it) { it.classList.remove(...DANCES); void it.offsetWidth; it.classList.add(DANCES[Math.floor(Math.random() * DANCES.length)]); }
+      sfx.dance();
+      return;
+    }
     if (t === "flip") { p.flip = !p.flip; sfx.pick(); }
     else {
       const next = clampS((p.s ?? 1) * (t === "bigger" ? 1.25 : 0.8));

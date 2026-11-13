@@ -5,7 +5,7 @@
 export const SHARED = "angelio:stickers";
 export const WORLD = "angelio:world";
 // Each game's own progress key → a short name.
-export const GAMES = { "regroup:v1": "regroup", "snapsplit:v1": "snap", "doubles:v1": "doubles", "grammar:v1": "grammar", "fractions:v1": "fractions", "letters:v1": "letters" };
+export const GAMES = { "regroup:v1": "regroup", "snapsplit:v1": "snap", "doubles:v1": "doubles", "grammar:v1": "grammar", "fractions:v1": "fractions", "letters:v1": "letters", "readaloud:v1": "read" };
 
 const read = (store, k, fallback) => { try { return JSON.parse(store.getItem(k) ?? "null") ?? fallback; } catch { return fallback; } };
 const write = (store, k, v) => { try { store.setItem(k, JSON.stringify(v)); } catch { /* storage blocked */ } };
