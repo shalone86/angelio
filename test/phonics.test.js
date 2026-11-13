@@ -34,9 +34,14 @@ test("every pattern: enough pictures, words and sentences; chunks spell the word
   }
 });
 
-test("blends show the pattern in every picture word", () => {
+test("blends are one chunk, highlighted, in every picture word", () => {
   const p = PATTERNS.find((x) => x.id === "g1-blends");
-  for (const [spec] of p.pictures) assert.ok(focusIndexes(p, chunks(spec)).length >= 2, spec);
+  for (const spec of [...p.pictures.map(([s]) => s), ...p.words]) {
+    const ch = chunks(spec), f = focusIndexes(p, ch);
+    assert.equal(f.length, 1, spec);
+    assert.equal(ch[f[0]].t.length, 2, spec);
+    assert.ok(ch[f[0]].s && ch[f[0]].s !== ch[f[0]].t, `${spec}: the blend has a sound to say`);
+  }
 });
 
 test("questions: the answer is always a choice, no duplicate choices", () => {

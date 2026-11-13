@@ -27,5 +27,7 @@ export const LETTERS = {
 };
 export const keyword = (l) => LETTERS[l].words[0];
 /** "sss, like sun" — how a letter's sound is said aloud, always with its picture word. */
-export const soundSay = (l) => `${LETTERS[l].sound}, like ${keyword(l)[0]}`;
+export const soundSay = (l) => `${snd(LETTERS[l].sound)}, like ${keyword(l)[0]}`;
+/** Mark a sound in spoken text, so a grown-up's recording of it plays (see clips.js). */
+export const snd = (s) => (s ? `{{${s}}}` : s);
 
