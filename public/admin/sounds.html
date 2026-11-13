@@ -30,6 +30,8 @@
     .snd .name { font: 800 1.5rem Andika, Nunito, system-ui, sans-serif; }
     .snd .name .ok { color: var(--good); font-size: 1.1rem; }
     .snd .btns { display: flex; gap: 6px; flex-wrap: wrap; justify-content: end; }
+    .who { display: flex; gap: 8px; margin: 4px 0 8px; } .who button { flex: 1; font-size: 1.1rem; background: #eef6ff; color: var(--ink); border: 3px solid transparent; }
+    .who button.on { background: #fff4cc; border-color: var(--sun); }
     .tip { background: #fff8e1; border-radius: 12px; padding: 8px 12px; }
     [hidden] { display: none !important; }
     @media (max-width: 520px) { .snd { grid-template-columns: 1fr; } .snd .btns { justify-content: start; } }
@@ -38,7 +40,7 @@
 <body>
 <main>
   <h1>🎙️ Record the sounds</h1>
-  <p class="muted">The robot voice can't say lone sounds well ("tuh" comes out "too"). Record each sound once and
+  <p class="muted">The robot voice can't say lone sounds well ("tuh" comes out "too"). Record each sound once (Mom and Dad can each record a set) and
     Letter Lane and Read Aloud play <b>your</b> voice everywhere that sound is used: tapping letters and chunks,
     sounding words out, and the hints. <a href="/admin/">← Family codes</a></p>
 
@@ -53,6 +55,13 @@
 
   <div id="panel" hidden>
     <section class="card">
+      <h2>Whose voice?</h2>
+      <div class="who" id="who">
+        <button data-who="f">👩 Mom's voice <span class="muted" data-n="f"></span></button>
+        <button data-who="m">👨 Dad's voice <span class="muted" data-n="m"></span></button>
+      </div>
+      <p class="muted">Each of you records the whole list. In the apps, grown-ups pick Mom's or Dad's voice (⚙️); a sound
+        only one of you recorded uses that one, and the robot says the rest.</p>
       <p class="tip">Tips: a quiet room, phone about a hand away. Press <b>⏺</b>, say just the sound, short and clear
         (for <b>t</b> a quick "t" with only a whisper of air, not "tuh-uh"), then it stops by itself. Silence before and after
         is trimmed for you, and the volume is evened out. Not happy? Record it again.</p>
@@ -67,7 +76,8 @@
   const $ = (s) => document.querySelector(s);
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   let key = (() => { try { return localStorage.getItem("angelio:admin") || sessionStorage.getItem("angelio:admin") || ""; } catch { return ""; } })();
-  let clips = {};
+  let clips = { f: {}, m: {} };
+  let who = (() => { try { return localStorage.getItem("angelio:recorder-who") === "m" ? "m" : "f"; } catch { return "f"; } })();
   let groups = [];
   let tab = 0;
   const player = new Audio();
@@ -149,24 +159,28 @@
     if (!r.ok) throw Object.assign(new Error(j.error || `error ${r.status}`), { status: r.status });
     return j;
   }
-  const loadClips = async () => { clips = (await (await fetch("/api/clips", { cache: "no-store" })).json()).clips ?? {}; };
+  const loadClips = async () => { clips = { f: {}, m: {}, ...((await (await fetch("/api/clips", { cache: "no-store" })).json()).clips ?? {}) }; };
+  const mine = () => clips[who] ?? {};
   const play = (url) => { player.src = url; player.play().catch(() => {}); };
   const robotUrl = (s) => `/letters/api/tts?${new URLSearchParams({ text: s, voice: "", v: "4" })}`;
-  const mineUrl = (s) => `/api/clip?id=${encodeURIComponent(s)}&v=${clips[s]}`;
+  const mineUrl = (s) => `/api/clip?set=${who}&id=${encodeURIComponent(s)}&v=${mine()[s]}`;
 
   function render() {
     const all = groups.flatMap((g) => g.items);
-    $("#count").textContent = `${all.filter((x) => clips[x.sound]).length} of ${all.length} sounds recorded.`;
-    $("#tabs").innerHTML = groups.map((g, i) => `<button class="${i === tab ? "on" : ""}" data-tab="${i}">${esc(g.name)} (${g.items.filter((x) => clips[x.sound]).length}/${g.items.length})</button>`).join("");
+    const has = (s) => mine()[s] != null;
+    document.querySelectorAll("[data-who]").forEach((b) => b.classList.toggle("on", b.dataset.who === who));
+    document.querySelectorAll("[data-n]").forEach((n) => { n.textContent = `${all.filter((x) => clips[n.dataset.n]?.[x.sound] != null).length}/${all.length}`; });
+    $("#count").textContent = `${who === "m" ? "Dad" : "Mom"}: ${all.filter((x) => has(x.sound)).length} of ${all.length} sounds recorded.`;
+    $("#tabs").innerHTML = groups.map((g, i) => `<button class="${i === tab ? "on" : ""}" data-tab="${i}">${esc(g.name)} (${g.items.filter((x) => has(x.sound)).length}/${g.items.length})</button>`).join("");
     $("#list").innerHTML = groups[tab].items.map((x) => `
       <div class="snd">
-        <div><div class="name">${esc(x.sound)} ${clips[x.sound] ? '<span class="ok">✓ yours</span>' : ""}</div>
+        <div><div class="name">${esc(x.sound)} ${has(x.sound) ? '<span class="ok">✓ done</span>' : ""}</div>
           <div class="muted">${[...x.uses].map(([c, ws]) => `<b>${esc(c)}</b> in ${ws.map(esc).join(", ")}`).join(" · ")}</div></div>
         <div class="btns">
           <button class="ghost" data-robot="${esc(x.sound)}" title="How the robot says it">🤖</button>
           <button class="rec" data-rec="${esc(x.sound)}">⏺ Record</button>
-          <button class="ghost" data-mine="${esc(x.sound)}" ${clips[x.sound] ? "" : "disabled"}>▶ Yours</button>
-          <button class="ghost" data-del="${esc(x.sound)}" ${clips[x.sound] ? "" : "disabled"} title="Delete (go back to the robot)">🗑</button>
+          <button class="ghost" data-mine="${esc(x.sound)}" ${has(x.sound) ? "" : "disabled"}>▶ Yours</button>
+          <button class="ghost" data-del="${esc(x.sound)}" ${has(x.sound) ? "" : "disabled"} title="Delete (go back to the robot)">🗑</button>
         </div>
       </div>`).join("");
     document.querySelectorAll("[data-tab]").forEach((b) => b.onclick = () => { tab = +b.dataset.tab; render(); });
@@ -174,7 +188,7 @@
     document.querySelectorAll("[data-mine]").forEach((b) => b.onclick = () => play(mineUrl(b.dataset.mine)));
     document.querySelectorAll("[data-del]").forEach((b) => b.onclick = async () => {
       if (!confirm(`Delete your "${b.dataset.del}"? The robot voice says it again.`)) return;
-      await call(`/api/admin/clip/delete?id=${encodeURIComponent(b.dataset.del)}`, { method: "POST" });
+      await call(`/api/admin/clip/delete?set=${who}&id=${encodeURIComponent(b.dataset.del)}`, { method: "POST" });
       await loadClips(); render();
     });
     document.querySelectorAll("[data-rec]").forEach((b) => b.onclick = async () => {
@@ -185,7 +199,7 @@
         b.classList.add("on"); b.textContent = "⏹ Stop"; b._stop = r.stop;
         const wav = await toWav(await r.done);
         b.textContent = "Saving…";
-        await call(`/api/admin/clip?id=${encodeURIComponent(b.dataset.rec)}`, { method: "POST", body: wav, type: "audio/wav" });
+        await call(`/api/admin/clip?set=${who}&id=${encodeURIComponent(b.dataset.rec)}`, { method: "POST", body: wav, type: "audio/wav" });
         await loadClips(); render();
         play(mineUrl(b.dataset.rec));
       } catch (e) {
@@ -194,6 +208,12 @@
       }
     });
   }
+
+  document.querySelectorAll("[data-who]").forEach((b) => b.onclick = () => {
+    who = b.dataset.who;
+    try { localStorage.setItem("angelio:recorder-who", who); } catch { /* ignore */ }
+    render();
+  });
 
   async function open() {
     await call("/api/admin/codes"); // checks the key
