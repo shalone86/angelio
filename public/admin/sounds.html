@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Record sounds</title>
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <style>
+    :root { --ink: #183153; --muted: #4b6584; --line: #cfe6fb; --sun: #ffc93c; --bad: #e5484d; --good: #16a34a; --rec: #e5484d; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 16px/1.45 Nunito, system-ui, sans-serif; color: var(--ink); background: #f2f9ff; }
+    main { max-width: 760px; margin: 0 auto; padding: 16px; }
+    h1 { font-size: 1.5rem; margin: 6px 0 2px; } h2 { font-size: 1.15rem; margin: 0 0 8px; }
+    .card { background: #fff; border-radius: 18px; padding: 14px 16px; margin: 12px 0; box-shadow: 0 4px 0 var(--line); }
+    label { display: block; font-weight: 700; margin: 6px 0 2px; }
+    input { font: inherit; width: 100%; padding: 10px 12px; border: 2px solid var(--line); border-radius: 12px; }
+    .row { display: flex; gap: 8px; align-items: end; flex-wrap: wrap; } .row > * { flex: 1 1 140px; }
+    button { font: inherit; font-weight: 800; border: 0; border-radius: 12px; padding: 10px 14px; background: var(--sun); color: #4a3300; cursor: pointer; min-height: 44px; }
+    button.ghost { background: #eef6ff; color: var(--ink); }
+    button.rec { background: var(--rec); color: #fff; }
+    button.rec.on { animation: pulse 1s infinite; }
+    @keyframes pulse { 50% { opacity: .55; } }
+    button:disabled { opacity: .35; cursor: default; }
+    .muted { color: var(--muted); font-size: .9rem; }
+    .err { color: var(--bad); font-weight: 700; }
+    .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0; }
+    .tabs button { background: #eef6ff; color: var(--ink); } .tabs button.on { background: var(--sun); color: #4a3300; }
+    .snd { display: grid; grid-template-columns: 1fr auto; gap: 6px 10px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); }
+    .snd .name { font: 800 1.5rem Andika, Nunito, system-ui, sans-serif; }
+    .snd .name .ok { color: var(--good); font-size: 1.1rem; }
+    .snd .btns { display: flex; gap: 6px; flex-wrap: wrap; justify-content: end; }
+    .tip { background: #fff8e1; border-radius: 12px; padding: 8px 12px; }
+    [hidden] { display: none !important; }
+    @media (max-width: 520px) { .snd { grid-template-columns: 1fr; } .snd .btns { justify-content: start; } }
+  </style>
+</head>
+<body>
+<main>
+  <h1>🎙️ Record the sounds</h1>
+  <p class="muted">The robot voice can't say lone sounds well ("tuh" comes out "too"). Record each sound once and
+    Letter Lane and Read Aloud play <b>your</b> voice everywhere that sound is used: tapping letters and chunks,
+    sounding words out, and the hints. <a href="/admin/">← Family codes</a></p>
+
+  <section class="card" id="login">
+    <h2>Admin key</h2>
+    <form id="login-form" class="row">
+      <div><label for="key">Your admin key</label><input id="key" type="password" autocomplete="current-password" required></div>
+      <button>Open</button>
+    </form>
+    <p class="err" id="login-err" hidden></p>
+  </section>
+
+  <div id="panel" hidden>
+    <section class="card">
+      <p class="tip">Tips: a quiet room, phone about a hand away. Press <b>⏺</b>, say just the sound, short and clear
+        (for <b>t</b> a quick "t" with only a whisper of air, not "tuh-uh"), then it stops by itself. Silence before and after
+        is trimmed for you, and the volume is evened out. Not happy? Record it again.</p>
+      <p class="muted" id="count"></p>
+      <div class="tabs" id="tabs"></div>
+      <p class="err" id="err" hidden></p>
+      <div id="list"></div>
+    </section>
+  </div>
+</main>
+<script type="module">
+  const $ = (s) => document.querySelector(s);
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  let key = (() => { try { return localStorage.getItem("angelio:admin") || sessionStorage.getItem("angelio:admin") || ""; } catch { return ""; } })();
+  let clips = {};
+  let groups = [];
+  let tab = 0;
+  const player = new Audio();
+
+  // ── which sounds the reading apps say (from their own word lists) ──
+  async function soundList() {
+    const { LETTERS, keyword } = await import("/letters/js/letter-sounds.js");
+    const { PATTERNS, chunks, wordOf } = await import("/letters/js/phonics.js");
+    const out = new Map(); // sound → { sound, uses: Map(chunk → [words]) , group }
+    const add = (sound, chunk, word, group) => {
+      if (!sound) return;
+      if (!out.has(sound)) out.set(sound, { sound, uses: new Map(), group });
+      const u = out.get(sound).uses;
+      if (!u.has(chunk)) u.set(chunk, []);
+      if (word && u.get(chunk).length < 2 && !u.get(chunk).includes(word)) u.get(chunk).push(word);
+    };
+    for (const l of Object.keys(LETTERS)) add(LETTERS[l].sound, l, keyword(l)[0], "Letters");
+    const gradeName = { 2: "Kindergarten chunks", 3: "1st grade chunks", 4: "2nd grade chunks", 5: "3rd grade chunks" };
+    for (const p of PATTERNS) {
+      if (p.syllables) continue; // big words are said whole, then slowly
+      for (const spec of [...p.pictures.map(([s]) => s), ...p.words]) {
+        for (const c of chunks(spec)) add(c.s, c.t, wordOf(spec), c.t.length === 1 && LETTERS[c.t] ? "Letters" : gradeName[p.grade]);
+      }
+    }
+    const order = ["Letters", ...Object.values(gradeName)];
+    return order.map((g) => ({ name: g, items: [...out.values()].filter((x) => x.group === g) })).filter((g) => g.items.length);
+  }
+
+  // ── recording → trimmed, evened-out 24 kHz WAV ──
+  let stream;
+  async function record(ms = 2200) {
+    stream ??= await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: true, autoGainControl: false } });
+    const rec = new MediaRecorder(stream);
+    const parts = [];
+    rec.ondataavailable = (e) => e.data.size && parts.push(e.data);
+    const done = new Promise((r) => (rec.onstop = r));
+    rec.start();
+    const t = setTimeout(() => rec.state !== "inactive" && rec.stop(), ms);
+    return { stop: () => { clearTimeout(t); if (rec.state !== "inactive") rec.stop(); }, done: done.then(() => new Blob(parts, { type: rec.mimeType })) };
+  }
+
+  async function toWav(blob) {
+    const ac = new (window.AudioContext || window.webkitAudioContext)();
+    const buf = await ac.decodeAudioData(await blob.arrayBuffer());
+    const sr = buf.sampleRate, n = buf.length, mono = new Float32Array(n);
+    for (let c = 0; c < buf.numberOfChannels; c++) { const d = buf.getChannelData(c); for (let i = 0; i < n; i++) mono[i] += d[i] / buf.numberOfChannels; }
+    let peak = 0; for (const v of mono) peak = Math.max(peak, Math.abs(v));
+    if (peak < 0.01) { ac.close(); throw new Error("I didn't hear anything. Is the microphone allowed?"); }
+    const w = Math.round(sr * 0.01), thr = peak * 0.12;
+    const loud = (i) => { let r = 0; for (let j = i; j < Math.min(n, i + w); j++) r = Math.max(r, Math.abs(mono[j])); return r > thr; };
+    let a = 0, b = n;
+    for (let i = 0; i < n; i += w) if (loud(i)) { a = i; break; }
+    for (let i = n - w; i > 0; i -= w) if (loud(i)) { b = i + w; break; }
+    a = Math.max(0, a - Math.round(sr * 0.04)); b = Math.min(n, b + Math.round(sr * 0.12));
+    const src = ac.createBuffer(1, b - a, sr); src.copyToChannel(mono.subarray(a, b), 0);
+    const off = new OfflineAudioContext(1, Math.ceil(((b - a) * 24000) / sr), 24000);
+    const node = off.createBufferSource(); node.buffer = src; node.connect(off.destination); node.start();
+    const res = (await off.startRendering()).getChannelData(0);
+    ac.close();
+    let pk = 0; for (const v of res) pk = Math.max(pk, Math.abs(v));
+    const g = 0.93 / pk, fade = 120, pcm = new Int16Array(res.length); // same loudness as the app voice
+    for (let i = 0; i < res.length; i++) {
+      let v = res[i] * g;
+      if (i < fade) v *= i / fade;
+      if (i > res.length - fade) v *= (res.length - i) / fade;
+      pcm[i] = Math.max(-32768, Math.min(32767, Math.round(v * 32767)));
+    }
+    const head = new DataView(new ArrayBuffer(44)), str = (o, s) => [...s].forEach((ch, i) => head.setUint8(o + i, ch.charCodeAt(0)));
+    str(0, "RIFF"); head.setUint32(4, 36 + pcm.byteLength, true); str(8, "WAVEfmt "); head.setUint32(16, 16, true);
+    head.setUint16(20, 1, true); head.setUint16(22, 1, true); head.setUint32(24, 24000, true); head.setUint32(28, 48000, true);
+    head.setUint16(32, 2, true); head.setUint16(34, 16, true); str(36, "data"); head.setUint32(40, pcm.byteLength, true);
+    return new Blob([head, pcm], { type: "audio/wav" });
+  }
+
+  // ── server ──
+  async function call(path, { method = "GET", body, type } = {}) {
+    const r = await fetch(path, { method, headers: { "x-admin-key": key, ...(type ? { "content-type": type } : {}) }, body });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw Object.assign(new Error(j.error || `error ${r.status}`), { status: r.status });
+    return j;
+  }
+  const loadClips = async () => { clips = (await (await fetch("/api/clips", { cache: "no-store" })).json()).clips ?? {}; };
+  const play = (url) => { player.src = url; player.play().catch(() => {}); };
+  const robotUrl = (s) => `/letters/api/tts?${new URLSearchParams({ text: s, voice: "", v: "4" })}`;
+  const mineUrl = (s) => `/api/clip?id=${encodeURIComponent(s)}&v=${clips[s]}`;
+
+  function render() {
+    const all = groups.flatMap((g) => g.items);
+    $("#count").textContent = `${all.filter((x) => clips[x.sound]).length} of ${all.length} sounds recorded.`;
+    $("#tabs").innerHTML = groups.map((g, i) => `<button class="${i === tab ? "on" : ""}" data-tab="${i}">${esc(g.name)} (${g.items.filter((x) => clips[x.sound]).length}/${g.items.length})</button>`).join("");
+    $("#list").innerHTML = groups[tab].items.map((x) => `
+      <div class="snd">
+        <div><div class="name">${esc(x.sound)} ${clips[x.sound] ? '<span class="ok">✓ yours</span>' : ""}</div>
+          <div class="muted">${[...x.uses].map(([c, ws]) => `<b>${esc(c)}</b> in ${ws.map(esc).join(", ")}`).join(" · ")}</div></div>
+        <div class="btns">
+          <button class="ghost" data-robot="${esc(x.sound)}" title="How the robot says it">🤖</button>
+          <button class="rec" data-rec="${esc(x.sound)}">⏺ Record</button>
+          <button class="ghost" data-mine="${esc(x.sound)}" ${clips[x.sound] ? "" : "disabled"}>▶ Yours</button>
+          <button class="ghost" data-del="${esc(x.sound)}" ${clips[x.sound] ? "" : "disabled"} title="Delete (go back to the robot)">🗑</button>
+        </div>
+      </div>`).join("");
+    document.querySelectorAll("[data-tab]").forEach((b) => b.onclick = () => { tab = +b.dataset.tab; render(); });
+    document.querySelectorAll("[data-robot]").forEach((b) => b.onclick = () => play(robotUrl(b.dataset.robot)));
+    document.querySelectorAll("[data-mine]").forEach((b) => b.onclick = () => play(mineUrl(b.dataset.mine)));
+    document.querySelectorAll("[data-del]").forEach((b) => b.onclick = async () => {
+      if (!confirm(`Delete your "${b.dataset.del}"? The robot voice says it again.`)) return;
+      await call(`/api/admin/clip/delete?id=${encodeURIComponent(b.dataset.del)}`, { method: "POST" });
+      await loadClips(); render();
+    });
+    document.querySelectorAll("[data-rec]").forEach((b) => b.onclick = async () => {
+      if (b.classList.contains("on")) return b._stop?.();
+      $("#err").hidden = true;
+      try {
+        const r = await record();
+        b.classList.add("on"); b.textContent = "⏹ Stop"; b._stop = r.stop;
+        const wav = await toWav(await r.done);
+        b.textContent = "Saving…";
+        await call(`/api/admin/clip?id=${encodeURIComponent(b.dataset.rec)}`, { method: "POST", body: wav, type: "audio/wav" });
+        await loadClips(); render();
+        play(mineUrl(b.dataset.rec));
+      } catch (e) {
+        $("#err").hidden = false; $("#err").textContent = e.message || String(e);
+        render();
+      }
+    });
+  }
+
+  async function open() {
+    await call("/api/admin/codes"); // checks the key
+    $("#login").hidden = true; $("#panel").hidden = false;
+    [groups] = await Promise.all([soundList(), loadClips()]);
+    render();
+  }
+  $("#login-form").onsubmit = async (e) => {
+    e.preventDefault();
+    key = $("#key").value.trim();
+    try { await open(); try { sessionStorage.setItem("angelio:admin", key); } catch { /* ignore */ } }
+    catch (err) { $("#login-err").hidden = false; $("#login-err").textContent = err.status === 401 ? "That admin key isn't right." : err.message; }
+  };
+  if (key) open().catch(() => {});
+</script>
+</body>
+</html>

@@ -35,6 +35,13 @@ Phase 1 (done, free codes, no payments):
 Phase 2 (when sharing publicly): payments (Stripe or Lemon Squeezy) that create a code automatically
 and email it, plus terms and a refund policy.
 
+## Recorded sounds (Nov 2026)
+
+The robot voice can't say lone letter sounds well ("tuh" comes out "too", "ih" like "eh"). A grown-up records each
+sound once at **angelio.org/admin/sounds** (needs the admin key); recordings are trimmed and evened out in the
+browser, stored in the shared KV store (`clip:<sound>`, index `clips:index`), and Letter Lane and Read Aloud play them
+wherever a sound is marked `{{tuh}}` in spoken text (kit `tts.js` → `setClips`). Unrecorded sounds still use the voice.
+
 ## Next apps
 
 - ~~**Phonics & reading, PreK–K**~~: live as **Letter Lane** (angelio.org/letters/), Nov 2026, with Kindergarten sh/ch/th and three-word sentences. Next: more letter groups (j v w x y z qu), sight words, letter tracing; real recorded letter sounds instead of the voice.
