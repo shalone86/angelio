@@ -24,7 +24,7 @@ Phase 1 (done, free codes, no payments):
   (needs the `ADMIN_KEY` secret on the angelio Worker).
 - Parents enter a code once on the hub (localStorage `angelio:code`); every app on angelio.org sends
   it as header `x-angelio-code`. Articulate's Settings has its own box for articulate.shalonely.com.
-- With var `REQUIRE_CODE = "true"`, an app's Worker allows `FREE_PER_DAY` (3) free checks a day per
+- With var `REQUIRE_CODE = "true"`, an app's Worker allows `FREE_PER_DAY` (20) free checks a day per
   network, then needs a code with checks left this month. `SPEECH_DAILY_CAP` (500) and
   `TTS_DAILY_CAP` (3000, live in every game now) are site-wide safety caps per day.
 - Articulate: **on since Nov 13, 2026** (`REQUIRE_CODE` in articulation's wrangler.jsonc vars; set it
