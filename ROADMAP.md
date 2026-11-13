@@ -27,8 +27,8 @@ Phase 1 (done, free codes, no payments):
 - With var `REQUIRE_CODE = "true"`, an app's Worker allows `FREE_PER_DAY` (3) free checks a day per
   network, then needs a code with checks left this month. `SPEECH_DAILY_CAP` (500) and
   `TTS_DAILY_CAP` (3000, live in every game now) are site-wide safety caps per day.
-- Articulate: code support is in the repo but not deployed/on yet. Planned for Friday: owner makes
-  codes, adds `"REQUIRE_CODE": "true"` to articulation's vars, deploys.
+- Articulate: **on since Nov 13, 2026** (`REQUIRE_CODE` in articulation's wrangler.jsonc vars; set it
+  to "false" and deploy to open speech checks again).
 
 Phase 2 (when sharing publicly): payments (Stripe or Lemon Squeezy) that create a code automatically
 and email it, plus terms and a refund policy.
