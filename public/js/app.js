@@ -6,7 +6,7 @@ S.init("letters:v1", {});
 
 import { createRouter } from "./kit/router.js";
 import { speak, stop, unmark } from "./kit/tts.js";
-import "./clips.js";
+import { addSoundVoiceSetting } from "./clips.js";
 import { sfx } from "./kit/sound.js";
 import * as FX from "./kit/fx.js";
 import { keepDockVisible } from "./kit/dock.js";
@@ -23,7 +23,7 @@ const app = document.getElementById("app");
 const route = createRouter([
   [/^$/, viewHome],
   [/^play\/([\w-]+)$/, viewPlay],
-  [/^grownups$/, () => viewGrownups(app, { about: ABOUT })],
+  [/^grownups$/, () => { viewGrownups(app, { about: ABOUT }); addSoundVoiceSetting(app); }],
 ], {
   before() { stop(); FX.clearFx(); document.body.classList.remove("in-game"); },
 });
