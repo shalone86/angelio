@@ -59,8 +59,8 @@ Topics only: we write all our own sentences, pictures and wording.
 - **Proofreading marks** (grades 2–3), a good "editor" level: tap a mistake, choose the real mark, and see it
   drawn on the sentence: ≡ capitalize, ⊙ add a period, ? add a question mark, ∧ add a word, the loop to take
   out, a circle for spelling, ¶ indent, and quotation marks. A final "fix this paragraph" round uses them all.
-- **Usage pairs** (grades 1–2): is/are, was/were, see/sees/saw, run/runs/ran, give/gives/gave, do/does,
-  has/have/had, I/me, we/us, a/an. Quick two-choice taps, sung-out "sounds right?" read aloud.
+- ~~**Usage pairs**~~: done (Nov 2026): A or An, I/Me & We/Us (grade 1); Is/Are & Was/Were, Has/Have/Had & Do/Does,
+  Sees/Runs/Gives & Saw/Ran/Gave (grade 2). Next up: **proofreading marks**.
 - **Verbs**: helping verbs, verbs that don't show action (is, am, are, was), adding -ed/-ing with spelling changes
   (hop → hopped, make → making), irregular verbs (already partly there).
 - **Sentences**: naming part and action part (subject and predicate), kinds of sentences (telling, asking,
