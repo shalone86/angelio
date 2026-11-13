@@ -19,7 +19,7 @@ export const GROUPS = [
 export const ALL_LETTERS = GROUPS.flat();
 
 export { LETTERS, keyword, soundSay } from "./letter-sounds.js";
-import { LETTERS, keyword, soundSay } from "./letter-sounds.js";
+import { LETTERS, keyword, soundSay, snd } from "./letter-sounds.js";
 
 export const RHYMES = [
   [["cat", "🐱"], ["hat", "🎩"]], [["dog", "🐶"], ["frog", "🐸"]], [["bee", "🐝"], ["tree", "🌳"]],
@@ -131,7 +131,7 @@ export function makeQuestion(stage, k, rand) {
     case "build": {
       const [w, e] = pick(rand, CVC);
       const extra = others(ALL_LETTERS, [...w], 3, rand);
-      return { type: "build", word: w, emoji: e, letters: [...w], prompt: `Build the word`, say: `Let's build ${w}. ${[...w].map((l) => LETTERS[l].sound).join("... ")}. ${w}!`,
+      return { type: "build", word: w, emoji: e, letters: [...w], prompt: `Build the word`, say: `Let's build ${w}. ${[...w].map((l) => snd(LETTERS[l].sound)).join("... ")}. ${w}!`,
         answer: w, tiles: shuffle([...w, ...extra], rand) };
     }
   }

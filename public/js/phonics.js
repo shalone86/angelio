@@ -15,6 +15,9 @@ export const CHUNK_SOUNDS = {
   oi: "oy", oy: "oy", ou: "ow", ow: "ow", tch: "chuh", dge: "juh", kn: "nnn", wr: "rrr", mb: "mmm",
   tion: "shun", ture: "cher", le: "ul", qu: "kwuh",
   j: "juh", v: "vvv", w: "wuh", x: "ks", y: "yuh", z: "zzz",
+  // blends: both sounds, quickly, as one chunk
+  st: "stuh", fr: "fruh", fl: "fluh", dr: "druh", cr: "kruh", sl: "sluh", sn: "snuh", tr: "truh", gr: "gruh", cl: "kluh", pl: "pluh",
+  nd: "nnd", ft: "fft", lk: "llk", nt: "nnt", mp: "mmp",
 };
 
 /** "c|a:ay|k|e:" → [{ t: "c", s: "kuh" }, { t: "a", s: "ay" }, { t: "k", s: "kuh" }, { t: "e", s: "", silent: true }] */
@@ -58,11 +61,11 @@ export const PATTERNS = [
     sentences: [["The duck can swim fast.", "🦆"], ["A king has a big ring.", "🤴"], ["My sock is on the rug.", "🧦"], ["The truck is stuck in the mud.", "🚚"], ["Tick tock goes the clock.", "🕰️"], ["A skunk sat on a rock.", "🦨"]],
   },
   {
-    id: "g1-blends", grade: 3, title: "Blends: fr, fl, st, nd…", emoji: "🐸", focus: ["f|r", "f|l", "d|r", "c|r", "s|l", "n|d", "f|t", "l|k", "n|t", "s|t"],
-    teach: "In a <b>blend</b>, you hear <b>both</b> letters, quickly: <b>fr</b>og, <b>fl</b>ag, ha<b>nd</b>.",
-    say: "In a blend, two letters sit side by side, and you hear both sounds, quickly. Fff, rrr, fr, like frog. Fff, lll, fl, like flag. At the end too: hand!",
-    pictures: [["f|r|o|g", "🐸"], ["f|l|a|g", "🚩"], ["d|r|u|m", "🥁"], ["c|r|a|b", "🦀"], ["s|l|e|d", "🛷"], ["h|a|n|d", "✋"], ["g|i|f|t", "🎁"], ["m|i|l|k", "🥛"], ["t|e|n|t", "⛺"]],
-    words: ["s|t|o|p", "s|n|a|p", "t|r|i|p", "g|r|i|n", "c|l|a|p", "p|l|a|n", "b|e|n|d", "j|u|m|p", "l|a|m|p", "f|a|s|t"],
+    id: "g1-blends", grade: 3, title: "Blends: fr, fl, st, nd…", emoji: "🐸", focus: ["fr", "fl", "dr", "cr", "sl", "sn", "tr", "gr", "cl", "pl", "st", "nd", "ft", "lk", "nt", "mp"],
+    teach: "In a <b>blend</b>, two letters stick together into one chunk. You hear <b>both</b> sounds, quickly: <b>fr</b>og, <b>fl</b>ag, ha<b>nd</b>.",
+    say: "In a blend, two letters stick together into one chunk, and you hear both sounds, quickly. Fff, rrr, fr, like frog. Fff, lll, fl, like flag. At the end too: hand!",
+    pictures: [["fr|o|g", "🐸"], ["fl|a|g", "🚩"], ["dr|u|m", "🥁"], ["cr|a|b", "🦀"], ["sl|e|d", "🛷"], ["h|a|nd", "✋"], ["g|i|ft", "🎁"], ["m|i|lk", "🥛"], ["t|e|nt", "⛺"]],
+    words: ["st|o|p", "sn|a|p", "tr|i|p", "gr|i|n", "cl|a|p", "pl|a|n", "b|e|nd", "j|u|mp", "l|a|mp", "f|a|st:sst"],
     sentences: [["The frog sat on a log.", "🐸"], ["A crab is on the sand.", "🦀"], ["Dad has a red flag.", "🚩"], ["We sled down the hill.", "🛷"], ["I can hit the drum.", "🥁"], ["The milk is in a cup.", "🥛"]],
   },
   {

@@ -1,11 +1,12 @@
 // "How it works" cards, one per level, read aloud before the first question.
 
 import { GROUPS, LETTERS, keyword } from "./reading.js";
+import { snd } from "./letter-sounds.js";
 import { PATTERNS, chunks, focusIndexes, wordOf } from "./phonics.js";
 
 const letterRow = (group) => `<div class="lesson-letters">${group.map((l) => `
   <span class="lesson-letter lesson-focus"><span class="abc">${l}</span><span class="pic" aria-hidden="true">${keyword(l)[1]}</span></span>`).join("")}</div>`;
-const lettersVoice = (group) => `${group.map((l) => `${l} says ${LETTERS[l].sound}, like ${keyword(l)[0]}.`).join(" ")} Say the sounds with me!`;
+const lettersVoice = (group) => `${group.map((l) => `${l} says ${snd(LETTERS[l].sound)}, like ${keyword(l)[0]}.`).join(" ")} Say the sounds with me!`;
 
 export const LESSONS = {
   "p-letters-1": { emoji: "🌱", title: "Letters make sounds", rule: "Every letter makes a sound. Listen, and say it too!", exampleHtml: letterRow(GROUPS[0]), voice: `Every letter makes a sound. ${lettersVoice(GROUPS[0])}` },

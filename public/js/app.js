@@ -5,7 +5,8 @@ import { jingleOnce } from "./kit/jingle.js";
 S.init("letters:v1", {});
 
 import { createRouter } from "./kit/router.js";
-import { speak, stop } from "./kit/tts.js";
+import { speak, stop, unmark } from "./kit/tts.js";
+import "./clips.js";
 import { sfx } from "./kit/sound.js";
 import * as FX from "./kit/fx.js";
 import { keepDockVisible } from "./kit/dock.js";
@@ -15,6 +16,7 @@ import { esc, starsHtml, nextButton, markDot, showFinish, stickerBook, viewGrown
 import { GRADES, STAGES, stageById, PER_STAGE, makeStage, LETTERS, soundSay, starsFor } from "./reading.js";
 import { LESSONS } from "./lessons.js";
 import { patternById, chunks, focusIndexes, patternWord } from "./phonics.js";
+import { snd } from "./letter-sounds.js";
 
 const app = document.getElementById("app");
 
@@ -96,7 +98,8 @@ function viewPlay(id) {
   const bubble = app.querySelector(".bubble"), dock = app.querySelector(".dock"), board = app.querySelector(".board");
   let alive = true, mistakes = 0, current = null;
   const tell = (text, voice = text) => {
-    bubble.querySelector(".say").innerHTML = esc(text);
+    bubble.querySelector(".say").innerHTML = esc(unmark(text));
+    sayRun++; // stops a sounding-out in progress
     bubble.animate?.([{ transform: "scale(1)" }, { transform: "scale(1.03)" }, { transform: "scale(1)" }], { duration: 280 });
     speak(voice);
   };
@@ -132,14 +135,14 @@ function viewPlay(id) {
 function hintFor(q) {
   switch (q.type) {
     case "letters": return `Listen: ${soundSay(q.letter)}. Look for the letter at the start of ${q.picture[0]}.`;
-    case "letters-picture": return `Say each picture slowly. Which one starts with ${LETTERS[q.letter].sound}?`;
+    case "letters-picture": return `Say each picture slowly. Which one starts with ${snd(LETTERS[q.letter].sound)}?`;
     case "first": return `Say it slowly: ${q.word}. What's the very first sound?`;
     case "rhyme": return `Rhyming words sound the same at the end. ${q.word}… listen to the end of each one.`;
     case "beats": return `Say it slowly and clap: ${q.parts.join("… ")}.`;
     case "case": return `Little ${q.letter} is the small shape of big ${q.big}. Trace them in the air!`;
     case "blend": return "Tap each letter to hear its sound, then press Blend and listen.";
-    case "build": return `Say it slowly: ${q.letters.map((l) => LETTERS[l].sound).join("… ")}. One letter for each sound.`;
-    case "sound-out": return `Tap each chunk and say its sound: ${q.chunks.filter((c) => !c.silent).map((c) => c.s).join("… ")}. Now say them faster!`;
+    case "build": return `Say it slowly: ${q.letters.map((l) => snd(LETTERS[l].sound)).join("… ")}. One letter for each sound.`;
+    case "sound-out": return `Tap each chunk and say its sound: ${q.chunks.filter((c) => !c.silent).map((c) => snd(c.s)).join("… ")}. Now say them faster!`;
     case "find-word": return `Listen again: ${q.word}. Look at each word and sound it out, chunk by chunk.`;
     case "read-sentence": return "Tap any word you're not sure about to hear it. Then read the whole sentence again.";
   }
@@ -160,6 +163,7 @@ function choose(ctx, q, html, { onWrong } = {}) {
   return new Promise((resolve) => {
     ctx.dock.querySelectorAll("[data-v]").forEach((b) => b.onclick = () => {
       if (!ctx.alive() || b.disabled) return;
+      sayRun++;
       sfx.select();
       if (b.dataset.v === String(q.answer)) {
         ctx.dock.querySelectorAll("[data-v]").forEach((x) => { x.disabled = true; });
@@ -182,15 +186,39 @@ function rightLine(q) {
   switch (q.type) {
     case "letters": return `${q.letter} says ${soundSay(q.letter)}.`;
     case "letters-picture": return `${q.answer} starts with ${q.letter}!`;
-    case "first": return `${q.word} starts with ${LETTERS[q.answer].sound}, ${q.answer}!`;
+    case "first": return `${q.word} starts with ${snd(LETTERS[q.answer].sound)}, ${q.answer}!`;
     case "rhyme": return `${q.word} and ${q.answer} rhyme!`;
     case "case": return `Big ${q.big}, little ${q.letter}.`;
-    case "blend": return `${q.letters.map((l) => LETTERS[l].sound).join(", ")}: ${q.word}!`;
-    case "sound-out": return `${q.chunks.filter((c) => !c.silent).map((c) => c.s).join(", ")}: ${q.word}!`;
+    case "blend": return `${q.letters.map((l) => snd(LETTERS[l].sound)).join(", ")}: ${q.word}!`;
+    case "sound-out": return `${q.chunks.filter((c) => !c.silent).map((c) => snd(c.s)).join(", ")}: ${q.word}!`;
     case "find-word": return `That's ${q.word}!`;
     case "read-sentence": return q.text;
   }
   return "";
+}
+
+// Sounding out, Hooked-on-Phonics style: each chunk lights up as its sound is said, one at a time
+// with a little gap, so a quick word like "cat" isn't one blur. Anything else that talks stops it.
+let sayRun = 0;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+async function sayInOrder(tiles, sounds) {
+  const run = ++sayRun;
+  for (let i = 0; i < tiles.length && run === sayRun; i++) {
+    tiles[i].classList.add("blending");
+    if (sounds[i]) await speak(snd(sounds[i]), { force: true }); else await sleep(500); // a quiet letter: just a pause
+    tiles[i].classList.remove("blending");
+    if (run === sayRun) await sleep(450);
+  }
+}
+/** Big words: say it at normal speed, then slowly while the chunks light up. */
+async function wholeThenSlow(tiles, word) {
+  const run = ++sayRun;
+  await speak(word, { force: true });
+  if (run !== sayRun) return;
+  await sleep(400);
+  tiles.forEach((t) => t.classList.add("blending"));
+  await speak(word, { force: true, rate: 0.6 });
+  tiles.forEach((t) => t.classList.remove("blending"));
 }
 
 /** A word as colored sound chunks: the pattern chunk highlighted, silent letters faded. */
@@ -208,17 +236,18 @@ const ASK = {
   async "sound-out"(q, ctx) {
     ctx.board.innerHTML = `
       <div class="word-big">${chunkWord(q.chunks, q)}</div>
-      <button class="btn big blend-btn" data-own-sound>👉 Sound it out</button>`;
+      <button class="btn big blend-btn" data-own-sound>${patternById(q.pattern).syllables ? "🐢 Hear it slowly" : "👉 Sound it out"}</button>`;
     const tiles = [...ctx.board.querySelectorAll(".chunk")];
     tiles.forEach((t, i) => t.onclick = () => {
       const c = q.chunks[i];
       t.classList.add("heard"); FX.pop(t, 1.1); sfx.key(i + 1);
-      speak(c.silent ? "This one is quiet!" : c.s, { force: true });
+      sayRun++;
+      speak(c.silent ? "This one is quiet!" : patternById(q.pattern).syllables ? c.s : snd(c.s), { force: true });
     });
-    ctx.board.querySelector(".blend-btn").onclick = () => {
-      tiles.forEach((t, i) => setTimeout(() => { t.classList.add("blending"); setTimeout(() => t.classList.remove("blending"), 450); }, i * 380));
-      speak(q.chunks.filter((c) => !c.silent).map((c) => c.s).join(" "), { force: true }); // the sounds, not the word: that's the child's job
-    };
+    const pat = patternById(q.pattern);
+    ctx.board.querySelector(".blend-btn").onclick = () => pat.syllables
+      ? wholeThenSlow(tiles, q.word) // big words: the whole word, then slowly, chunks lighting up
+      : sayInOrder(tiles, q.chunks.map((c) => c.s)); // the sounds, not the word: blending is the child's job
     await choose(ctx, q, q.choices.map(pictureOnly).join(""), { onWrong: (v) => `That's ${v}. Tap the chunks and sound it out again.` });
   },
   // Phonics: hear a word, find it among similar words.
@@ -249,12 +278,12 @@ const ASK = {
   // PreK: which picture starts with this letter?
   async "letters-picture"(q, ctx) {
     ctx.board.innerHTML = `<div class="big-letter"><span class="abc">${q.letter}</span></div>`;
-    await choose(ctx, q, q.choices.map(pictureBtn).join(""), { onWrong: (v) => `${v} starts with ${LETTERS[v[0]]?.sound ?? v[0]}. We need ${soundSay(q.letter)}.` });
+    await choose(ctx, q, q.choices.map(pictureBtn).join(""), { onWrong: (v) => `${v} starts with ${snd(LETTERS[v[0]]?.sound) ?? v[0]}. We need ${soundSay(q.letter)}.` });
   },
   // PreK: the first sound of a picture word.
   async first(q, ctx) {
     ctx.board.innerHTML = `<div class="sound-card"><span class="pic big" aria-hidden="true">${q.emoji}</span><span class="pic-word">${esc(q.word)}</span></div>`;
-    await choose(ctx, q, q.choices.map((l) => letterBtn(l)).join(""), { onWrong: (v) => `${v} says ${LETTERS[v].sound}. Listen: ${q.word}.` });
+    await choose(ctx, q, q.choices.map((l) => letterBtn(l)).join(""), { onWrong: (v) => `${v} says ${snd(LETTERS[v].sound)}. Listen: ${q.word}.` });
   },
   // PreK: rhymes.
   async rhyme(q, ctx) {
@@ -297,12 +326,9 @@ const ASK = {
       <div class="sound-boxes">${q.letters.map((l, i) => `<button class="sound-box" data-own-sound data-i="${i}" aria-label="letter ${l}"><span class="abc">${l}</span></button>`).join("")}</div>
       <button class="btn big blend-btn" data-own-sound>👉 Blend</button>`;
     const boxes = [...ctx.board.querySelectorAll(".sound-box")];
-    boxes.forEach((b, i) => b.onclick = () => { b.classList.add("heard"); FX.pop(b, 1.1); sfx.key(i + 1); speak(LETTERS[q.letters[i]].sound, { force: true }); });
-    ctx.board.querySelector(".blend-btn").onclick = async () => {
-      // Light the boxes left to right and say the sounds quickly together (not the word: that's the child's job).
-      boxes.forEach((b, i) => setTimeout(() => { b.classList.add("blending"); setTimeout(() => b.classList.remove("blending"), 450); }, i * 380));
-      speak(q.letters.map((l) => LETTERS[l].sound).join(" "), { force: true });
-    };
+    boxes.forEach((b, i) => b.onclick = () => { b.classList.add("heard"); FX.pop(b, 1.1); sfx.key(i + 1); sayRun++; speak(snd(LETTERS[q.letters[i]].sound), { force: true }); });
+    // Light the boxes left to right, one sound each, with a little gap (not the word: that's the child's job).
+    ctx.board.querySelector(".blend-btn").onclick = () => sayInOrder(boxes, q.letters.map((l) => LETTERS[l].sound));
     await choose(ctx, q, q.choices.map(pictureOnly).join(""), { onWrong: (v) => `That's ${v}. Tap the letters and blend again.` });
   },
   // K: hear a word, put its letters in the sound boxes.
@@ -323,7 +349,7 @@ const ASK = {
       const check = () => {
         if (filled.some((t) => t == null)) return;
         const word = filled.map((t) => q.tiles[t]).join("");
-        if (word === q.word) { done = true; sfx.right(); FX.confetti(20); const p = praise(); ctx.tell(p, `${p} ${q.letters.map((l) => LETTERS[l].sound).join(", ")}: ${q.word}!`); resolve(); return; }
+        if (word === q.word) { done = true; sfx.right(); FX.confetti(20); const p = praise(); ctx.tell(p, `${p} ${q.letters.map((l) => snd(LETTERS[l].sound)).join(", ")}: ${q.word}!`); resolve(); return; }
         ctx.miss(); tries++; sfx.oops(); FX.shake(ctx.board.querySelector(".sound-boxes"));
         if (tries < 2) {
           // Keep the letters that are right; send the others back.
@@ -335,14 +361,14 @@ const ASK = {
         done = true;
         q.letters.forEach((l, i) => { filled[i] = q.tiles.findIndex((x, j) => x === l && !filled.slice(0, i).includes(j)); });
         paint();
-        ctx.tell("Here's the answer.", `${q.letters.map((l) => LETTERS[l].sound).join(", ")}: ${q.word}.`);
+        ctx.tell("Here's the answer.", `${q.letters.map((l) => snd(LETTERS[l].sound)).join(", ")}: ${q.word}.`);
         setTimeout(resolve, 1400);
       };
       tiles.forEach((t, ti) => t.onclick = () => {
         if (done || t.disabled) return;
         const i = filled.indexOf(null);
         if (i < 0) return;
-        filled[i] = ti; t.disabled = true; sfx.key(i + 1); speak(LETTERS[q.tiles[ti]].sound, { force: true });
+        filled[i] = ti; t.disabled = true; sfx.key(i + 1); speak(snd(LETTERS[q.tiles[ti]].sound), { force: true });
         paint(); check();
       });
       slots.forEach((s, i) => s.onclick = () => {
