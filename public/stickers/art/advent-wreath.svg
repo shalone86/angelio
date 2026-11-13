@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><title>Advent wreath</title>
+<ellipse cx="32" cy="48" rx="26" ry="10" fill="#3f8a3f" stroke="#2a5f2a" stroke-width="2"/>
+<ellipse cx="32" cy="47" rx="15" ry="5" fill="#fffaf0" stroke="#2a5f2a" stroke-width="1.5"/>
+<g fill="#5cb85c"><circle cx="9" cy="46" r="3"/><circle cx="55" cy="46" r="3"/><circle cx="20" cy="56" r="3"/><circle cx="44" cy="56" r="3"/><circle cx="32" cy="58" r="3"/></g>
+<g fill="#e5343f"><circle cx="14" cy="52" r="2"/><circle cx="50" cy="52" r="2"/><circle cx="26" cy="57" r="2"/><circle cx="38" cy="57" r="2"/></g>
+<g stroke-width="1.5" stroke-linejoin="round">
+<rect x="10" y="28" width="7" height="18" rx="1.5" fill="#8b46d6" stroke="#5a2399"/>
+<rect x="22" y="24" width="7" height="20" rx="1.5" fill="#8b46d6" stroke="#5a2399"/>
+<rect x="35" y="24" width="7" height="20" rx="1.5" fill="#f28ab2" stroke="#b5476f"/>
+<rect x="47" y="28" width="7" height="18" rx="1.5" fill="#8b46d6" stroke="#5a2399"/></g>
+<g fill="#ffb02e" stroke="#e0612a" stroke-width="1"><path d="M13.5 26c-2-3 0-6 0-7 0 1 2 4 0 7z"/><path d="M25.5 22c-2-3 0-6 0-7 0 1 2 4 0 7z"/></g>
+<path d="M13.5 26v2M25.5 22v2M38.5 22v2M50.5 26v2" stroke="#3a2a1a" stroke-width="1.2"/>
+</svg>

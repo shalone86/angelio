@@ -8,7 +8,8 @@ import { jingleOnce, playJingle } from "../js/jingle.js";
 
 const $ = (s, el = document) => el.querySelector(s);
 // Stickers are emoji, or our own drawings saved as "art:mary" (art/mary.svg), sized like emoji.
-const ART_NAMES = { mary: "Mary", "baby-jesus": "Baby Jesus", "sacred-heart": "Sacred Heart", chalice: "Chalice", monstrance: "Monstrance", bible: "Holy Bible", lily: "Lily" };
+const ART_NAMES = { mary: "Mary", "baby-jesus": "Baby Jesus", "sacred-heart": "Sacred Heart", chalice: "Chalice", monstrance: "Monstrance", bible: "Holy Bible", lily: "Lily",
+  "st-joseph": "St. Joseph", "st-francis": "St. Francis", "guardian-angel": "Guardian angel", "holy-family": "The Holy Family", rosary: "Rosary", "agnus-dei": "Lamb of God", "advent-wreath": "Advent wreath", "loaves-fishes": "Loaves and fishes" };
 const art = (e) => (String(e).startsWith("art:") && ART_NAMES[e.slice(4)]
   ? `<img class="art-sticker" src="art/${e.slice(4)}.svg" alt="${ART_NAMES[e.slice(4)]}" draggable="false">`
   : String(e).replace(/[<>&"]/g, ""));
