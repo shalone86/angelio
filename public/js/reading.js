@@ -2,11 +2,13 @@
 // beats (syllables), big and little letters, blending and building three-letter words.
 // Pure data and question making (no DOM); tested in test/reading.test.js.
 //
+import { PATTERNS, makePhonics, patternById } from "./phonics.js";
+
 // Letter order follows the common early-phonics groups: s a t p i n, then m d g o c k, then e u r h b f l.
 
 export const GRADES = [
   { n: 1, title: "PreK", emoji: "🐣", blurb: "Letters and their sounds, first sounds, rhymes and beats." },
-  { n: 2, title: "Kindergarten", emoji: "🦊", blurb: "Big and little letters, blend sounds into words, build words." },
+  { n: 2, title: "Kindergarten", emoji: "🦊", blurb: "Big and little letters, blend and build words, sh ch th, and little sentences." },
 ];
 
 export const GROUPS = [
@@ -16,34 +18,8 @@ export const GROUPS = [
 ];
 export const ALL_LETTERS = GROUPS.flat();
 
-/**
- * Each letter: the sound to say (spelled so a voice says it well), and picture words that start
- * with that sound. The first word is the letter's "keyword" (s: sun).
- */
-export const LETTERS = {
-  s: { sound: "sss", words: [["sun", "☀️"], ["sock", "🧦"], ["snake", "🐍"], ["seal", "🦭"]] },
-  a: { sound: "ah", words: [["apple", "🍎"], ["ant", "🐜"], ["alligator", "🐊"]] },
-  t: { sound: "tuh", words: [["tiger", "🐯"], ["tent", "⛺"], ["tooth", "🦷"], ["turtle", "🐢"]] },
-  p: { sound: "puh", words: [["pig", "🐷"], ["pizza", "🍕"], ["pear", "🍐"], ["penguin", "🐧"]] },
-  i: { sound: "ih", words: [["iguana", "🦎"], ["insect", "🐞"]] },
-  n: { sound: "nnn", words: [["nose", "👃"], ["nut", "🥜"], ["nine", "9️⃣"]] },
-  m: { sound: "mmm", words: [["moon", "🌙"], ["mouse", "🐭"], ["monkey", "🐵"], ["milk", "🥛"]] },
-  d: { sound: "duh", words: [["dog", "🐶"], ["duck", "🦆"], ["drum", "🥁"], ["donut", "🍩"]] },
-  g: { sound: "guh", words: [["goat", "🐐"], ["gift", "🎁"], ["grapes", "🍇"], ["gorilla", "🦍"]] },
-  o: { sound: "aw", words: [["octopus", "🐙"], ["otter", "🦦"], ["ox", "🐂"]] },
-  c: { sound: "kuh", words: [["cat", "🐱"], ["cake", "🎂"], ["car", "🚗"], ["cow", "🐮"]] },
-  k: { sound: "kuh", words: [["kite", "🪁"], ["key", "🔑"], ["koala", "🐨"], ["king", "🤴"]] },
-  e: { sound: "eh", words: [["egg", "🥚"], ["elephant", "🐘"], ["elf", "🧝"]] },
-  u: { sound: "uh", words: [["umbrella", "☂️"], ["up", "⬆️"]] },
-  r: { sound: "rrr", words: [["rabbit", "🐰"], ["rainbow", "🌈"], ["ring", "💍"], ["robot", "🤖"]] },
-  h: { sound: "huh", words: [["hat", "🎩"], ["horse", "🐴"], ["house", "🏠"], ["heart", "❤️"]] },
-  b: { sound: "buh", words: [["bus", "🚌"], ["bee", "🐝"], ["banana", "🍌"], ["bear", "🐻"]] },
-  f: { sound: "fff", words: [["fish", "🐟"], ["fox", "🦊"], ["frog", "🐸"], ["feather", "🪶"]] },
-  l: { sound: "lll", words: [["lion", "🦁"], ["leaf", "🍃"], ["lemon", "🍋"], ["lamb", "🐑"]] },
-};
-export const keyword = (l) => LETTERS[l].words[0];
-/** "sss, like sun" — how a letter's sound is said aloud, always with its picture word. */
-export const soundSay = (l) => `${LETTERS[l].sound}, like ${keyword(l)[0]}`;
+export { LETTERS, keyword, soundSay } from "./letter-sounds.js";
+import { LETTERS, keyword, soundSay } from "./letter-sounds.js";
 
 export const RHYMES = [
   [["cat", "🐱"], ["hat", "🎩"]], [["dog", "🐶"], ["frog", "🐸"]], [["bee", "🐝"], ["tree", "🌳"]],
@@ -82,6 +58,9 @@ export const STAGES = [
   { id: "k-big-little", grade: 2, type: "case", title: "Big and Little Letters", emoji: "🔠" },
   { id: "k-blend", grade: 2, type: "blend", title: "Blend It!", emoji: "🧩" },
   { id: "k-build", grade: 2, type: "build", title: "Build It!", emoji: "🏗️" },
+  // Phonics patterns (phonics.js): taught alone, in words, then in sentences.
+  // phonics.js is shared with Read Aloud (grades 1-3); Letter Lane uses only the Kindergarten patterns.
+  ...PATTERNS.filter((p) => p.grade <= 2).map((p) => ({ id: p.id, grade: p.grade, type: "phonics", pattern: p.id, title: p.title, emoji: p.emoji })),
 ];
 export const stageById = (id) => STAGES.find((s) => s.id === id);
 export const PER_STAGE = 6;
@@ -167,6 +146,7 @@ export function rhymes(a, b) {
 
 export function makeStage(stage, seed = Date.now()) {
   const rand = seeded(seed);
+  if (stage.type === "phonics") return makePhonics(patternById(stage.pattern), rand).map((q) => ({ ...q, pattern: stage.pattern }));
   if (stage.type === "letters") stage = { ...stage, _order: shuffle(GROUPS[stage.group], rand) }; // six different letters each round
   const out = [];
   for (let k = 0; k < PER_STAGE; k++) {

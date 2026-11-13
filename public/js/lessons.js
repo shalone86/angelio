@@ -1,6 +1,7 @@
 // "How it works" cards, one per level, read aloud before the first question.
 
 import { GROUPS, LETTERS, keyword } from "./reading.js";
+import { PATTERNS, chunks, focusIndexes, wordOf } from "./phonics.js";
 
 const letterRow = (group) => `<div class="lesson-letters">${group.map((l) => `
   <span class="lesson-letter lesson-focus"><span class="abc">${l}</span><span class="pic" aria-hidden="true">${keyword(l)[1]}</span></span>`).join("")}</div>`;
@@ -41,3 +42,17 @@ export const LESSONS = {
     voice: "Listen to each sound in a word. Sun. Sss. Uh. Nnn. One letter for each sound: s, u, n. Tap the letters to fill the boxes!",
   },
 };
+
+// Phonics levels: how to say the pattern, three example words in chunks, then "let's practice".
+for (const p of PATTERNS.filter((x) => x.grade <= 2)) {
+  const ex = p.pictures.slice(0, 3);
+  const word = ([spec, emoji]) => {
+    const ch = chunks(spec, p.syllables), f = new Set(focusIndexes(p, ch));
+    return `<span class="lesson-word lesson-focus"><span class="pic" aria-hidden="true">${emoji}</span><span class="chunked">${ch.map((c, i) => `<span class="chunk${f.has(i) ? " focus" : ""}${c.silent ? " silent" : ""}">${c.t}</span>`).join(p.syllables ? '<span class="dot">·</span>' : "")}</span></span>`;
+  };
+  LESSONS[p.id] = {
+    emoji: p.emoji, title: p.title, rule: p.teach,
+    exampleHtml: `<div class="lesson-words">${ex.map(word).join("")}</div>`,
+    voice: `${p.say} Let's practice: ${ex.map(([s]) => wordOf(s)).join(", ")}!`,
+  };
+}

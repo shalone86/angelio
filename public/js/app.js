@@ -14,6 +14,7 @@ import { leadIn, praise, tryAgain, vary } from "./kit/vary.js";
 import { esc, starsHtml, nextButton, markDot, showFinish, stickerBook, viewGrownups, installClickSounds, wireVoiceToggle } from "./kit/ui.js";
 import { GRADES, STAGES, stageById, PER_STAGE, makeStage, LETTERS, soundSay, starsFor } from "./reading.js";
 import { LESSONS } from "./lessons.js";
+import { patternById, chunks, focusIndexes, patternWord } from "./phonics.js";
 
 const app = document.getElementById("app");
 
@@ -138,6 +139,9 @@ function hintFor(q) {
     case "case": return `Little ${q.letter} is the small shape of big ${q.big}. Trace them in the air!`;
     case "blend": return "Tap each letter to hear its sound, then press Blend and listen.";
     case "build": return `Say it slowly: ${q.letters.map((l) => LETTERS[l].sound).join("… ")}. One letter for each sound.`;
+    case "sound-out": return `Tap each chunk and say its sound: ${q.chunks.filter((c) => !c.silent).map((c) => c.s).join("… ")}. Now say them faster!`;
+    case "find-word": return `Listen again: ${q.word}. Look at each word and sound it out, chunk by chunk.`;
+    case "read-sentence": return "Tap any word you're not sure about to hear it. Then read the whole sentence again.";
   }
   return "Take your time!";
 }
@@ -145,6 +149,8 @@ function hintFor(q) {
 // ───────── shared pieces ─────────
 
 const letterBtn = (l, extra = "") => `<button class="choice-card letter-card${extra}" data-v="${l}" aria-label="letter ${l}"><span class="abc">${l}</span></button>`;
+// Just the picture, no word under it: the child reads the word, the picture checks it.
+const pictureOnly = (c) => `<button class="choice-card picture-card emoji-only" data-v="${esc(c.word)}" aria-label="${esc(c.word)}"><span class="pic" aria-hidden="true">${c.emoji}</span></button>`;
 const pictureBtn = (c) => `<button class="choice-card picture-card" data-v="${esc(c.word)}"><span class="pic" aria-hidden="true">${c.emoji}</span><span class="pic-word">${esc(c.word)}</span></button>`;
 
 /** Choices in the dock; resolves on the right one (or after two misses, with the answer shown). */
@@ -180,13 +186,60 @@ function rightLine(q) {
     case "rhyme": return `${q.word} and ${q.answer} rhyme!`;
     case "case": return `Big ${q.big}, little ${q.letter}.`;
     case "blend": return `${q.letters.map((l) => LETTERS[l].sound).join(", ")}: ${q.word}!`;
+    case "sound-out": return `${q.chunks.filter((c) => !c.silent).map((c) => c.s).join(", ")}: ${q.word}!`;
+    case "find-word": return `That's ${q.word}!`;
+    case "read-sentence": return q.text;
   }
   return "";
+}
+
+/** A word as colored sound chunks: the pattern chunk highlighted, silent letters faded. */
+function chunkWord(spec, q, { tag = "button", cls = "" } = {}) {
+  const pat = patternById(q.pattern);
+  const ch = typeof spec === "string" ? chunks(spec, pat.syllables) : spec;
+  const focus = new Set(focusIndexes(pat, ch));
+  return `<span class="chunked ${cls}${pat.syllables ? " syllables" : ""}">${ch.map((c, i) => `<${tag} class="chunk${focus.has(i) ? " focus" : ""}${c.silent ? " silent" : ""}"${tag === "button" ? ` data-own-sound data-c="${i}" aria-label="${esc(c.t)}"` : ""}>${esc(c.t)}</${tag}>`).join(tag === "button" && pat.syllables ? '<span class="dot" aria-hidden="true">·</span>' : "")}</span>`;
 }
 
 // ───────── each kind of question ─────────
 
 const ASK = {
+  // Phonics: tap each chunk to hear it, sound out the word, find the picture.
+  async "sound-out"(q, ctx) {
+    ctx.board.innerHTML = `
+      <div class="word-big">${chunkWord(q.chunks, q)}</div>
+      <button class="btn big blend-btn" data-own-sound>👉 Sound it out</button>`;
+    const tiles = [...ctx.board.querySelectorAll(".chunk")];
+    tiles.forEach((t, i) => t.onclick = () => {
+      const c = q.chunks[i];
+      t.classList.add("heard"); FX.pop(t, 1.1); sfx.key(i + 1);
+      speak(c.silent ? "This one is quiet!" : c.s, { force: true });
+    });
+    ctx.board.querySelector(".blend-btn").onclick = () => {
+      tiles.forEach((t, i) => setTimeout(() => { t.classList.add("blending"); setTimeout(() => t.classList.remove("blending"), 450); }, i * 380));
+      speak(q.chunks.filter((c) => !c.silent).map((c) => c.s).join(" "), { force: true }); // the sounds, not the word: that's the child's job
+    };
+    await choose(ctx, q, q.choices.map(pictureOnly).join(""), { onWrong: (v) => `That's ${v}. Tap the chunks and sound it out again.` });
+  },
+  // Phonics: hear a word, find it among similar words.
+  async "find-word"(q, ctx) {
+    ctx.board.innerHTML = `<button class="hear-big" data-own-sound aria-label="Hear the word">🔊<span>Hear the word</span></button>`;
+    ctx.board.querySelector(".hear-big").onclick = () => speak(q.word, { force: true });
+    await choose(ctx, q, q.choices.map((c) => `<button class="choice-card word-card" data-v="${esc(c.word)}">${chunkWord(c.chunks, q, { tag: "span" })}</button>`).join(""),
+      { onWrong: (v) => `That says ${v}. Listen: ${q.word}.` });
+  },
+  // Phonics: read a sentence (tap any word for help), then find the matching picture.
+  async "read-sentence"(q, ctx) {
+    const pat = patternById(q.pattern);
+    const words = q.text.split(/\s+/);
+    ctx.board.innerHTML = `
+      <p class="sentence" lang="en">${words.map((w, i) => `<button class="sw${patternWord(pat, w) ? " focus" : ""}" data-own-sound data-w="${i}">${esc(w)}</button>`).join(" ")}</p>
+      <button class="btn small read-me" data-own-sound>🔊 Read it to me</button>`;
+    ctx.board.querySelectorAll(".sw").forEach((b) => b.onclick = () => { b.classList.add("heard"); speak(words[+b.dataset.w].replace(/[^A-Za-z']/g, ""), { force: true }); });
+    ctx.board.querySelector(".read-me").onclick = () => speak(q.text, { force: true });
+    await choose(ctx, q, q.choices.map(pictureOnly).join(""),
+      { onWrong: () => "Read it again, slowly. Which picture shows what the sentence says?" });
+  },
   // PreK: hear a sound, find its letter.
   async letters(q, ctx) {
     ctx.board.innerHTML = `<div class="sound-card"><button class="hear-sound" data-own-sound aria-label="Hear the sound">🔊</button><span class="pic big" aria-hidden="true">${q.picture[1]}</span><span class="pic-word">${esc(q.picture[0])}</span></div>`;
@@ -250,7 +303,7 @@ const ASK = {
       boxes.forEach((b, i) => setTimeout(() => { b.classList.add("blending"); setTimeout(() => b.classList.remove("blending"), 450); }, i * 380));
       speak(q.letters.map((l) => LETTERS[l].sound).join(" "), { force: true });
     };
-    await choose(ctx, q, q.choices.map(pictureBtn).join(""), { onWrong: (v) => `That says ${v}. Tap the letters and blend again.` });
+    await choose(ctx, q, q.choices.map(pictureOnly).join(""), { onWrong: (v) => `That's ${v}. Tap the letters and blend again.` });
   },
   // K: hear a word, put its letters in the sound boxes.
   async build(q, ctx) {
