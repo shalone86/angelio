@@ -16,7 +16,7 @@
 //   STT_TOKEN     secret: a Hugging Face token, if the Space is private
 // Optional vars ANDROID_PACKAGE and ANDROID_SHA256 (comma-separated fingerprints) for assetlinks.
 
-import { checkSpeech, codeStatus } from "./codes.js";
+import { checkSpeech, codeStatus, dailyCap } from "./codes.js";
 
 const STT_MODEL = "@cf/openai/whisper-large-v3-turbo";
 // All speech uses Aura-2 (the nicer voice), sent as WAV so Safari plays even single words.
@@ -146,16 +146,38 @@ async function tts(request, url, env, ctx) {
   const cacheKey = new Request(`https://tts.cache/v3/aura/${voice}/${encodeURIComponent(text)}`);
   const hit = await cache.match(cacheKey);
   if (hit) return hit;
+  const store = await savedClip(env, "art3", voice, text);
+  const saved = await store.get();
+  if (saved) {
+    const res = new Response(saved, { headers: { "content-type": "audio/wav", "cache-control": "public, max-age=2592000", "x-voice-source": "saved" } });
+    ctx.waitUntil(cache.put(cacheKey, res.clone()));
+    return res;
+  }
+  // The same site-wide daily caps on new clips as the Angelio apps (shared KV counters).
+  const cap = await dailyCap(env, "tts", Number(env.TTS_DAILY_CAP ?? 3000));
+  const chars = await dailyCap(env, "ttschars", Number(env.TTS_DAILY_CHARS ?? 15000));
+  if (!cap.ok || !chars.ok) return json({ error: "voice is resting for today" }, 503);
   const raw = await env.AI.run(TTS_MODEL, { text, speaker: voice, encoding: "linear16", container: "wav", sample_rate: 24000 }, { returnRawResponse: true });
   if (!raw.ok) return json({ error: `tts failed (${raw.status})` }, 502);
-  const res = new Response(await raw.arrayBuffer(), {
+  const wav = await raw.arrayBuffer();
+  const res = new Response(wav, {
     headers: { "content-type": "audio/wav", "cache-control": "public, max-age=2592000", "x-voice-source": "aura" },
   });
-  ctx.waitUntil(cache.put(cacheKey, res.clone()));
+  ctx.waitUntil(Promise.all([cache.put(cacheKey, res.clone()), store.put(wav), cap.charge(), chars.charge(text.length)]));
   return res;
 }
 
 
+
+// Every new clip is also saved in the shared KV store, so a line is made (and paid for) once, for every
+// app and every Cloudflare data center. The edge cache is only per data center, and it can forget.
+async function savedClip(env, prefix, voice, text) {
+  if (!env.CODES) return { get: async () => null, put: async () => {} };
+  const h = [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`${voice}|${text}`)))]
+    .map((b) => b.toString(16).padStart(2, "0")).join("");
+  const k = `tts:${prefix}:${h}`;
+  return { get: () => env.CODES.get(k, "arrayBuffer"), put: (buf) => env.CODES.put(k, buf) };
+}
 
 function toBase64(buf) {
   const bytes = new Uint8Array(buf);
