@@ -7,3 +7,7 @@
   "Backburner" in shalone86/angelio ROADMAP.md). They asked to be reminded until it's done.
 - Keep the kid-facing rules: everything read aloud, big tap targets, gentle mistakes, varied
   voice lines, no reload mid-game. Run `npm test` before pushing.
+
+## Master roadmap
+
+Master roadmap for all my projects: `shalone86/picoparish` → `ROADMAP.md` (private repo; attach it with add_repo to read it from another project). Check it before suggesting what to build next, and update it when something ships.
