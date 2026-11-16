@@ -35,7 +35,8 @@ const ABOUT = `
     <li><b>Songs:</b> an album plays straight through. Under <i>For grown-ups</i> you'll find the downloads: audio, instrumentals,
       videos and lead sheets.</li>
   </ul>
-  <p>All lessons and songs are written, drawn and performed by Shalone Cason and friends.</p>`;
+  <p>All lessons and songs are written, drawn and performed by Shalone Cason and friends.</p>
+  <p><a class="btn small" href="#/review">📝 Review every quiz (answers shown)</a></p>`;
 
 const route = createRouter([
   [/^$/, viewHome],
@@ -49,6 +50,7 @@ const route = createRouter([
   [/^album\/([\w-]+)\/([\w-]+)$/, (a, s) => viewSongs(s, a)],
   [/^song\/([\w-]+)$/, (s) => viewSongs(s)],
   [/^grownups$/, () => viewGrownups(app, { about: ABOUT })],
+  [/^review$/, viewReview],
 ], {
   before() { stop(); FX.clearFx(); document.body.classList.remove("in-game"); },
 });
@@ -234,6 +236,31 @@ function viewQuiz(id, courseId) {
     });
   })();
   return () => { alive = false; };
+}
+
+// ───────── grown-ups: every quiz on one page, answers shown, for checking ─────────
+
+function viewReview() {
+  const show = (q) => {
+    const t = q.type ?? "choice";
+    if (t === "choice") return `<ul>${q.choices.map((c, i) => `<li${i === q.answer ? ' class="ok"' : ""}>${i === q.answer ? "✅ " : ""}${esc(c)}</li>`).join("")}</ul>`;
+    if (t === "blank") return `<ul>${q.words.map((w) => `<li${w === q.answer ? ' class="ok"' : ""}>${w === q.answer ? "✅ " : ""}${esc(w)}</li>`).join("")}</ul>`;
+    if (t === "order") return `<ol>${q.items.map((x) => `<li>${esc(x)}</li>`).join("")}</ol>`;
+    return `<ul>${q.pairs.map(([a, b]) => `<li>${esc(a)} ↔ ${esc(b)}</li>`).join("")}</ul>`;
+  };
+  const kind = { choice: "Choice", blank: "Word tiles", order: "Put in order", match: "Match" };
+  const withQuiz = LIB.lessons.filter((l) => l.quiz);
+  app.innerHTML = `
+    <section class="review">
+      <div class="watch-top"><a class="icon-btn" href="#/grownups" aria-label="Back">✕</a><h1 class="watch-title">📝 Every quiz</h1></div>
+      <p class="muted">${withQuiz.length} lessons, ${withQuiz.reduce((n, l) => n + l.quiz.length, 0)} questions. ✅ marks the right answer; “order” shows the right order.
+        <b>Draft</b> means written from the video's words and not checked yet. To change one, tell your helper or edit <code>content/quizzes.json</code>.</p>
+      ${withQuiz.map((l) => `
+        <article class="card review-quiz">
+          <h2>${esc(l.title)} ${l.quizDraft ? '<span class="draft">Draft</span>' : ""} <a class="small" href="#/lesson/${l.id}">▶ video</a></h2>
+          <ol class="review-qs">${l.quiz.map((q) => `<li><b>${esc(q.q)}</b> <span class="muted small">(${kind[q.type ?? "choice"]})</span>${show(q)}<p class="muted small">📜 ${esc(q.why ?? "")}</p></li>`).join("")}</ol>
+        </article>`).join("")}
+    </section>`;
 }
 
 // ───────── people: everyone who wrote or sang a song ─────────

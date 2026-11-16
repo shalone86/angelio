@@ -293,5 +293,2542 @@
     "why": "False! The Catholic Encyclopedia says infallibility “is not attributed to every doctrinal act of the pope.”"
    }
   ]
+ },
+ "what-is-lent": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "What is Lent?",
+    "choices": [
+     "The 40 days before Easter",
+     "The 12 days of Christmas",
+     "The week after Easter"
+    ],
+    "answer": 0,
+    "why": "In the video: Lent is the 40 days before Easter, when Catholics pray, fast and prepare."
+   },
+   {
+    "type": "blank",
+    "q": "Lent starts on Ash ____.",
+    "words": [
+     "Wednesday",
+     "Sunday",
+     "Friday"
+    ],
+    "answer": "Wednesday",
+    "why": "In the video: that is why Catholics start the Lenten season with Ash Wednesday."
+   },
+   {
+    "type": "choice",
+    "q": "On the Fridays of Lent, Catholics don't eat…",
+    "choices": [
+     "Meat",
+     "Bread",
+     "Fruit"
+    ],
+    "answer": 0,
+    "why": "In the video: every Friday of Lent, Catholics abstain from meat and eat fish instead."
+   },
+   {
+    "type": "match",
+    "q": "The number 40 in the Bible. Match each one.",
+    "pairs": [
+     [
+      "The flood",
+      "It rained 40 days"
+     ],
+     [
+      "Moses",
+      "40 days on the mountain with God"
+     ],
+     [
+      "Jesus in the desert",
+      "Fasted 40 days"
+     ]
+    ],
+    "why": "In the video: it rained 40 days in the flood, Moses was on the mountain 40 days, and Jesus fasted 40 days in the desert."
+   }
+  ]
+ },
+ "what-are-the-stations-of-the-cross": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "How many Stations of the Cross are there?",
+    "choices": [
+     "14",
+     "7",
+     "40"
+    ],
+    "answer": 0,
+    "why": "In the video: there have traditionally been 14 stations."
+   },
+   {
+    "type": "blank",
+    "q": "The Stations of the Cross follow the path Jesus walked to be ____.",
+    "words": [
+     "crucified",
+     "baptized",
+     "born"
+    ],
+    "answer": "crucified",
+    "why": "In the video: it is believed to be the actual path that Jesus walked when he was crucified."
+   },
+   {
+    "type": "order",
+    "q": "Put these stations in order.",
+    "items": [
+     "Jesus is condemned to death",
+     "Jesus carries his cross",
+     "Jesus meets his mother",
+     "Jesus dies on the cross"
+    ],
+    "why": "In the video: 1, Jesus is condemned. 2, he carries his cross. 4, he meets his mother. 12, Jesus dies on the cross."
+   },
+   {
+    "type": "choice",
+    "q": "Who helps Jesus carry the cross?",
+    "choices": [
+     "Simon of Cyrene",
+     "Saint Peter",
+     "A Roman soldier"
+    ],
+    "answer": 0,
+    "why": "In the video: station 5, Simon of Cyrene helps Jesus carry the cross."
+   }
+  ]
+ },
+ "why-are-there-bad-people-in-the-church": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "Why are there people who do bad things in the Church?",
+    "choices": [
+     "Because people aren't perfect",
+     "Because God wants it",
+     "Because the Church is bad"
+    ],
+    "answer": 0,
+    "why": "In the video: the Church is made of humans, and people are flawed. They make mistakes."
+   },
+   {
+    "type": "choice",
+    "q": "Can a priest who sins still forgive sins in confession?",
+    "choices": [
+     "Yes, by Jesus' power",
+     "No, never",
+     "Only on Sundays"
+    ],
+    "answer": 0,
+    "why": "In the video: he can, because it is not by his power that he gives the sacraments, but by Jesus Christ's power."
+   },
+   {
+    "type": "blank",
+    "q": "Peter denied Jesus three times, but Jesus still made him the first ____.",
+    "words": [
+     "Pope",
+     "king",
+     "farmer"
+    ],
+    "answer": "Pope",
+    "why": "In the video: Jesus still made Peter the first Pope."
+   },
+   {
+    "type": "choice",
+    "q": "What should we do for people who do wrong?",
+    "choices": [
+     "Pray for them",
+     "Point fingers",
+     "Stop going to church"
+    ],
+    "answer": 0,
+    "why": "In the video: it's not our job to point fingers and judge, but to pray for them and help them on their way to heaven."
+   }
+  ]
+ },
+ "why-are-there-statues-and-paintings-in-churches": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "Why do churches have beautiful art?",
+    "choices": [
+     "To remind us of the beauty of heaven",
+     "To fill empty walls",
+     "To sell it"
+    ],
+    "answer": 0,
+    "why": "In the video: churches should have beautiful art to remind us of the beauty of heaven."
+   },
+   {
+    "type": "choice",
+    "q": "Who should sacred art show?",
+    "choices": [
+     "Jesus, Mary or the saints",
+     "Famous kings",
+     "Anything at all"
+    ],
+    "answer": 0,
+    "why": "In the video: religious art should include Christ, the Virgin Mary, or one of the saints."
+   },
+   {
+    "type": "blank",
+    "q": "Long ago, many people couldn't ____, so pictures taught them the faith.",
+    "words": [
+     "read",
+     "sing",
+     "walk"
+    ],
+    "answer": "read",
+    "why": "In the video: when not many people could read, sacred art was a great way to learn and understand the faith."
+   },
+   {
+    "type": "choice",
+    "q": "Which of these was a great artist the Church supported?",
+    "choices": [
+     "Michelangelo",
+     "Moses",
+     "Noah"
+    ],
+    "answer": 0,
+    "why": "In the video: the Church has always supported artists such as Michelangelo, Da Vinci and Caravaggio."
+   }
+  ]
+ },
+ "why-do-we-bow-and-kneel": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "When do we genuflect (bend the right knee)?",
+    "choices": [
+     "Passing in front of the tabernacle",
+     "Walking into the parking lot",
+     "At the end of a song"
+    ],
+    "answer": 0,
+    "why": "In the video: we genuflect any time we pass in front of a tabernacle that holds the Blessed Sacrament."
+   },
+   {
+    "type": "blank",
+    "q": "Bending the knee is a sign of ____ for Jesus in the Blessed Sacrament.",
+    "words": [
+     "adoration",
+     "hurry",
+     "tiredness"
+    ],
+    "answer": "adoration",
+    "why": "In the video: a genuflection signifies adoration, so it is reserved for the Most Blessed Sacrament."
+   },
+   {
+    "type": "choice",
+    "q": "At which name do we bow our heads?",
+    "choices": [
+     "Jesus",
+     "Our own name",
+     "The priest's name"
+    ],
+    "answer": 0,
+    "why": "In the video: “at the name of Jesus every knee should bend.” We bow our heads at the name of Jesus."
+   },
+   {
+    "type": "match",
+    "q": "Match each one to what we do.",
+    "pairs": [
+     [
+      "Passing the tabernacle",
+      "Genuflect"
+     ],
+     [
+      "The name of Jesus",
+      "Bow the head"
+     ]
+    ],
+    "why": "In the video: we genuflect when we pass the tabernacle, and bow our heads at the name of Jesus, Mary, and the Trinity."
+   }
+  ]
+ },
+ "when-and-why-should-we-stay-home-from-mass": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "On which days do Catholics go to Mass?",
+    "choices": [
+     "Every Sunday and Holy Days",
+     "Only at Christmas",
+     "Only on birthdays"
+    ],
+    "answer": 0,
+    "why": "In the video: we are obliged to attend Mass every Sunday and Holy Day of Obligation."
+   },
+   {
+    "type": "choice",
+    "q": "Which is a good reason to stay home from Mass?",
+    "choices": [
+     "A serious illness",
+     "A cartoon is on",
+     "It's raining a little"
+    ],
+    "answer": 0,
+    "why": "In the video: a serious illness, like anything contagious or anything that keeps you from leaving the house."
+   },
+   {
+    "type": "blank",
+    "q": "If you are sick, staying home protects the other ____.",
+    "words": [
+     "people",
+     "chairs",
+     "candles"
+    ],
+    "answer": "people",
+    "why": "In the video: people who love Mass should still think of the other parishioners when they're sick."
+   },
+   {
+    "type": "choice",
+    "q": "Who else might stay home with a sick little child?",
+    "choices": [
+     "A parent",
+     "The priest",
+     "The choir"
+    ],
+    "answer": 0,
+    "why": "In the video: when young children get sick, parents have to care for them and may miss Mass."
+   }
+  ]
+ },
+ "what-is-holy-week": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "blank",
+    "q": "Holy Week begins on ____ Sunday.",
+    "words": [
+     "Palm",
+     "Easter",
+     "Pentecost"
+    ],
+    "answer": "Palm",
+    "why": "In the video: Holy Week begins on Palm Sunday."
+   },
+   {
+    "type": "order",
+    "q": "Put the days of Holy Week in order.",
+    "items": [
+     "Palm Sunday",
+     "Holy Thursday",
+     "Good Friday",
+     "Holy Saturday"
+    ],
+    "why": "In the video: Holy Week begins on Palm Sunday, then Holy Thursday, Good Friday and Holy Saturday, before Easter."
+   },
+   {
+    "type": "match",
+    "q": "Match each day to what it remembers.",
+    "pairs": [
+     [
+      "Holy Thursday",
+      "The first Holy Eucharist"
+     ],
+     [
+      "Good Friday",
+      "Jesus' passion and death"
+     ],
+     [
+      "Holy Saturday",
+      "Jesus' burial"
+     ]
+    ],
+    "why": "In the video: Holy Thursday remembers the Eucharist, Good Friday Christ's passion and death, and Holy Saturday his burial."
+   },
+   {
+    "type": "choice",
+    "q": "On Holy Thursday, whose feet did Jesus wash?",
+    "choices": [
+     "The apostles'",
+     "The soldiers'",
+     "The kings'"
+    ],
+    "answer": 0,
+    "why": "In the video: the washing of the feet remembers Christ washing the feet of the apostles at the Last Supper."
+   }
+  ]
+ },
+ "what-is-epiphany": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "When is Epiphany?",
+    "choices": [
+     "January 6",
+     "December 25",
+     "Easter Sunday"
+    ],
+    "answer": 0,
+    "why": "In the video: Epiphany is celebrated on January 6th, 12 days after Christmas."
+   },
+   {
+    "type": "choice",
+    "q": "Who visited baby Jesus at Epiphany?",
+    "choices": [
+     "The three wise men",
+     "The twelve apostles",
+     "Saint Nicholas"
+    ],
+    "answer": 0,
+    "why": "In the video: the first event is when the three wise men, or kings, visited the infant Jesus."
+   },
+   {
+    "type": "blank",
+    "q": "Epiphany also remembers when John the Baptist ____ Jesus.",
+    "words": [
+     "baptized",
+     "fed",
+     "carried"
+    ],
+    "answer": "baptized",
+    "why": "In the video: the second event was when Saint John the Baptist baptized Jesus."
+   },
+   {
+    "type": "choice",
+    "q": "In many Latin American countries, who brings gifts to children?",
+    "choices": [
+     "The three wise men",
+     "Santa Claus",
+     "The Easter bunny"
+    ],
+    "answer": 0,
+    "why": "In the video: in many Latin American countries, it is the three wise men, not Santa Claus, who bring gifts."
+   }
+  ]
+ },
+ "what-is-the-golden-rule-moral-lesson": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "What is the Golden Rule?",
+    "choices": [
+     "Treat others the way you'd like to be treated",
+     "Always win the game",
+     "Keep your toys to yourself"
+    ],
+    "answer": 0,
+    "why": "In the video: the Golden Rule is to treat others the way you'd like to be treated."
+   },
+   {
+    "type": "match",
+    "q": "Match what you like to what you should do.",
+    "pairs": [
+     [
+      "You like it when others share",
+      "Share your toys"
+     ],
+     [
+      "You like a smile and “good morning”",
+      "Smile and say good morning"
+     ],
+     [
+      "You don't like mean words",
+      "Don't say mean things"
+     ]
+    ],
+    "why": "In the video: if you like it when people share, share your toys. If you like a smile, smile at others. If you don't like mean words, don't say them."
+   },
+   {
+    "type": "choice",
+    "q": "If someone doesn't follow the Golden Rule, should you give up on it?",
+    "choices": [
+     "No, keep trying",
+     "Yes, give up",
+     "Only on Mondays"
+    ],
+    "answer": 0,
+    "why": "In the video: you should not give up on the Golden Rule, because most of the time it works."
+   },
+   {
+    "type": "blank",
+    "q": "The Golden Rule is worth more than ____.",
+    "words": [
+     "gold",
+     "a cookie",
+     "a sticker"
+    ],
+    "answer": "gold",
+    "why": "In the video: the Golden Rule is very valuable, much more valuable than gold."
+   }
+  ]
+ },
+ "who-is-saint-aidan-of-lindisfarne": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "Saint Aidan was a monk from which country?",
+    "choices": [
+     "Ireland",
+     "Italy",
+     "Egypt"
+    ],
+    "answer": 0,
+    "why": "In the video: Aidan was an Irish monk and missionary."
+   },
+   {
+    "type": "blank",
+    "q": "Aidan founded a monastery on the island of ____.",
+    "words": [
+     "Lindisfarne",
+     "Malta",
+     "Sicily"
+    ],
+    "answer": "Lindisfarne",
+    "why": "In the video: he founded a monastic cathedral on the island of Lindisfarne, and was its first bishop."
+   },
+   {
+    "type": "choice",
+    "q": "How did Aidan share the Gospel?",
+    "choices": [
+     "He walked from village to village talking with people",
+     "He sent letters only",
+     "He stayed in his room"
+    ],
+    "answer": 0,
+    "why": "In the video: Aidan walked from one village to another, kindly talking with the people and caring about their lives."
+   },
+   {
+    "type": "choice",
+    "q": "Who did Saint Aidan especially help?",
+    "choices": [
+     "Orphans and slaves",
+     "Only kings",
+     "Only soldiers"
+    ],
+    "answer": 0,
+    "why": "In the video: he gave orphans a home and schooling, and used his own gifts to pay for the freedom of slaves."
+   }
+  ]
+ },
+ "what-is-ash-wednesday": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "On Ash Wednesday, what shape does the priest make with ashes on our forehead?",
+    "choices": [
+     "A cross",
+     "A star",
+     "A heart"
+    ],
+    "answer": 0,
+    "why": "In the video: the priest puts ashes in the shape of a cross on our forehead."
+   },
+   {
+    "type": "blank",
+    "q": "The ashes come from burning the ____ from last year's Palm Sunday.",
+    "words": [
+     "palms",
+     "candles",
+     "books"
+    ],
+    "answer": "palms",
+    "why": "In the video: the ashes come from burning the palms that were blessed on Palm Sunday the year before."
+   },
+   {
+    "type": "choice",
+    "q": "What do the ashes remind us?",
+    "choices": [
+     "We are made from dust",
+     "It's time for a party",
+     "Spring is here"
+    ],
+    "answer": 0,
+    "why": "In the video: we are all made from dust, and one day we will return to dust."
+   },
+   {
+    "type": "choice",
+    "q": "Ash Wednesday starts which time of the year?",
+    "choices": [
+     "Lent",
+     "Advent",
+     "Christmas"
+    ],
+    "answer": 0,
+    "why": "In the video: Ash Wednesday is a special day in the time of year called Lent."
+   }
+  ]
+ },
+ "what-is-penance": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "What is penance?",
+    "choices": [
+     "Showing we're sorry for sin with our actions",
+     "A kind of song",
+     "A holiday"
+    ],
+    "answer": 0,
+    "why": "In the video: penance is saying I'm sorry with your actions."
+   },
+   {
+    "type": "choice",
+    "q": "What is mortification?",
+    "choices": [
+     "Giving something up to root out a bad habit",
+     "Eating extra dessert",
+     "Sleeping in"
+    ],
+    "answer": 0,
+    "why": "In the video: mortification is giving up something harmless to build strength against a bad habit."
+   },
+   {
+    "type": "match",
+    "q": "Match each word to what it means.",
+    "pairs": [
+     [
+      "Penance",
+      "Saying sorry with actions"
+     ],
+     [
+      "Mortification",
+      "Giving up a habit to grow stronger"
+     ]
+    ],
+    "why": "In the video: penance says I'm sorry; mortification roots out the bad habit so we don't fall again."
+   },
+   {
+    "type": "blank",
+    "q": "Penance is like buying ____ after forgetting someone's birthday.",
+    "words": [
+     "flowers",
+     "a hammer",
+     "socks"
+    ],
+    "answer": "flowers",
+    "why": "In the video: penance is like buying flowers after forgetting someone's birthday."
+   }
+  ]
+ },
+ "what-are-some-ideas-for-penance": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "What do we do first, to know what we're sorry for?",
+    "choices": [
+     "An examination of conscience",
+     "Eat a snack",
+     "Play a game"
+    ],
+    "answer": 0,
+    "why": "In the video: start with an examination of conscience, going through the Ten Commandments."
+   },
+   {
+    "type": "choice",
+    "q": "Who gives us a penance in confession?",
+    "choices": [
+     "The priest",
+     "A friend",
+     "The teacher"
+    ],
+    "answer": 0,
+    "why": "In the video: go to confession and the priest gives you a proper penance."
+   },
+   {
+    "type": "choice",
+    "q": "Which one is a good penance?",
+    "choices": [
+     "Praying three Hail Marys",
+     "Watching TV",
+     "Eating candy"
+    ],
+    "answer": 0,
+    "why": "In the video: common penances are the Our Father, three Hail Marys, the Stations of the Cross, the Rosary, and reading the Gospels."
+   },
+   {
+    "type": "order",
+    "q": "Put these in order.",
+    "items": [
+     "Examine your conscience",
+     "Go to confession",
+     "Do your penance"
+    ],
+    "why": "In the video: first examine your conscience, then go to confession, and the priest gives you a penance to do."
+   }
+  ]
+ },
+ "what-is-laetare-sunday": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "Which Sunday of Lent is Laetare Sunday?",
+    "choices": [
+     "The fourth",
+     "The first",
+     "The last"
+    ],
+    "answer": 0,
+    "why": "In the video: Laetare Sunday is the fourth Sunday of Lent."
+   },
+   {
+    "type": "blank",
+    "q": "“Laetare” means ____!",
+    "words": [
+     "rejoice",
+     "sleep",
+     "hurry"
+    ],
+    "answer": "rejoice",
+    "why": "In the video: Laetare Jerusalem means rejoice, O Jerusalem."
+   },
+   {
+    "type": "choice",
+    "q": "What color can the priest wear on Laetare Sunday?",
+    "choices": [
+     "Rose",
+     "Green",
+     "Black"
+    ],
+    "answer": 0,
+    "why": "In the video: rose-colored vestments instead of purple, with flowers on the altar and the organ playing."
+   },
+   {
+    "type": "choice",
+    "q": "How long is Lent?",
+    "choices": [
+     "40 days",
+     "7 days",
+     "100 days"
+    ],
+    "answer": 0,
+    "why": "In the video: Lent starts about six weeks before Easter and lasts for 40 days."
+   }
+  ]
+ },
+ "what-is-passiontide": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "In the last two weeks of Lent, what covers statues and crosses?",
+    "choices": [
+     "A violet veil",
+     "Flowers",
+     "Paint"
+    ],
+    "answer": 0,
+    "why": "In the video: crosses, statues and pictures are covered with a violet veil."
+   },
+   {
+    "type": "choice",
+    "q": "Why are they covered?",
+    "choices": [
+     "Jesus no longer walked openly, but hid himself",
+     "To keep dust off",
+     "Because it's cold"
+    ],
+    "answer": 0,
+    "why": "In the video: during this time Christ no longer walked openly among the people, but hid himself."
+   },
+   {
+    "type": "blank",
+    "q": "Passiontide starts on ____ Sunday.",
+    "words": [
+     "Passion",
+     "Easter",
+     "Christmas"
+    ],
+    "answer": "Passion",
+    "why": "In the video: these are the two weeks between Passion Sunday and Easter."
+   }
+  ]
+ },
+ "what-is-palm-sunday": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "Palm Sunday begins which week?",
+    "choices": [
+     "Holy Week",
+     "Christmas week",
+     "The first week of summer"
+    ],
+    "answer": 0,
+    "why": "In the video: Palm Sunday is the beginning of Holy Week."
+   },
+   {
+    "type": "choice",
+    "q": "What do we remember with the palm branches?",
+    "choices": [
+     "Jesus entering Jerusalem",
+     "Noah's ark",
+     "Jesus' birth"
+    ],
+    "answer": 0,
+    "why": "In the video: we remember the day Jesus entered Jerusalem and the people welcomed him by waving palm branches."
+   },
+   {
+    "type": "order",
+    "q": "Put Palm Sunday in order.",
+    "items": [
+     "The palms are blessed",
+     "The procession",
+     "Mass"
+    ],
+    "why": "In the video: the priest blesses the palms, they're carried in a procession, and then Mass is celebrated."
+   },
+   {
+    "type": "blank",
+    "q": "Old palms are burned to make the ashes for Ash ____.",
+    "words": [
+     "Wednesday",
+     "Monday",
+     "Saturday"
+    ],
+    "answer": "Wednesday",
+    "why": "In the video: palm branches are even used to make ashes for Ash Wednesday."
+   }
+  ]
+ },
+ "what-is-holy-saturday": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "What does the Paschal candle stand for?",
+    "choices": [
+     "The light of the risen Christ",
+     "A birthday",
+     "The sun"
+    ],
+    "answer": 0,
+    "why": "In the video: the Paschal candle symbolized the light of the risen Christ."
+   },
+   {
+    "type": "blank",
+    "q": "On Holy Saturday night, the new ____ is blessed.",
+    "words": [
+     "fire",
+     "car",
+     "snow"
+    ],
+    "answer": "fire",
+    "why": "In the video: celebrations included the blessing of the new fire and the lighting of lamps and candles."
+   },
+   {
+    "type": "choice",
+    "q": "Who was baptized at the Easter Vigil?",
+    "choices": [
+     "New believers (catechumens)",
+     "Only priests",
+     "Nobody"
+    ],
+    "answer": 0,
+    "why": "In the video: the night of the Easter Vigil was for the baptism of catechumens."
+   }
+  ]
+ },
+ "what-is-the-resurrection-of-christ": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "What is the Resurrection?",
+    "choices": [
+     "Jesus rising from the dead",
+     "Jesus being born",
+     "Jesus walking on water"
+    ],
+    "answer": 0,
+    "why": "In the video: the Resurrection is when Jesus rose from the dead after being crucified."
+   },
+   {
+    "type": "blank",
+    "q": "Jesus rose from the dead ____ days after he died.",
+    "words": [
+     "three",
+     "ten",
+     "forty"
+    ],
+    "answer": "three",
+    "why": "In the video: this miracle happened three days after his death."
+   },
+   {
+    "type": "choice",
+    "q": "Who saw Jesus at the tomb?",
+    "choices": [
+     "Mary Magdalene",
+     "King Herod",
+     "Pontius Pilate"
+    ],
+    "answer": 0,
+    "why": "In the video: many saw Jesus after he rose, including Mary Magdalene and other women at the tomb."
+   },
+   {
+    "type": "match",
+    "q": "Match each Gospel writer.",
+    "pairs": [
+     [
+      "Matthew",
+      "Gospel 1"
+     ],
+     [
+      "Mark",
+      "Gospel 2"
+     ],
+     [
+      "Luke",
+      "Gospel 3"
+     ],
+     [
+      "John",
+      "Gospel 4"
+     ]
+    ],
+    "why": "In the video: the Gospels written by Matthew, Mark, Luke and John tell the story of the resurrection."
+   }
+  ]
+ },
+ "what-are-easter-traditions": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "Why did people start coloring Easter eggs?",
+    "choices": [
+     "Eggs weren't eaten in Lent, so they saved them for Easter",
+     "To paint the house",
+     "To feed the birds"
+    ],
+    "answer": 0,
+    "why": "In the video: eggs were not allowed during Lent, so people saved them and colored them red for Easter joy."
+   },
+   {
+    "type": "choice",
+    "q": "What is lit from the Easter fire?",
+    "choices": [
+     "The Paschal candle",
+     "The oven",
+     "A fireplace"
+    ],
+    "answer": 0,
+    "why": "In the video: the fire is lit by the priest and used to light the Paschal candle."
+   },
+   {
+    "type": "blank",
+    "q": "The Easter season lasts from Easter until ____.",
+    "words": [
+     "Pentecost",
+     "Christmas",
+     "Lent"
+    ],
+    "answer": "Pentecost",
+    "why": "In the video: the Easter season starts on Easter and ends on Pentecost."
+   },
+   {
+    "type": "choice",
+    "q": "When does the Easter Vigil Mass start?",
+    "choices": [
+     "At night, after the sun goes down",
+     "At breakfast",
+     "At noon"
+    ],
+    "answer": 0,
+    "why": "In the video: the Easter Vigil starts late at night after the sun goes down."
+   }
+  ]
+ },
+ "what-day-is-easter": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "Which day of the week is Easter always on?",
+    "choices": [
+     "Sunday",
+     "Friday",
+     "Monday"
+    ],
+    "answer": 0,
+    "why": "In the video: it was decided that Easter would always be on a Sunday."
+   },
+   {
+    "type": "blank",
+    "q": "Easter is the first Sunday after the first full ____ after March 21.",
+    "words": [
+     "moon",
+     "sun",
+     "week"
+    ],
+    "answer": "moon",
+    "why": "In the video: Easter is on the first Sunday after the first full moon following March 21st."
+   },
+   {
+    "type": "choice",
+    "q": "Why did the Church want one date for Easter?",
+    "choices": [
+     "So everyone could celebrate together",
+     "To sell calendars",
+     "Because of the weather"
+    ],
+    "answer": 0,
+    "why": "In the video: the most important thing was that the Church wanted everyone to celebrate Easter together."
+   }
+  ]
+ },
+ "what-is-eastertide": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "How long is the Easter season?",
+    "choices": [
+     "From Easter Sunday to Pentecost",
+     "One day",
+     "From Christmas to Easter"
+    ],
+    "answer": 0,
+    "why": "In the video: Paschaltide lasts from Easter Sunday until Pentecost."
+   },
+   {
+    "type": "choice",
+    "q": "What color does the priest wear in the Easter season?",
+    "choices": [
+     "White",
+     "Purple",
+     "Black"
+    ],
+    "answer": 0,
+    "why": "In the video: the season is marked by white vestments, the Gloria and the Alleluia."
+   },
+   {
+    "type": "blank",
+    "q": "In the Easter season we sing “____!” again.",
+    "words": [
+     "Alleluia",
+     "Goodnight",
+     "Happy birthday"
+    ],
+    "answer": "Alleluia",
+    "why": "In the video: Paschaltide is marked by saying the Alleluia."
+   },
+   {
+    "type": "choice",
+    "q": "How often does the Church encourage us to receive Communion?",
+    "choices": [
+     "Sundays and feast days, even daily",
+     "Once in our life",
+     "Never"
+    ],
+    "answer": 0,
+    "why": "In the video, quoting Catechism 1389: receive the Eucharist on Sundays and feast days, or more often still, even daily."
+   }
+  ]
+ },
+ "the-story-of-blessed-stepinac": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "Where was Blessed Stepinac the Archbishop?",
+    "choices": [
+     "Zagreb, in Croatia",
+     "Rome",
+     "Paris"
+    ],
+    "answer": 0,
+    "why": "In the video: Aloysius Stepinac was the Archbishop of Zagreb, in Croatia."
+   },
+   {
+    "type": "choice",
+    "q": "During the war, what did he do for people in danger?",
+    "choices": [
+     "Protected them",
+     "Ignored them",
+     "Ran away"
+    ],
+    "answer": 0,
+    "why": "In the video: he protected people who were in danger, even people of other religions."
+   },
+   {
+    "type": "blank",
+    "q": "Pope Pius XII made him a ____.",
+    "words": [
+     "cardinal",
+     "king",
+     "general"
+    ],
+    "answer": "cardinal",
+    "why": "In the video: in 1952 Pope Pius XII recognized his devotion and made him a cardinal."
+   }
+  ]
+ },
+ "what-are-cherubim": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "What job do cherubim have in the Bible?",
+    "choices": [
+     "They guard holy places",
+     "They cook meals",
+     "They build houses"
+    ],
+    "answer": 0,
+    "why": "In the video: they have a special job: they guard important places, like the Garden of Eden."
+   },
+   {
+    "type": "blank",
+    "q": "Cherubim guarded the Garden of ____.",
+    "words": [
+     "Eden",
+     "Gethsemane",
+     "Roses"
+    ],
+    "answer": "Eden",
+    "why": "In the video: in the Bible, cherubim protected the Garden of Eden."
+   },
+   {
+    "type": "choice",
+    "q": "Where were two cherubim made in gold?",
+    "choices": [
+     "On the Ark of the Covenant",
+     "On a boat",
+     "On a crown"
+    ],
+    "answer": 0,
+    "why": "In the video: cherubim figures were on the mercy seat of the Ark and in the Holy of Holies."
+   }
+  ]
+ },
+ "what-are-evil-angels": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "What are evil angels?",
+    "choices": [
+     "Angels who turned against God",
+     "Angels who are just grumpy",
+     "People in costumes"
+    ],
+    "answer": 0,
+    "why": "In the video: these angels were once good, but they turned against God."
+   },
+   {
+    "type": "choice",
+    "q": "Which archangel fought the dragon?",
+    "choices": [
+     "Saint Michael",
+     "Saint Gabriel",
+     "Saint Raphael"
+    ],
+    "answer": 0,
+    "why": "In the video: the devil, shown as a dragon, fought against Archangel Michael."
+   },
+   {
+    "type": "choice",
+    "q": "Who helps us choose good?",
+    "choices": [
+     "Jesus and our guardian angel",
+     "Nobody",
+     "The devil"
+    ],
+    "answer": 0,
+    "why": "In the video: we always have help from Jesus Christ and our guardian angel to do good things."
+   }
+  ]
+ },
+ "what-is-the-order-and-number-of-angels": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "How many choirs (groups) of angels are there?",
+    "choices": [
+     "Nine",
+     "Two",
+     "Twelve"
+    ],
+    "answer": 0,
+    "why": "In the video: Saint Gregory the Great says there are nine groups of angels."
+   },
+   {
+    "type": "choice",
+    "q": "Which of these is a choir of angels?",
+    "choices": [
+     "Seraphim",
+     "Pharaohs",
+     "Prophets"
+    ],
+    "answer": 0,
+    "why": "In the video: the nine are angels, archangels, virtues, powers, principalities, dominions, thrones, cherubim and seraphim."
+   },
+   {
+    "type": "blank",
+    "q": "Angels are ____ and guardians created by God.",
+    "words": [
+     "messengers",
+     "robots",
+     "animals"
+    ],
+    "answer": "messengers",
+    "why": "In the video: angels are spiritual beings, messengers and guardians created by God."
+   }
+  ]
+ },
+ "who-is-saint-gabriel-the-archangel": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "What did Gabriel tell the Virgin Mary?",
+    "choices": [
+     "She would be the mother of Jesus",
+     "To build an ark",
+     "To move to Rome"
+    ],
+    "answer": 0,
+    "why": "In the video: Gabriel was the angel of the Annunciation, who told the Virgin Mary about the birth of Christ."
+   },
+   {
+    "type": "blank",
+    "q": "Gabriel told Zechariah about the birth of John the ____.",
+    "words": [
+     "Baptist",
+     "Apostle",
+     "King"
+    ],
+    "answer": "Baptist",
+    "why": "In the video: in the Gospels, Gabriel told Zechariah about the birth of John the Baptist."
+   },
+   {
+    "type": "choice",
+    "q": "Gabriel is known as the angel of God's…",
+    "choices": [
+     "Power and strength",
+     "Cooking",
+     "Weather"
+    ],
+    "answer": 0,
+    "why": "In the video: Gabriel is known as the angel of God's power and strength."
+   }
+  ]
+ },
+ "who-is-saint-raphael-the-archangel": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "Saint Raphael is known for…",
+    "choices": [
+     "Healing",
+     "Building",
+     "Farming"
+    ],
+    "answer": 0,
+    "why": "In the video: Raphael is an angel who is good at healing people."
+   },
+   {
+    "type": "blank",
+    "q": "Raphael helped a boy named ____ on a journey.",
+    "words": [
+     "Tobias",
+     "David",
+     "Samuel"
+    ],
+    "answer": "Tobias",
+    "why": "In the video: he helped a boy named Tobias on a journey and protected him from many dangers."
+   },
+   {
+    "type": "match",
+    "q": "The Bible names three angels. Match them.",
+    "pairs": [
+     [
+      "Michael",
+      "Fights the devil"
+     ],
+     [
+      "Gabriel",
+      "Told Mary about Jesus"
+     ],
+     [
+      "Raphael",
+      "Healed Tobit's eyes"
+     ]
+    ],
+    "why": "In the video: the Bible names only three angels: Michael, Gabriel and Raphael. Raphael healed the blindness in Tobias' family."
+   }
+  ]
+ },
+ "who-is-saint-michael-the-archangel": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "What does the name Michael mean?",
+    "choices": [
+     "Who is like God?",
+     "Strong horse",
+     "Little star"
+    ],
+    "answer": 0,
+    "why": "In the video: the name Michael means “Who is like God?”"
+   },
+   {
+    "type": "choice",
+    "q": "Who did Michael and the good angels fight?",
+    "choices": [
+     "The devil and his followers",
+     "The Romans",
+     "The giants"
+    ],
+    "answer": 0,
+    "why": "In the video: in a big battle in heaven, Michael and the good angels fought against the devil and his followers."
+   },
+   {
+    "type": "blank",
+    "q": "Saint Michael helps and ____ people.",
+    "words": [
+     "protects",
+     "scares",
+     "forgets"
+    ],
+    "answer": "protects",
+    "why": "In the video: Saint Michael's main job is to help and protect people and to fight against Satan."
+   }
+  ]
+ },
+ "what-are-angels": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "Do angels have bodies like ours?",
+    "choices": [
+     "No, they are spirits",
+     "Yes, just like us",
+     "Only on Sundays"
+    ],
+    "answer": 0,
+    "why": "In the video, from Catechism 328–330: angels are helpers from heaven who don't have physical bodies."
+   },
+   {
+    "type": "blank",
+    "q": "Angels are God's ____.",
+    "words": [
+     "messengers",
+     "pets",
+     "toys"
+    ],
+    "answer": "messengers",
+    "why": "In the video: angels are God's messengers, like at the Annunciation and at Christ's birth."
+   },
+   {
+    "type": "choice",
+    "q": "Which angel told Mary she would have baby Jesus?",
+    "choices": [
+     "Gabriel",
+     "Michael",
+     "Raphael"
+    ],
+    "answer": 0,
+    "why": "In the video: the angel Gabriel told Mary she would have a baby who would be the Savior of the world."
+   }
+  ]
+ },
+ "what-is-advent": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "Advent gets us ready for…",
+    "choices": [
+     "Christmas",
+     "Summer",
+     "Easter"
+    ],
+    "answer": 0,
+    "why": "In the video: Advent is the season of the four Sundays leading up to Christmas."
+   },
+   {
+    "type": "choice",
+    "q": "How many Sundays are in Advent?",
+    "choices": [
+     "Four",
+     "Two",
+     "Seven"
+    ],
+    "answer": 0,
+    "why": "In the video: Advent is the four Sundays and weekdays before Christmas."
+   },
+   {
+    "type": "blank",
+    "q": "In Advent the priest usually wears ____.",
+    "words": [
+     "purple",
+     "green",
+     "gold"
+    ],
+    "answer": "purple",
+    "why": "In the video: the priest usually wears violet or purple vestments in Advent."
+   },
+   {
+    "type": "blank",
+    "q": "“Advent” comes from a Latin word that means “to ____”.",
+    "words": [
+     "come",
+     "sleep",
+     "eat"
+    ],
+    "answer": "come",
+    "why": "In the video: Advent, from Advenire in Latin, means to come to."
+   }
+  ]
+ },
+ "what-is-an-advent-wreath": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "How many candles are on an Advent wreath?",
+    "choices": [
+     "Four",
+     "Three",
+     "Ten"
+    ],
+    "answer": 0,
+    "why": "In the video: the wreath has four candles for the four weeks of Advent."
+   },
+   {
+    "type": "choice",
+    "q": "Why is the wreath round and evergreen?",
+    "choices": [
+     "God's love never ends",
+     "It's easy to carry",
+     "It smells nice"
+    ],
+    "answer": 0,
+    "why": "In the video: the round shape of evergreen is a reminder that God's love never ends."
+   },
+   {
+    "type": "blank",
+    "q": "Most of the candles are purple, and one is ____.",
+    "words": [
+     "rose",
+     "black",
+     "blue"
+    ],
+    "answer": "rose",
+    "why": "In the video: usually three candles are purple and one is rose."
+   },
+   {
+    "type": "choice",
+    "q": "Where did the Advent wreath come from?",
+    "choices": [
+     "Germany",
+     "Mexico",
+     "Japan"
+    ],
+    "answer": 0,
+    "why": "In the video: the Advent wreath comes from Germany."
+   }
+  ]
+ },
+ "what-is-gaudete-sunday": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "Which Sunday of Advent is Gaudete Sunday?",
+    "choices": [
+     "The third",
+     "The first",
+     "The last"
+    ],
+    "answer": 0,
+    "why": "In the video: the third Sunday of Advent is known as Gaudete."
+   },
+   {
+    "type": "blank",
+    "q": "“Gaudete” means ____!",
+    "words": [
+     "rejoice",
+     "be quiet",
+     "go home"
+    ],
+    "answer": "rejoice",
+    "why": "In the video: Gaudete means rejoice."
+   },
+   {
+    "type": "match",
+    "q": "Match each joyful Sunday to its season.",
+    "pairs": [
+     [
+      "Gaudete Sunday",
+      "Advent"
+     ],
+     [
+      "Laetare Sunday",
+      "Lent"
+     ]
+    ],
+    "why": "In the video: Gaudete Sunday is much like Laetare Sunday, which is in the middle of Lent. On both the priest may wear rose."
+   }
+  ]
+ },
+ "what-is-a-jesse-tree": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "What hangs on a Jesse tree?",
+    "choices": [
+     "Ornaments of Bible stories",
+     "Fruit",
+     "Socks"
+    ],
+    "answer": 0,
+    "why": "In the video: Jesse trees have ornaments of the events around Jesus' birth and the Old Testament prophecies."
+   },
+   {
+    "type": "choice",
+    "q": "When do families make a Jesse tree?",
+    "choices": [
+     "During Advent",
+     "During summer",
+     "On Easter"
+    ],
+    "answer": 0,
+    "why": "In the video: many parishes and families make Jesse trees during Advent."
+   },
+   {
+    "type": "blank",
+    "q": "A Jesse tree helps us get ready for ____.",
+    "words": [
+     "Christmas",
+     "school",
+     "Halloween"
+    ],
+    "answer": "Christmas",
+    "why": "In the video: it's a way to reflect on these events while preparing for the celebration of Christmas."
+   }
+  ]
+ },
+ "what-is-a-the-history-of-the-christmas-tree": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "What do the lights on a Christmas tree stand for?",
+    "choices": [
+     "Christ, the light of the world",
+     "The stars only",
+     "Nothing special"
+    ],
+    "answer": 0,
+    "why": "In the video: the Christmas light or candle symbolized Christ, the light of the world."
+   },
+   {
+    "type": "choice",
+    "q": "Which saint is in the legend of the first Christmas tree?",
+    "choices": [
+     "Saint Boniface",
+     "Saint Patrick",
+     "Saint Nicholas"
+    ],
+    "answer": 0,
+    "why": "In the video: the German legend is about Saint Boniface, an English bishop who preached in Germany."
+   },
+   {
+    "type": "blank",
+    "q": "The Christmas tree can stay up until the feast of ____.",
+    "words": [
+     "Epiphany",
+     "Easter",
+     "Pentecost"
+    ],
+    "answer": "Epiphany",
+    "why": "In the video: the tree is set up just before Christmas and may stay until the solemnity of Epiphany."
+   }
+  ]
+ },
+ "what-are-nativity-scenes": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "Who made the first nativity scene?",
+    "choices": [
+     "Saint Francis of Assisi",
+     "Saint Peter",
+     "Saint Paul"
+    ],
+    "answer": 0,
+    "why": "In the video: the custom owes its origin to Saint Francis of Assisi, on Christmas Eve in 1223."
+   },
+   {
+    "type": "choice",
+    "q": "Who is in a nativity scene?",
+    "choices": [
+     "Mary, Joseph and baby Jesus",
+     "Noah and the ark",
+     "Moses and Pharaoh"
+    ],
+    "answer": 0,
+    "why": "In the video: it includes Mary, Joseph and the baby Jesus, the shepherds, the wise men and animals."
+   },
+   {
+    "type": "blank",
+    "q": "Saint Francis brought hay and an ____ to the manger.",
+    "words": [
+     "ox",
+     "elephant",
+     "eagle"
+    ],
+    "answer": "ox",
+    "why": "In the video: he prepared a manger and brought hay and an ox."
+   }
+  ]
+ },
+ "who-was-saint-valentine-free-catholic-comic-for-ki": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "When is Saint Valentine's feast day?",
+    "choices": [
+     "February 14",
+     "December 25",
+     "March 17"
+    ],
+    "answer": 0,
+    "why": "In the video: both Saint Valentines were martyrs whose feast is celebrated on February 14th."
+   },
+   {
+    "type": "choice",
+    "q": "What was the first Saint Valentine?",
+    "choices": [
+     "A priest in Rome",
+     "A king",
+     "A soldier"
+    ],
+    "answer": 0,
+    "why": "In the video: the first Saint Valentine was a priest who lived in Rome in the 3rd century."
+   },
+   {
+    "type": "blank",
+    "q": "Valentine would not stop being a ____, even when the emperor told him to.",
+    "words": [
+     "Christian",
+     "teacher",
+     "farmer"
+    ],
+    "answer": "Christian",
+    "why": "In the video: told to renounce the Christian God, he said, “No, never.”"
+   }
+  ]
+ },
+ "saint-frances-xavier-cabrini": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "Mother Cabrini was the first saint from which country?",
+    "choices": [
+     "The United States",
+     "Ireland",
+     "China"
+    ],
+    "answer": 0,
+    "why": "In the video: Mother Cabrini was our first United States saint."
+   },
+   {
+    "type": "choice",
+    "q": "Where did the Pope send her instead of China?",
+    "choices": [
+     "The United States",
+     "Egypt",
+     "Australia"
+    ],
+    "answer": 0,
+    "why": "In the video: Pope Leo XIII told her, “Not China, but the United States.”"
+   },
+   {
+    "type": "blank",
+    "q": "She started many hospitals, homes and ____ for people in need.",
+    "words": [
+     "schools",
+     "castles",
+     "zoos"
+    ],
+    "answer": "schools",
+    "why": "In the video: she founded 67 hospitals, homes and institutions, and she started as a school teacher."
+   },
+   {
+    "type": "choice",
+    "q": "Who did she help in America?",
+    "choices": [
+     "Italian immigrants",
+     "Only kings",
+     "Only soldiers"
+    ],
+    "answer": 0,
+    "why": "In the video: thousands of Italians were coming to America and needed help in a strange country."
+   }
+  ]
+ },
+ "why-veil-statues": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "When are statues covered in church?",
+    "choices": [
+     "The last weeks of Lent",
+     "At Christmas",
+     "In summer"
+    ],
+    "answer": 0,
+    "why": "In the video: crosses and images are covered from the fifth Sunday of Lent."
+   },
+   {
+    "type": "choice",
+    "q": "Why do we veil them?",
+    "choices": [
+     "To help us get ready for Easter",
+     "To clean them",
+     "Because they're broken"
+    ],
+    "answer": 0,
+    "why": "In the video: veiling shows it's a special time of preparing for Easter, like a surprise gift we can't wait to open."
+   },
+   {
+    "type": "order",
+    "q": "Put the three days of the Triduum in order.",
+    "items": [
+     "Holy Thursday",
+     "Good Friday",
+     "Holy Saturday"
+    ],
+    "why": "In the video: these weeks get us ready for the Triduum: Holy Thursday, Good Friday and Holy Saturday."
+   }
+  ]
+ },
+ "the-brothers-of-the-sacred-heart": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "Who did Father Coindre want to help?",
+    "choices": [
+     "Homeless boys",
+     "Kings",
+     "Sailors"
+    ],
+    "answer": 0,
+    "why": "In the video: in France there were many homeless boys who were always in trouble, and he took them in."
+   },
+   {
+    "type": "choice",
+    "q": "What did he teach the boys?",
+    "choices": [
+     "A trade, so they'd stay busy",
+     "Nothing",
+     "How to gamble"
+    ],
+    "answer": 0,
+    "why": "In the video: he hired men to teach the boys the silk weavers' trade, to keep them busy and out of trouble."
+   },
+   {
+    "type": "blank",
+    "q": "The new order was named the Brothers of the Sacred ____.",
+    "words": [
+     "Heart",
+     "Mountain",
+     "River"
+    ],
+    "answer": "Heart",
+    "why": "In the video: “your name will be Brothers of the Sacred Heart.”"
+   }
+  ]
+ },
+ "what-are-seraphim": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "How many wings did the seraphim have in Isaiah's vision?",
+    "choices": [
+     "Six",
+     "Two",
+     "Ten"
+    ],
+    "answer": 0,
+    "why": "In the video: in Isaiah chapter 6, he saw angels called seraphim who served God, and they had six wings."
+   },
+   {
+    "type": "blank",
+    "q": "The seraphim sang: “Holy, Holy, Holy, Lord God of ____.”",
+    "words": [
+     "hosts",
+     "kings",
+     "trees"
+    ],
+    "answer": "hosts",
+    "why": "In the video: they called out, “Holy, Holy, Holy, Lord God of hosts. All the earth is full of his glory.”"
+   },
+   {
+    "type": "choice",
+    "q": "What did a seraph touch Isaiah's lips with?",
+    "choices": [
+     "A hot coal",
+     "A feather",
+     "Some honey"
+    ],
+    "answer": 0,
+    "why": "In the video: one of the angels touched Isaiah's lips with a lump of hot coal."
+   }
+  ]
+ },
+ "why-pay-attention-during-prayer": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "If we get distracted while praying, what do we do?",
+    "choices": [
+     "Turn our thoughts back to God",
+     "Stop praying forever",
+     "Pray louder"
+    ],
+    "answer": 0,
+    "why": "In the video: we can continue praying once we've focused our attention back on God."
+   },
+   {
+    "type": "match",
+    "q": "Match each kind of prayer.",
+    "pairs": [
+     [
+      "Vocal prayer",
+      "Praying out loud"
+     ],
+     [
+      "Mental prayer",
+      "Thinking about God"
+     ]
+    ],
+    "why": "In the video: vocal prayer is praying out loud, and mental prayer is thinking about God without set words."
+   },
+   {
+    "type": "blank",
+    "q": "Jesus gave us the Our ____ to pray.",
+    "words": [
+     "Father",
+     "Friend",
+     "Song"
+    ],
+    "answer": "Father",
+    "why": "In the video: we can say prayers people have already written, like how Jesus gave us the Our Father."
+   }
+  ]
+ },
+ "an-introduction-to-prayer": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "Who answers our prayers?",
+    "choices": [
+     "Only God",
+     "The saints by themselves",
+     "Nobody"
+    ],
+    "answer": 0,
+    "why": "In the video: we can only pray to God, and only God can answer our prayers."
+   },
+   {
+    "type": "choice",
+    "q": "Can we ask the saints to pray for us?",
+    "choices": [
+     "Yes, they pray to God with us",
+     "No, never",
+     "Only on their birthdays"
+    ],
+    "answer": 0,
+    "why": "In the video: we can ask for the help of friends, family and the saints, who pray to God with us."
+   },
+   {
+    "type": "blank",
+    "q": "Praying for other people is called ____ prayer.",
+    "words": [
+     "intercessory",
+     "silly",
+     "secret"
+    ],
+    "answer": "intercessory",
+    "why": "In the video: intercessory prayer is when we pray for other people."
+   }
+  ]
+ },
+ "a-legend-for-easter": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "In the legend, what did Rosalind give the children at the Easter party?",
+    "choices": [
+     "Painted eggs",
+     "Cake",
+     "Toys"
+    ],
+    "answer": 0,
+    "why": "In the video: she painted the eggs with bright flowers and verses for the Easter party."
+   },
+   {
+    "type": "choice",
+    "q": "Who took them in when they had no home?",
+    "choices": [
+     "A kind miller and his wife",
+     "A king",
+     "The guards"
+    ],
+    "answer": 0,
+    "why": "In the video: the miller and his wife gladly gave them a home."
+   },
+   {
+    "type": "order",
+    "q": "Put the story in order.",
+    "items": [
+     "Rosalind and the children flee",
+     "She paints Easter eggs",
+     "A pilgrim reads a painted egg",
+     "Arno finds his family"
+    ],
+    "why": "In the video: they fled to the miller's home, Rosalind painted eggs for Easter, a pilgrim saw one, and it was Arno, who found them."
+   }
+  ]
+ },
+ "why-should-we-make-the-sign-of-the-cross": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "When do Catholics make the Sign of the Cross?",
+    "choices": [
+     "When we begin our prayers",
+     "Only at bedtime",
+     "Never"
+    ],
+    "answer": 0,
+    "why": "In the video: Catholics make the sign of the cross when they begin their prayers."
+   },
+   {
+    "type": "blank",
+    "q": "“In the name of the Father, and of the Son, and of the Holy ____.”",
+    "words": [
+     "Spirit",
+     "Church",
+     "Family"
+    ],
+    "answer": "Spirit",
+    "why": "In the video: we trace the cross while saying, in the name of the Father, Son, and the Holy Spirit."
+   },
+   {
+    "type": "choice",
+    "q": "Long ago, when did Christians make the sign of the cross?",
+    "choices": [
+     "Eating, traveling, sleeping, everything!",
+     "Only once a year",
+     "Only in church"
+    ],
+    "answer": 0,
+    "why": "In the video: Saint Cyril of Jerusalem said to make it over the bread we eat, when traveling, before sleep, in everything."
+   }
+  ]
+ },
+ "what-difference-does-prayer-make": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "If we don't get what we prayed for, what should we believe?",
+    "choices": [
+     "God has a bigger plan for us",
+     "God didn't hear",
+     "Prayer doesn't work"
+    ],
+    "answer": 0,
+    "why": "In the video: when we don't get what we ask for, believe that God has a bigger plan than we can imagine."
+   },
+   {
+    "type": "choice",
+    "q": "Why might God not give us something we asked for?",
+    "choices": [
+     "It wouldn't be good for us",
+     "He forgot",
+     "He was busy"
+    ],
+    "answer": 0,
+    "why": "In the video: sometimes we pray for the wrong things, and God knows what's best for us (James 4:3)."
+   },
+   {
+    "type": "blank",
+    "q": "God can answer prayers through family, friends and natural ____.",
+    "words": [
+     "events",
+     "colors",
+     "noises"
+    ],
+    "answer": "events",
+    "why": "In the video: sometimes God grants our prayers by using natural events, family and friends."
+   }
+  ]
+ },
+ "conditions-of-prayer": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "To pray well, we need…",
+    "choices": [
+     "Faith and trust in God",
+     "Fancy words",
+     "A loud voice"
+    ],
+    "answer": 0,
+    "why": "In the video: to pray effectively, we need to have faith and trust in God."
+   },
+   {
+    "type": "choice",
+    "q": "In Jesus' story, whose prayer pleased God?",
+    "choices": [
+     "The humble tax collector's",
+     "The proud Pharisee's",
+     "Neither"
+    ],
+    "answer": 0,
+    "why": "In the video: the story of the Pharisee and the tax collector (Luke 18) shows we must pray humbly."
+   },
+   {
+    "type": "blank",
+    "q": "When we pray we should be ____, not demanding.",
+    "words": [
+     "humble",
+     "bossy",
+     "grumpy"
+    ],
+    "answer": "humble",
+    "why": "In the video: for prayer to work, it's important to be humble. Demanding things from God is not prayer."
+   }
+  ]
+ },
+ "saint-gabriel-of-our-lady-of-sorrows": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "What was Saint Gabriel's name before he became a religious brother?",
+    "choices": [
+     "Francis Possenti",
+     "Peter Smith",
+     "John Bosco"
+    ],
+    "answer": 0,
+    "why": "In the video: his name was Francis Possenti, from Assisi, Italy."
+   },
+   {
+    "type": "choice",
+    "q": "As a boy, what was Francis known for?",
+    "choices": [
+     "Giving to the poor",
+     "Being mean",
+     "Never going to school"
+    ],
+    "answer": 0,
+    "why": "In the video: as a young boy, Francis was known for his generosity. He was always giving something to the poor."
+   },
+   {
+    "type": "blank",
+    "q": "Francis said the most brilliant career is to give your life completely to ____.",
+    "words": [
+     "God",
+     "money",
+     "sports"
+    ],
+    "answer": "God",
+    "why": "In the video: “I will never have any peace until I give my life completely to God. That is the most brilliant career any man can have.”"
+   }
+  ]
+ },
+ "posture-during-prayer": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "Why do we kneel, bow or fold our hands when we pray?",
+    "choices": [
+     "To show love and respect for God",
+     "To rest our legs",
+     "Because we're tired"
+    ],
+    "answer": 0,
+    "why": "In the video: our posture while praying shows our respect and devotion to God."
+   },
+   {
+    "type": "blank",
+    "q": "Early Christians prayed standing with arms stretched out, like Jesus on the ____.",
+    "words": [
+     "cross",
+     "boat",
+     "hill"
+    ],
+    "answer": "cross",
+    "why": "In the video: the orans posture is standing with hands stretched out like Jesus did on the cross."
+   },
+   {
+    "type": "choice",
+    "q": "Where should we use prayer postures?",
+    "choices": [
+     "At Mass and at home",
+     "Only at Mass",
+     "Nowhere"
+    ],
+    "answer": 0,
+    "why": "In the video: in public, such as during Mass, and also in private prayer, like morning and night prayers."
+   }
+  ]
+ },
+ "the-need-for-prayer": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "How does prayer help us?",
+    "choices": [
+     "It helps us resist temptation",
+     "It makes us taller",
+     "It does nothing"
+    ],
+    "answer": 0,
+    "why": "In the video: we need prayer because it helps us resist temptation and receive God's grace."
+   },
+   {
+    "type": "choice",
+    "q": "How often does the Bible tell us to pray?",
+    "choices": [
+     "Constantly",
+     "Once a year",
+     "Never"
+    ],
+    "answer": 0,
+    "why": "In the video: the Bible tells us to pray constantly, whenever we need to, which is often."
+   },
+   {
+    "type": "blank",
+    "q": "Prayer helps us grow in our ____.",
+    "words": [
+     "faith",
+     "shoes",
+     "height"
+    ],
+    "answer": "faith",
+    "why": "In the video: prayer helps us receive God's grace and grow in our faith."
+   }
+  ]
+ },
+ "what-is-vocal-prayer": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "What is vocal prayer?",
+    "choices": [
+     "Praying with words",
+     "Sleeping",
+     "Drawing a picture"
+    ],
+    "answer": 0,
+    "why": "In the video: vocal prayer involves speaking out loud or thinking words while praying."
+   },
+   {
+    "type": "choice",
+    "q": "Which is a vocal prayer?",
+    "choices": [
+     "The Lord's Prayer",
+     "A nap",
+     "A walk"
+    ],
+    "answer": 0,
+    "why": "In the video: examples of vocal prayer are the Lord's Prayer and the Psalms, hymns and litanies."
+   },
+   {
+    "type": "match",
+    "q": "Match each kind of prayer.",
+    "pairs": [
+     [
+      "Private prayer",
+      "Praying alone"
+     ],
+     [
+      "Public prayer",
+      "Praying with others"
+     ]
+    ],
+    "why": "In the video: prayer done alone is private prayer; with others, it's public prayer."
+   }
+  ]
+ },
+ "what-is-mental-prayer": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "What is mental prayer?",
+    "choices": [
+     "Quietly thinking about God",
+     "Shouting",
+     "Doing math"
+    ],
+    "answer": 0,
+    "why": "In the video: meditation, or mental prayer, is when we reflect deeply on God's truths and mysteries."
+   },
+   {
+    "type": "blank",
+    "q": "Another word for mental prayer is ____.",
+    "words": [
+     "meditation",
+     "lunch",
+     "recess"
+    ],
+    "answer": "meditation",
+    "why": "In the video: meditation, also known as mental prayer, is a beautiful practice in the Catholic faith."
+   },
+   {
+    "type": "choice",
+    "q": "Who in the Gospels is often shown praying quietly?",
+    "choices": [
+     "Jesus",
+     "Pontius Pilate",
+     "Herod"
+    ],
+    "answer": 0,
+    "why": "In the video: in the New Testament, Jesus is often shown meditating in the Gospels."
+   }
+  ]
+ },
+ "what-is-public-and-private-prayer": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "Which is a public prayer of the whole Church?",
+    "choices": [
+     "The Mass",
+     "A bedtime prayer alone",
+     "A wish"
+    ],
+    "answer": 0,
+    "why": "In the video: every Mass is a public prayer, and so are sacraments like baptism and matrimony."
+   },
+   {
+    "type": "match",
+    "q": "Match each prayer.",
+    "pairs": [
+     [
+      "Mass",
+      "Public prayer"
+     ],
+     [
+      "Night prayers by yourself",
+      "Private prayer"
+     ]
+    ],
+    "why": "In the video: public prayer is offered officially, like the Mass; private prayer is our own prayer, alone or with others."
+   },
+   {
+    "type": "blank",
+    "q": "Praying together helps us connect with other ____.",
+    "words": [
+     "Catholics",
+     "cars",
+     "animals"
+    ],
+    "answer": "Catholics",
+    "why": "In the video: public prayer is a way to connect with other Catholics."
+   }
+  ]
+ },
+ "what-is-the-byzantine-catholic-church-byzantine-ca": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "Who does the Byzantine Catholic Church trace its start to?",
+    "choices": [
+     "The 12 apostles",
+     "A king in France",
+     "Saint Patrick"
+    ],
+    "answer": 0,
+    "why": "In the video: the Byzantine Catholic Church traces its foundation back to the 12 apostles."
+   },
+   {
+    "type": "blank",
+    "q": "The disciples were first called Christians in ____.",
+    "words": [
+     "Antioch",
+     "Paris",
+     "London"
+    ],
+    "answer": "Antioch",
+    "why": "In the video: Antioch is where the disciples were first called Christians."
+   },
+   {
+    "type": "match",
+    "q": "Match each tradition to its language.",
+    "pairs": [
+     [
+      "Eastern tradition",
+      "Greek"
+     ],
+     [
+      "Western tradition",
+      "Latin"
+     ]
+    ],
+    "why": "In the video: two traditions grew from the earliest days: the Eastern, or Greek, and the Western, or Latin."
+   }
+  ]
+ },
+ "what-does-pascha-mean": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "What is another name for Pascha?",
+    "choices": [
+     "Easter",
+     "Christmas",
+     "Pentecost"
+    ],
+    "answer": 0,
+    "why": "In the video: Pascha is the feast of the Resurrection, also commonly known as Easter."
+   },
+   {
+    "type": "blank",
+    "q": "Pascha means God ____.",
+    "words": [
+     "saves",
+     "sleeps",
+     "sings"
+    ],
+    "answer": "saves",
+    "why": "In the video: the word Pascha comes from the Exodus, when God saved his people from Egypt. It means God saves."
+   },
+   {
+    "type": "choice",
+    "q": "Someone says “Christ is risen!” What do you answer?",
+    "choices": [
+     "Indeed, he is risen!",
+     "Good morning!",
+     "Thank you!"
+    ],
+    "answer": 0,
+    "why": "In the video: people greet each other with “Christ is risen,” and you answer, “Indeed, he is risen.”"
+   }
+  ]
+ },
+ "who-was-pope-francis": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "Where was Pope Francis from?",
+    "choices": [
+     "Argentina",
+     "Italy",
+     "Canada"
+    ],
+    "answer": 0,
+    "why": "In the video: Pope Francis was born Jorge Mario Bergoglio in Buenos Aires, Argentina."
+   },
+   {
+    "type": "choice",
+    "q": "Why did he choose the name Francis?",
+    "choices": [
+     "For Saint Francis, who loved nature and the poor",
+     "It was his dad's name",
+     "He picked it from a hat"
+    ],
+    "answer": 0,
+    "why": "In the video: he chose Francis because Saint Francis of Assisi was known for his love of nature and helping the poor."
+   },
+   {
+    "type": "order",
+    "q": "Put his life in order.",
+    "items": [
+     "Became a Jesuit priest",
+     "Archbishop of Buenos Aires",
+     "Made a cardinal",
+     "Chosen as Pope"
+    ],
+    "why": "In the video: priest in the Jesuit order, Archbishop of Buenos Aires in 1998, cardinal in 2001, and Pope in 2013."
+   },
+   {
+    "type": "blank",
+    "q": "He was the first Pope from South ____.",
+    "words": [
+     "America",
+     "Africa",
+     "Asia"
+    ],
+    "answer": "America",
+    "why": "In the video: Pope Francis was the first pope from South America, and the first who was a Jesuit."
+   }
+  ]
+ },
+ "what-is-a-conclave-how-do-catholics-elect-a-pope": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "Who chooses the new Pope?",
+    "choices": [
+     "The cardinals",
+     "Everyone in the world",
+     "The Pope's family"
+    ],
+    "answer": 0,
+    "why": "In the video: cardinals travel to Vatican City from all over the world to choose the new Pope."
+   },
+   {
+    "type": "blank",
+    "q": "In Latin, “conclave” means locked with a ____.",
+    "words": [
+     "key",
+     "song",
+     "rope"
+    ],
+    "answer": "key",
+    "why": "In the video: in Latin, conclave means locked with a key."
+   },
+   {
+    "type": "choice",
+    "q": "Where do the cardinals vote?",
+    "choices": [
+     "The Sistine Chapel",
+     "A football stadium",
+     "A school gym"
+    ],
+    "answer": 0,
+    "why": "In the video: they go into a famous room called the Sistine Chapel, painted by Michelangelo."
+   },
+   {
+    "type": "choice",
+    "q": "Who was the first Pope?",
+    "choices": [
+     "Saint Peter",
+     "Saint Paul",
+     "Saint Francis"
+    ],
+    "answer": 0,
+    "why": "In the video: Jesus appointed Saint Peter as the first Pope, and there has been an unbroken line since."
+   }
+  ]
+ },
+ "who-is-pope-leo-xiv": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "Where was Pope Leo XIV born?",
+    "choices": [
+     "Chicago",
+     "Rome",
+     "Madrid"
+    ],
+    "answer": 0,
+    "why": "In the video: Robert Francis Prevost was born in Chicago in 1955."
+   },
+   {
+    "type": "choice",
+    "q": "Where did he spend many years as a missionary?",
+    "choices": [
+     "Peru",
+     "Japan",
+     "Norway"
+    ],
+    "answer": 0,
+    "why": "In the video: he joined the mission to Peru and spent most of his time there, later becoming a bishop there."
+   },
+   {
+    "type": "blank",
+    "q": "He is the first Pope from North ____.",
+    "words": [
+     "America",
+     "Pole",
+     "Africa"
+    ],
+    "answer": "America",
+    "why": "In the video: he is the first North American pope."
+   },
+   {
+    "type": "choice",
+    "q": "Which religious order did he join?",
+    "choices": [
+     "The Order of Saint Augustine",
+     "The Jesuits",
+     "The Franciscans"
+    ],
+    "answer": 0,
+    "why": "In the video: he became a priest in the Order of Saint Augustine."
+   }
+  ]
+ },
+ "who-is-vladimir-the-great-a-video-for-catholic-kid": {
+  "draft": true,
+  "questions": [
+   {
+    "type": "choice",
+    "q": "Where was Saint Vladimir the Grand Prince?",
+    "choices": [
+     "Kyiv",
+     "Rome",
+     "London"
+    ],
+    "answer": 0,
+    "why": "In the video: Vladimir the Great was Grand Prince of Kyiv from 978 until his death in 1015."
+   },
+   {
+    "type": "choice",
+    "q": "After he became a Christian, what did he do?",
+    "choices": [
+     "Built churches and gave to the poor",
+     "Started more wars",
+     "Nothing changed"
+    ],
+    "answer": 0,
+    "why": "In the video: he became a Christian and Christianized his country by building churches and giving to the poor."
+   },
+   {
+    "type": "blank",
+    "q": "Of all the religions he heard about, Vladimir liked ____ best.",
+    "words": [
+     "Christianity",
+     "none",
+     "magic"
+    ],
+    "answer": "Christianity",
+    "why": "In the video: missionaries from many religions came, but he wasn't impressed by any of them except Christianity."
+   }
+  ]
  }
 }
