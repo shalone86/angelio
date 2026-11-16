@@ -1,0 +1,180 @@
+/* Letter Lane styles (base.css has the shared look). */
+/* Letters in Andika, a font made for beginning readers (simple a and g, clear shapes). */
+.abc { font-family: "Andika", "Nunito", system-ui, sans-serif; font-weight: 700; line-height: 1; }
+.pic { font-size: 2.6rem; line-height: 1; }
+.pic.big { font-size: 4.6rem; }
+.pic-word { font: 800 1.15rem var(--font-body); color: var(--muted); }
+
+/* Home */
+.grade { margin-top: 18px; }
+.grade-title { font-size: 1.3rem; margin: 0; }
+.grade-blurb { margin: 2px 0 0; }
+.grade-jump { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin: 12px 0 4px; }
+.grade-chip { font: 800 .95rem var(--font-body); color: var(--text); background: var(--surface); border: 2px solid var(--border);
+  border-radius: 999px; padding: 6px 11px; box-shadow: var(--shadow); cursor: pointer; white-space: nowrap; }
+.grade-chip:active { transform: translateY(3px); box-shadow: none; }
+#grade-1, #grade-2 { scroll-margin-top: 70px; }
+
+/* Board */
+.board { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 14px; }
+.sound-card { display: flex; flex-direction: column; align-items: center; gap: 4px; position: relative; padding: 4px 12px; }
+.sound-card.small .pic.big { font-size: 3.6rem; }
+.hear-sound { position: absolute; top: 0; right: -46px; width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--blue);
+  background: var(--blue-soft); font-size: 1.2rem; cursor: pointer; box-shadow: 0 3px 0 rgb(29 127 224 / .25); }
+.hear-sound:active { transform: translateY(2px); box-shadow: none; }
+.big-letter .abc { font-size: 6.5rem; color: var(--accent-strong); }
+
+/* Answer buttons */
+.letter-choices { display: flex; gap: 12px; justify-content: center; flex-wrap: nowrap; }
+.letter-card { min-width: 92px; min-height: 92px; display: grid; place-items: center; padding: 6px 16px; }
+.letter-card .abc { font-size: 3.4rem; }
+.picture-choices { display: flex; gap: 10px; justify-content: center; flex-wrap: nowrap; }
+.picture-card { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 100px; padding: 8px 10px; }
+.picture-card .pic-word { font-size: 1rem; color: var(--text); }
+
+/* Clap the beats */
+.beat-row { display: flex; gap: 10px; min-height: 30px; align-items: center; justify-content: center; }
+.beat { width: 26px; height: 26px; border-radius: 50%; background: var(--accent); box-shadow: 0 3px 0 var(--accent-strong); animation: beat-in .25s ease-out; }
+@keyframes beat-in { from { transform: scale(.3); } }
+.drum { font-size: 4rem; width: 120px; height: 120px; border-radius: 50%; border: 4px solid var(--border); background: var(--surface-2); cursor: pointer;
+  box-shadow: 0 6px 0 var(--border); }
+.drum:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--border); }
+
+/* Sound boxes (blend and build) */
+.sound-boxes { display: flex; gap: 10px; justify-content: center; }
+.sound-box { width: 86px; height: 96px; border-radius: 16px; border: 3px solid var(--blue); background: var(--surface); display: grid; place-items: center;
+  cursor: pointer; box-shadow: 0 4px 0 rgb(29 127 224 / .25); }
+.sound-box .abc { font-size: 3.6rem; }
+.sound-box.empty { border-style: dashed; background: var(--blue-soft); box-shadow: none; }
+.sound-box.heard { background: var(--yellow-soft); }
+.sound-box.blending { background: var(--yellow); transform: translateY(-6px); transition: transform .2s, background .2s; }
+.blend-btn { min-width: 180px; }
+.tiles { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.tiles .letter-card { min-width: 70px; min-height: 70px; padding: 4px 10px; }
+.tiles .letter-card .abc { font-size: 2.6rem; }
+.tiles .letter-card:disabled { opacity: .3; }
+
+/* Lesson examples */
+.lesson-letters { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.lesson-letter { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 8px; border-radius: 12px; background: var(--surface); }
+.lesson-letter .abc { font-size: 2.2rem; }
+.lesson-letter .pic { font-size: 1.6rem; }
+.lesson-pair { display: flex; gap: 14px; justify-content: center; align-items: center; flex-wrap: wrap; font-size: 1.6rem; font-weight: 700; text-align: center; }
+.lesson-pair .abc { font-size: 2.6rem; }
+
+/* Back to all Angelio games (angelio.org), at the left of the top bar. */
+.hub-link { display: inline-grid; place-items: center; flex: none; width: 38px; height: 38px; border-radius: 12px;
+  background: linear-gradient(#5bb4ff, #bfe3ff); box-shadow: 0 2px 0 #3a8fd9; }
+.hub-link img { width: 30px; height: 30px; border-radius: 9px; }
+.hub-link:active { transform: translateY(2px); box-shadow: none; }
+/* Phones: the menu gets its own row and scrolls sideways instead of being cut off. */
+@media (max-width: 560px) {
+  .topbar { flex-wrap: wrap; row-gap: 6px; }
+  .topbar .nav { margin-left: 0; width: 100%; overflow-x: auto; scrollbar-width: none; flex-wrap: nowrap; }
+  .topbar .nav::-webkit-scrollbar { display: none; }
+  .topbar .nav a { white-space: nowrap; }
+}
+
+/* ───────── Small screens ───────── */
+@media (max-width: 480px) {
+  .board { padding: 10px 8px; gap: 6px; }
+  .pic.big { font-size: 3.8rem; }
+  .big-letter .abc { font-size: 5rem; }
+  .letter-choices, .picture-choices { gap: 8px; }
+  .letter-card { min-width: 0; flex: 1; min-height: 80px; }
+  .letter-card .abc { font-size: 3rem; }
+  .picture-card { min-width: 0; flex: 1; padding: 6px 4px; }
+  .picture-card .pic { font-size: 2.2rem; }
+  .picture-card .pic-word { font-size: .9rem; }
+  .sound-box { width: 72px; height: 82px; }
+  .sound-box .abc { font-size: 3rem; }
+  .drum { width: 100px; height: 100px; font-size: 3.3rem; }
+  .hear-sound { right: -40px; width: 40px; height: 40px; }
+}
+@media (orientation: landscape) and (max-height: 520px) {
+  .board { padding: 6px; gap: 4px; flex-direction: row; flex-wrap: wrap; justify-content: center; }
+  .pic.big { font-size: 3.2rem; }
+  .big-letter .abc { font-size: 4.4rem; }
+  .letter-choices, .picture-choices { flex-direction: row; flex-wrap: wrap; justify-content: center; }
+  .letter-card { min-width: 64px; min-height: 64px; flex: 0 1 auto; }
+  .letter-card .abc { font-size: 2.4rem; }
+  .picture-card { min-width: 64px; padding: 4px 6px; }
+  .picture-card .pic { font-size: 1.8rem; }
+  .picture-card .pic-word { font-size: .8rem; }
+  .sound-box { width: 64px; height: 72px; }
+  .sound-box .abc { font-size: 2.6rem; }
+  .drum { width: 84px; height: 84px; font-size: 2.8rem; }
+  .beat-row { width: 100%; }
+  .tiles .letter-card { min-width: 52px; min-height: 52px; }
+  .tiles .letter-card .abc { font-size: 2rem; }
+  .lesson-letter .abc { font-size: 1.6rem; } .lesson-letter .pic { font-size: 1.2rem; }
+  .lesson-pair { font-size: 1.2rem; } .lesson-pair .abc { font-size: 1.8rem; } .lesson-pair .pic.big { font-size: 2.4rem; }
+}
+
+/* Answer buttons fill the bar and stay big enough for small fingers */
+.letter-choices, .picture-choices { width: 100%; max-width: 440px; margin: 0 auto; }
+.picture-card { min-height: 104px; justify-content: center; }
+.picture-card .pic { font-size: 3rem; }
+@media (max-width: 480px) {
+  .picture-card { min-height: 100px; }
+  .picture-card .pic { font-size: 2.8rem; }
+  .picture-card .pic-word { font-size: 1rem; }
+}
+@media (orientation: landscape) and (max-height: 520px) {
+  .letter-choices, .picture-choices { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .letter-card { min-width: 0; min-height: 72px; }
+  .letter-card .abc { font-size: 2.8rem; }
+  .picture-card { min-width: 0; min-height: 84px; padding: 4px; }
+  .picture-card .pic { font-size: 2.4rem; }
+  .picture-card .pic-word { font-size: .85rem; }
+}
+
+/* Phonics: words broken into sound chunks (sh-i-p, n-igh-t), the pattern in orange */
+.word-big { display: flex; justify-content: center; }
+.chunked { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.chunk { font-family: "Andika", "Nunito", system-ui, sans-serif; font-weight: 700; line-height: 1; color: var(--text); }
+button.chunk { min-width: 70px; height: 92px; padding: 0 12px; font-size: 3.4rem; border-radius: 16px; border: 3px solid var(--blue);
+  background: var(--surface); cursor: pointer; box-shadow: 0 4px 0 rgb(29 127 224 / .25); }
+button.chunk:active { transform: translateY(3px); box-shadow: none; }
+.chunk.focus { color: var(--red-dark); }
+button.chunk.focus { border-color: var(--accent-strong); background: var(--yellow-soft); }
+.chunk.silent { opacity: .38; }
+button.chunk.silent { border-style: dashed; }
+button.chunk.heard { background: var(--yellow-soft); }
+button.chunk.blending { background: var(--yellow); transform: translateY(-6px); transition: transform .2s, background .2s; }
+.chunked .dot { font-size: 2rem; color: var(--muted); }
+.hear-big { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 3.4rem; padding: 14px 26px; border-radius: 22px;
+  border: 3px solid var(--blue); background: var(--blue-soft); cursor: pointer; box-shadow: 0 5px 0 rgb(29 127 224 / .25); }
+.hear-big span { font: 800 1.05rem var(--font-body); color: var(--blue-ink); }
+.hear-big:active { transform: translateY(3px); box-shadow: none; }
+.word-card { min-height: 84px; flex: 1 1 0; min-width: 0; padding: 8px 6px; display: grid; place-items: center; }
+.word-card .chunked { gap: 1px; }
+.word-card .chunk { font-size: 2.1rem; }
+.sentence { margin: 0; max-width: 680px; text-align: center; line-height: 1.5; }
+.sw { font: 700 2.3rem "Andika", "Nunito", system-ui, sans-serif; color: var(--text); background: none; border: 0; border-bottom: 3px solid transparent;
+  padding: 0 2px; margin: 0; cursor: pointer; border-radius: 6px; }
+.sw.focus { border-bottom-color: var(--accent); }
+.sw.heard { background: var(--yellow-soft); }
+.read-me { margin-top: 2px; }
+.picture-card.emoji-only .pic { font-size: 3.4rem; }
+.lesson-words { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.lesson-word { display: inline-flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 10px; border-radius: 12px; background: var(--surface); }
+.lesson-word .chunk { font-size: 2rem; }
+.lesson-word .pic { font-size: 1.8rem; }
+@media (max-width: 480px) {
+  button.chunk { min-width: 56px; height: 78px; font-size: 2.7rem; padding: 0 8px; }
+  .chunked { gap: 4px; }
+  .sw { font-size: 1.8rem; }
+  .word-card .chunk { font-size: 1.7rem; }
+  .lesson-word .chunk { font-size: 1.6rem; }
+}
+@media (orientation: landscape) and (max-height: 520px) {
+  button.chunk { min-width: 52px; height: 64px; font-size: 2.4rem; padding: 0 8px; }
+  .hear-big { font-size: 2.2rem; padding: 6px 18px; }
+  .sw { font-size: 1.55rem; }
+  .sentence { line-height: 1.3; }
+  .word-card { min-height: 64px; }
+  .word-card .chunk { font-size: 1.6rem; }
+  .picture-card.emoji-only .pic { font-size: 2.6rem; }
+  .lesson-word .chunk { font-size: 1.3rem; } .lesson-word .pic { font-size: 1.3rem; }
+}
