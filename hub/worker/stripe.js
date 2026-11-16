@@ -70,7 +70,7 @@ const json = (body, status = 200) => new Response(JSON.stringify(body), { status
 
 /** Routes under /api/stripe/. `fetcher` is for tests. */
 export async function stripeApi(request, url, env, fetcher = fetch) {
-  if (!env.STRIPE_KEY || !env.STRIPE_WEBHOOK_SECRET) return json({ error: "Stripe isn't set up yet" }, 503);
+  if (!env.STRIPE_KEY || !env.STRIPE_WEBHOOK_SECRET) return json({ error: "Stripe isn't set up yet." }, 503);
   const route = `${request.method} ${url.pathname}`;
 
   if (route === "GET /api/stripe/code") {
