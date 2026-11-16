@@ -1,54 +1,80 @@
 /* App-specific styles (base.css has the shared look). */
 
-/* Home: a shelf of lessons and a shelf of songs */
-.shelf { margin-top: 18px; }
-.shelf-title { font-size: 1.3rem; margin: 0; }
-.shelf-blurb { margin: 2px 0 10px; }
-.video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+/* Home: shelves that scroll sideways */
+.small-hero { padding-bottom: 4px; }
+.shelf { margin-top: 16px; }
+.shelf-title { font-size: 1.25rem; margin: 0; }
+.shelf-blurb { margin: 2px 0 8px; }
+.shelf-row { display: grid; align-items: start; grid-auto-flow: column; grid-auto-columns: minmax(200px, 240px); gap: 12px; overflow-x: auto;
+  scroll-snap-type: x mandatory; padding: 2px 2px 10px; scrollbar-width: thin; }
+.shelf-row > * { scroll-snap-align: start; }
 .video-card { display: flex; flex-direction: column; gap: 6px; padding: 8px; border-radius: 18px; background: var(--surface);
   box-shadow: var(--shadow); color: var(--text); text-decoration: none; font-weight: 800; }
-.video-card img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 12px; background: var(--blue-soft); }
 .video-card:active { transform: translateY(3px); box-shadow: none; }
-.video-title { font-size: 1.05rem; padding: 0 4px; }
-.video-card .stars { padding: 0 4px; }
+.thumb { position: relative; display: block; }
+.thumb img, .course-item img, .playlist-item img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 12px; background: var(--blue-soft); display: block; }
+.seen { position: absolute; top: 6px; right: 6px; width: 28px; height: 28px; border-radius: 50%; background: var(--good); color: #fff;
+  display: grid; place-items: center; font-size: .95rem; }
+.count { position: absolute; bottom: 6px; right: 6px; padding: 2px 8px; border-radius: 999px; background: rgb(0 0 0 / .65); color: #fff; font-size: .8rem; }
+.video-title { font-size: 1rem; line-height: 1.25; padding: 0 4px; }
+.tag { display: inline-flex; align-items: center; gap: 4px; font-size: .85rem; color: var(--muted); padding: 0 4px; }
 
 /* Watching */
 .watch { display: flex; flex-direction: column; gap: 12px; }
 .watch-top { display: flex; align-items: center; gap: 10px; }
-.watch-title { font-size: 1.3rem; margin: 0; line-height: 1.2; }
-.video-wrap { width: 100%; border-radius: 18px; overflow: hidden; background: #000; box-shadow: var(--shadow); }
+.watch-title { font-size: 1.25rem; margin: 0; line-height: 1.2; display: flex; flex-direction: column; }
+.course-of { font-weight: 700; }
+.video-wrap { position: relative; width: 100%; border-radius: 18px; overflow: hidden; background: #000; box-shadow: var(--shadow); }
 .video-wrap video { display: block; width: 100%; aspect-ratio: 16 / 9; max-height: 70vh; background: #000; }
+.big-play { position: absolute; inset: 0; margin: auto; width: 110px; height: 110px; border-radius: 50%; border: 0; font-size: 3rem;
+  background: var(--accent); color: #fff; box-shadow: 0 6px 0 var(--accent-strong); cursor: pointer; }
 .watch-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.up-next { display: flex; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap; padding: 10px; border-radius: 14px;
+  background: var(--yellow-soft); font-weight: 700; }
 .words h3 { margin: 14px 0 4px; font-size: 1.1rem; }
 .words p { margin: 6px 0; line-height: 1.55; }
 
-/* Quiz: words as answers, big enough for small fingers */
-.answer-choices { flex-direction: column; align-items: stretch; width: 100%; max-width: 520px; margin: 0 auto; }
-.choice-card.answer { font: 800 1.25rem var(--font-body); text-align: left; padding: 14px 18px; min-height: 60px; }
-.why p { margin: 4px 0; font-size: 1.1rem; }
+/* A course: numbered lessons */
+.start-btn { align-self: center; }
+.course-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.course-item { display: grid; grid-template-columns: 44px 120px 1fr; gap: 12px; align-items: center; padding: 8px; border-radius: 16px;
+  background: var(--surface); box-shadow: var(--shadow); color: var(--text); text-decoration: none; font-weight: 800; }
+.course-item.next { outline: 3px solid var(--accent); }
+.course-item .num { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--blue-soft); font-size: 1.1rem; }
+.course-name { display: flex; flex-direction: column; gap: 2px; }
 
-/* Sing along: the words, big */
-.lyrics-title { margin: 0 0 6px; font-size: 1.2rem; }
-.stanza { margin: 10px 0; }
-.stanza p { margin: 2px 0; font: 700 1.35rem/1.45 "Andika", "Nunito", system-ui, sans-serif; }
-.stanza.chorus { padding: 8px 12px; border-radius: 14px; background: var(--yellow-soft); }
-.stanza.chorus p { font-style: italic; }
+/* Songs: up next, downloads */
+.playlist { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(170px, 200px); gap: 10px; overflow-x: auto; padding-bottom: 8px; }
+.playlist-item { position: relative; display: flex; flex-direction: column; gap: 4px; padding: 6px; border: 0; border-radius: 14px;
+  background: var(--surface); box-shadow: var(--shadow); font: 800 .92rem var(--font-body); color: var(--text); text-align: left; cursor: pointer; }
+.playlist-item:active { transform: translateY(3px); box-shadow: none; }
+.seen-mini { position: absolute; top: 10px; right: 10px; width: 22px; height: 22px; border-radius: 50%; background: var(--good); color: #fff;
+  display: grid; place-items: center; font-size: .75rem; }
+.downloads summary { cursor: pointer; font-weight: 800; }
+.dl-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+
+/* Quiz: the answers right under the question */
+.quiz .answers { margin-top: 4px; }
+.answer-choices { flex-direction: column; align-items: stretch; width: 100%; max-width: 560px; margin: 0 auto; }
+.choice-card.answer { font: 800 1.2rem var(--font-body); text-align: left; padding: 14px 18px; min-height: 60px; }
+.reveal-btn { display: block; width: 100%; max-width: 560px; margin: 0 auto; text-align: center !important; }
+.reveal { max-width: 560px; margin: 0 auto; text-align: center; font: 800 1.6rem var(--font-display); color: var(--good); }
+.why p { margin: 4px 0; font-size: 1.05rem; line-height: 1.5; }
 
 @media (max-width: 480px) {
-  .video-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-  .video-title { font-size: .92rem; }
-  .stanza p { font-size: 1.15rem; }
-  .choice-card.answer { font-size: 1.1rem; min-height: 54px; }
+  .shelf-row { grid-auto-columns: minmax(160px, 70vw); }
+  .course-item { grid-template-columns: 36px 96px 1fr; gap: 8px; }
+  .choice-card.answer { font-size: 1.05rem; min-height: 54px; }
 }
 /* Sideways phones: the video gets the height, the buttons sit beside it */
 @media (orientation: landscape) and (max-height: 520px) {
-  .watch { display: grid; grid-template-columns: minmax(0, 1fr) minmax(200px, 34%); align-items: start; gap: 10px; }
-  .watch-top, .watch .words, .watch .lyrics, .watch > .shelf-title, .watch > .video-grid { grid-column: 1 / -1; }
-  .video-wrap video { max-height: calc(100vh - 120px); }
+  .watch { display: grid; grid-template-columns: minmax(0, 1fr) minmax(200px, 32%); align-items: start; gap: 10px; }
+  .watch > :not(.video-wrap):not(.watch-actions) { grid-column: 1 / -1; }
+  .video-wrap video { max-height: calc(100vh - 110px); }
   .watch-actions { flex-direction: column; align-items: stretch; }
   .answer-choices { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); max-width: none; }
-  .choice-card.answer { min-height: 50px; padding: 8px 12px; font-size: 1.05rem; }
-  .why p { font-size: 1rem; }
+  .choice-card.answer { min-height: 48px; padding: 8px 12px; font-size: 1rem; }
+  .why p { font-size: .95rem; }
 }
 
 /* Back to all Angelio games (angelio.org), at the left of the top bar. */
