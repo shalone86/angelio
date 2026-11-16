@@ -1,0 +1,30 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "articulation",
+  "main": "worker/index.js",
+  "compatibility_date": "2025-09-01",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*", "/.well-known/*"]
+  },
+  "ai": { "binding": "AI" },
+  // Shared Angelio store: family codes and daily safety caps (worker/codes.js).
+  "kv_namespaces": [{ "binding": "CODES", "id": "a39d9bda676b420394c3eaba35975dec" }],
+  // Speech checks need a family code after FREE_PER_DAY free tries a day (per network), with a
+  // site-wide daily safety cap. Codes are made at angelio.org/admin/. Set REQUIRE_CODE to "false" to open them again.
+  "vars": { "REQUIRE_CODE": "true", "FREE_PER_DAY": "20", "SPEECH_DAILY_CAP": "500" },
+  "observability": { "enabled": true },
+  "workers_dev": true,
+  "routes": [{ "pattern": "articulate.shalonely.com", "custom_domain": true }]
+  // Optional: require a passcode for the API (keeps strangers off your Workers AI quota):
+  //   npx wrangler secret put APP_PASSCODE
+  //
+  // Optional hybrid: run speech checks on your own server or a free Hugging Face Space
+  // (better word scoring; falls back to Workers AI when it's asleep or down):
+  // "vars": { "STT_ORIGIN": "https://YOU-articulation.hf.space" }
+  // secrets, if needed:  npx wrangler secret put STT_PASSCODE / STT_TOKEN
+  //
+  // Android app (docs/ANDROID.md): add to "vars":
+  //   "ANDROID_PACKAGE": "com.example.articulation", "ANDROID_SHA256": "AA:BB:…"
+}
