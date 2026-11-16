@@ -114,26 +114,35 @@ function ofTheDay(list, salt) {
   return list.length ? list[(day * 7 + salt) % list.length] : null;
 }
 
+// Home remembers where you scrolled, so coming back from a video lands where you were.
+const HOME_SCROLL = "watch:homeScroll";
 function viewHome() {
-  const course = ofTheDay(LIB.courses, 0), song = ofTheDay(LIB.songs, 3);
-  const firstOf = (c) => lessonById(c.items[0]);
+  const lesson = ofTheDay(LIB.lessons, 0), song = ofTheDay(LIB.songs, 3);
+  const today = (href, label, item, extra = "") => `<a class="today-card" href="${href}">
+        <span class="today-label">${label}</span>
+        <span class="thumb"><img src="${esc(item.poster ?? "")}" alt=""></span>
+        <span class="video-title">${esc(item.title)}</span>${extra}</a>`;
   app.innerHTML = `
     <section class="hero small-hero">
       <h1 class="title">Watch &amp; Sing</h1>
       <p class="lede">Lessons about the Faith, and songs to sing!</p>
     </section>
     <section class="today">
-      ${course ? `<a class="today-card" href="#/course/${course.id}">
-        <span class="today-label">🎓 Course of the day</span>
-        <span class="thumb"><img src="${esc(firstOf(course)?.poster ?? "")}" alt=""><span class="count">${course.items.length} lessons</span></span>
-        <span class="video-title">${course.emoji} ${esc(course.title)}</span></a>` : ""}
-      ${song ? `<a class="today-card" href="#/song/${song.id}">
-        <span class="today-label">🎵 Song of the day</span>
-        <span class="thumb"><img src="${esc(song.poster ?? "")}" alt=""></span>
-        <span class="video-title">${esc(song.title)}</span></a>` : ""}
+      ${lesson ? today(`#/lesson/${lesson.id}`, "📚 Lesson of the day", lesson, lesson.quiz ? `<span class="tag">📝 Quiz ${starsHtml(S.progress(lesson.id).stars)}</span>` : "") : ""}
+      ${song ? today(`#/song/${song.id}`, "🎵 Song of the day", song) : ""}
     </section>
     ${Object.entries(LISTS).map(([k, L]) => shelf(L.emoji, L.title, L.blurb, L.cards().slice(0, 12).join(""), k)).join("")}
     ${stickerBook()}`;
+  // Back to where you were: the page and each shelf's sideways scroll.
+  let saved = null;
+  try { saved = JSON.parse(sessionStorage.getItem(HOME_SCROLL) ?? "null"); } catch { /* none */ }
+  if (saved) requestAnimationFrame(() => {
+    app.querySelectorAll(".shelf-row").forEach((r, i) => { r.scrollLeft = saved.rows?.[i] ?? 0; });
+    window.scrollTo(0, saved.y ?? 0);
+  });
+  return () => {
+    try { sessionStorage.setItem(HOME_SCROLL, JSON.stringify({ y: window.scrollY, rows: [...app.querySelectorAll(".shelf-row")].map((r) => r.scrollLeft) })); } catch { /* ignore */ }
+  };
 }
 
 // ───────── "See all": every course, lesson, album or song on one page ─────────
@@ -379,6 +388,10 @@ function viewSongs(songId, albumId) {
 }
 
 // ───────── start ─────────
+
+// Pinned titles sit just under the site's top bar, whose height changes on phones.
+const topbarHeight = () => document.documentElement.style.setProperty("--topbar-h", `${document.querySelector(".topbar")?.offsetHeight ?? 0}px`);
+topbarHeight(); addEventListener("resize", topbarHeight);
 
 installClickSounds();
 jingleOnce("watch", () => S.settings().sounds);
