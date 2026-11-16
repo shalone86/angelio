@@ -60,6 +60,7 @@
     </section>
     <section class="card">
       <h2>Codes <span class="muted" id="month"></span></h2>
+      <input id="find" type="search" placeholder="Find a code by name, email or code (for a lost code)" aria-label="Find a code">
       <div id="list"></div>
       <p><button class="ghost small" id="logout">Forget admin key on this device</button></p>
     </section>
@@ -84,7 +85,8 @@
     $("#today").textContent = `Speech checks: ${d.today.speech} · New voice clips: ${d.today.tts} (the daily safety caps stop new ones past their limit)`;
     $("#list").innerHTML = d.codes.length ? d.codes.map((c) => `
       <div class="item ${c.revoked ? "revoked" : ""}">
-        <div><b>${esc(c.name)}</b> <span class="code">${esc(c.code)}</span>${c.revoked ? " · <b>turned off</b>" : ""}
+        <div data-find="${esc(`${c.name} ${c.email ?? ""} ${c.code}`.toLowerCase())}"><b>${esc(c.name)}</b> <span class="code">${esc(c.code)}</span>${c.revoked ? " · <b>turned off</b>" : ""}${c.source === "stripe" ? ` · 💳 ${c.live ? "paid" : "test payment"}` : ""}
+          ${c.email ? `<div class="muted">✉️ ${esc(c.email)}</div>` : ""}
           <div class="muted">${c.used} of ${c.limit} speech checks used this month</div>
           <div class="bar"><i style="width:${Math.min(100, (100 * c.used) / c.limit)}%"></i></div></div>
         <div>
@@ -119,6 +121,10 @@
     $("#name").value = ""; load();
   };
   $("#copy").onclick = () => navigator.clipboard?.writeText($("#made-code").textContent);
+  $("#find").oninput = () => {
+    const q = $("#find").value.trim().toLowerCase();
+    document.querySelectorAll("[data-find]").forEach((d) => { d.closest(".item").hidden = q && !d.dataset.find.includes(q); });
+  };
   $("#logout").onclick = () => { try { localStorage.removeItem("angelio:admin"); sessionStorage.removeItem("angelio:admin"); } catch { /* ignore */ } location.reload(); };
   if (key) load().catch(() => {});
 </script>

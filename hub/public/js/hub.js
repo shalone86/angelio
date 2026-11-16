@@ -51,5 +51,14 @@ async function showCode(code, { fresh = false } = {}) {
     codeStatus.className = "code-status bad"; codeStatus.textContent = "Couldn't check the code right now. Try again in a minute.";
   }
 }
+// "Get a family code" (Stripe). While the link is a Stripe TEST link, the button only shows on
+// angelio.org/?testbuy (for trying it out); with the live link it shows for everyone.
+{
+  const buy = document.querySelector("[data-buy]"), link = buy?.querySelector("a")?.href ?? "";
+  let testing = false;
+  try { testing = new URLSearchParams(location.search).has("testbuy") || sessionStorage.getItem("angelio:testbuy") === "1"; if (testing) sessionStorage.setItem("angelio:testbuy", "1"); } catch { /* ignore */ }
+  if (buy && (!link.includes("/test_") || testing)) buy.hidden = false;
+}
+
 codeForm?.addEventListener("submit", (e) => { e.preventDefault(); showCode(codeIn.value.trim().toUpperCase(), { fresh: true }); });
 if (codeForm) showCode(getCode());

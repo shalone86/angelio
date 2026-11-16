@@ -20,10 +20,12 @@ export const APPS = {
 };
 
 import { normalizeCode, newCode, codeStatus, day, month } from "./codes.js";
+import { stripeApi } from "./stripe.js";
 
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    if (url.pathname.startsWith("/api/stripe/")) return stripeApi(request, url, env).catch((e) => json({ error: String(e?.message ?? e) }, 500));
     if (url.pathname.startsWith("/api/")) return api(request, url, env).catch((e) => json({ error: String(e?.message ?? e) }, 500));
     const [, first = "", ...rest] = url.pathname.split("/");
     const binding = APPS[first.toLowerCase()];

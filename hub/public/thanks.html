@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Thank you · Angelio</title>
+  <meta name="theme-color" content="#5bb4ff">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;700;800&display=swap">
+  <link rel="stylesheet" href="/css/hub.css">
+</head>
+<body>
+<div class="sky" aria-hidden="true"><div class="cloud c1"></div><div class="cloud c2"></div></div>
+<main>
+  <header>
+    <a class="brand" href="/" aria-label="Angelio, angelio.org"><img src="/icon.svg" alt="" width="34" height="34">Angelio<span class="tld">.org</span></a>
+  </header>
+  <section class="panel page">
+    <h1>Thank you! 🙏</h1>
+    <div id="thanks" aria-live="polite"><p>Getting your family code…</p></div>
+  </section>
+  <footer>
+    <p><a href="/">Home</a> · <a href="/terms">Terms &amp; refunds</a> · <a href="/privacy">Privacy</a> · <a href="mailto:support@angelio.org">support@angelio.org</a></p>
+  </footer>
+</main>
+<script type="module">
+  const box = document.getElementById("thanks");
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const id = new URLSearchParams(location.search).get("session_id");
+  async function load(tries = 0) {
+    if (!id) { box.innerHTML = "<p>This page shows your family code right after you pay. If you paid and don't see it, email <a href=\"mailto:support@angelio.org\">support@angelio.org</a> and we'll find it.</p>"; return; }
+    const r = await fetch(`/api/stripe/code?session_id=${encodeURIComponent(id)}`).catch(() => null);
+    const j = r ? await r.json().catch(() => ({})) : {};
+    if (r?.status === 409 && tries < 5) { setTimeout(() => load(tries + 1), 3000); return; } // payment still finishing
+    if (!r?.ok) { box.innerHTML = `<p>${esc(j.error || "We couldn't reach the server.")} If you paid, your code is safe: email <a href="mailto:support@angelio.org">support@angelio.org</a> and we'll find it.</p>`; return; }
+    try { localStorage.setItem("angelio:code", j.code); } catch { /* private window */ }
+    box.innerHTML = `
+      <p>Your family code is</p>
+      <p class="new-code">${esc(j.code)}</p>
+      <p>It's already on <b>this device</b>. To use it on another phone or tablet, open <b>angelio.org</b> there and enter it once in
+        the <b>Speech checks</b> box (or in Articulate's Settings). It gives up to ${j.limit} speech checks a month on all your family's devices.</p>
+      <p><b>Keep it somewhere safe</b>, like a note on your phone. Your receipt from Stripe has a link to manage or cancel anytime.</p>
+      <p class="row-btns"><button type="button" class="pill" data-copy>📋 Copy code</button> <a class="pill" href="/">Start practicing ▶</a></p>`;
+    box.querySelector("[data-copy]").onclick = (e) => { navigator.clipboard?.writeText(j.code); e.target.textContent = "✅ Copied"; };
+  }
+  load();
+</script>
+</body>
+</html>
