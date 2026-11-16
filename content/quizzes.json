@@ -1,0 +1,297 @@
+{
+ "_about": "Quizzes written here replace a lesson's Ghost quiz. Types: choice (choices + answer index), blank (q with ____, words, answer), order (items in the right order), match (pairs). Every question has a why. draft: true means not reviewed yet.",
+ "what-is-the-byzantine-rite": {
+  "questions": [
+   {
+    "type": "choice",
+    "q": "Byzantine worship grew from the way Christians prayed in Antioch.",
+    "choices": [
+     "True",
+     "False"
+    ],
+    "answer": 0,
+    "why": "True! The Catholic Encyclopedia says it “is derived from that of Antioch.”"
+   },
+   {
+    "type": "choice",
+    "q": "What do Byzantine Catholics and Roman Catholics share?",
+    "choices": [
+     "The same church buildings",
+     "The same faith and sacraments",
+     "Nothing at all"
+    ],
+    "answer": 1,
+    "why": "We share one faith and the same seven sacraments. We just pray in different ways (CCC 1202)."
+   },
+   {
+    "type": "blank",
+    "q": "“It was in ____ that the disciples were first called Christians.”",
+    "words": [
+     "Antioch",
+     "Rome",
+     "Bethlehem"
+    ],
+    "answer": "Antioch",
+    "why": "Acts 11:26. Christians got their name in the city of Antioch."
+   },
+   {
+    "type": "choice",
+    "q": "The Catholic Church is only the Roman, or Latin, Church.",
+    "choices": [
+     "True",
+     "False"
+    ],
+    "answer": 1,
+    "why": "False! The Catholic Church is a family of Churches, Eastern and Western (Christ – Our Pascha 285)."
+   },
+   {
+    "type": "choice",
+    "q": "Who are all the Catholic Churches united with?",
+    "choices": [
+     "The Pope, who takes Saint Peter’s place",
+     "The king of Constantinople",
+     "Nobody"
+    ],
+    "answer": 0,
+    "why": "All the Catholic Churches are united with the Pope, “the successor of the apostle Peter” (Christ – Our Pascha 291)."
+   }
+  ]
+ },
+ "what-does-byzantine-mean": {
+  "questions": [
+   {
+    "type": "choice",
+    "q": "Where does the word “Byzantine” come from?",
+    "choices": [
+     "A king named Peter",
+     "The city of Byzantium, named for Byzas",
+     "A kind of bread"
+    ],
+    "answer": 1,
+    "why": "The city was “naturally called Byzantion” after Byzas, its founder."
+   },
+   {
+    "type": "choice",
+    "q": "“Byzantine” is a way of praying that many different peoples share.",
+    "choices": [
+     "True",
+     "False"
+    ],
+    "answer": 0,
+    "why": "True! Greeks, Slavs, Arabs and others pray the Byzantine liturgy, which spread from Constantinople."
+   },
+   {
+    "type": "blank",
+    "q": "Byzantium was renamed ____, after Emperor Constantine.",
+    "words": [
+     "Constantinople",
+     "Antioch",
+     "Rome"
+    ],
+    "answer": "Constantinople",
+    "why": "Constantine made it his capital, and the city took his name: Constantinople."
+   },
+   {
+    "type": "choice",
+    "q": "What did Byzantine Catholics keep?",
+    "choices": [
+     "Their Byzantine prayers, and unity with Rome",
+     "Only the Roman Rite",
+     "Neither one"
+    ],
+    "answer": 0,
+    "why": "They kept their Byzantine way of praying and stayed in communion with the Church of Rome."
+   },
+   {
+    "type": "choice",
+    "q": "Byzantine Catholics and Orthodox Christians pray the same Byzantine liturgy.",
+    "choices": [
+     "True",
+     "False"
+    ],
+    "answer": 0,
+    "why": "True! The difference is unity with the Pope. The Catechism says our communion “lacks little to attain the fullness” (CCC 838)."
+   }
+  ]
+ },
+ "inside-a-byzantine-church": {
+  "questions": [
+   {
+    "type": "choice",
+    "q": "What is the wall of icons called?",
+    "choices": [
+     "The iconostasis",
+     "The bell tower",
+     "The font"
+    ],
+    "answer": 0,
+    "why": "The iconostasis is a wall of icons that separates and unites the sanctuary and the nave."
+   },
+   {
+    "type": "choice",
+    "q": "In an icon of Mary, she points us to Jesus.",
+    "choices": [
+     "True",
+     "False"
+    ],
+    "answer": 0,
+    "why": "True! The Mother of God holds Christ and points to him, showing us the way."
+   },
+   {
+    "type": "blank",
+    "q": "The doors in the middle of the iconostasis are called the ____ Doors.",
+    "words": [
+     "Royal",
+     "Front",
+     "Golden"
+    ],
+    "answer": "Royal",
+    "why": "The Royal (or Holy) Doors are in the center of the iconostasis."
+   },
+   {
+    "type": "choice",
+    "q": "How do Byzantine Catholics receive Holy Communion?",
+    "choices": [
+     "From a golden spoon",
+     "From a cup they hold themselves",
+     "They do not receive it"
+    ],
+    "answer": 0,
+    "why": "The priest gives the Body and Blood of Christ with a spoon, for the cleansing from sins."
+   },
+   {
+    "type": "choice",
+    "q": "The Church holds all lawfully recognized rites to be of equal right and dignity.",
+    "choices": [
+     "True",
+     "False"
+    ],
+    "answer": 0,
+    "why": "True! Catechism 1203: all lawful rites are “of equal right and dignity.”"
+   },
+   {
+    "type": "match",
+    "q": "Match each one to what it is.",
+    "pairs": [
+     [
+      "Iconostasis",
+      "A wall of icons"
+     ],
+     [
+      "Royal Doors",
+      "The doors in the middle"
+     ],
+     [
+      "Golden spoon",
+      "How we receive Holy Communion"
+     ]
+    ],
+    "why": "Byzantine churches have a wall of icons called an iconostasis, with the Royal Doors in the middle, and Communion is given with a golden spoon."
+   }
+  ]
+ },
+ "the-sign-of-the-cross": {
+  "questions": [
+   {
+    "type": "choice",
+    "q": "Why do we make the Sign of the Cross?",
+    "choices": [
+     "To remember the Trinity",
+     "To say Goodbye",
+     "To be nice to Others"
+    ],
+    "answer": 0,
+    "why": "Christ – Our Pascha 626: the Christian “professes faith in the Most Holy Trinity.”"
+   },
+   {
+    "type": "choice",
+    "q": "Which shoulder do Byzantine Catholics touch first?",
+    "choices": [
+     "The right",
+     "The left",
+     "Neither"
+    ],
+    "answer": 0,
+    "why": "Christ – Our Pascha 626: “from the right shoulder to the left.”"
+   },
+   {
+    "type": "blank",
+    "q": "Three fingers joined stand for the Holy ____.",
+    "words": [
+     "Trinity",
+     "Angels",
+     "Church"
+    ],
+    "answer": "Trinity",
+    "why": "Christ – Our Pascha 626: joining the first three fingers is “a sign of our profession of faith in the Holy Trinity.”"
+   },
+   {
+    "type": "choice",
+    "q": "The Church holds all lawfully recognized rites to be of equal right and dignity.",
+    "choices": [
+     "True",
+     "False"
+    ],
+    "answer": 0,
+    "why": "True! Catechism 1203: all lawful rites are “of equal right and dignity.”"
+   },
+   {
+    "type": "order",
+    "q": "Put the Byzantine Sign of the Cross in order.",
+    "items": [
+     "Forehead",
+     "Chest",
+     "Right shoulder",
+     "Left shoulder"
+    ],
+    "why": "Christ – Our Pascha 626: “from the forehead to the breast and from the right shoulder to the left.”"
+   }
+  ]
+ },
+ "what-is-infallibility": {
+  "questions": [
+   {
+    "type": "choice",
+    "q": "What job did Jesus give Peter?",
+    "choices": [
+     "Strengthen his brothers",
+     "Build a boat",
+     "Count the fish"
+    ],
+    "answer": 0,
+    "why": "Luke 22:32: “you must strengthen your brothers.”"
+   },
+   {
+    "type": "choice",
+    "q": "Infallibility means the Pope always knows who will win the big game.",
+    "choices": [
+     "True",
+     "False"
+    ],
+    "answer": 1,
+    "why": "False! Catechism 891: the gift is for “a doctrine pertaining to faith or morals.”"
+   },
+   {
+    "type": "blank",
+    "q": "Infallible means can't be ____.",
+    "words": [
+     "wrong",
+     "late",
+     "quiet"
+    ],
+    "answer": "wrong",
+    "why": "Infallible means unable to be wrong. Catechism 889: Jesus gave his Church “a share in his own infallibility.”"
+   },
+   {
+    "type": "choice",
+    "q": "The Pope never makes any mistakes at all.",
+    "choices": [
+     "True",
+     "False"
+    ],
+    "answer": 1,
+    "why": "False! The Catholic Encyclopedia says infallibility “is not attributed to every doctrinal act of the pope.”"
+   }
+  ]
+ }
+}

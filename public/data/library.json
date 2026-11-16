@@ -8,7 +8,7 @@
    "emoji": "☦️",
    "items": [
     "what-is-the-byzantine-rite",
-    "what-does-byzantine-mean-2",
+    "what-does-byzantine-mean",
     "inside-a-byzantine-church",
     "the-sign-of-the-cross"
    ]
@@ -147,6 +147,161 @@
     "your-merciful-mother-virgin-mary-lofi",
     "those-who-seek-me-virgin-mary-lofi",
     "no-more-gloom-book-of-isaiah-lofi"
+   ]
+  }
+ ],
+ "people": [
+  {
+   "id": "shalone-cason",
+   "name": "Shalone Cason",
+   "songs": [
+    "the-eucharist-song",
+    "resurrection-of-the-lord",
+    "priest-indeed",
+    "the-baptism-song",
+    "five-holy-monks",
+    "body-of-christ-what-is-the-church",
+    "8th-commandment-do-not-lie",
+    "the-confession-song",
+    "palm-sunday",
+    "five-holy-monks-new-version",
+    "when-we-go-to-mass",
+    "resurrection-song-byzantine-art-version",
+    "four-marks-of-the-church",
+    "we-hope-to-go-to-heaven",
+    "i-love-to-pray",
+    "pray-hope-don-t-worry",
+    "blessings",
+    "jesus-teaches-god-is-love",
+    "the-sign-of-the-cross-song",
+    "my-whole-body-worships-god",
+    "god-created-it-all",
+    "who-is-jesus-christ",
+    "noah-and-the-flood",
+    "the-exodus-song-moses-freed-his-people",
+    "god-s-our-father",
+    "love-one-another",
+    "jesus-wants-us-to-forgive",
+    "who-are-the-saints",
+    "jesus-is-lord",
+    "holy-communion-song"
+   ]
+  },
+  {
+   "id": "kylie-keegan",
+   "name": "Kylie Keegan",
+   "songs": [
+    "the-eucharist-song",
+    "i-love-to-pray",
+    "blessings",
+    "god-created-it-all",
+    "who-is-jesus-christ"
+   ]
+  },
+  {
+   "id": "anthony-moran",
+   "name": "Anthony Moran",
+   "songs": [
+    "jesus-welcome-by-anthony-moran",
+    "i-believe-in-god-by-anthony-moran",
+    "he-made-the-sea-by-anthony-moran",
+    "love-the-lord-by-anthony-moran",
+    "the-sacraments-by-anthony-moran",
+    "the-people-came-by-anthony-moran",
+    "who-do-we-believe-in-jesus-christ-by-anthony-moran",
+    "christ-was-born-by-anthony-moran",
+    "his-name-is-jesus-christ-by-anthony-moran",
+    "we-believe-by-anthony-moran",
+    "i-can-sing-by-anthony-moran",
+    "jesus-said-by-anthony-moran",
+    "our-father-by-anthony-moran",
+    "hail-mary-by-anthony-moran",
+    "the-lord-said-to-abraham-by-anthony-moran",
+    "we-just-say-no-by-anthony-moran"
+   ]
+  },
+  {
+   "id": "adrianna-ortiz",
+   "name": "Adrianna Ortiz",
+   "songs": [
+    "the-baptism-song",
+    "i-love-to-pray",
+    "pray-hope-don-t-worry",
+    "the-sign-of-the-cross-song",
+    "god-created-it-all",
+    "who-is-jesus-christ",
+    "god-s-our-father",
+    "jesus-wants-us-to-forgive",
+    "who-are-the-saints",
+    "jesus-is-lord"
+   ]
+  },
+  {
+   "id": "catholic-lofi",
+   "name": "Catholic LoFi",
+   "songs": [
+    "preserve-your-heart-in-peace",
+    "exalted-above-the-hills",
+    "your-guilt-is-taken-away-book-of-isaiah-lofi",
+    "onward-and-forever-more-book-of-isaiah-lofi",
+    "your-merciful-mother-virgin-mary-lofi",
+    "those-who-seek-me-virgin-mary-lofi",
+    "no-more-gloom-book-of-isaiah-lofi"
+   ]
+  },
+  {
+   "id": "andre-van-haren",
+   "name": "André van Haren",
+   "songs": [
+    "we-hope-to-go-to-heaven"
+   ]
+  },
+  {
+   "id": "richard-schletty",
+   "name": "Richard Schletty",
+   "songs": [
+    "we-hope-to-go-to-heaven"
+   ]
+  },
+  {
+   "id": "anne-schletty",
+   "name": "Anne Schletty",
+   "songs": [
+    "we-hope-to-go-to-heaven"
+   ]
+  },
+  {
+   "id": "bella-green",
+   "name": "Bella Green",
+   "songs": [
+    "we-hope-to-go-to-heaven"
+   ]
+  },
+  {
+   "id": "dominic-cason",
+   "name": "Dominic Cason",
+   "songs": [
+    "i-love-to-pray",
+    "jesus-teaches-god-is-love",
+    "who-is-jesus-christ"
+   ]
+  },
+  {
+   "id": "amelia-cason",
+   "name": "Amelia Cason",
+   "songs": [
+    "i-love-to-pray",
+    "jesus-teaches-god-is-love",
+    "who-is-jesus-christ",
+    "jesus-wants-us-to-forgive"
+   ]
+  },
+  {
+   "id": "ashley-cason",
+   "name": "Ashley Cason",
+   "songs": [
+    "who-is-jesus-christ",
+    "god-s-our-father"
    ]
   }
  ],
@@ -886,20 +1041,6 @@
    "transcript": null
   },
   {
-   "id": "what-does-byzantine-mean",
-   "title": "What does Byzantine Mean?",
-   "about": "A lesson that goes over the basic history of the Byzantine Catholic Church and the meaning of the word Byzantine.",
-   "video": "https://kids.methodiusmedia.com/content/files/2024/08/What-does-Byzantine-Mean.mov",
-   "poster": "https://kids.methodiusmedia.com/content/images/size/w600/2024/08/what-does-byzantine-mean-3-1.png",
-   "tags": [
-    "byzantine-catholic-lessons",
-    "catholic-kids-video-lessons"
-   ],
-   "date": "2024-08-10",
-   "quiz": null,
-   "transcript": null
-  },
-  {
    "id": "what-does-pascha-mean",
    "title": "What does Pascha Mean?",
    "about": "A lesson that goes over the meaning of the word Pascha.",
@@ -984,11 +1125,7 @@
    "date": "2026-10-21",
    "quiz": [
     {
-     "q": "“It was in ____ that the disciples were first called Christians.”",
-     "reveal": "Antioch",
-     "why": "Acts 11:26. Christians got their name in the city of Antioch."
-    },
-    {
+     "type": "choice",
      "q": "Byzantine worship grew from the way Christians prayed in Antioch.",
      "choices": [
       "True",
@@ -998,6 +1135,7 @@
      "why": "True! The Catholic Encyclopedia says it “is derived from that of Antioch.”"
     },
     {
+     "type": "choice",
      "q": "What do Byzantine Catholics and Roman Catholics share?",
      "choices": [
       "The same church buildings",
@@ -1008,6 +1146,18 @@
      "why": "We share one faith and the same seven sacraments. We just pray in different ways (CCC 1202)."
     },
     {
+     "type": "blank",
+     "q": "“It was in ____ that the disciples were first called Christians.”",
+     "words": [
+      "Antioch",
+      "Rome",
+      "Bethlehem"
+     ],
+     "answer": "Antioch",
+     "why": "Acts 11:26. Christians got their name in the city of Antioch."
+    },
+    {
+     "type": "choice",
      "q": "The Catholic Church is only the Roman, or Latin, Church.",
      "choices": [
       "True",
@@ -1017,6 +1167,7 @@
      "why": "False! The Catholic Church is a family of Churches, Eastern and Western (Christ – Our Pascha 285)."
     },
     {
+     "type": "choice",
      "q": "Who are all the Catholic Churches united with?",
      "choices": [
       "The Pope, who takes Saint Peter’s place",
@@ -1053,7 +1204,7 @@
    ]
   },
   {
-   "id": "what-does-byzantine-mean-2",
+   "id": "what-does-byzantine-mean",
    "title": "What Does Byzantine Mean?",
    "about": "A city named for its founder, an emperor's new capital, and a way of praying that spread across the world, for kids.",
    "video": "https://kids.methodiusmedia.com/content/media/2026/10/lesson-7.mp4",
@@ -1066,6 +1217,7 @@
    "date": "2026-10-21",
    "quiz": [
     {
+     "type": "choice",
      "q": "Where does the word “Byzantine” come from?",
      "choices": [
       "A king named Peter",
@@ -1076,11 +1228,7 @@
      "why": "The city was “naturally called Byzantion” after Byzas, its founder."
     },
     {
-     "q": "Byzantium was renamed ____, after Emperor Constantine.",
-     "reveal": "Constantinople",
-     "why": "Constantine made it his capital, and the city took his name: Constantinople."
-    },
-    {
+     "type": "choice",
      "q": "“Byzantine” is a way of praying that many different peoples share.",
      "choices": [
       "True",
@@ -1090,6 +1238,18 @@
      "why": "True! Greeks, Slavs, Arabs and others pray the Byzantine liturgy, which spread from Constantinople."
     },
     {
+     "type": "blank",
+     "q": "Byzantium was renamed ____, after Emperor Constantine.",
+     "words": [
+      "Constantinople",
+      "Antioch",
+      "Rome"
+     ],
+     "answer": "Constantinople",
+     "why": "Constantine made it his capital, and the city took his name: Constantinople."
+    },
+    {
+     "type": "choice",
      "q": "What did Byzantine Catholics keep?",
      "choices": [
       "Their Byzantine prayers, and unity with Rome",
@@ -1100,6 +1260,7 @@
      "why": "They kept their Byzantine way of praying and stayed in communion with the Church of Rome."
     },
     {
+     "type": "choice",
      "q": "Byzantine Catholics and Orthodox Christians pray the same Byzantine liturgy.",
      "choices": [
       "True",
@@ -1148,6 +1309,7 @@
    "date": "2026-10-23",
    "quiz": [
     {
+     "type": "choice",
      "q": "What is the wall of icons called?",
      "choices": [
       "The iconostasis",
@@ -1158,11 +1320,7 @@
      "why": "The iconostasis is a wall of icons that separates and unites the sanctuary and the nave."
     },
     {
-     "q": "The doors in the middle of the iconostasis are called the ____ Doors.",
-     "reveal": "Royal / Holy",
-     "why": "The Royal (or Holy) Doors are in the center of the iconostasis."
-    },
-    {
+     "type": "choice",
      "q": "In an icon of Mary, she points us to Jesus.",
      "choices": [
       "True",
@@ -1172,6 +1330,18 @@
      "why": "True! The Mother of God holds Christ and points to him, showing us the way."
     },
     {
+     "type": "blank",
+     "q": "The doors in the middle of the iconostasis are called the ____ Doors.",
+     "words": [
+      "Royal",
+      "Front",
+      "Golden"
+     ],
+     "answer": "Royal",
+     "why": "The Royal (or Holy) Doors are in the center of the iconostasis."
+    },
+    {
+     "type": "choice",
      "q": "How do Byzantine Catholics receive Holy Communion?",
      "choices": [
       "From a golden spoon",
@@ -1182,6 +1352,7 @@
      "why": "The priest gives the Body and Blood of Christ with a spoon, for the cleansing from sins."
     },
     {
+     "type": "choice",
      "q": "The Church holds all lawfully recognized rites to be of equal right and dignity.",
      "choices": [
       "True",
@@ -1189,6 +1360,25 @@
      ],
      "answer": 0,
      "why": "True! Catechism 1203: all lawful rites are “of equal right and dignity.”"
+    },
+    {
+     "type": "match",
+     "q": "Match each one to what it is.",
+     "pairs": [
+      [
+       "Iconostasis",
+       "A wall of icons"
+      ],
+      [
+       "Royal Doors",
+       "The doors in the middle"
+      ],
+      [
+       "Golden spoon",
+       "How we receive Holy Communion"
+      ]
+     ],
+     "why": "Byzantine churches have a wall of icons called an iconostasis, with the Royal Doors in the middle, and Communion is given with a golden spoon."
     }
    ],
    "transcript": [
@@ -1230,7 +1420,8 @@
    "date": "2026-10-27",
    "quiz": [
     {
-     "q": "What do we say the Sign of the Cross?",
+     "type": "choice",
+     "q": "Why do we make the Sign of the Cross?",
      "choices": [
       "To remember the Trinity",
       "To say Goodbye",
@@ -1240,6 +1431,7 @@
      "why": "Christ – Our Pascha 626: the Christian “professes faith in the Most Holy Trinity.”"
     },
     {
+     "type": "choice",
      "q": "Which shoulder do Byzantine Catholics touch first?",
      "choices": [
       "The right",
@@ -1250,11 +1442,18 @@
      "why": "Christ – Our Pascha 626: “from the right shoulder to the left.”"
     },
     {
+     "type": "blank",
      "q": "Three fingers joined stand for the Holy ____.",
-     "reveal": "Trinity",
+     "words": [
+      "Trinity",
+      "Angels",
+      "Church"
+     ],
+     "answer": "Trinity",
      "why": "Christ – Our Pascha 626: joining the first three fingers is “a sign of our profession of faith in the Holy Trinity.”"
     },
     {
+     "type": "choice",
      "q": "The Church holds all lawfully recognized rites to be of equal right and dignity.",
      "choices": [
       "True",
@@ -1262,6 +1461,17 @@
      ],
      "answer": 0,
      "why": "True! Catechism 1203: all lawful rites are “of equal right and dignity.”"
+    },
+    {
+     "type": "order",
+     "q": "Put the Byzantine Sign of the Cross in order.",
+     "items": [
+      "Forehead",
+      "Chest",
+      "Right shoulder",
+      "Left shoulder"
+     ],
+     "why": "Christ – Our Pascha 626: “from the forehead to the breast and from the right shoulder to the left.”"
     }
    ],
    "transcript": [
@@ -1298,11 +1508,7 @@
    "date": "2026-11-04",
    "quiz": [
     {
-     "q": "Infallible means can’t be ____.",
-     "reveal": "wrong / mistaken",
-     "why": "Infallible means unable to be wrong. Catechism 889: Jesus gave his Church “a share in his own infallibility.”"
-    },
-    {
+     "type": "choice",
      "q": "What job did Jesus give Peter?",
      "choices": [
       "Strengthen his brothers",
@@ -1313,6 +1519,7 @@
      "why": "Luke 22:32: “you must strengthen your brothers.”"
     },
     {
+     "type": "choice",
      "q": "Infallibility means the Pope always knows who will win the big game.",
      "choices": [
       "True",
@@ -1322,6 +1529,18 @@
      "why": "False! Catechism 891: the gift is for “a doctrine pertaining to faith or morals.”"
     },
     {
+     "type": "blank",
+     "q": "Infallible means can't be ____.",
+     "words": [
+      "wrong",
+      "late",
+      "quiet"
+     ],
+     "answer": "wrong",
+     "why": "Infallible means unable to be wrong. Catechism 889: Jesus gave his Church “a share in his own infallibility.”"
+    },
+    {
+     "type": "choice",
      "q": "The Pope never makes any mistakes at all.",
      "choices": [
       "True",
@@ -1365,6 +1584,14 @@
     "catholic-kids-songs"
    ],
    "date": "2023-06-08",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Kylie Keegan"
+    ]
+   },
    "downloads": [
     {
      "kind": "📄 Lead sheet",
@@ -1399,6 +1626,14 @@
     "catholic-kids-songs"
    ],
    "date": "2023-06-08",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -1423,6 +1658,14 @@
     "catholic-kids-songs"
    ],
    "date": "2023-06-08",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ]
+   },
    "downloads": [
     {
      "kind": "📄 Lead sheet",
@@ -1447,6 +1690,14 @@
     "catholic-kids-songs"
    ],
    "date": "2023-06-12",
+   "credits": {
+    "written": [
+     "Anthony Moran"
+    ],
+    "sung": [
+     "Anthony Moran"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -1466,6 +1717,14 @@
     "catholic-kids-songs"
    ],
    "date": "2023-06-19",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Adrianna Ortiz"
+    ]
+   },
    "downloads": [
     {
      "kind": "📄 Lead sheet",
@@ -1490,6 +1749,14 @@
     "catholic-kids-songs"
    ],
    "date": "2023-06-19",
+   "credits": {
+    "written": [
+     "Anthony Moran"
+    ],
+    "sung": [
+     "Anthony Moran"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -1509,6 +1776,14 @@
     "catholic-kids-songs"
    ],
    "date": "2023-07-05",
+   "credits": {
+    "written": [
+     "Anthony Moran"
+    ],
+    "sung": [
+     "Anthony Moran"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -1528,6 +1803,14 @@
     "catholic-kids-songs"
    ],
    "date": "2023-07-10",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ]
+   },
    "downloads": [
     {
      "kind": "📄 Lead sheet",
@@ -1552,6 +1835,14 @@
     "catholic-kids-songs"
    ],
    "date": "2023-07-10",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎼 Instrumental",
@@ -1581,6 +1872,14 @@
     "catholic-kids-songs"
    ],
    "date": "2023-07-11",
+   "credits": {
+    "written": [
+     "Anthony Moran"
+    ],
+    "sung": [
+     "Anthony Moran"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -1600,6 +1899,14 @@
     "catholic-kids-songs"
    ],
    "date": "2023-07-11",
+   "credits": {
+    "written": [
+     "Anthony Moran"
+    ],
+    "sung": [
+     "Anthony Moran"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -1619,6 +1926,14 @@
     "catholic-kids-songs"
    ],
    "date": "2023-07-23",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -1638,6 +1953,14 @@
     "catholic-kids-songs"
    ],
    "date": "2023-08-21",
+   "credits": {
+    "written": [
+     "Anthony Moran"
+    ],
+    "sung": [
+     "Anthony Moran"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -1657,6 +1980,14 @@
     "catholic-kids-songs"
    ],
    "date": "2023-08-23",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -1676,6 +2007,14 @@
     "catholic-kids-songs"
    ],
    "date": "2023-09-13",
+   "credits": {
+    "written": [
+     "Anthony Moran"
+    ],
+    "sung": [
+     "Anthony Moran"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -1695,6 +2034,14 @@
     "catholic-kids-songs"
    ],
    "date": "2023-09-29",
+   "credits": {
+    "written": [
+     "Anthony Moran"
+    ],
+    "sung": [
+     "Anthony Moran"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -1714,6 +2061,14 @@
     "catholic-kids-songs"
    ],
    "date": "2023-09-30",
+   "credits": {
+    "written": [
+     "Anthony Moran"
+    ],
+    "sung": [
+     "Anthony Moran"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -1733,6 +2088,14 @@
     "catholic-kids-songs"
    ],
    "date": "2023-10-02",
+   "credits": {
+    "written": [
+     "Anthony Moran"
+    ],
+    "sung": [
+     "Anthony Moran"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -1752,6 +2115,14 @@
     "catholic-kids-songs"
    ],
    "date": "2023-10-06",
+   "credits": {
+    "written": [
+     "Anthony Moran"
+    ],
+    "sung": [
+     "Anthony Moran"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -1771,6 +2142,14 @@
     "catholic-kids-songs"
    ],
    "date": "2023-10-24",
+   "credits": {
+    "written": [
+     "Anthony Moran"
+    ],
+    "sung": [
+     "Anthony Moran"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -1790,6 +2169,14 @@
     "catholic-kids-songs"
    ],
    "date": "2023-11-02",
+   "credits": {
+    "written": [
+     "Anthony Moran"
+    ],
+    "sung": [
+     "Anthony Moran"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -1809,6 +2196,14 @@
     "catholic-kids-songs"
    ],
    "date": "2023-11-08",
+   "credits": {
+    "written": [
+     "Anthony Moran"
+    ],
+    "sung": [
+     "Anthony Moran"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -1828,6 +2223,14 @@
     "catholic-kids-songs"
    ],
    "date": "2023-11-10",
+   "credits": {
+    "written": [
+     "Anthony Moran"
+    ],
+    "sung": [
+     "Anthony Moran"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -1846,6 +2249,11 @@
     "catholic-lofi"
    ],
    "date": "2024-03-08",
+   "credits": {
+    "written": [
+     "Catholic LoFi"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -1864,6 +2272,11 @@
     "catholic-lofi"
    ],
    "date": "2024-03-14",
+   "credits": {
+    "written": [
+     "Catholic LoFi"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -1883,6 +2296,14 @@
     "catholic-kids-songs"
    ],
    "date": "2024-03-22",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -1901,6 +2322,11 @@
     "catholic-lofi"
    ],
    "date": "2024-03-23",
+   "credits": {
+    "written": [
+     "Catholic LoFi"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -1919,6 +2345,11 @@
     "catholic-lofi"
    ],
    "date": "2024-03-28",
+   "credits": {
+    "written": [
+     "Catholic LoFi"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -1937,6 +2368,11 @@
     "catholic-lofi"
    ],
    "date": "2024-03-31",
+   "credits": {
+    "written": [
+     "Catholic LoFi"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -1956,6 +2392,14 @@
     "catholic-kids-songs"
    ],
    "date": "2024-04-02",
+   "credits": {
+    "written": [
+     "Anthony Moran"
+    ],
+    "sung": [
+     "Anthony Moran"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -1975,6 +2419,14 @@
     "catholic-kids-songs"
    ],
    "date": "2024-04-03",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ]
+   },
    "downloads": [
     {
      "kind": "📄 Lead sheet",
@@ -2000,6 +2452,14 @@
     "songs-with-richard-schletty"
    ],
    "date": "2024-04-05",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ]
+   },
    "downloads": [
     {
      "kind": "📄 Lead sheet",
@@ -2030,6 +2490,14 @@
     "catholic-kids-songs"
    ],
    "date": "2024-04-06",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -2048,6 +2516,11 @@
     "catholic-lofi"
    ],
    "date": "2024-04-16",
+   "credits": {
+    "written": [
+     "Catholic LoFi"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -2066,6 +2539,11 @@
     "catholic-lofi"
    ],
    "date": "2024-04-16",
+   "credits": {
+    "written": [
+     "Catholic LoFi"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -2085,6 +2563,14 @@
     "catholic-kids-songs"
    ],
    "date": "2024-05-03",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -2110,6 +2596,18 @@
     "songs-with-richard-schletty"
    ],
    "date": "2024-06-08",
+   "credits": {
+    "written": [
+     "André van Haren",
+     "Richard Schletty",
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Anne Schletty",
+     "Richard Schletty",
+     "Bella Green"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎧 Song (audio)",
@@ -2154,6 +2652,18 @@
     "catholic-kids-songs"
    ],
    "date": "2024-06-11",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Dominic Cason",
+     "Amelia Cason",
+     "Shalone Cason",
+     "Adrianna Ortiz",
+     "Kylie Keegan"
+    ]
+   },
    "downloads": [
     {
      "kind": "📄 Lead sheet",
@@ -2188,6 +2698,14 @@
     "catholic-kids-songs"
    ],
    "date": "2024-07-01",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Adrianna Ortiz"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎼 Instrumental",
@@ -2217,6 +2735,15 @@
     "catholic-kids-songs"
    ],
    "date": "2024-07-13",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason",
+     "Kylie Keegan"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎧 Song (audio)",
@@ -2242,6 +2769,18 @@
     "catholic-kids-songs"
    ],
    "date": "2024-08-20",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ],
+    "backing": [
+     "Dominic Cason",
+     "Amelia Cason"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -2262,6 +2801,15 @@
     "catholic-kids-songs"
    ],
    "date": "2024-09-20",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Adrianna Ortiz",
+     "Shalone Cason"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -2282,6 +2830,14 @@
     "catholic-kids-songs"
    ],
    "date": "2024-09-26",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -2301,6 +2857,16 @@
     "catholic-kids-songs"
    ],
    "date": "2024-09-30",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason",
+     "Adrianna Ortiz",
+     "Kylie Keegan"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -2320,6 +2886,21 @@
     "catholic-kids-songs"
    ],
    "date": "2024-10-27",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ],
+    "backing": [
+     "Kylie Keegan",
+     "Adrianna Ortiz",
+     "Ashley Cason",
+     "Dominic Cason",
+     "Amelia Cason"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -2340,6 +2921,14 @@
     "bible-songs-for-kids"
    ],
    "date": "2024-11-07",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -2360,6 +2949,14 @@
     "bible-songs-for-kids"
    ],
    "date": "2024-11-22",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -2379,6 +2976,15 @@
     "catholic-kids-songs"
    ],
    "date": "2024-12-20",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Adrianna Ortiz",
+     "Ashley Cason"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -2398,6 +3004,14 @@
     "catholic-kids-songs"
    ],
    "date": "2025-01-04",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -2417,6 +3031,18 @@
     "catholic-kids-songs"
    ],
    "date": "2025-01-25",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ],
+    "backing": [
+     "Adrianna Ortiz",
+     "Amelia Cason"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -2436,6 +3062,17 @@
     "catholic-kids-songs"
    ],
    "date": "2025-04-11",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ],
+    "backing": [
+     "Adrianna Ortiz"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -2455,6 +3092,20 @@
     "catholic-kids-songs"
    ],
    "date": "2025-05-23",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ],
+    "animation": [
+     "Shalone Cason"
+    ],
+    "backing": [
+     "Adrianna Ortiz"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",
@@ -2475,6 +3126,14 @@
     "songs-by-s-d-cason"
    ],
    "date": "2026-05-07",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ]
+   },
    "downloads": [
     {
      "kind": "🎬 Video",

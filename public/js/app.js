@@ -13,6 +13,7 @@ import * as FX from "./kit/fx.js";
 import { keepDockVisible } from "./kit/dock.js";
 import { leadIn, praise, tryAgain } from "./kit/vary.js";
 import { esc, starsHtml, starsFor, nextButton, say, markDot, showFinish, stickerBook, viewGrownups, installClickSounds, wireVoiceToggle } from "./kit/ui.js";
+import { ASK, spoken, answerText } from "./quiz.js";
 
 const app = document.getElementById("app");
 let LIB = { courses: [], albums: [], lessons: [], songs: [] };
@@ -20,6 +21,8 @@ const lessonById = (id) => LIB.lessons.find((l) => l.id === id);
 const songById = (id) => LIB.songs.find((s) => s.id === id);
 const courseById = (id) => LIB.courses.find((c) => c.id === id);
 const albumById = (id) => LIB.albums.find((a) => a.id === id);
+const personById = (id) => LIB.people?.find((p) => p.id === id);
+const personId = (name) => name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 const watched = (id) => !!S.settings().watched?.[id];
 const markWatched = (id) => S.setSetting("watched", { ...S.settings().watched, [id]: Date.now() });
 
@@ -39,7 +42,9 @@ const route = createRouter([
   [/^course\/([\w-]+)$/, viewCourse],
   [/^course\/([\w-]+)\/([\w-]+)$/, (c, l) => viewLesson(l, c)],
   [/^lesson\/([\w-]+)$/, (l) => viewLesson(l)],
-  [/^quiz\/([\w-]+)$/, viewQuiz],
+  [/^quiz\/([\w-]+)$/, (l) => viewQuiz(l)],
+  [/^course\/([\w-]+)\/([\w-]+)\/quiz$/, (c, l) => viewQuiz(l, c)],
+  [/^person\/([\w-]+)$/, viewPerson],
   [/^album\/([\w-]+)$/, (a) => viewSongs(albumById(a)?.items[0], a)],
   [/^album\/([\w-]+)\/([\w-]+)$/, (a, s) => viewSongs(s, a)],
   [/^song\/([\w-]+)$/, (s) => viewSongs(s)],
@@ -143,7 +148,7 @@ function viewLesson(id, courseId) {
         <h1 class="watch-title">${esc(l.title)}${course ? `<span class="muted small course-of">${esc(course.title)} · ${list.indexOf(l.id) + 1} of ${list.length}</span>` : ""}</h1></div>
       ${player(l)}
       <div class="watch-actions">
-        ${l.quiz ? `<a class="btn big primary" href="#/quiz/${l.id}" data-quiz>📝 Quiz time!</a>` : ""}
+        ${l.quiz ? `<a class="btn big primary" href="${course ? `#/course/${course.id}/${l.id}/quiz` : `#/quiz/${l.id}`}" data-quiz>📝 Quiz time!</a>` : ""}
         ${next ? `<a class="btn${l.quiz ? "" : " big primary"}" href="#/course/${course.id}/${next.id}" data-next-lesson>Next lesson ▶</a>` : ""}
         ${l.transcript ? `<button class="btn" data-words aria-expanded="false">📖 Read the words</button>` : ""}
       </div>
@@ -171,15 +176,17 @@ function viewLesson(id, courseId) {
 
 // ───────── the quiz ─────────
 
-function viewQuiz(id) {
+function viewQuiz(id, courseId) {
   const l = lessonById(id);
   if (!l?.quiz) { location.hash = "#/"; return; }
+  const course = courseId && courseById(courseId);
   const qs = l.quiz;
+  const back = course ? `#/course/${course.id}/${l.id}` : `#/lesson/${l.id}`;
   document.body.classList.add("in-game");
   app.innerHTML = `
     <section class="play quiz">
       <div class="play-top">
-        <a class="icon-btn" href="#/lesson/${l.id}" aria-label="Back to the video">✕</a>
+        <a class="icon-btn" href="${back}" aria-label="Back to the video">✕</a>
         <div class="dots">${qs.map((_, k) => `<i data-dot="${k}"></i>`).join("")}</div>
         <button class="icon-btn" data-read title="Read it again" aria-label="Read it again">💬</button>
         <button class="icon-btn toggle" data-voice title="Read aloud">🔊</button>
@@ -193,65 +200,74 @@ function viewQuiz(id) {
   const bubble = app.querySelector(".bubble"), dock = app.querySelector(".dock"), answers = app.querySelector(".answers"), why = app.querySelector(".why");
   let alive = true, mistakes = 0, current = "";
   app.querySelector("[data-read]").onclick = () => current && speak(current, { force: true });
-  const listed = (cs) => (cs.length === 2 ? cs.join(", or ") : `${cs.slice(0, -1).join(", ")}, or ${cs.at(-1)}`);
-  const blankToSay = (q) => q.replace(/_{2,}/g, "blank");
 
   (async () => {
     for (let k = 0; k < qs.length && alive; k++) {
-      const q = qs[k], before = mistakes;
+      const q = qs[k];
       app.querySelectorAll("[data-dot]").forEach((d) => d.classList.toggle("now", +d.dataset.dot === k));
       why.hidden = true; dock.innerHTML = "";
-      bubble.querySelector(".say").textContent = q.q;
-      current = q.choices ? `${blankToSay(q.q)} ${listed(q.choices)}?` : `${blankToSay(q.q)} Say your answer out loud, then tap to check!`;
+      bubble.querySelector(".say").textContent = q.type === "blank" ? q.q.replace(/_{2,}/g, "___") : q.q;
+      current = spoken(q);
       speak(`${k ? `${leadIn()} ` : ""}${current}`);
-      if (q.choices) {
-        answers.innerHTML = `<div class="choices answer-choices">${q.choices.map((c, i) => `<button class="choice-card answer" data-v="${i}">${esc(c)}</button>`).join("")}</div>`;
-        await new Promise((resolve) => {
-          let tries = 0;
-          answers.querySelectorAll("[data-v]").forEach((b) => b.onclick = () => {
-            if (!alive || b.disabled) return;
-            sfx.select();
-            if (+b.dataset.v === q.answer) {
-              answers.querySelectorAll("[data-v]").forEach((x) => { x.disabled = true; });
-              b.classList.add("right"); sfx.right(); FX.confetti(15); say(bubble, praise());
-              return resolve();
-            }
-            mistakes++; tries++;
-            b.classList.add("wrong"); b.disabled = true; FX.shake(b); sfx.oops();
-            if (tries < 2) { const t = tryAgain(); bubble.querySelector(".say").textContent = `${t} Think about the video.`; speak(`${t} Think about the video.`); return; }
-            answers.querySelectorAll("[data-v]").forEach((x) => { x.disabled = true; if (+x.dataset.v === q.answer) x.classList.add("right"); });
-            say(bubble, `Here's the answer: ${esc(q.choices[q.answer])}.`);
-            resolve();
-          });
-        });
-      } else {
-        // A fill-in question: say it, then tap to see. (Nothing to get wrong.)
-        answers.innerHTML = `<button class="choice-card answer reveal-btn">🗣️ I said it! Show me</button>`;
-        await new Promise((resolve) => { answers.querySelector(".reveal-btn").onclick = () => { sfx.select(); resolve(); }; });
-        answers.innerHTML = `<div class="card reveal">${esc(q.reveal)}</div>`;
-        FX.confetti(10); say(bubble, `The answer is: ${esc(q.reveal)}. Did you get it?`);
-      }
+      const miss = await (ASK[q.type] ?? ASK.choice)(q, answers, {
+        onMiss: (n) => { if (n === 1) { const t = tryAgain(); bubble.querySelector(".say").textContent = `${t} Think about the video.`; speak(`${t} Think about the video.`); } },
+      });
       if (!alive) return;
+      mistakes += miss;
+      say(bubble, miss >= 2 && (q.type === "choice" || q.type === "blank") ? `Here's the answer: ${esc(answerText(q))}.` : praise());
       if (q.why) { why.innerHTML = `<p>📜 ${esc(q.why)}</p>`; why.hidden = false; setTimeout(() => alive && speak(q.why), 1100); }
-      markDot(app, k, mistakes > before);
+      markDot(app, k, miss > 0);
       S.solvedOne();
       await nextButton(dock, k < qs.length - 1 ? "Next ▶" : "Finish 🏁");
       answers.innerHTML = "";
     }
     if (!alive) return;
+    markWatched(l.id);
+    // In a course, go on to the next lesson; otherwise back to all the videos.
+    const list = course?.items ?? [], nextId = list[list.indexOf(l.id) + 1], nx = nextId && lessonById(nextId);
     showFinish(app, {
       id: l.id, stars: starsFor(mistakes), mistakes, title: "Quiz done!", done: `${qs.length} questions.`,
-      again: `#/quiz/${l.id}`, onAgain: route, next: { href: "#/", label: "More videos ▶" },
+      again: course ? `#/course/${course.id}/${l.id}/quiz` : `#/quiz/${l.id}`, onAgain: route,
+      next: nx ? { href: `#/course/${course.id}/${nx.id}`, label: `Next lesson: ${nx.title} ▶` }
+        : course ? { href: `#/course/${course.id}`, label: `${course.emoji} Course done! Back to ${course.title} ▶` }
+        : { href: "#/", label: "More videos ▶" },
     });
   })();
   return () => { alive = false; };
+}
+
+// ───────── people: everyone who wrote or sang a song ─────────
+
+const ROLES = [["written", "✍️ Written by"], ["sung", "🎤 Sung by"], ["backing", "🎶 Backing vocals"], ["animation", "🎨 Animation"]];
+const creditsHtml = (song) => song.credits ? `<div class="credits">${ROLES.filter(([k]) => song.credits[k]?.length).map(([k, label]) => `
+  <div class="credit-row"><span class="credit-label">${label}</span>${song.credits[k].map((n) => `<a class="person-chip" href="#/person/${personId(n)}">${esc(n)}</a>`).join("")}</div>`).join("")}</div>` : "";
+
+function viewPerson(id) {
+  const p = personById(id);
+  if (!p) { location.hash = "#/"; return; }
+  const songs = p.songs.map(songById).filter(Boolean);
+  const roleOf = (s) => ROLES.filter(([k]) => s.credits?.[k]?.some((n) => personId(n) === id)).map(([, label]) => label.split(" ")[0]).join(" ");
+  app.innerHTML = `
+    <section class="watch">
+      <div class="watch-top"><a class="icon-btn" href="javascript:history.back()" aria-label="Back">✕</a>
+        <h1 class="watch-title">🎤 ${esc(p.name)}<span class="muted small course-of">${songs.length} song${songs.length === 1 ? "" : "s"}</span></h1></div>
+      <a class="btn big primary start-btn" href="#/song/${songs[0]?.id}" data-play-all>▶ Play their songs</a>
+      <div class="video-grid">${songs.map((s) => `
+        <a class="video-card" href="#/song/${s.id}"><span class="thumb"><img src="${esc(s.poster ?? "")}" alt="" loading="lazy"></span>
+          <span class="video-title">${esc(s.title)}</span><span class="tag">${roleOf(s)}</span></a>`).join("")}</div>
+    </section>`;
+  app.querySelector("[data-play-all]").onclick = (e) => { e.preventDefault(); sessionStorage.setItem("watch:queue", JSON.stringify(p.songs)); location.hash = `#/song/${songs[0].id}`; };
+  speak(`Songs with ${p.name}.`);
 }
 
 // ───────── songs: one player that goes straight through the album ─────────
 
 function viewSongs(songId, albumId) {
   const album = albumId && albumById(albumId);
-  const ids = album ? album.items : [...LIB.songs].reverse().map((s) => s.id);
+  // A person's "Play their songs" queue, else the album, else all songs (newest first).
+  let queue = null;
+  try { queue = JSON.parse(sessionStorage.getItem("watch:queue") ?? "null"); sessionStorage.removeItem("watch:queue"); } catch { /* none */ }
+  const ids = album ? album.items : queue?.includes(songId) ? queue : [...LIB.songs].reverse().map((s) => s.id);
   let s = songById(songId);
   if (!s) { location.hash = "#/"; return; }
   app.innerHTML = `
@@ -259,6 +275,7 @@ function viewSongs(songId, albumId) {
       <div class="watch-top"><a class="icon-btn" href="#/" aria-label="Back">✕</a>
         <h1 class="watch-title"><span class="now-title"></span>${album ? `<span class="muted small course-of">${album.emoji} ${esc(album.title)}</span>` : ""}</h1></div>
       ${player(s)}
+      <div class="credits-box"></div>
       <h2 class="shelf-title">🎶 Up next</h2>
       <div class="playlist"></div>
       <details class="card downloads"><summary>⬇️ For grown-ups: downloads</summary><div class="dl-list"></div></details>
@@ -268,10 +285,11 @@ function viewSongs(songId, albumId) {
   const show = (song, play) => {
     s = song;
     app.querySelector(".now-title").textContent = song.title;
+    app.querySelector(".credits-box").innerHTML = creditsHtml(song);
     history.replaceState(null, "", album ? `#/album/${album.id}/${song.id}` : `#/song/${song.id}`);
     if (play) { video.poster = song.poster ?? ""; video.src = song.video; start(video); }
     const i = ids.indexOf(song.id), rest = [...ids.slice(i + 1), ...ids.slice(0, i)].map(songById).filter(Boolean);
-    list.innerHTML = rest.slice(0, album ? 50 : 12).map((x) => `
+    list.innerHTML = rest.slice(0, album || queue ? 60 : 12).map((x) => `
       <button class="playlist-item" data-song="${x.id}"><img src="${esc(x.poster ?? "")}" alt="" loading="lazy"><span>${esc(x.title)}</span>${watched(x.id) ? "<span class=\"seen-mini\">✓</span>" : ""}</button>`).join("");
     list.querySelectorAll("[data-song]").forEach((b) => b.onclick = () => show(songById(b.dataset.song), true));
     const counts = {};

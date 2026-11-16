@@ -118,6 +118,33 @@ function downloadsFor(title, files) {
   });
 }
 
+// "Music and lyrics: Shalone Cason Vocals: Adrianna Ortiz and Kylie Keegan" → { written: [...], sung: [...], … }
+const ROLE = /((?:lead |backup |additional )?(?:music|lyrics|vocals|arrangement|animation)(?:(?:\s*,\s*|\s+and\s+|,\s*and\s+)(?:music|lyrics|vocals|arrangement|animation))*)\s*:/gi;
+function parseCredits(html) {
+  const m = html.match(/kg-callout-text[^>]*>([\s\S]*?)<\/div>/);
+  if (!m) return null;
+  const t = text(m[1]).replace(/^[^A-Za-z]+/, "");
+  const marks = [...t.matchAll(ROLE)];
+  if (!marks.length) return null;
+  const out = {};
+  marks.forEach((mk, i) => {
+    const roles = mk[1].toLowerCase(), end = i + 1 < marks.length ? marks[i + 1].index : t.length;
+    const names = t.slice(mk.index + mk[0].length, end).replace(/[.;]\s*$/, "").split(/\s*,\s*(?:and\s+|&\s*)?|\s+and\s+|\s*&\s*/).map((x) => x.trim().replace(/\.$/, "")).filter(Boolean);
+    const add = (k) => { out[k] = [...new Set([...(out[k] ?? []), ...names])]; };
+    if (/music|lyrics|arrangement/.test(roles)) add("written");
+    if (/vocals/.test(roles)) add(/backup|additional/.test(roles) ? "backing" : "sung");
+    if (/animation/.test(roles)) add("animation");
+  });
+  return Object.keys(out).length ? out : null;
+}
+// Songs with no credit line: the tag says who ("Songs by Anthony Moran").
+function creditsFromTags(tags) {
+  const by = tags.find((t) => /^songs-(by|with)-/.test(t.slug));
+  if (by) { const who = by.name.replace(/^Songs (by|with)\s+/i, ""); return { written: [who], sung: [who] }; }
+  if (tags.some((t) => t.slug === "catholic-lofi")) return { written: ["Catholic LoFi"] };
+  return null;
+}
+
 const posts = [];
 for (let page = 1; ; page++) {
   const j = await api(`posts/?limit=100&page=${page}&include=tags&formats=html`);
@@ -149,22 +176,53 @@ for (const p of posts.sort((a, b) => a.published_at.localeCompare(b.published_at
       const downloads = downloadsFor(base.title, files);
       // The song's own video can always be saved.
       if (!downloads.some((d) => d.url === base.video)) downloads.push({ kind: "🎬 Video", label: base.title, url: base.video });
-      songs.push({ ...base, downloads });
+      songs.push({ ...base, credits: parseCredits(html) ?? creditsFromTags(tags), downloads });
     } else {
       lessons.push({ ...base, quiz: parseQuiz(html), transcript: parseTranscript(html) });
     }
   } catch (e) { skipped.push(`${p.slug} (${e.message})`); }
 }
 
+// A remake replaces the older video with the same title: keep the newest.
+for (const list of [lessons, songs]) {
+  for (let i = list.length - 1; i >= 0; i--) {
+    const newer = list.findIndex((x, j) => j > i && x.id === list[i].id);
+    if (newer > -1) { skipped.push(`${list[i].id} from ${list[i].date} (replaced by the newer one from ${list[newer].date})`); list.splice(i, 1); }
+  }
+}
 // Unique ids (two posts could shorten to the same one).
 for (const list of [lessons, songs]) {
   const seen = new Map();
   for (const x of list) { const n = (seen.get(x.id) ?? 0) + 1; seen.set(x.id, n); if (n > 1) x.id = `${x.id}-${n}`; }
 }
 
+// Hand-written quizzes (content/quizzes.json) replace a lesson's Ghost quiz. A bad entry is reported and skipped.
+const QUIZ_TYPES = { choice: (q) => q.choices?.length >= 2 && q.answer >= 0 && q.answer < q.choices.length,
+  blank: (q) => /_{2,}/.test(q.q) && q.words?.includes(q.answer), order: (q) => q.items?.length >= 3, match: (q) => q.pairs?.length >= 2 };
+const extra = JSON.parse(fs.readFileSync(new URL("../content/quizzes.json", import.meta.url), "utf8"));
+for (const [id, quiz] of Object.entries(extra)) {
+  if (id.startsWith("_")) continue;
+  const l = lessons.find((x) => x.id === id);
+  if (!l) { skipped.push(`quiz for ${id} (no such lesson)`); continue; }
+  const good = quiz.questions.filter((q) => (QUIZ_TYPES[q.type ?? "choice"]?.(q) ? true : (skipped.push(`a quiz question in ${id}: "${String(q.q).slice(0, 40)}"`), false)));
+  if (good.length) l.quiz = good.map((q) => ({ type: "choice", ...q }));
+  if (quiz.draft) l.quizDraft = true;
+}
+// Ghost fill-in questions ("Answer: …") need a word bank, so they come from content/quizzes.json instead.
+for (const l of lessons) if (l.quiz) { l.quiz = l.quiz.filter((q) => !q.reveal).map((q) => ({ type: "choice", ...q })); if (!l.quiz.length) l.quiz = null; }
+
+// The same person written two ways.
+const ALIASES = { "S.D. Cason": "Shalone Cason", Ashley: "Ashley Cason", Dominic: "Dominic Cason" };
+for (const s of songs) for (const k of Object.keys(s.credits ?? {})) s.credits[k] = [...new Set(s.credits[k].map((n) => ALIASES[n] ?? n))];
+const people = {};
+for (const s of songs) for (const [role, names] of Object.entries(s.credits ?? {})) for (const n of names) {
+  const id = slugify(n);
+  (people[id] ??= { id, name: n, songs: [] }).songs.includes(s.id) || people[id].songs.push(s.id);
+}
+
 const group = (defs, list) => defs.map((d) => ({ id: d.tag, title: tagNames[d.tag] ?? d.tag, emoji: d.emoji, items: list.filter((x) => x.tags.includes(d.tag)).map((x) => x.id) }))
   .filter((g) => g.items.length);
-const library = { source: SITE, built: new Date().toISOString().slice(0, 10), courses: group(COURSES, lessons), albums: group(ALBUMS, songs), lessons, songs };
+const library = { source: SITE, built: new Date().toISOString().slice(0, 10), courses: group(COURSES, lessons), albums: group(ALBUMS, songs), people: Object.values(people), lessons, songs };
 
 fs.mkdirSync(new URL("../public/data/", import.meta.url), { recursive: true });
 fs.writeFileSync(OUT, JSON.stringify(library, null, 1));
@@ -172,4 +230,6 @@ console.log(`lessons ${lessons.length} (with quiz ${lessons.filter((l) => l.quiz
 console.log(`songs ${songs.length} (with downloads ${songs.filter((s) => s.downloads.length).length})`);
 console.log(`courses: ${library.courses.map((c) => `${c.title} (${c.items.length})`).join(", ")}`);
 console.log(`albums: ${library.albums.map((a) => `${a.title} (${a.items.length})`).join(", ")}`);
+console.log(`people: ${library.people.map((p) => `${p.name} (${p.songs.length})`).join(", ")}`);
+console.log(`songs without credits: ${songs.filter((s) => !s.credits).map((s) => s.title).join(", ") || "none"}`);
 if (skipped.length) console.log(`skipped ${skipped.length}: ${skipped.join(", ")}`);
