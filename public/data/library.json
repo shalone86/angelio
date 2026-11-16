@@ -42,6 +42,91 @@
    "items": [
     "saint-frances-xavier-cabrini"
    ]
+  },
+  {
+   "id": "prayer",
+   "title": "How to Pray",
+   "emoji": "🙏",
+   "items": [
+    "why-pay-attention-during-prayer",
+    "an-introduction-to-prayer",
+    "what-difference-does-prayer-make",
+    "conditions-of-prayer",
+    "posture-during-prayer",
+    "the-need-for-prayer",
+    "what-is-vocal-prayer",
+    "what-is-mental-prayer",
+    "what-is-public-and-private-prayer"
+   ]
+  },
+  {
+   "id": "advent",
+   "title": "Advent",
+   "emoji": "🕯️",
+   "items": [
+    "what-is-advent",
+    "what-is-an-advent-wreath",
+    "what-is-gaudete-sunday",
+    "what-is-a-jesse-tree",
+    "what-is-a-the-history-of-the-christmas-tree",
+    "what-are-nativity-scenes"
+   ]
+  },
+  {
+   "id": "lent",
+   "title": "Lent",
+   "emoji": "💜",
+   "items": [
+    "what-is-lent",
+    "what-are-the-stations-of-the-cross",
+    "what-is-ash-wednesday",
+    "what-is-penance",
+    "what-are-some-ideas-for-penance",
+    "what-is-laetare-sunday",
+    "what-is-passiontide",
+    "what-is-palm-sunday",
+    "why-veil-statues"
+   ]
+  },
+  {
+   "id": "easter",
+   "title": "Easter",
+   "emoji": "🐣",
+   "items": [
+    "what-is-holy-week",
+    "what-is-holy-saturday",
+    "what-is-the-resurrection-of-christ",
+    "what-are-easter-traditions",
+    "what-day-is-easter",
+    "what-is-eastertide"
+   ]
+  },
+  {
+   "id": "angels",
+   "title": "Angels",
+   "emoji": "👼",
+   "items": [
+    "what-are-cherubim",
+    "what-are-evil-angels",
+    "what-is-the-order-and-number-of-angels",
+    "what-are-seraphim",
+    "who-is-saint-gabriel-the-archangel",
+    "who-is-saint-raphael-the-archangel",
+    "who-is-saint-michael-the-archangel",
+    "what-are-angels"
+   ]
+  },
+  {
+   "id": "catholic-comics",
+   "title": "Comics",
+   "emoji": "💬",
+   "items": [
+    "who-was-saint-valentine-free-catholic-comic-for-ki",
+    "saint-frances-xavier-cabrini",
+    "the-brothers-of-the-sacred-heart",
+    "a-legend-for-easter",
+    "saint-gabriel-of-our-lady-of-sorrows"
+   ]
   }
  ],
  "albums": [

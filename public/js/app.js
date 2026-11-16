@@ -46,6 +46,7 @@ const route = createRouter([
   [/^quiz\/([\w-]+)$/, (l) => viewQuiz(l)],
   [/^course\/([\w-]+)\/([\w-]+)\/quiz$/, (c, l) => viewQuiz(l, c)],
   [/^person\/([\w-]+)$/, viewPerson],
+  [/^all\/(courses|lessons|albums|songs)$/, viewAll],
   [/^album\/([\w-]+)$/, (a) => viewSongs(albumById(a)?.items[0], a)],
   [/^album\/([\w-]+)\/([\w-]+)$/, (a, s) => viewSongs(s, a)],
   [/^song\/([\w-]+)$/, (s) => viewSongs(s)],
@@ -88,25 +89,66 @@ const groupCard = (href, g, list, noun) => {
       ${done ? `<span class="muted small">${done} of ${g.items.length} watched</span>` : ""}
     </a>`;
 };
-const shelf = (emoji, title, blurb, cards) => `
+const shelf = (emoji, title, blurb, cards, all) => `
   <section class="shelf">
-    <h2 class="shelf-title"><span aria-hidden="true">${emoji}</span> ${title}</h2>
+    <div class="shelf-head">
+      <h2 class="shelf-title"><span aria-hidden="true">${emoji}</span> ${title}</h2>
+      ${all ? `<a class="btn small see-all" href="#/all/${all}">See all ▸</a>` : ""}
+    </div>
     <p class="muted shelf-blurb">${blurb}</p>
     <div class="shelf-row">${cards}</div>
   </section>`;
 
+// Every list, as cards: home shelves and the "See all" pages use the same ones.
+const newest = (list) => [...list].reverse();
+const LISTS = {
+  courses: { emoji: "🎓", title: "Courses", blurb: "Lessons in order, one after another.", cards: () => LIB.courses.map((c) => groupCard(`#/course/${c.id}`, c, LIB.lessons, "lessons")) },
+  lessons: { emoji: "📚", title: "Lessons", blurb: "Watch, and try the quiz.", cards: () => newest(LIB.lessons).map((l) => card(`#/lesson/${l.id}`, l, l.quiz ? `<span class="tag">📝 Quiz ${starsHtml(S.progress(l.id).stars)}</span>` : "")) },
+  albums: { emoji: "💿", title: "Albums", blurb: "Songs that play one after another.", cards: () => LIB.albums.map((a) => groupCard(`#/album/${a.id}`, a, LIB.songs, "songs")) },
+  songs: { emoji: "🎵", title: "Songs", blurb: "Sing and dance!", cards: () => newest(LIB.songs).map((s) => card(`#/song/${s.id}`, s)) },
+};
+
+// A course and a song of the day: the same for everyone on a given day, new the next day.
+function ofTheDay(list, salt) {
+  const d = new Date(), day = Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 86400000);
+  return list.length ? list[(day * 7 + salt) % list.length] : null;
+}
+
 function viewHome() {
-  const newest = (list) => [...list].reverse();
+  const course = ofTheDay(LIB.courses, 0), song = ofTheDay(LIB.songs, 3);
+  const firstOf = (c) => lessonById(c.items[0]);
   app.innerHTML = `
     <section class="hero small-hero">
       <h1 class="title">Watch &amp; Sing</h1>
       <p class="lede">Lessons about the Faith, and songs to sing!</p>
     </section>
-    ${shelf("🎓", "Courses", "Lessons in order, one after another.", LIB.courses.map((c) => groupCard(`#/course/${c.id}`, c, LIB.lessons, "lessons")).join(""))}
-    ${shelf("📚", "Lessons", "Watch, and try the quiz when there is one.", newest(LIB.lessons).map((l) => card(`#/lesson/${l.id}`, l, l.quiz ? `<span class="tag">📝 Quiz ${starsHtml(S.progress(l.id).stars)}</span>` : "")).join(""))}
-    ${shelf("💿", "Albums", "Songs that play one after another.", LIB.albums.map((a) => groupCard(`#/album/${a.id}`, a, LIB.songs, "songs")).join(""))}
-    ${shelf("🎵", "Songs", "Sing and dance!", newest(LIB.songs).map((s) => card(`#/song/${s.id}`, s)).join(""))}
+    <section class="today">
+      ${course ? `<a class="today-card" href="#/course/${course.id}">
+        <span class="today-label">🎓 Course of the day</span>
+        <span class="thumb"><img src="${esc(firstOf(course)?.poster ?? "")}" alt=""><span class="count">${course.items.length} lessons</span></span>
+        <span class="video-title">${course.emoji} ${esc(course.title)}</span></a>` : ""}
+      ${song ? `<a class="today-card" href="#/song/${song.id}">
+        <span class="today-label">🎵 Song of the day</span>
+        <span class="thumb"><img src="${esc(song.poster ?? "")}" alt=""></span>
+        <span class="video-title">${esc(song.title)}</span></a>` : ""}
+    </section>
+    ${Object.entries(LISTS).map(([k, L]) => shelf(L.emoji, L.title, L.blurb, L.cards().slice(0, 12).join(""), k)).join("")}
     ${stickerBook()}`;
+}
+
+// ───────── "See all": every course, lesson, album or song on one page ─────────
+
+function viewAll(kind) {
+  const L = LISTS[kind];
+  if (!L) { location.hash = "#/"; return; }
+  const cards = L.cards();
+  app.innerHTML = `
+    <section class="watch">
+      <div class="watch-top"><a class="icon-btn" href="#/" aria-label="Back">✕</a>
+        <h1 class="watch-title"><span aria-hidden="true">${L.emoji}</span> All ${L.title.toLowerCase()}<span class="muted small course-of">${cards.length}</span></h1></div>
+      <div class="video-grid">${cards.join("")}</div>
+    </section>`;
+  speak(`All the ${L.title.toLowerCase()}.`);
 }
 
 // ───────── a course ─────────

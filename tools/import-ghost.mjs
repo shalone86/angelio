@@ -24,6 +24,12 @@ const COURSES = [
   { tag: "all-about-popes", emoji: "🗝️" },
   { tag: "catholic-saints-for-boys", emoji: "🛡️" },
   { tag: "catholic-saints-for-girls", emoji: "🌹" },
+  { tag: "prayer", emoji: "🙏", title: "How to Pray" },
+  { tag: "advent", emoji: "🕯️" },
+  { tag: "lent", emoji: "💜" },
+  { tag: "easter", emoji: "🐣" },
+  { tag: "angels", emoji: "👼" },
+  { tag: "catholic-comics", emoji: "💬", title: "Comics" },
 ];
 const ALBUMS = [
   { tag: "byzantine-catholic-songs", emoji: "☦️" },
@@ -220,7 +226,7 @@ for (const s of songs) for (const [role, names] of Object.entries(s.credits ?? {
   (people[id] ??= { id, name: n, songs: [] }).songs.includes(s.id) || people[id].songs.push(s.id);
 }
 
-const group = (defs, list) => defs.map((d) => ({ id: d.tag, title: tagNames[d.tag] ?? d.tag, emoji: d.emoji, items: list.filter((x) => x.tags.includes(d.tag)).map((x) => x.id) }))
+const group = (defs, list) => defs.map((d) => ({ id: d.tag, title: d.title ?? tagNames[d.tag] ?? d.tag, emoji: d.emoji, items: list.filter((x) => x.tags.includes(d.tag)).map((x) => x.id) }))
   .filter((g) => g.items.length);
 const library = { source: SITE, built: new Date().toISOString().slice(0, 10), courses: group(COURSES, lessons), albums: group(ALBUMS, songs), people: Object.values(people), lessons, songs };
 

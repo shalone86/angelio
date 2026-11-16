@@ -61,6 +61,15 @@
 .reveal { max-width: 560px; margin: 0 auto; text-align: center; font: 800 1.6rem var(--font-display); color: var(--good); }
 .why p { margin: 4px 0; font-size: 1.05rem; line-height: 1.5; }
 
+/* Home: today, and "See all" */
+.today { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 10px; }
+.today-card { display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 20px; text-decoration: none; color: var(--text);
+  font-weight: 800; background: linear-gradient(160deg, var(--yellow-soft), var(--surface)); box-shadow: var(--shadow); border: 3px solid var(--yellow); }
+.today-card:active { transform: translateY(3px); box-shadow: none; }
+.today-label { font: 800 .95rem var(--font-body); color: var(--accent-strong); padding: 0 4px; }
+.shelf-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.see-all { flex: none; }
+
 /* Who wrote and sang it: big and tappable */
 .credits { display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border-radius: 18px; background: var(--surface); box-shadow: var(--shadow); }
 .credit-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
