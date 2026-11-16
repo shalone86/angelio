@@ -30,6 +30,7 @@ export default {
     // Old address: carry saved progress over to the new one (worker/moved.js).
     const moved = movedResponse(url, env);
     if (moved) return moved;
+    if (url.pathname.startsWith("/media/")) return media(request, env, url);
     if (!url.pathname.startsWith("/api/")) return env.ASSETS.fetch(request);
 
     if (env.APP_PASSCODE && request.headers.get("x-app-passcode") !== env.APP_PASSCODE) {
@@ -97,6 +98,32 @@ async function savedClip(env, prefix, voice, text) {
     .map((b) => b.toString(16).padStart(2, "0")).join("");
   const k = `tts:${prefix}:${h}`;
   return { get: () => env.CODES.get(k, "arrayBuffer"), put: (buf) => env.CODES.put(k, buf) };
+}
+
+// Videos, pictures and downloads, from the R2 bucket "watch-media" (binding MEDIA). Supports Range
+// requests, so videos can be scrubbed and start playing before they've fully loaded.
+async function media(request, env, url) {
+  if (!env.MEDIA) return new Response("media isn't set up", { status: 503 });
+  if (request.method !== "GET" && request.method !== "HEAD") return new Response(null, { status: 405 });
+  const key = decodeURIComponent(url.pathname.slice("/media/".length));
+  if (!key || key.includes("..")) return new Response("not found", { status: 404 });
+  const range = request.headers.get("range");
+  const obj = request.method === "HEAD" ? await env.MEDIA.head(key) : await env.MEDIA.get(key, range ? { range: request.headers } : {});
+  if (!obj) return new Response("not found", { status: 404 });
+  const h = new Headers();
+  obj.writeHttpMetadata(h);
+  h.set("etag", obj.httpEtag);
+  h.set("accept-ranges", "bytes");
+  h.set("cache-control", "public, max-age=31536000, immutable");
+  if (url.searchParams.has("download")) h.set("content-disposition", `attachment; filename="${key.split("/").pop().replace(/"/g, "")}"`);
+  if (range && obj.range && request.method === "GET") {
+    const r = obj.range, offset = r.offset ?? (r.suffix != null ? obj.size - r.suffix : 0), length = r.length ?? obj.size - offset;
+    h.set("content-range", `bytes ${offset}-${offset + length - 1}/${obj.size}`);
+    h.set("content-length", String(length));
+    return new Response(obj.body, { status: 206, headers: h });
+  }
+  h.set("content-length", String(obj.size));
+  return new Response(request.method === "HEAD" ? null : obj.body, { headers: h });
 }
 
 const json = (body, status = 200) =>

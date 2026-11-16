@@ -47,6 +47,7 @@ self.addEventListener("fetch", (e) => {
   const url = new URL(req.url);
   if (url.origin === location.origin && url.pathname.endsWith("/api/tts")) return e.respondWith(cacheFirst(req));
   if (url.origin === location.origin && url.pathname.includes("/api/")) return;
+  if (url.origin === location.origin && url.pathname.includes("/media/")) return; // videos stream straight from the server
   if (/fonts\.(googleapis|gstatic)\.com$/.test(url.hostname)) return e.respondWith(cacheFirst(req));
   if (url.origin === location.origin) e.respondWith(networkFirst(req));
 });
