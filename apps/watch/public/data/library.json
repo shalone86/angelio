@@ -1,0 +1,5594 @@
+{
+ "source": "https://kids.methodiusmedia.com",
+ "built": "2026-11-16",
+ "courses": [
+  {
+   "id": "intro-to-byzantine-rite",
+   "title": "Intro to Byzantine Rite",
+   "emoji": "☦️",
+   "items": [
+    "what-is-the-byzantine-rite",
+    "what-does-byzantine-mean",
+    "inside-a-byzantine-church",
+    "the-sign-of-the-cross"
+   ]
+  },
+  {
+   "id": "all-about-popes",
+   "title": "All About Popes",
+   "emoji": "🗝️",
+   "items": [
+    "who-was-pope-francis",
+    "what-is-a-conclave-how-do-catholics-elect-a-pope",
+    "who-is-pope-leo-xiv",
+    "what-is-infallibility"
+   ]
+  },
+  {
+   "id": "catholic-saints-for-boys",
+   "title": "Catholic Saints for Boys",
+   "emoji": "🛡️",
+   "items": [
+    "who-is-saint-aidan-of-lindisfarne",
+    "who-was-saint-valentine-free-catholic-comic-for-ki",
+    "saint-gabriel-of-our-lady-of-sorrows",
+    "who-is-vladimir-the-great-a-video-for-catholic-kid"
+   ]
+  },
+  {
+   "id": "catholic-saints-for-girls",
+   "title": "Catholic Saints for Girls",
+   "emoji": "🌹",
+   "items": [
+    "saint-frances-xavier-cabrini"
+   ]
+  },
+  {
+   "id": "prayer",
+   "title": "How to Pray",
+   "emoji": "🙏",
+   "items": [
+    "why-pay-attention-during-prayer",
+    "an-introduction-to-prayer",
+    "what-difference-does-prayer-make",
+    "conditions-of-prayer",
+    "posture-during-prayer",
+    "the-need-for-prayer",
+    "what-is-vocal-prayer",
+    "what-is-mental-prayer",
+    "what-is-public-and-private-prayer"
+   ]
+  },
+  {
+   "id": "advent",
+   "title": "Advent",
+   "emoji": "🕯️",
+   "items": [
+    "what-is-advent",
+    "what-is-an-advent-wreath",
+    "what-is-gaudete-sunday",
+    "what-is-a-jesse-tree",
+    "what-is-a-the-history-of-the-christmas-tree",
+    "what-are-nativity-scenes"
+   ]
+  },
+  {
+   "id": "lent",
+   "title": "Lent",
+   "emoji": "💜",
+   "items": [
+    "what-is-lent",
+    "what-are-the-stations-of-the-cross",
+    "what-is-ash-wednesday",
+    "what-is-penance",
+    "what-are-some-ideas-for-penance",
+    "what-is-laetare-sunday",
+    "what-is-passiontide",
+    "what-is-palm-sunday",
+    "why-veil-statues"
+   ]
+  },
+  {
+   "id": "easter",
+   "title": "Easter",
+   "emoji": "🐣",
+   "items": [
+    "what-is-holy-week",
+    "what-is-holy-saturday",
+    "what-is-the-resurrection-of-christ",
+    "what-are-easter-traditions",
+    "what-day-is-easter",
+    "what-is-eastertide"
+   ]
+  },
+  {
+   "id": "angels",
+   "title": "Angels",
+   "emoji": "👼",
+   "items": [
+    "what-are-cherubim",
+    "what-are-evil-angels",
+    "what-is-the-order-and-number-of-angels",
+    "what-are-seraphim",
+    "who-is-saint-gabriel-the-archangel",
+    "who-is-saint-raphael-the-archangel",
+    "who-is-saint-michael-the-archangel",
+    "what-are-angels"
+   ]
+  },
+  {
+   "id": "catholic-comics",
+   "title": "Comics",
+   "emoji": "💬",
+   "items": [
+    "who-was-saint-valentine-free-catholic-comic-for-ki",
+    "saint-frances-xavier-cabrini",
+    "the-brothers-of-the-sacred-heart",
+    "a-legend-for-easter",
+    "saint-gabriel-of-our-lady-of-sorrows"
+   ]
+  }
+ ],
+ "albums": [
+  {
+   "id": "byzantine-catholic-songs",
+   "title": "Byzantine Catholic Songs",
+   "emoji": "☦️",
+   "items": [
+    "resurrection-song-byzantine-art-version",
+    "jesus-teaches-god-is-love",
+    "the-sign-of-the-cross-song",
+    "my-whole-body-worships-god",
+    "holy-communion-song"
+   ]
+  },
+  {
+   "id": "bible-songs-for-kids",
+   "title": "Bible Songs for Kids",
+   "emoji": "📖",
+   "items": [
+    "noah-and-the-flood",
+    "the-exodus-song-moses-freed-his-people"
+   ]
+  },
+  {
+   "id": "songs-by-s-d-cason",
+   "title": "Songs by S.D. Cason",
+   "emoji": "🎸",
+   "items": [
+    "the-eucharist-song",
+    "resurrection-of-the-lord",
+    "priest-indeed",
+    "the-baptism-song",
+    "five-holy-monks",
+    "body-of-christ-what-is-the-church",
+    "8th-commandment-do-not-lie",
+    "the-confession-song",
+    "palm-sunday",
+    "five-holy-monks-new-version",
+    "when-we-go-to-mass",
+    "resurrection-song-byzantine-art-version",
+    "four-marks-of-the-church",
+    "we-hope-to-go-to-heaven",
+    "i-love-to-pray",
+    "pray-hope-don-t-worry",
+    "blessings",
+    "jesus-teaches-god-is-love",
+    "the-sign-of-the-cross-song",
+    "my-whole-body-worships-god",
+    "god-created-it-all",
+    "who-is-jesus-christ",
+    "noah-and-the-flood",
+    "the-exodus-song-moses-freed-his-people",
+    "god-s-our-father",
+    "love-one-another",
+    "jesus-wants-us-to-forgive",
+    "who-are-the-saints",
+    "jesus-is-lord",
+    "holy-communion-song"
+   ]
+  },
+  {
+   "id": "songs-by-anthony-moran",
+   "title": "Songs by Anthony Moran",
+   "emoji": "🎹",
+   "items": [
+    "jesus-welcome-by-anthony-moran",
+    "i-believe-in-god-by-anthony-moran",
+    "he-made-the-sea-by-anthony-moran",
+    "love-the-lord-by-anthony-moran",
+    "the-sacraments-by-anthony-moran",
+    "the-people-came-by-anthony-moran",
+    "who-do-we-believe-in-jesus-christ-by-anthony-moran",
+    "christ-was-born-by-anthony-moran",
+    "his-name-is-jesus-christ-by-anthony-moran",
+    "we-believe-by-anthony-moran",
+    "i-can-sing-by-anthony-moran",
+    "jesus-said-by-anthony-moran",
+    "our-father-by-anthony-moran",
+    "hail-mary-by-anthony-moran",
+    "the-lord-said-to-abraham-by-anthony-moran",
+    "we-just-say-no-by-anthony-moran"
+   ]
+  },
+  {
+   "id": "songs-with-richard-schletty",
+   "title": "Songs with Richard Schletty",
+   "emoji": "🎻",
+   "items": [
+    "when-we-go-to-mass",
+    "we-hope-to-go-to-heaven"
+   ]
+  },
+  {
+   "id": "catholic-lofi",
+   "title": "Catholic LoFi",
+   "emoji": "🌙",
+   "items": [
+    "preserve-your-heart-in-peace",
+    "exalted-above-the-hills",
+    "your-guilt-is-taken-away-book-of-isaiah-lofi",
+    "onward-and-forever-more-book-of-isaiah-lofi",
+    "your-merciful-mother-virgin-mary-lofi",
+    "those-who-seek-me-virgin-mary-lofi",
+    "no-more-gloom-book-of-isaiah-lofi"
+   ]
+  }
+ ],
+ "people": [
+  {
+   "id": "shalone-cason",
+   "name": "Shalone Cason",
+   "songs": [
+    "the-eucharist-song",
+    "resurrection-of-the-lord",
+    "priest-indeed",
+    "the-baptism-song",
+    "five-holy-monks",
+    "body-of-christ-what-is-the-church",
+    "8th-commandment-do-not-lie",
+    "the-confession-song",
+    "palm-sunday",
+    "five-holy-monks-new-version",
+    "when-we-go-to-mass",
+    "resurrection-song-byzantine-art-version",
+    "four-marks-of-the-church",
+    "we-hope-to-go-to-heaven",
+    "i-love-to-pray",
+    "pray-hope-don-t-worry",
+    "blessings",
+    "jesus-teaches-god-is-love",
+    "the-sign-of-the-cross-song",
+    "my-whole-body-worships-god",
+    "god-created-it-all",
+    "who-is-jesus-christ",
+    "noah-and-the-flood",
+    "the-exodus-song-moses-freed-his-people",
+    "god-s-our-father",
+    "love-one-another",
+    "jesus-wants-us-to-forgive",
+    "who-are-the-saints",
+    "jesus-is-lord",
+    "holy-communion-song"
+   ]
+  },
+  {
+   "id": "kylie-keegan",
+   "name": "Kylie Keegan",
+   "songs": [
+    "the-eucharist-song",
+    "i-love-to-pray",
+    "blessings",
+    "god-created-it-all",
+    "who-is-jesus-christ"
+   ]
+  },
+  {
+   "id": "anthony-moran",
+   "name": "Anthony Moran",
+   "songs": [
+    "jesus-welcome-by-anthony-moran",
+    "i-believe-in-god-by-anthony-moran",
+    "he-made-the-sea-by-anthony-moran",
+    "love-the-lord-by-anthony-moran",
+    "the-sacraments-by-anthony-moran",
+    "the-people-came-by-anthony-moran",
+    "who-do-we-believe-in-jesus-christ-by-anthony-moran",
+    "christ-was-born-by-anthony-moran",
+    "his-name-is-jesus-christ-by-anthony-moran",
+    "we-believe-by-anthony-moran",
+    "i-can-sing-by-anthony-moran",
+    "jesus-said-by-anthony-moran",
+    "our-father-by-anthony-moran",
+    "hail-mary-by-anthony-moran",
+    "the-lord-said-to-abraham-by-anthony-moran",
+    "we-just-say-no-by-anthony-moran"
+   ]
+  },
+  {
+   "id": "adrianna-ortiz",
+   "name": "Adrianna Ortiz",
+   "songs": [
+    "the-baptism-song",
+    "i-love-to-pray",
+    "pray-hope-don-t-worry",
+    "the-sign-of-the-cross-song",
+    "god-created-it-all",
+    "who-is-jesus-christ",
+    "god-s-our-father",
+    "jesus-wants-us-to-forgive",
+    "who-are-the-saints",
+    "jesus-is-lord"
+   ]
+  },
+  {
+   "id": "catholic-lofi",
+   "name": "Catholic LoFi",
+   "songs": [
+    "preserve-your-heart-in-peace",
+    "exalted-above-the-hills",
+    "your-guilt-is-taken-away-book-of-isaiah-lofi",
+    "onward-and-forever-more-book-of-isaiah-lofi",
+    "your-merciful-mother-virgin-mary-lofi",
+    "those-who-seek-me-virgin-mary-lofi",
+    "no-more-gloom-book-of-isaiah-lofi"
+   ]
+  },
+  {
+   "id": "andre-van-haren",
+   "name": "André van Haren",
+   "songs": [
+    "we-hope-to-go-to-heaven"
+   ]
+  },
+  {
+   "id": "richard-schletty",
+   "name": "Richard Schletty",
+   "songs": [
+    "we-hope-to-go-to-heaven"
+   ]
+  },
+  {
+   "id": "anne-schletty",
+   "name": "Anne Schletty",
+   "songs": [
+    "we-hope-to-go-to-heaven"
+   ]
+  },
+  {
+   "id": "bella-green",
+   "name": "Bella Green",
+   "songs": [
+    "we-hope-to-go-to-heaven"
+   ]
+  },
+  {
+   "id": "dominic-cason",
+   "name": "Dominic Cason",
+   "songs": [
+    "i-love-to-pray",
+    "jesus-teaches-god-is-love",
+    "who-is-jesus-christ"
+   ]
+  },
+  {
+   "id": "amelia-cason",
+   "name": "Amelia Cason",
+   "songs": [
+    "i-love-to-pray",
+    "jesus-teaches-god-is-love",
+    "who-is-jesus-christ",
+    "jesus-wants-us-to-forgive"
+   ]
+  },
+  {
+   "id": "ashley-cason",
+   "name": "Ashley Cason",
+   "songs": [
+    "who-is-jesus-christ",
+    "god-s-our-father"
+   ]
+  }
+ ],
+ "lessons": [
+  {
+   "id": "what-is-lent",
+   "title": "What is Lent?",
+   "about": null,
+   "video": "media/files/2023/07/What-is-Lent_.mp4",
+   "poster": "media/images/size/w600/2023/06/15.png",
+   "tags": [
+    "lent",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2023-06-11",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "What is Lent?",
+     "choices": [
+      "The 40 days before Easter",
+      "The 12 days of Christmas",
+      "The week after Easter"
+     ],
+     "answer": 0,
+     "why": "In the video: Lent is the 40 days before Easter, when Catholics pray, fast and prepare."
+    },
+    {
+     "type": "blank",
+     "q": "Lent starts on Ash ____.",
+     "words": [
+      "Wednesday",
+      "Sunday",
+      "Friday"
+     ],
+     "answer": "Wednesday",
+     "why": "In the video: that is why Catholics start the Lenten season with Ash Wednesday."
+    },
+    {
+     "type": "choice",
+     "q": "On the Fridays of Lent, Catholics don't eat…",
+     "choices": [
+      "Meat",
+      "Bread",
+      "Fruit"
+     ],
+     "answer": 0,
+     "why": "In the video: every Friday of Lent, Catholics abstain from meat and eat fish instead."
+    },
+    {
+     "type": "match",
+     "q": "The number 40 in the Bible. Match each one.",
+     "pairs": [
+      [
+       "The flood",
+       "It rained 40 days"
+      ],
+      [
+       "Moses",
+       "40 days on the mountain with God"
+      ],
+      [
+       "Jesus in the desert",
+       "Fasted 40 days"
+      ]
+     ],
+     "why": "In the video: it rained 40 days in the flood, Moses was on the mountain 40 days, and Jesus fasted 40 days in the desert."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-are-the-stations-of-the-cross",
+   "title": "What are the Stations of the Cross?",
+   "about": null,
+   "video": "media/files/2023/07/What-are-the-Stations-of-the-Cross_.mp4",
+   "poster": "media/images/size/w600/2023/06/14.png",
+   "tags": [
+    "lent",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2023-06-12",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "How many Stations of the Cross are there?",
+     "choices": [
+      "14",
+      "7",
+      "40"
+     ],
+     "answer": 0,
+     "why": "In the video: there have traditionally been 14 stations."
+    },
+    {
+     "type": "blank",
+     "q": "The Stations of the Cross follow the path Jesus walked to be ____.",
+     "words": [
+      "crucified",
+      "baptized",
+      "born"
+     ],
+     "answer": "crucified",
+     "why": "In the video: it is believed to be the actual path that Jesus walked when he was crucified."
+    },
+    {
+     "type": "order",
+     "q": "Put these stations in order.",
+     "items": [
+      "Jesus is condemned to death",
+      "Jesus carries his cross",
+      "Jesus meets his mother",
+      "Jesus dies on the cross"
+     ],
+     "why": "In the video: 1, Jesus is condemned. 2, he carries his cross. 4, he meets his mother. 12, Jesus dies on the cross."
+    },
+    {
+     "type": "choice",
+     "q": "Who helps Jesus carry the cross?",
+     "choices": [
+      "Simon of Cyrene",
+      "Saint Peter",
+      "A Roman soldier"
+     ],
+     "answer": 0,
+     "why": "In the video: station 5, Simon of Cyrene helps Jesus carry the cross."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "why-are-there-bad-people-in-the-church",
+   "title": "Why are there Bad People in the Church?",
+   "about": null,
+   "video": "media/files/2023/07/Why-are-There-Bad-People-in-the-Catholic-Church_.mp4",
+   "poster": "media/images/size/w600/2023/06/13-1.png",
+   "tags": [
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2023-06-12",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "Why are there people who do bad things in the Church?",
+     "choices": [
+      "Because people aren't perfect",
+      "Because God wants it",
+      "Because the Church is bad"
+     ],
+     "answer": 0,
+     "why": "In the video: the Church is made of humans, and people are flawed. They make mistakes."
+    },
+    {
+     "type": "choice",
+     "q": "Can a priest who sins still forgive sins in confession?",
+     "choices": [
+      "Yes, by Jesus' power",
+      "No, never",
+      "Only on Sundays"
+     ],
+     "answer": 0,
+     "why": "In the video: he can, because it is not by his power that he gives the sacraments, but by Jesus Christ's power."
+    },
+    {
+     "type": "blank",
+     "q": "Peter denied Jesus three times, but Jesus still made him the first ____.",
+     "words": [
+      "Pope",
+      "king",
+      "farmer"
+     ],
+     "answer": "Pope",
+     "why": "In the video: Jesus still made Peter the first Pope."
+    },
+    {
+     "type": "choice",
+     "q": "What should we do for people who do wrong?",
+     "choices": [
+      "Pray for them",
+      "Point fingers",
+      "Stop going to church"
+     ],
+     "answer": 0,
+     "why": "In the video: it's not our job to point fingers and judge, but to pray for them and help them on their way to heaven."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "why-are-there-statues-and-paintings-in-churches",
+   "title": "Why are there Statues and Paintings in Churches?",
+   "about": null,
+   "video": "media/files/2023/07/Why-are-there-so-many-statues-and-paintings-in-Catholic-Churches_.mp4",
+   "poster": "media/images/size/w600/2023/06/11.png",
+   "tags": [
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2023-06-12",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "Why do churches have beautiful art?",
+     "choices": [
+      "To remind us of the beauty of heaven",
+      "To fill empty walls",
+      "To sell it"
+     ],
+     "answer": 0,
+     "why": "In the video: churches should have beautiful art to remind us of the beauty of heaven."
+    },
+    {
+     "type": "choice",
+     "q": "Who should sacred art show?",
+     "choices": [
+      "Jesus, Mary or the saints",
+      "Famous kings",
+      "Anything at all"
+     ],
+     "answer": 0,
+     "why": "In the video: religious art should include Christ, the Virgin Mary, or one of the saints."
+    },
+    {
+     "type": "blank",
+     "q": "Long ago, many people couldn't ____, so pictures taught them the faith.",
+     "words": [
+      "read",
+      "sing",
+      "walk"
+     ],
+     "answer": "read",
+     "why": "In the video: when not many people could read, sacred art was a great way to learn and understand the faith."
+    },
+    {
+     "type": "choice",
+     "q": "Which of these was a great artist the Church supported?",
+     "choices": [
+      "Michelangelo",
+      "Moses",
+      "Noah"
+     ],
+     "answer": 0,
+     "why": "In the video: the Church has always supported artists such as Michelangelo, Da Vinci and Caravaggio."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "why-do-we-bow-and-kneel",
+   "title": "Why do We Bow and Kneel?",
+   "about": null,
+   "video": "media/files/2023/07/Why-Do-We-Bow-and-Kneel.mp4",
+   "poster": "media/images/size/w600/2023/06/12.png",
+   "tags": [
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2023-06-12",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "When do we genuflect (bend the right knee)?",
+     "choices": [
+      "Passing in front of the tabernacle",
+      "Walking into the parking lot",
+      "At the end of a song"
+     ],
+     "answer": 0,
+     "why": "In the video: we genuflect any time we pass in front of a tabernacle that holds the Blessed Sacrament."
+    },
+    {
+     "type": "blank",
+     "q": "Bending the knee is a sign of ____ for Jesus in the Blessed Sacrament.",
+     "words": [
+      "adoration",
+      "hurry",
+      "tiredness"
+     ],
+     "answer": "adoration",
+     "why": "In the video: a genuflection signifies adoration, so it is reserved for the Most Blessed Sacrament."
+    },
+    {
+     "type": "choice",
+     "q": "At which name do we bow our heads?",
+     "choices": [
+      "Jesus",
+      "Our own name",
+      "The priest's name"
+     ],
+     "answer": 0,
+     "why": "In the video: “at the name of Jesus every knee should bend.” We bow our heads at the name of Jesus."
+    },
+    {
+     "type": "match",
+     "q": "Match each one to what we do.",
+     "pairs": [
+      [
+       "Passing the tabernacle",
+       "Genuflect"
+      ],
+      [
+       "The name of Jesus",
+       "Bow the head"
+      ]
+     ],
+     "why": "In the video: we genuflect when we pass the tabernacle, and bow our heads at the name of Jesus, Mary, and the Trinity."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "when-and-why-should-we-stay-home-from-mass",
+   "title": "When and Why Should We Stay Home from Mass?",
+   "about": null,
+   "video": "media/files/2023/07/When-and-Why-Should-We-Stay-Home-from-Mass_.mp4",
+   "poster": "media/images/size/w600/2023/06/10.png",
+   "tags": [
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2023-06-12",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "On which days do Catholics go to Mass?",
+     "choices": [
+      "Every Sunday and Holy Days",
+      "Only at Christmas",
+      "Only on birthdays"
+     ],
+     "answer": 0,
+     "why": "In the video: we are obliged to attend Mass every Sunday and Holy Day of Obligation."
+    },
+    {
+     "type": "choice",
+     "q": "Which is a good reason to stay home from Mass?",
+     "choices": [
+      "A serious illness",
+      "A cartoon is on",
+      "It's raining a little"
+     ],
+     "answer": 0,
+     "why": "In the video: a serious illness, like anything contagious or anything that keeps you from leaving the house."
+    },
+    {
+     "type": "blank",
+     "q": "If you are sick, staying home protects the other ____.",
+     "words": [
+      "people",
+      "chairs",
+      "candles"
+     ],
+     "answer": "people",
+     "why": "In the video: people who love Mass should still think of the other parishioners when they're sick."
+    },
+    {
+     "type": "choice",
+     "q": "Who else might stay home with a sick little child?",
+     "choices": [
+      "A parent",
+      "The priest",
+      "The choir"
+     ],
+     "answer": 0,
+     "why": "In the video: when young children get sick, parents have to care for them and may miss Mass."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-is-holy-week",
+   "title": "What is Holy Week?",
+   "about": null,
+   "video": "media/files/2023/07/What-is-Holy-Week-for-kids.mp4",
+   "poster": "media/images/size/w600/2023/06/34.png",
+   "tags": [
+    "easter",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2023-06-12",
+   "quiz": [
+    {
+     "type": "blank",
+     "q": "Holy Week begins on ____ Sunday.",
+     "words": [
+      "Palm",
+      "Easter",
+      "Pentecost"
+     ],
+     "answer": "Palm",
+     "why": "In the video: Holy Week begins on Palm Sunday."
+    },
+    {
+     "type": "order",
+     "q": "Put the days of Holy Week in order.",
+     "items": [
+      "Palm Sunday",
+      "Holy Thursday",
+      "Good Friday",
+      "Holy Saturday"
+     ],
+     "why": "In the video: Holy Week begins on Palm Sunday, then Holy Thursday, Good Friday and Holy Saturday, before Easter."
+    },
+    {
+     "type": "match",
+     "q": "Match each day to what it remembers.",
+     "pairs": [
+      [
+       "Holy Thursday",
+       "The first Holy Eucharist"
+      ],
+      [
+       "Good Friday",
+       "Jesus' passion and death"
+      ],
+      [
+       "Holy Saturday",
+       "Jesus' burial"
+      ]
+     ],
+     "why": "In the video: Holy Thursday remembers the Eucharist, Good Friday Christ's passion and death, and Holy Saturday his burial."
+    },
+    {
+     "type": "choice",
+     "q": "On Holy Thursday, whose feet did Jesus wash?",
+     "choices": [
+      "The apostles'",
+      "The soldiers'",
+      "The kings'"
+     ],
+     "answer": 0,
+     "why": "In the video: the washing of the feet remembers Christ washing the feet of the apostles at the Last Supper."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-is-epiphany",
+   "title": "What is Epiphany?",
+   "about": null,
+   "video": "media/files/2023/07/Catholic-Q-A---What-is-Epiphany_.mp4",
+   "poster": "media/images/size/w600/2023/06/6-3.png",
+   "tags": [
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2023-06-12",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "When is Epiphany?",
+     "choices": [
+      "January 6",
+      "December 25",
+      "Easter Sunday"
+     ],
+     "answer": 0,
+     "why": "In the video: Epiphany is celebrated on January 6th, 12 days after Christmas."
+    },
+    {
+     "type": "choice",
+     "q": "Who visited baby Jesus at Epiphany?",
+     "choices": [
+      "The three wise men",
+      "The twelve apostles",
+      "Saint Nicholas"
+     ],
+     "answer": 0,
+     "why": "In the video: the first event is when the three wise men, or kings, visited the infant Jesus."
+    },
+    {
+     "type": "blank",
+     "q": "Epiphany also remembers when John the Baptist ____ Jesus.",
+     "words": [
+      "baptized",
+      "fed",
+      "carried"
+     ],
+     "answer": "baptized",
+     "why": "In the video: the second event was when Saint John the Baptist baptized Jesus."
+    },
+    {
+     "type": "choice",
+     "q": "In many Latin American countries, who brings gifts to children?",
+     "choices": [
+      "The three wise men",
+      "Santa Claus",
+      "The Easter bunny"
+     ],
+     "answer": 0,
+     "why": "In the video: in many Latin American countries, it is the three wise men, not Santa Claus, who bring gifts."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-is-the-golden-rule-moral-lesson",
+   "title": "What is the Golden Rule (Moral Lesson)?",
+   "about": null,
+   "video": "media/files/2023/07/Golden-Rule_-Morality-Centrality-001.mp4",
+   "poster": "media/images/size/w600/2023/06/Screenshot-2023-06-15-at-9.52.54-AM.png",
+   "tags": [
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2023-06-12",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "What is the Golden Rule?",
+     "choices": [
+      "Treat others the way you'd like to be treated",
+      "Always win the game",
+      "Keep your toys to yourself"
+     ],
+     "answer": 0,
+     "why": "In the video: the Golden Rule is to treat others the way you'd like to be treated."
+    },
+    {
+     "type": "match",
+     "q": "Match what you like to what you should do.",
+     "pairs": [
+      [
+       "You like it when others share",
+       "Share your toys"
+      ],
+      [
+       "You like a smile and “good morning”",
+       "Smile and say good morning"
+      ],
+      [
+       "You don't like mean words",
+       "Don't say mean things"
+      ]
+     ],
+     "why": "In the video: if you like it when people share, share your toys. If you like a smile, smile at others. If you don't like mean words, don't say them."
+    },
+    {
+     "type": "choice",
+     "q": "If someone doesn't follow the Golden Rule, should you give up on it?",
+     "choices": [
+      "No, keep trying",
+      "Yes, give up",
+      "Only on Mondays"
+     ],
+     "answer": 0,
+     "why": "In the video: you should not give up on the Golden Rule, because most of the time it works."
+    },
+    {
+     "type": "blank",
+     "q": "The Golden Rule is worth more than ____.",
+     "words": [
+      "gold",
+      "a cookie",
+      "a sticker"
+     ],
+     "answer": "gold",
+     "why": "In the video: the Golden Rule is very valuable, much more valuable than gold."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "who-is-saint-aidan-of-lindisfarne",
+   "title": "Who is Saint Aidan of Lindisfarne?",
+   "about": null,
+   "video": "media/files/2023/07/Saint-Aidan-of-Lindisfarne-Biography.mp4",
+   "poster": "media/images/size/w600/2023/06/8.png",
+   "tags": [
+    "catholic-saints-for-boys",
+    "catholic-kids-video-lessons",
+    "catholic-saints"
+   ],
+   "date": "2023-06-12",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "Saint Aidan was a monk from which country?",
+     "choices": [
+      "Ireland",
+      "Italy",
+      "Egypt"
+     ],
+     "answer": 0,
+     "why": "In the video: Aidan was an Irish monk and missionary."
+    },
+    {
+     "type": "blank",
+     "q": "Aidan founded a monastery on the island of ____.",
+     "words": [
+      "Lindisfarne",
+      "Malta",
+      "Sicily"
+     ],
+     "answer": "Lindisfarne",
+     "why": "In the video: he founded a monastic cathedral on the island of Lindisfarne, and was its first bishop."
+    },
+    {
+     "type": "choice",
+     "q": "How did Aidan share the Gospel?",
+     "choices": [
+      "He walked from village to village talking with people",
+      "He sent letters only",
+      "He stayed in his room"
+     ],
+     "answer": 0,
+     "why": "In the video: Aidan walked from one village to another, kindly talking with the people and caring about their lives."
+    },
+    {
+     "type": "choice",
+     "q": "Who did Saint Aidan especially help?",
+     "choices": [
+      "Orphans and slaves",
+      "Only kings",
+      "Only soldiers"
+     ],
+     "answer": 0,
+     "why": "In the video: he gave orphans a home and schooling, and used his own gifts to pay for the freedom of slaves."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-is-ash-wednesday",
+   "title": "What is Ash Wednesday?",
+   "about": null,
+   "video": "media/files/2023/07/What-is-Ash-Wednesday_--for-kids-.mp4",
+   "poster": "media/images/size/w600/2023/06/27-1.png",
+   "tags": [
+    "lent",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2023-06-12",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "On Ash Wednesday, what shape does the priest make with ashes on our forehead?",
+     "choices": [
+      "A cross",
+      "A star",
+      "A heart"
+     ],
+     "answer": 0,
+     "why": "In the video: the priest puts ashes in the shape of a cross on our forehead."
+    },
+    {
+     "type": "blank",
+     "q": "The ashes come from burning the ____ from last year's Palm Sunday.",
+     "words": [
+      "palms",
+      "candles",
+      "books"
+     ],
+     "answer": "palms",
+     "why": "In the video: the ashes come from burning the palms that were blessed on Palm Sunday the year before."
+    },
+    {
+     "type": "choice",
+     "q": "What do the ashes remind us?",
+     "choices": [
+      "We are made from dust",
+      "It's time for a party",
+      "Spring is here"
+     ],
+     "answer": 0,
+     "why": "In the video: we are all made from dust, and one day we will return to dust."
+    },
+    {
+     "type": "choice",
+     "q": "Ash Wednesday starts which time of the year?",
+     "choices": [
+      "Lent",
+      "Advent",
+      "Christmas"
+     ],
+     "answer": 0,
+     "why": "In the video: Ash Wednesday is a special day in the time of year called Lent."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-is-penance",
+   "title": "What is Penance?",
+   "about": null,
+   "video": "media/files/2023/07/What-are-Penance-and-Mortification_.mp4",
+   "poster": "media/images/size/w600/2023/06/28.png",
+   "tags": [
+    "lent",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2023-06-12",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "What is penance?",
+     "choices": [
+      "Showing we're sorry for sin with our actions",
+      "A kind of song",
+      "A holiday"
+     ],
+     "answer": 0,
+     "why": "In the video: penance is saying I'm sorry with your actions."
+    },
+    {
+     "type": "choice",
+     "q": "What is mortification?",
+     "choices": [
+      "Giving something up to root out a bad habit",
+      "Eating extra dessert",
+      "Sleeping in"
+     ],
+     "answer": 0,
+     "why": "In the video: mortification is giving up something harmless to build strength against a bad habit."
+    },
+    {
+     "type": "match",
+     "q": "Match each word to what it means.",
+     "pairs": [
+      [
+       "Penance",
+       "Saying sorry with actions"
+      ],
+      [
+       "Mortification",
+       "Giving up a habit to grow stronger"
+      ]
+     ],
+     "why": "In the video: penance says I'm sorry; mortification roots out the bad habit so we don't fall again."
+    },
+    {
+     "type": "blank",
+     "q": "Penance is like buying ____ after forgetting someone's birthday.",
+     "words": [
+      "flowers",
+      "a hammer",
+      "socks"
+     ],
+     "answer": "flowers",
+     "why": "In the video: penance is like buying flowers after forgetting someone's birthday."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-are-some-ideas-for-penance",
+   "title": "What are Some Ideas for Penance?",
+   "about": null,
+   "video": "media/files/2024/11/penance2.mp4",
+   "poster": "media/images/size/w600/2023/06/29.png",
+   "tags": [
+    "lent",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2023-06-12",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "What do we do first, to know what we're sorry for?",
+     "choices": [
+      "An examination of conscience",
+      "Eat a snack",
+      "Play a game"
+     ],
+     "answer": 0,
+     "why": "In the video: start with an examination of conscience, going through the Ten Commandments."
+    },
+    {
+     "type": "choice",
+     "q": "Who gives us a penance in confession?",
+     "choices": [
+      "The priest",
+      "A friend",
+      "The teacher"
+     ],
+     "answer": 0,
+     "why": "In the video: go to confession and the priest gives you a proper penance."
+    },
+    {
+     "type": "choice",
+     "q": "Which one is a good penance?",
+     "choices": [
+      "Praying three Hail Marys",
+      "Watching TV",
+      "Eating candy"
+     ],
+     "answer": 0,
+     "why": "In the video: common penances are the Our Father, three Hail Marys, the Stations of the Cross, the Rosary, and reading the Gospels."
+    },
+    {
+     "type": "order",
+     "q": "Put these in order.",
+     "items": [
+      "Examine your conscience",
+      "Go to confession",
+      "Do your penance"
+     ],
+     "why": "In the video: first examine your conscience, then go to confession, and the priest gives you a penance to do."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-is-laetare-sunday",
+   "title": "What is Laetare Sunday?",
+   "about": null,
+   "video": "media/files/2023/07/What-is-Laetare-Sunday_-for-kids.mp4",
+   "poster": "media/images/size/w600/2023/06/30.png",
+   "tags": [
+    "lent",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2023-06-12",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "Which Sunday of Lent is Laetare Sunday?",
+     "choices": [
+      "The fourth",
+      "The first",
+      "The last"
+     ],
+     "answer": 0,
+     "why": "In the video: Laetare Sunday is the fourth Sunday of Lent."
+    },
+    {
+     "type": "blank",
+     "q": "“Laetare” means ____!",
+     "words": [
+      "rejoice",
+      "sleep",
+      "hurry"
+     ],
+     "answer": "rejoice",
+     "why": "In the video: Laetare Jerusalem means rejoice, O Jerusalem."
+    },
+    {
+     "type": "choice",
+     "q": "What color can the priest wear on Laetare Sunday?",
+     "choices": [
+      "Rose",
+      "Green",
+      "Black"
+     ],
+     "answer": 0,
+     "why": "In the video: rose-colored vestments instead of purple, with flowers on the altar and the organ playing."
+    },
+    {
+     "type": "choice",
+     "q": "How long is Lent?",
+     "choices": [
+      "40 days",
+      "7 days",
+      "100 days"
+     ],
+     "answer": 0,
+     "why": "In the video: Lent starts about six weeks before Easter and lasts for 40 days."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-is-passiontide",
+   "title": "What is Passiontide?",
+   "about": null,
+   "video": "media/files/2023/07/What-is-Passiontide_-for-kids.mp4",
+   "poster": "media/images/size/w600/2023/06/31.png",
+   "tags": [
+    "lent",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2023-06-12",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "In the last two weeks of Lent, what covers statues and crosses?",
+     "choices": [
+      "A violet veil",
+      "Flowers",
+      "Paint"
+     ],
+     "answer": 0,
+     "why": "In the video: crosses, statues and pictures are covered with a violet veil."
+    },
+    {
+     "type": "choice",
+     "q": "Why are they covered?",
+     "choices": [
+      "Jesus no longer walked openly, but hid himself",
+      "To keep dust off",
+      "Because it's cold"
+     ],
+     "answer": 0,
+     "why": "In the video: during this time Christ no longer walked openly among the people, but hid himself."
+    },
+    {
+     "type": "blank",
+     "q": "Passiontide starts on ____ Sunday.",
+     "words": [
+      "Passion",
+      "Easter",
+      "Christmas"
+     ],
+     "answer": "Passion",
+     "why": "In the video: these are the two weeks between Passion Sunday and Easter."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-is-palm-sunday",
+   "title": "What is Palm Sunday?",
+   "about": null,
+   "video": "media/files/2024/11/palm.mp4",
+   "poster": "media/images/size/w600/2023/06/35.png",
+   "tags": [
+    "lent",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2023-06-12",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "Palm Sunday begins which week?",
+     "choices": [
+      "Holy Week",
+      "Christmas week",
+      "The first week of summer"
+     ],
+     "answer": 0,
+     "why": "In the video: Palm Sunday is the beginning of Holy Week."
+    },
+    {
+     "type": "choice",
+     "q": "What do we remember with the palm branches?",
+     "choices": [
+      "Jesus entering Jerusalem",
+      "Noah's ark",
+      "Jesus' birth"
+     ],
+     "answer": 0,
+     "why": "In the video: we remember the day Jesus entered Jerusalem and the people welcomed him by waving palm branches."
+    },
+    {
+     "type": "order",
+     "q": "Put Palm Sunday in order.",
+     "items": [
+      "The palms are blessed",
+      "The procession",
+      "Mass"
+     ],
+     "why": "In the video: the priest blesses the palms, they're carried in a procession, and then Mass is celebrated."
+    },
+    {
+     "type": "blank",
+     "q": "Old palms are burned to make the ashes for Ash ____.",
+     "words": [
+      "Wednesday",
+      "Monday",
+      "Saturday"
+     ],
+     "answer": "Wednesday",
+     "why": "In the video: palm branches are even used to make ashes for Ash Wednesday."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-is-holy-saturday",
+   "title": "What is Holy Saturday?",
+   "about": null,
+   "video": "media/files/2024/11/holy-sat.mp4",
+   "poster": "media/images/size/w600/2023/06/36.png",
+   "tags": [
+    "easter",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2023-06-12",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "What does the Paschal candle stand for?",
+     "choices": [
+      "The light of the risen Christ",
+      "A birthday",
+      "The sun"
+     ],
+     "answer": 0,
+     "why": "In the video: the Paschal candle symbolized the light of the risen Christ."
+    },
+    {
+     "type": "blank",
+     "q": "On Holy Saturday night, the new ____ is blessed.",
+     "words": [
+      "fire",
+      "car",
+      "snow"
+     ],
+     "answer": "fire",
+     "why": "In the video: celebrations included the blessing of the new fire and the lighting of lamps and candles."
+    },
+    {
+     "type": "choice",
+     "q": "Who was baptized at the Easter Vigil?",
+     "choices": [
+      "New believers (catechumens)",
+      "Only priests",
+      "Nobody"
+     ],
+     "answer": 0,
+     "why": "In the video: the night of the Easter Vigil was for the baptism of catechumens."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-is-the-resurrection-of-christ",
+   "title": "What is the Resurrection of Christ?",
+   "about": null,
+   "video": "media/files/2024/11/resu.mp4",
+   "poster": "media/images/size/w600/2023/06/37.png",
+   "tags": [
+    "easter",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2023-06-12",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "What is the Resurrection?",
+     "choices": [
+      "Jesus rising from the dead",
+      "Jesus being born",
+      "Jesus walking on water"
+     ],
+     "answer": 0,
+     "why": "In the video: the Resurrection is when Jesus rose from the dead after being crucified."
+    },
+    {
+     "type": "blank",
+     "q": "Jesus rose from the dead ____ days after he died.",
+     "words": [
+      "three",
+      "ten",
+      "forty"
+     ],
+     "answer": "three",
+     "why": "In the video: this miracle happened three days after his death."
+    },
+    {
+     "type": "choice",
+     "q": "Who saw Jesus at the tomb?",
+     "choices": [
+      "Mary Magdalene",
+      "King Herod",
+      "Pontius Pilate"
+     ],
+     "answer": 0,
+     "why": "In the video: many saw Jesus after he rose, including Mary Magdalene and other women at the tomb."
+    },
+    {
+     "type": "match",
+     "q": "Match each Gospel writer.",
+     "pairs": [
+      [
+       "Matthew",
+       "Gospel 1"
+      ],
+      [
+       "Mark",
+       "Gospel 2"
+      ],
+      [
+       "Luke",
+       "Gospel 3"
+      ],
+      [
+       "John",
+       "Gospel 4"
+      ]
+     ],
+     "why": "In the video: the Gospels written by Matthew, Mark, Luke and John tell the story of the resurrection."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-are-easter-traditions",
+   "title": "What are Easter Traditions?",
+   "about": null,
+   "video": "media/files/2023/07/Easter-Traditions-Explained-for-kids.mp4",
+   "poster": "media/images/size/w600/2023/06/27.png",
+   "tags": [
+    "easter",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2023-06-12",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "Why did people start coloring Easter eggs?",
+     "choices": [
+      "Eggs weren't eaten in Lent, so they saved them for Easter",
+      "To paint the house",
+      "To feed the birds"
+     ],
+     "answer": 0,
+     "why": "In the video: eggs were not allowed during Lent, so people saved them and colored them red for Easter joy."
+    },
+    {
+     "type": "choice",
+     "q": "What is lit from the Easter fire?",
+     "choices": [
+      "The Paschal candle",
+      "The oven",
+      "A fireplace"
+     ],
+     "answer": 0,
+     "why": "In the video: the fire is lit by the priest and used to light the Paschal candle."
+    },
+    {
+     "type": "blank",
+     "q": "The Easter season lasts from Easter until ____.",
+     "words": [
+      "Pentecost",
+      "Christmas",
+      "Lent"
+     ],
+     "answer": "Pentecost",
+     "why": "In the video: the Easter season starts on Easter and ends on Pentecost."
+    },
+    {
+     "type": "choice",
+     "q": "When does the Easter Vigil Mass start?",
+     "choices": [
+      "At night, after the sun goes down",
+      "At breakfast",
+      "At noon"
+     ],
+     "answer": 0,
+     "why": "In the video: the Easter Vigil starts late at night after the sun goes down."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-day-is-easter",
+   "title": "What Day is Easter?",
+   "about": null,
+   "video": "media/files/2023/07/What-Day-is-Easter_-for-kids.mp4",
+   "poster": "media/images/size/w600/2023/06/39.png",
+   "tags": [
+    "easter",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2023-06-12",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "Which day of the week is Easter always on?",
+     "choices": [
+      "Sunday",
+      "Friday",
+      "Monday"
+     ],
+     "answer": 0,
+     "why": "In the video: it was decided that Easter would always be on a Sunday."
+    },
+    {
+     "type": "blank",
+     "q": "Easter is the first Sunday after the first full ____ after March 21.",
+     "words": [
+      "moon",
+      "sun",
+      "week"
+     ],
+     "answer": "moon",
+     "why": "In the video: Easter is on the first Sunday after the first full moon following March 21st."
+    },
+    {
+     "type": "choice",
+     "q": "Why did the Church want one date for Easter?",
+     "choices": [
+      "So everyone could celebrate together",
+      "To sell calendars",
+      "Because of the weather"
+     ],
+     "answer": 0,
+     "why": "In the video: the most important thing was that the Church wanted everyone to celebrate Easter together."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-is-eastertide",
+   "title": "What is Eastertide?",
+   "about": null,
+   "video": "media/files/2023/07/What-is-Pascal-Tide-for-kids-What-is-Eastertide-What-is-the-Easter-Season.mp4",
+   "poster": "media/images/size/w600/2023/06/40.png",
+   "tags": [
+    "easter",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2023-06-12",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "How long is the Easter season?",
+     "choices": [
+      "From Easter Sunday to Pentecost",
+      "One day",
+      "From Christmas to Easter"
+     ],
+     "answer": 0,
+     "why": "In the video: Paschaltide lasts from Easter Sunday until Pentecost."
+    },
+    {
+     "type": "choice",
+     "q": "What color does the priest wear in the Easter season?",
+     "choices": [
+      "White",
+      "Purple",
+      "Black"
+     ],
+     "answer": 0,
+     "why": "In the video: the season is marked by white vestments, the Gloria and the Alleluia."
+    },
+    {
+     "type": "blank",
+     "q": "In the Easter season we sing “____!” again.",
+     "words": [
+      "Alleluia",
+      "Goodnight",
+      "Happy birthday"
+     ],
+     "answer": "Alleluia",
+     "why": "In the video: Paschaltide is marked by saying the Alleluia."
+    },
+    {
+     "type": "choice",
+     "q": "How often does the Church encourage us to receive Communion?",
+     "choices": [
+      "Sundays and feast days, even daily",
+      "Once in our life",
+      "Never"
+     ],
+     "answer": 0,
+     "why": "In the video, quoting Catechism 1389: receive the Eucharist on Sundays and feast days, or more often still, even daily."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "the-story-of-blessed-stepinac",
+   "title": "The Story of Blessed Stepinac",
+   "about": null,
+   "video": "media/files/2023/07/Blessed-Aloysius-Viktor-Stepinac.mp4",
+   "poster": "media/images/size/w600/2023/06/Screenshot-2023-06-14-at-10.27.09-AM.png",
+   "tags": [],
+   "date": "2023-06-14",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "Where was Blessed Stepinac the Archbishop?",
+     "choices": [
+      "Zagreb, in Croatia",
+      "Rome",
+      "Paris"
+     ],
+     "answer": 0,
+     "why": "In the video: Aloysius Stepinac was the Archbishop of Zagreb, in Croatia."
+    },
+    {
+     "type": "choice",
+     "q": "During the war, what did he do for people in danger?",
+     "choices": [
+      "Protected them",
+      "Ignored them",
+      "Ran away"
+     ],
+     "answer": 0,
+     "why": "In the video: he protected people who were in danger, even people of other religions."
+    },
+    {
+     "type": "blank",
+     "q": "Pope Pius XII made him a ____.",
+     "words": [
+      "cardinal",
+      "king",
+      "general"
+     ],
+     "answer": "cardinal",
+     "why": "In the video: in 1952 Pope Pius XII recognized his devotion and made him a cardinal."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-are-cherubim",
+   "title": "What are Cherubim?",
+   "about": null,
+   "video": "media/files/2023/06/What-are-Cherubim---for-Catholic-Kids.mp4",
+   "poster": "media/images/size/w600/2023/06/Screenshot-2023-06-20-192115.png",
+   "tags": [
+    "angels",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2023-06-20",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "What job do cherubim have in the Bible?",
+     "choices": [
+      "They guard holy places",
+      "They cook meals",
+      "They build houses"
+     ],
+     "answer": 0,
+     "why": "In the video: they have a special job: they guard important places, like the Garden of Eden."
+    },
+    {
+     "type": "blank",
+     "q": "Cherubim guarded the Garden of ____.",
+     "words": [
+      "Eden",
+      "Gethsemane",
+      "Roses"
+     ],
+     "answer": "Eden",
+     "why": "In the video: in the Bible, cherubim protected the Garden of Eden."
+    },
+    {
+     "type": "choice",
+     "q": "Where were two cherubim made in gold?",
+     "choices": [
+      "On the Ark of the Covenant",
+      "On a boat",
+      "On a crown"
+     ],
+     "answer": 0,
+     "why": "In the video: cherubim figures were on the mercy seat of the Ark and in the Holy of Holies."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-are-evil-angels",
+   "title": "What are Evil Angels?",
+   "about": null,
+   "video": "media/files/2023/06/What-are-Bad-Angels-for-Catholic-Kids.mp4",
+   "poster": "media/images/size/w600/2023/06/Screenshot-2023-06-22-140837-1.png",
+   "tags": [
+    "angels",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2023-06-22",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "What are evil angels?",
+     "choices": [
+      "Angels who turned against God",
+      "Angels who are just grumpy",
+      "People in costumes"
+     ],
+     "answer": 0,
+     "why": "In the video: these angels were once good, but they turned against God."
+    },
+    {
+     "type": "choice",
+     "q": "Which archangel fought the dragon?",
+     "choices": [
+      "Saint Michael",
+      "Saint Gabriel",
+      "Saint Raphael"
+     ],
+     "answer": 0,
+     "why": "In the video: the devil, shown as a dragon, fought against Archangel Michael."
+    },
+    {
+     "type": "choice",
+     "q": "Who helps us choose good?",
+     "choices": [
+      "Jesus and our guardian angel",
+      "Nobody",
+      "The devil"
+     ],
+     "answer": 0,
+     "why": "In the video: we always have help from Jesus Christ and our guardian angel to do good things."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-is-the-order-and-number-of-angels",
+   "title": "What is the Order and Number of Angels?",
+   "about": null,
+   "video": "media/files/2023/06/The-Order-of-Angels-for-kids.mp4",
+   "poster": "media/images/size/w600/2023/06/Screenshot-2023-06-22-135248.png",
+   "tags": [
+    "angels",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2023-06-22",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "How many choirs (groups) of angels are there?",
+     "choices": [
+      "Nine",
+      "Two",
+      "Twelve"
+     ],
+     "answer": 0,
+     "why": "In the video: Saint Gregory the Great says there are nine groups of angels."
+    },
+    {
+     "type": "choice",
+     "q": "Which of these is a choir of angels?",
+     "choices": [
+      "Seraphim",
+      "Pharaohs",
+      "Prophets"
+     ],
+     "answer": 0,
+     "why": "In the video: the nine are angels, archangels, virtues, powers, principalities, dominions, thrones, cherubim and seraphim."
+    },
+    {
+     "type": "blank",
+     "q": "Angels are ____ and guardians created by God.",
+     "words": [
+      "messengers",
+      "robots",
+      "animals"
+     ],
+     "answer": "messengers",
+     "why": "In the video: angels are spiritual beings, messengers and guardians created by God."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-are-seraphim",
+   "title": "What are Seraphim?",
+   "about": null,
+   "video": "media/files/2023/06/What-are-Seraphim-for-Catholic-Kids.mp4",
+   "poster": "media/images/size/w600/2023/06/Screenshot-2023-06-27-182359.png",
+   "tags": [
+    "catholic-kids-video-lessons",
+    "angels"
+   ],
+   "date": "2023-06-27",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "How many wings did the seraphim have in Isaiah's vision?",
+     "choices": [
+      "Six",
+      "Two",
+      "Ten"
+     ],
+     "answer": 0,
+     "why": "In the video: in Isaiah chapter 6, he saw angels called seraphim who served God, and they had six wings."
+    },
+    {
+     "type": "blank",
+     "q": "The seraphim sang: “Holy, Holy, Holy, Lord God of ____.”",
+     "words": [
+      "hosts",
+      "kings",
+      "trees"
+     ],
+     "answer": "hosts",
+     "why": "In the video: they called out, “Holy, Holy, Holy, Lord God of hosts. All the earth is full of his glory.”"
+    },
+    {
+     "type": "choice",
+     "q": "What did a seraph touch Isaiah's lips with?",
+     "choices": [
+      "A hot coal",
+      "A feather",
+      "Some honey"
+     ],
+     "answer": 0,
+     "why": "In the video: one of the angels touched Isaiah's lips with a lump of hot coal."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "who-is-saint-gabriel-the-archangel",
+   "title": "Who is Saint Gabriel the Archangel?",
+   "about": null,
+   "video": "media/files/2023/07/Who-is-Saint-Gabriel-the-Archangel-for-Kids.mp4",
+   "poster": "media/images/size/w600/2023/06/Who-is-Saint-Gabriel-the-Archangel-for-Kids--1-.png",
+   "tags": [
+    "angels",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2023-06-29",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "What did Gabriel tell the Virgin Mary?",
+     "choices": [
+      "She would be the mother of Jesus",
+      "To build an ark",
+      "To move to Rome"
+     ],
+     "answer": 0,
+     "why": "In the video: Gabriel was the angel of the Annunciation, who told the Virgin Mary about the birth of Christ."
+    },
+    {
+     "type": "blank",
+     "q": "Gabriel told Zechariah about the birth of John the ____.",
+     "words": [
+      "Baptist",
+      "Apostle",
+      "King"
+     ],
+     "answer": "Baptist",
+     "why": "In the video: in the Gospels, Gabriel told Zechariah about the birth of John the Baptist."
+    },
+    {
+     "type": "choice",
+     "q": "Gabriel is known as the angel of God's…",
+     "choices": [
+      "Power and strength",
+      "Cooking",
+      "Weather"
+     ],
+     "answer": 0,
+     "why": "In the video: Gabriel is known as the angel of God's power and strength."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "who-is-saint-raphael-the-archangel",
+   "title": "Who is Saint Raphael the Archangel?",
+   "about": null,
+   "video": "media/files/2023/07/saint-raphael.mp4",
+   "poster": "media/images/size/w600/2023/07/Screenshot-2023-07-05-153411-1.png",
+   "tags": [
+    "angels",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2023-07-05",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "Saint Raphael is known for…",
+     "choices": [
+      "Healing",
+      "Building",
+      "Farming"
+     ],
+     "answer": 0,
+     "why": "In the video: Raphael is an angel who is good at healing people."
+    },
+    {
+     "type": "blank",
+     "q": "Raphael helped a boy named ____ on a journey.",
+     "words": [
+      "Tobias",
+      "David",
+      "Samuel"
+     ],
+     "answer": "Tobias",
+     "why": "In the video: he helped a boy named Tobias on a journey and protected him from many dangers."
+    },
+    {
+     "type": "match",
+     "q": "The Bible names three angels. Match them.",
+     "pairs": [
+      [
+       "Michael",
+       "Fights the devil"
+      ],
+      [
+       "Gabriel",
+       "Told Mary about Jesus"
+      ],
+      [
+       "Raphael",
+       "Healed Tobit's eyes"
+      ]
+     ],
+     "why": "In the video: the Bible names only three angels: Michael, Gabriel and Raphael. Raphael healed the blindness in Tobias' family."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "who-is-saint-michael-the-archangel",
+   "title": "Who is Saint Michael the Archangel?",
+   "about": null,
+   "video": "media/files/2023/07/Who-is-Saint-Michael-for-Kids.mp4",
+   "poster": "media/images/size/w600/2023/07/Screenshot-2023-07-06-204623.png",
+   "tags": [
+    "angels",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2023-07-06",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "What does the name Michael mean?",
+     "choices": [
+      "Who is like God?",
+      "Strong horse",
+      "Little star"
+     ],
+     "answer": 0,
+     "why": "In the video: the name Michael means “Who is like God?”"
+    },
+    {
+     "type": "choice",
+     "q": "Who did Michael and the good angels fight?",
+     "choices": [
+      "The devil and his followers",
+      "The Romans",
+      "The giants"
+     ],
+     "answer": 0,
+     "why": "In the video: in a big battle in heaven, Michael and the good angels fought against the devil and his followers."
+    },
+    {
+     "type": "blank",
+     "q": "Saint Michael helps and ____ people.",
+     "words": [
+      "protects",
+      "scares",
+      "forgets"
+     ],
+     "answer": "protects",
+     "why": "In the video: Saint Michael's main job is to help and protect people and to fight against Satan."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-are-angels",
+   "title": "What are Angels",
+   "about": null,
+   "video": "media/files/2023/07/angels-basics-for-kids.mp4",
+   "poster": "media/images/size/w600/2023/06/kids-course-thumbnails-1.png",
+   "tags": [
+    "angels",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2023-10-30",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "Do angels have bodies like ours?",
+     "choices": [
+      "No, they are spirits",
+      "Yes, just like us",
+      "Only on Sundays"
+     ],
+     "answer": 0,
+     "why": "In the video, from Catechism 328–330: angels are helpers from heaven who don't have physical bodies."
+    },
+    {
+     "type": "blank",
+     "q": "Angels are God's ____.",
+     "words": [
+      "messengers",
+      "pets",
+      "toys"
+     ],
+     "answer": "messengers",
+     "why": "In the video: angels are God's messengers, like at the Annunciation and at Christ's birth."
+    },
+    {
+     "type": "choice",
+     "q": "Which angel told Mary she would have baby Jesus?",
+     "choices": [
+      "Gabriel",
+      "Michael",
+      "Raphael"
+     ],
+     "answer": 0,
+     "why": "In the video: the angel Gabriel told Mary she would have a baby who would be the Savior of the world."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-is-advent",
+   "title": "What is Advent?",
+   "about": null,
+   "video": "media/files/2023/11/What-is-Advent.mp4",
+   "poster": "media/images/size/w600/2023/11/what-is-advent2.png",
+   "tags": [
+    "advent",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2023-11-13",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "Advent gets us ready for…",
+     "choices": [
+      "Christmas",
+      "Summer",
+      "Easter"
+     ],
+     "answer": 0,
+     "why": "In the video: Advent is the season of the four Sundays leading up to Christmas."
+    },
+    {
+     "type": "choice",
+     "q": "How many Sundays are in Advent?",
+     "choices": [
+      "Four",
+      "Two",
+      "Seven"
+     ],
+     "answer": 0,
+     "why": "In the video: Advent is the four Sundays and weekdays before Christmas."
+    },
+    {
+     "type": "blank",
+     "q": "In Advent the priest usually wears ____.",
+     "words": [
+      "purple",
+      "green",
+      "gold"
+     ],
+     "answer": "purple",
+     "why": "In the video: the priest usually wears violet or purple vestments in Advent."
+    },
+    {
+     "type": "blank",
+     "q": "“Advent” comes from a Latin word that means “to ____”.",
+     "words": [
+      "come",
+      "sleep",
+      "eat"
+     ],
+     "answer": "come",
+     "why": "In the video: Advent, from Advenire in Latin, means to come to."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-is-an-advent-wreath",
+   "title": "What is an Advent Wreath?",
+   "about": null,
+   "video": "media/files/2023/11/Advent-Wreath.mp4",
+   "poster": "media/images/size/w600/2023/11/advent-wreath.jpg",
+   "tags": [
+    "advent",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2023-11-14",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "How many candles are on an Advent wreath?",
+     "choices": [
+      "Four",
+      "Three",
+      "Ten"
+     ],
+     "answer": 0,
+     "why": "In the video: the wreath has four candles for the four weeks of Advent."
+    },
+    {
+     "type": "choice",
+     "q": "Why is the wreath round and evergreen?",
+     "choices": [
+      "God's love never ends",
+      "It's easy to carry",
+      "It smells nice"
+     ],
+     "answer": 0,
+     "why": "In the video: the round shape of evergreen is a reminder that God's love never ends."
+    },
+    {
+     "type": "blank",
+     "q": "Most of the candles are purple, and one is ____.",
+     "words": [
+      "rose",
+      "black",
+      "blue"
+     ],
+     "answer": "rose",
+     "why": "In the video: usually three candles are purple and one is rose."
+    },
+    {
+     "type": "choice",
+     "q": "Where did the Advent wreath come from?",
+     "choices": [
+      "Germany",
+      "Mexico",
+      "Japan"
+     ],
+     "answer": 0,
+     "why": "In the video: the Advent wreath comes from Germany."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-is-gaudete-sunday",
+   "title": "What is Gaudete Sunday?",
+   "about": null,
+   "video": "media/files/2023/11/Gaudete-Sunday.mp4",
+   "poster": "media/images/size/w600/2023/11/gaudete-sunday.jpg",
+   "tags": [
+    "advent",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2023-11-15",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "Which Sunday of Advent is Gaudete Sunday?",
+     "choices": [
+      "The third",
+      "The first",
+      "The last"
+     ],
+     "answer": 0,
+     "why": "In the video: the third Sunday of Advent is known as Gaudete."
+    },
+    {
+     "type": "blank",
+     "q": "“Gaudete” means ____!",
+     "words": [
+      "rejoice",
+      "be quiet",
+      "go home"
+     ],
+     "answer": "rejoice",
+     "why": "In the video: Gaudete means rejoice."
+    },
+    {
+     "type": "match",
+     "q": "Match each joyful Sunday to its season.",
+     "pairs": [
+      [
+       "Gaudete Sunday",
+       "Advent"
+      ],
+      [
+       "Laetare Sunday",
+       "Lent"
+      ]
+     ],
+     "why": "In the video: Gaudete Sunday is much like Laetare Sunday, which is in the middle of Lent. On both the priest may wear rose."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-is-a-jesse-tree",
+   "title": "What is a Jesse Tree?",
+   "about": null,
+   "video": "media/files/2023/11/Short-Version-What-is-the-Jesse-Tree.mp4",
+   "poster": "media/images/size/w600/2023/11/what-s-a-jesse-tree2.jpg",
+   "tags": [
+    "advent",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2023-11-22",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "What hangs on a Jesse tree?",
+     "choices": [
+      "Ornaments of Bible stories",
+      "Fruit",
+      "Socks"
+     ],
+     "answer": 0,
+     "why": "In the video: Jesse trees have ornaments of the events around Jesus' birth and the Old Testament prophecies."
+    },
+    {
+     "type": "choice",
+     "q": "When do families make a Jesse tree?",
+     "choices": [
+      "During Advent",
+      "During summer",
+      "On Easter"
+     ],
+     "answer": 0,
+     "why": "In the video: many parishes and families make Jesse trees during Advent."
+    },
+    {
+     "type": "blank",
+     "q": "A Jesse tree helps us get ready for ____.",
+     "words": [
+      "Christmas",
+      "school",
+      "Halloween"
+     ],
+     "answer": "Christmas",
+     "why": "In the video: it's a way to reflect on these events while preparing for the celebration of Christmas."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-is-a-the-history-of-the-christmas-tree",
+   "title": "What is a the History of the Christmas Tree?",
+   "about": null,
+   "video": "media/files/2023/12/What-is-the-History-of-the-Christmas-Tree.mp4",
+   "poster": "media/images/size/w600/2023/12/What-is-the-History-of-the-Christmas-Tree.jpg",
+   "tags": [
+    "advent",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2023-12-09",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "What do the lights on a Christmas tree stand for?",
+     "choices": [
+      "Christ, the light of the world",
+      "The stars only",
+      "Nothing special"
+     ],
+     "answer": 0,
+     "why": "In the video: the Christmas light or candle symbolized Christ, the light of the world."
+    },
+    {
+     "type": "choice",
+     "q": "Which saint is in the legend of the first Christmas tree?",
+     "choices": [
+      "Saint Boniface",
+      "Saint Patrick",
+      "Saint Nicholas"
+     ],
+     "answer": 0,
+     "why": "In the video: the German legend is about Saint Boniface, an English bishop who preached in Germany."
+    },
+    {
+     "type": "blank",
+     "q": "The Christmas tree can stay up until the feast of ____.",
+     "words": [
+      "Epiphany",
+      "Easter",
+      "Pentecost"
+     ],
+     "answer": "Epiphany",
+     "why": "In the video: the tree is set up just before Christmas and may stay until the solemnity of Epiphany."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-are-nativity-scenes",
+   "title": "What are Nativity Scenes?",
+   "about": null,
+   "video": "media/files/2023/12/What-is-a-Nativity-Scene.mp4",
+   "poster": "media/images/size/w600/2023/12/What-is-a-Nativity-Scene.jpg",
+   "tags": [
+    "advent",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2023-12-09",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "Who made the first nativity scene?",
+     "choices": [
+      "Saint Francis of Assisi",
+      "Saint Peter",
+      "Saint Paul"
+     ],
+     "answer": 0,
+     "why": "In the video: the custom owes its origin to Saint Francis of Assisi, on Christmas Eve in 1223."
+    },
+    {
+     "type": "choice",
+     "q": "Who is in a nativity scene?",
+     "choices": [
+      "Mary, Joseph and baby Jesus",
+      "Noah and the ark",
+      "Moses and Pharaoh"
+     ],
+     "answer": 0,
+     "why": "In the video: it includes Mary, Joseph and the baby Jesus, the shepherds, the wise men and animals."
+    },
+    {
+     "type": "blank",
+     "q": "Saint Francis brought hay and an ____ to the manger.",
+     "words": [
+      "ox",
+      "elephant",
+      "eagle"
+     ],
+     "answer": "ox",
+     "why": "In the video: he prepared a manger and brought hay and an ox."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "who-was-saint-valentine-free-catholic-comic-for-ki",
+   "title": "Who was Saint Valentine? Free Catholic Comic for Kids",
+   "about": null,
+   "video": "media/media/2026/09/who-was-saint-valentine.mp4",
+   "poster": "media/images/size/w600/2024/03/valentine-thumb-2.jpg",
+   "tags": [
+    "catholic-comics",
+    "catholic-saints",
+    "catholic-saints-for-boys"
+   ],
+   "date": "2024-03-09",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "When is Saint Valentine's feast day?",
+     "choices": [
+      "February 14",
+      "December 25",
+      "March 17"
+     ],
+     "answer": 0,
+     "why": "In the video: both Saint Valentines were martyrs whose feast is celebrated on February 14th."
+    },
+    {
+     "type": "choice",
+     "q": "What was the first Saint Valentine?",
+     "choices": [
+      "A priest in Rome",
+      "A king",
+      "A soldier"
+     ],
+     "answer": 0,
+     "why": "In the video: the first Saint Valentine was a priest who lived in Rome in the 3rd century."
+    },
+    {
+     "type": "blank",
+     "q": "Valentine would not stop being a ____, even when the emperor told him to.",
+     "words": [
+      "Christian",
+      "teacher",
+      "farmer"
+     ],
+     "answer": "Christian",
+     "why": "In the video: told to renounce the Christian God, he said, “No, never.”"
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "saint-frances-xavier-cabrini",
+   "title": "Saint Frances Xavier Cabrini",
+   "about": null,
+   "video": "media/media/2026/09/saint-frances-xavier-cabrini.mp4",
+   "poster": "media/images/size/w600/2024/03/mother-cabrini.jpg",
+   "tags": [
+    "catholic-comics",
+    "catholic-saints-for-girls",
+    "catholic-saints"
+   ],
+   "date": "2024-03-16",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "Mother Cabrini was the first saint from which country?",
+     "choices": [
+      "The United States",
+      "Ireland",
+      "China"
+     ],
+     "answer": 0,
+     "why": "In the video: Mother Cabrini was our first United States saint."
+    },
+    {
+     "type": "choice",
+     "q": "Where did the Pope send her instead of China?",
+     "choices": [
+      "The United States",
+      "Egypt",
+      "Australia"
+     ],
+     "answer": 0,
+     "why": "In the video: Pope Leo XIII told her, “Not China, but the United States.”"
+    },
+    {
+     "type": "blank",
+     "q": "She started many hospitals, homes and ____ for people in need.",
+     "words": [
+      "schools",
+      "castles",
+      "zoos"
+     ],
+     "answer": "schools",
+     "why": "In the video: she founded 67 hospitals, homes and institutions, and she started as a school teacher."
+    },
+    {
+     "type": "choice",
+     "q": "Who did she help in America?",
+     "choices": [
+      "Italian immigrants",
+      "Only kings",
+      "Only soldiers"
+     ],
+     "answer": 0,
+     "why": "In the video: thousands of Italians were coming to America and needed help in a strange country."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "why-veil-statues",
+   "title": "Why Veil Statues?",
+   "about": null,
+   "video": "media/media/2026/09/why-veil-statues.mp4",
+   "poster": "media/images/size/w600/2024/03/Image-3-18-24-at-1.03-PM.jpeg",
+   "tags": [
+    "lent",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2024-03-18",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "When are statues covered in church?",
+     "choices": [
+      "The last weeks of Lent",
+      "At Christmas",
+      "In summer"
+     ],
+     "answer": 0,
+     "why": "In the video: crosses and images are covered from the fifth Sunday of Lent."
+    },
+    {
+     "type": "choice",
+     "q": "Why do we veil them?",
+     "choices": [
+      "To help us get ready for Easter",
+      "To clean them",
+      "Because they're broken"
+     ],
+     "answer": 0,
+     "why": "In the video: veiling shows it's a special time of preparing for Easter, like a surprise gift we can't wait to open."
+    },
+    {
+     "type": "order",
+     "q": "Put the three days of the Triduum in order.",
+     "items": [
+      "Holy Thursday",
+      "Good Friday",
+      "Holy Saturday"
+     ],
+     "why": "In the video: these weeks get us ready for the Triduum: Holy Thursday, Good Friday and Holy Saturday."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "the-brothers-of-the-sacred-heart",
+   "title": "The Brothers of the Sacred Heart",
+   "about": null,
+   "video": "media/media/2026/09/the-brothers-of-the-sacred-heart.mp4",
+   "poster": "media/images/size/w600/2024/03/brothers-comic-thumb.png",
+   "tags": [
+    "catholic-comics"
+   ],
+   "date": "2024-03-22",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "Who did Father Coindre want to help?",
+     "choices": [
+      "Homeless boys",
+      "Kings",
+      "Sailors"
+     ],
+     "answer": 0,
+     "why": "In the video: in France there were many homeless boys who were always in trouble, and he took them in."
+    },
+    {
+     "type": "choice",
+     "q": "What did he teach the boys?",
+     "choices": [
+      "A trade, so they'd stay busy",
+      "Nothing",
+      "How to gamble"
+     ],
+     "answer": 0,
+     "why": "In the video: he hired men to teach the boys the silk weavers' trade, to keep them busy and out of trouble."
+    },
+    {
+     "type": "blank",
+     "q": "The new order was named the Brothers of the Sacred ____.",
+     "words": [
+      "Heart",
+      "Mountain",
+      "River"
+     ],
+     "answer": "Heart",
+     "why": "In the video: “your name will be Brothers of the Sacred Heart.”"
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "why-pay-attention-during-prayer",
+   "title": "Why Pay Attention During Prayer?",
+   "about": null,
+   "video": "media/media/2026/09/why-pay-attention-during-prayer.mp4",
+   "poster": "media/images/size/w600/2024/03/Image-3-26-24-at-7.09-PM.jpeg",
+   "tags": [
+    "prayer",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2024-03-26",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "If we get distracted while praying, what do we do?",
+     "choices": [
+      "Turn our thoughts back to God",
+      "Stop praying forever",
+      "Pray louder"
+     ],
+     "answer": 0,
+     "why": "In the video: we can continue praying once we've focused our attention back on God."
+    },
+    {
+     "type": "match",
+     "q": "Match each kind of prayer.",
+     "pairs": [
+      [
+       "Vocal prayer",
+       "Praying out loud"
+      ],
+      [
+       "Mental prayer",
+       "Thinking about God"
+      ]
+     ],
+     "why": "In the video: vocal prayer is praying out loud, and mental prayer is thinking about God without set words."
+    },
+    {
+     "type": "blank",
+     "q": "Jesus gave us the Our ____ to pray.",
+     "words": [
+      "Father",
+      "Friend",
+      "Song"
+     ],
+     "answer": "Father",
+     "why": "In the video: we can say prayers people have already written, like how Jesus gave us the Our Father."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "an-introduction-to-prayer",
+   "title": "An Introduction to Prayer",
+   "about": null,
+   "video": "media/media/2026/09/an-introduction-to-prayer.mp4",
+   "poster": "media/images/size/w600/2024/03/Image-3-26-24-at-7.27-PM.jpeg",
+   "tags": [
+    "prayer",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2024-03-26",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "Who answers our prayers?",
+     "choices": [
+      "Only God",
+      "The saints by themselves",
+      "Nobody"
+     ],
+     "answer": 0,
+     "why": "In the video: we can only pray to God, and only God can answer our prayers."
+    },
+    {
+     "type": "choice",
+     "q": "Can we ask the saints to pray for us?",
+     "choices": [
+      "Yes, they pray to God with us",
+      "No, never",
+      "Only on their birthdays"
+     ],
+     "answer": 0,
+     "why": "In the video: we can ask for the help of friends, family and the saints, who pray to God with us."
+    },
+    {
+     "type": "blank",
+     "q": "Praying for other people is called ____ prayer.",
+     "words": [
+      "intercessory",
+      "silly",
+      "secret"
+     ],
+     "answer": "intercessory",
+     "why": "In the video: intercessory prayer is when we pray for other people."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "a-legend-for-easter",
+   "title": "A Legend for Easter",
+   "about": null,
+   "video": "media/media/2026/09/a-legend-for-easter.mp4",
+   "poster": "media/images/size/w600/2024/03/15-6.jpg",
+   "tags": [
+    "catholic-comics"
+   ],
+   "date": "2024-03-29",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "In the legend, what did Rosalind give the children at the Easter party?",
+     "choices": [
+      "Painted eggs",
+      "Cake",
+      "Toys"
+     ],
+     "answer": 0,
+     "why": "In the video: she painted the eggs with bright flowers and verses for the Easter party."
+    },
+    {
+     "type": "choice",
+     "q": "Who took them in when they had no home?",
+     "choices": [
+      "A kind miller and his wife",
+      "A king",
+      "The guards"
+     ],
+     "answer": 0,
+     "why": "In the video: the miller and his wife gladly gave them a home."
+    },
+    {
+     "type": "order",
+     "q": "Put the story in order.",
+     "items": [
+      "Rosalind and the children flee",
+      "She paints Easter eggs",
+      "A pilgrim reads a painted egg",
+      "Arno finds his family"
+     ],
+     "why": "In the video: they fled to the miller's home, Rosalind painted eggs for Easter, a pilgrim saw one, and it was Arno, who found them."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "why-should-we-make-the-sign-of-the-cross",
+   "title": "Why Should We Make the Sign of the Cross?",
+   "about": null,
+   "video": "media/files/2023/07/Why-make-the-Sign-of-the-Cross_.mp4",
+   "poster": "media/images/size/w600/2023/06/9.png",
+   "tags": [
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2024-04-01",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "When do Catholics make the Sign of the Cross?",
+     "choices": [
+      "When we begin our prayers",
+      "Only at bedtime",
+      "Never"
+     ],
+     "answer": 0,
+     "why": "In the video: Catholics make the sign of the cross when they begin their prayers."
+    },
+    {
+     "type": "blank",
+     "q": "“In the name of the Father, and of the Son, and of the Holy ____.”",
+     "words": [
+      "Spirit",
+      "Church",
+      "Family"
+     ],
+     "answer": "Spirit",
+     "why": "In the video: we trace the cross while saying, in the name of the Father, Son, and the Holy Spirit."
+    },
+    {
+     "type": "choice",
+     "q": "Long ago, when did Christians make the sign of the cross?",
+     "choices": [
+      "Eating, traveling, sleeping, everything!",
+      "Only once a year",
+      "Only in church"
+     ],
+     "answer": 0,
+     "why": "In the video: Saint Cyril of Jerusalem said to make it over the bread we eat, when traveling, before sleep, in everything."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-difference-does-prayer-make",
+   "title": "What Difference Does Prayer Make?",
+   "about": null,
+   "video": "media/media/2026/09/what-difference-does-prayer-make.mp4",
+   "poster": "media/images/size/w600/2024/03/Screenshot-2024-03-14-at-3.05.39-PM.png",
+   "tags": [
+    "catholic-kids-video-lessons",
+    "prayer"
+   ],
+   "date": "2024-04-04",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "If we don't get what we prayed for, what should we believe?",
+     "choices": [
+      "God has a bigger plan for us",
+      "God didn't hear",
+      "Prayer doesn't work"
+     ],
+     "answer": 0,
+     "why": "In the video: when we don't get what we ask for, believe that God has a bigger plan than we can imagine."
+    },
+    {
+     "type": "choice",
+     "q": "Why might God not give us something we asked for?",
+     "choices": [
+      "It wouldn't be good for us",
+      "He forgot",
+      "He was busy"
+     ],
+     "answer": 0,
+     "why": "In the video: sometimes we pray for the wrong things, and God knows what's best for us (James 4:3)."
+    },
+    {
+     "type": "blank",
+     "q": "God can answer prayers through family, friends and natural ____.",
+     "words": [
+      "events",
+      "colors",
+      "noises"
+     ],
+     "answer": "events",
+     "why": "In the video: sometimes God grants our prayers by using natural events, family and friends."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "conditions-of-prayer",
+   "title": "Conditions of Prayer",
+   "about": null,
+   "video": "media/media/2026/09/conditions-of-prayer.mp4",
+   "poster": "media/images/size/w600/2024/04/conditions-of-prayer-thumbnail.png",
+   "tags": [
+    "prayer",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2024-04-16",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "To pray well, we need…",
+     "choices": [
+      "Faith and trust in God",
+      "Fancy words",
+      "A loud voice"
+     ],
+     "answer": 0,
+     "why": "In the video: to pray effectively, we need to have faith and trust in God."
+    },
+    {
+     "type": "choice",
+     "q": "In Jesus' story, whose prayer pleased God?",
+     "choices": [
+      "The humble tax collector's",
+      "The proud Pharisee's",
+      "Neither"
+     ],
+     "answer": 0,
+     "why": "In the video: the story of the Pharisee and the tax collector (Luke 18) shows we must pray humbly."
+    },
+    {
+     "type": "blank",
+     "q": "When we pray we should be ____, not demanding.",
+     "words": [
+      "humble",
+      "bossy",
+      "grumpy"
+     ],
+     "answer": "humble",
+     "why": "In the video: for prayer to work, it's important to be humble. Demanding things from God is not prayer."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "saint-gabriel-of-our-lady-of-sorrows",
+   "title": "Saint Gabriel of Our Lady of Sorrows",
+   "about": null,
+   "video": "media/media/2026/09/saint-gabriel-of-our-lady-of-sorrows.mp4",
+   "poster": "media/images/size/w600/2024/04/saint-gabriel-thumbnail-1.png",
+   "tags": [
+    "catholic-comics",
+    "catholic-saints-for-boys",
+    "catholic-saints"
+   ],
+   "date": "2024-04-21",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "What was Saint Gabriel's name before he became a religious brother?",
+     "choices": [
+      "Francis Possenti",
+      "Peter Smith",
+      "John Bosco"
+     ],
+     "answer": 0,
+     "why": "In the video: his name was Francis Possenti, from Assisi, Italy."
+    },
+    {
+     "type": "choice",
+     "q": "As a boy, what was Francis known for?",
+     "choices": [
+      "Giving to the poor",
+      "Being mean",
+      "Never going to school"
+     ],
+     "answer": 0,
+     "why": "In the video: as a young boy, Francis was known for his generosity. He was always giving something to the poor."
+    },
+    {
+     "type": "blank",
+     "q": "Francis said the most brilliant career is to give your life completely to ____.",
+     "words": [
+      "God",
+      "money",
+      "sports"
+     ],
+     "answer": "God",
+     "why": "In the video: “I will never have any peace until I give my life completely to God. That is the most brilliant career any man can have.”"
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "posture-during-prayer",
+   "title": "Posture During Prayer",
+   "about": null,
+   "video": "media/media/2026/09/posture-during-prayer.mp4",
+   "poster": "media/images/size/w600/2024/05/Screenshot-2024-05-01-at-10.42.59-AM.png",
+   "tags": [
+    "prayer",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2024-05-01",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "Why do we kneel, bow or fold our hands when we pray?",
+     "choices": [
+      "To show love and respect for God",
+      "To rest our legs",
+      "Because we're tired"
+     ],
+     "answer": 0,
+     "why": "In the video: our posture while praying shows our respect and devotion to God."
+    },
+    {
+     "type": "blank",
+     "q": "Early Christians prayed standing with arms stretched out, like Jesus on the ____.",
+     "words": [
+      "cross",
+      "boat",
+      "hill"
+     ],
+     "answer": "cross",
+     "why": "In the video: the orans posture is standing with hands stretched out like Jesus did on the cross."
+    },
+    {
+     "type": "choice",
+     "q": "Where should we use prayer postures?",
+     "choices": [
+      "At Mass and at home",
+      "Only at Mass",
+      "Nowhere"
+     ],
+     "answer": 0,
+     "why": "In the video: in public, such as during Mass, and also in private prayer, like morning and night prayers."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "the-need-for-prayer",
+   "title": "The Need for Prayer",
+   "about": null,
+   "video": "media/media/2026/09/the-need-for-prayer.mp4",
+   "poster": "media/images/size/w600/2024/05/Screenshot-2024-05-07-at-3.53.07-PM.png",
+   "tags": [
+    "prayer",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2024-05-07",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "How does prayer help us?",
+     "choices": [
+      "It helps us resist temptation",
+      "It makes us taller",
+      "It does nothing"
+     ],
+     "answer": 0,
+     "why": "In the video: we need prayer because it helps us resist temptation and receive God's grace."
+    },
+    {
+     "type": "choice",
+     "q": "How often does the Bible tell us to pray?",
+     "choices": [
+      "Constantly",
+      "Once a year",
+      "Never"
+     ],
+     "answer": 0,
+     "why": "In the video: the Bible tells us to pray constantly, whenever we need to, which is often."
+    },
+    {
+     "type": "blank",
+     "q": "Prayer helps us grow in our ____.",
+     "words": [
+      "faith",
+      "shoes",
+      "height"
+     ],
+     "answer": "faith",
+     "why": "In the video: prayer helps us receive God's grace and grow in our faith."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-is-vocal-prayer",
+   "title": "What is Vocal Prayer?",
+   "about": null,
+   "video": "media/media/2026/09/what-is-vocal-prayer.mp4",
+   "poster": "media/images/size/w600/2024/05/Vocal-Prayer.jpg",
+   "tags": [
+    "prayer",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2024-05-14",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "What is vocal prayer?",
+     "choices": [
+      "Praying with words",
+      "Sleeping",
+      "Drawing a picture"
+     ],
+     "answer": 0,
+     "why": "In the video: vocal prayer involves speaking out loud or thinking words while praying."
+    },
+    {
+     "type": "choice",
+     "q": "Which is a vocal prayer?",
+     "choices": [
+      "The Lord's Prayer",
+      "A nap",
+      "A walk"
+     ],
+     "answer": 0,
+     "why": "In the video: examples of vocal prayer are the Lord's Prayer and the Psalms, hymns and litanies."
+    },
+    {
+     "type": "match",
+     "q": "Match each kind of prayer.",
+     "pairs": [
+      [
+       "Private prayer",
+       "Praying alone"
+      ],
+      [
+       "Public prayer",
+       "Praying with others"
+      ]
+     ],
+     "why": "In the video: prayer done alone is private prayer; with others, it's public prayer."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-is-mental-prayer",
+   "title": "What is Mental Prayer?",
+   "about": null,
+   "video": "media/media/2026/09/what-is-mental-prayer.mp4",
+   "poster": "media/images/size/w600/2024/05/Screenshot-2024-05-20-at-4.22.26-PM.png",
+   "tags": [
+    "prayer",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2024-05-20",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "What is mental prayer?",
+     "choices": [
+      "Quietly thinking about God",
+      "Shouting",
+      "Doing math"
+     ],
+     "answer": 0,
+     "why": "In the video: meditation, or mental prayer, is when we reflect deeply on God's truths and mysteries."
+    },
+    {
+     "type": "blank",
+     "q": "Another word for mental prayer is ____.",
+     "words": [
+      "meditation",
+      "lunch",
+      "recess"
+     ],
+     "answer": "meditation",
+     "why": "In the video: meditation, also known as mental prayer, is a beautiful practice in the Catholic faith."
+    },
+    {
+     "type": "choice",
+     "q": "Who in the Gospels is often shown praying quietly?",
+     "choices": [
+      "Jesus",
+      "Pontius Pilate",
+      "Herod"
+     ],
+     "answer": 0,
+     "why": "In the video: in the New Testament, Jesus is often shown meditating in the Gospels."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-is-public-and-private-prayer",
+   "title": "What is Public and Private Prayer?",
+   "about": null,
+   "video": "media/files/2024/05/Public-and-private-prayer.mp4",
+   "poster": "media/images/size/w600/2024/05/Image-5-30-24-at-10.59-AM.jpg",
+   "tags": [
+    "prayer",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2024-05-30",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "Which is a public prayer of the whole Church?",
+     "choices": [
+      "The Mass",
+      "A bedtime prayer alone",
+      "A wish"
+     ],
+     "answer": 0,
+     "why": "In the video: every Mass is a public prayer, and so are sacraments like baptism and matrimony."
+    },
+    {
+     "type": "match",
+     "q": "Match each prayer.",
+     "pairs": [
+      [
+       "Mass",
+       "Public prayer"
+      ],
+      [
+       "Night prayers by yourself",
+       "Private prayer"
+      ]
+     ],
+     "why": "In the video: public prayer is offered officially, like the Mass; private prayer is our own prayer, alone or with others."
+    },
+    {
+     "type": "blank",
+     "q": "Praying together helps us connect with other ____.",
+     "words": [
+      "Catholics",
+      "cars",
+      "animals"
+     ],
+     "answer": "Catholics",
+     "why": "In the video: public prayer is a way to connect with other Catholics."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-is-the-byzantine-catholic-church-byzantine-ca",
+   "title": "What is the Byzantine Catholic Church? Byzantine Catholic Video Lesson for Kids",
+   "about": "A lesson that goes over the basic history of the Byzantine Catholic Church.",
+   "video": "media/files/2024/08/What-is-the-Byzantine-Catholic-Church-1.mp4",
+   "poster": "media/images/size/w600/2024/08/what-is-byz-basic-1.png",
+   "tags": [
+    "byzantine-catholic-lessons",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2024-08-02",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "Who does the Byzantine Catholic Church trace its start to?",
+     "choices": [
+      "The 12 apostles",
+      "A king in France",
+      "Saint Patrick"
+     ],
+     "answer": 0,
+     "why": "In the video: the Byzantine Catholic Church traces its foundation back to the 12 apostles."
+    },
+    {
+     "type": "blank",
+     "q": "The disciples were first called Christians in ____.",
+     "words": [
+      "Antioch",
+      "Paris",
+      "London"
+     ],
+     "answer": "Antioch",
+     "why": "In the video: Antioch is where the disciples were first called Christians."
+    },
+    {
+     "type": "match",
+     "q": "Match each tradition to its language.",
+     "pairs": [
+      [
+       "Eastern tradition",
+       "Greek"
+      ],
+      [
+       "Western tradition",
+       "Latin"
+      ]
+     ],
+     "why": "In the video: two traditions grew from the earliest days: the Eastern, or Greek, and the Western, or Latin."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-does-pascha-mean",
+   "title": "What does Pascha Mean?",
+   "about": "A lesson that goes over the meaning of the word Pascha.",
+   "video": "media/files/2025/04/what-is-pascha.mov",
+   "poster": "media/images/size/w600/2025/04/thumbnail-1.png",
+   "tags": [
+    "byzantine-catholic-lessons",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2025-04-18",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "What is another name for Pascha?",
+     "choices": [
+      "Easter",
+      "Christmas",
+      "Pentecost"
+     ],
+     "answer": 0,
+     "why": "In the video: Pascha is the feast of the Resurrection, also commonly known as Easter."
+    },
+    {
+     "type": "blank",
+     "q": "Pascha means God ____.",
+     "words": [
+      "saves",
+      "sleeps",
+      "sings"
+     ],
+     "answer": "saves",
+     "why": "In the video: the word Pascha comes from the Exodus, when God saved his people from Egypt. It means God saves."
+    },
+    {
+     "type": "choice",
+     "q": "Someone says “Christ is risen!” What do you answer?",
+     "choices": [
+      "Indeed, he is risen!",
+      "Good morning!",
+      "Thank you!"
+     ],
+     "answer": 0,
+     "why": "In the video: people greet each other with “Christ is risen,” and you answer, “Indeed, he is risen.”"
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "who-was-pope-francis",
+   "title": "Who was Pope Francis?",
+   "about": null,
+   "video": "media/files/2025/04/Who-was-Pope-Francis.mp4",
+   "poster": "media/images/size/w600/2025/04/who-was-pope-francis-3.png",
+   "tags": [
+    "all-about-popes",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2025-04-23",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "Where was Pope Francis from?",
+     "choices": [
+      "Argentina",
+      "Italy",
+      "Canada"
+     ],
+     "answer": 0,
+     "why": "In the video: Pope Francis was born Jorge Mario Bergoglio in Buenos Aires, Argentina."
+    },
+    {
+     "type": "choice",
+     "q": "Why did he choose the name Francis?",
+     "choices": [
+      "For Saint Francis, who loved nature and the poor",
+      "It was his dad's name",
+      "He picked it from a hat"
+     ],
+     "answer": 0,
+     "why": "In the video: he chose Francis because Saint Francis of Assisi was known for his love of nature and helping the poor."
+    },
+    {
+     "type": "order",
+     "q": "Put his life in order.",
+     "items": [
+      "Became a Jesuit priest",
+      "Archbishop of Buenos Aires",
+      "Made a cardinal",
+      "Chosen as Pope"
+     ],
+     "why": "In the video: priest in the Jesuit order, Archbishop of Buenos Aires in 1998, cardinal in 2001, and Pope in 2013."
+    },
+    {
+     "type": "blank",
+     "q": "He was the first Pope from South ____.",
+     "words": [
+      "America",
+      "Africa",
+      "Asia"
+     ],
+     "answer": "America",
+     "why": "In the video: Pope Francis was the first pope from South America, and the first who was a Jesuit."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-is-a-conclave-how-do-catholics-elect-a-pope",
+   "title": "What is a Conclave? (How do Catholics elect a Pope)",
+   "about": null,
+   "video": "media/files/2025/04/What-is-a-Conclave.mov",
+   "poster": "media/images/size/w600/2025/04/Kids-Thumbnails-SQUARE--Video-.png",
+   "tags": [
+    "all-about-popes",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2025-04-25",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "Who chooses the new Pope?",
+     "choices": [
+      "The cardinals",
+      "Everyone in the world",
+      "The Pope's family"
+     ],
+     "answer": 0,
+     "why": "In the video: cardinals travel to Vatican City from all over the world to choose the new Pope."
+    },
+    {
+     "type": "blank",
+     "q": "In Latin, “conclave” means locked with a ____.",
+     "words": [
+      "key",
+      "song",
+      "rope"
+     ],
+     "answer": "key",
+     "why": "In the video: in Latin, conclave means locked with a key."
+    },
+    {
+     "type": "choice",
+     "q": "Where do the cardinals vote?",
+     "choices": [
+      "The Sistine Chapel",
+      "A football stadium",
+      "A school gym"
+     ],
+     "answer": 0,
+     "why": "In the video: they go into a famous room called the Sistine Chapel, painted by Michelangelo."
+    },
+    {
+     "type": "choice",
+     "q": "Who was the first Pope?",
+     "choices": [
+      "Saint Peter",
+      "Saint Paul",
+      "Saint Francis"
+     ],
+     "answer": 0,
+     "why": "In the video: Jesus appointed Saint Peter as the first Pope, and there has been an unbroken line since."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "who-is-pope-leo-xiv",
+   "title": "Who is Pope Leo XIV?",
+   "about": null,
+   "video": "media/files/2025/05/Who-is-Pope-Leo-XIV.mp4",
+   "poster": "media/images/size/w600/2025/05/pope-leo-xiv.png",
+   "tags": [
+    "all-about-popes",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2025-05-10",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "Where was Pope Leo XIV born?",
+     "choices": [
+      "Chicago",
+      "Rome",
+      "Madrid"
+     ],
+     "answer": 0,
+     "why": "In the video: Robert Francis Prevost was born in Chicago in 1955."
+    },
+    {
+     "type": "choice",
+     "q": "Where did he spend many years as a missionary?",
+     "choices": [
+      "Peru",
+      "Japan",
+      "Norway"
+     ],
+     "answer": 0,
+     "why": "In the video: he joined the mission to Peru and spent most of his time there, later becoming a bishop there."
+    },
+    {
+     "type": "blank",
+     "q": "He is the first Pope from North ____.",
+     "words": [
+      "America",
+      "Pole",
+      "Africa"
+     ],
+     "answer": "America",
+     "why": "In the video: he is the first North American pope."
+    },
+    {
+     "type": "choice",
+     "q": "Which religious order did he join?",
+     "choices": [
+      "The Order of Saint Augustine",
+      "The Jesuits",
+      "The Franciscans"
+     ],
+     "answer": 0,
+     "why": "In the video: he became a priest in the Order of Saint Augustine."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "who-is-vladimir-the-great-a-video-for-catholic-kid",
+   "title": "Who is Vladimir the Great? A Video for Catholic Kids",
+   "about": null,
+   "video": "media/files/2025/08/who-is-vladimir-the-great.mp4",
+   "poster": "media/images/size/w600/2025/08/Vlad-the-great.png",
+   "tags": [
+    "catholic-saints",
+    "catholic-saints-for-boys",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2025-08-01",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "Where was Saint Vladimir the Grand Prince?",
+     "choices": [
+      "Kyiv",
+      "Rome",
+      "London"
+     ],
+     "answer": 0,
+     "why": "In the video: Vladimir the Great was Grand Prince of Kyiv from 978 until his death in 1015."
+    },
+    {
+     "type": "choice",
+     "q": "After he became a Christian, what did he do?",
+     "choices": [
+      "Built churches and gave to the poor",
+      "Started more wars",
+      "Nothing changed"
+     ],
+     "answer": 0,
+     "why": "In the video: he became a Christian and Christianized his country by building churches and giving to the poor."
+    },
+    {
+     "type": "blank",
+     "q": "Of all the religions he heard about, Vladimir liked ____ best.",
+     "words": [
+      "Christianity",
+      "none",
+      "magic"
+     ],
+     "answer": "Christianity",
+     "why": "In the video: missionaries from many religions came, but he wasn't impressed by any of them except Christianity."
+    }
+   ],
+   "transcript": null,
+   "quizDraft": true
+  },
+  {
+   "id": "what-is-the-byzantine-rite",
+   "title": "What Is the Byzantine Rite?",
+   "about": "Where Byzantine Catholics come from, how they pray, and how they belong to the one Catholic Church, for kids.",
+   "video": "media/media/2026/10/lesson-8.mp4",
+   "poster": "media/images/size/w600/2026/10/kids-thumb-21.png",
+   "tags": [
+    "intro-to-byzantine-rite",
+    "catholic-kids-video-lessons",
+    "byzantine-catholic-lessons"
+   ],
+   "date": "2026-10-21",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "Byzantine worship grew from the way Christians prayed in Antioch.",
+     "choices": [
+      "True",
+      "False"
+     ],
+     "answer": 0,
+     "why": "True! The Catholic Encyclopedia says it “is derived from that of Antioch.”"
+    },
+    {
+     "type": "choice",
+     "q": "What do Byzantine Catholics and Roman Catholics share?",
+     "choices": [
+      "The same church buildings",
+      "The same faith and sacraments",
+      "Nothing at all"
+     ],
+     "answer": 1,
+     "why": "We share one faith and the same seven sacraments. We just pray in different ways (CCC 1202)."
+    },
+    {
+     "type": "blank",
+     "q": "“It was in ____ that the disciples were first called Christians.”",
+     "words": [
+      "Antioch",
+      "Rome",
+      "Bethlehem"
+     ],
+     "answer": "Antioch",
+     "why": "Acts 11:26. Christians got their name in the city of Antioch."
+    },
+    {
+     "type": "choice",
+     "q": "The Catholic Church is only the Roman, or Latin, Church.",
+     "choices": [
+      "True",
+      "False"
+     ],
+     "answer": 1,
+     "why": "False! The Catholic Church is a family of Churches, Eastern and Western (Christ – Our Pascha 285)."
+    },
+    {
+     "type": "choice",
+     "q": "Who are all the Catholic Churches united with?",
+     "choices": [
+      "The Pope, who takes Saint Peter’s place",
+      "The king of Constantinople",
+      "Nobody"
+     ],
+     "answer": 0,
+     "why": "All the Catholic Churches are united with the Pope, “the successor of the apostle Peter” (Christ – Our Pascha 291)."
+    }
+   ],
+   "transcript": [
+    "Some Catholics pray with icons and receive communion with a spoon, but why do they do this, and who are they? Well, let’s get a quick introduction to Byzantine Rite Catholics with this lesson. I’m your host, Shalone Cason, and as always, we’ll begin in the name of the Father, and of the Son, and of the Holy Spirit.",
+    "It started in Antioch",
+    "Long ago, Jesus’s followers spread the Good News to a big city called Antioch.",
+    "“it was in Antioch that the disciples were first called Christians.” (Acts 11:26)",
+    "That’s where Christians got their name! Saint Peter and Saint Paul both lived there for a while, and the way Antioch prayed is where our story begins.",
+    "Its prayers came from Antioch",
+    "An old Catholic encyclopedia tells us where Byzantine worship comes from.",
+    "“It is derived from that of Antioch.” (Catholic Encyclopedia, “The Rite of Constantinople”)",
+    "It grew from the way Antioch prayed, then grew up in a great city called Constantinople. Its old name was Byzantium, and that’s where the word Byzantine comes from!",
+    "One faith, many ways to pray",
+    "The Catechism tells us why Catholics pray in different ways.",
+    "“Churches of the same geographical and cultural area came to celebrate the mystery of Christ through particular expressions characterized by the culture” (Catechism 1202)",
+    "Byzantine and Roman Catholics believe the same things and share the same seven sacraments. We just pray differently: Byzantine churches are full of icons, and the whole Liturgy is sung!",
+    "A big Church family",
+    "A Byzantine catechism tells us how the Catholic Church is put together.",
+    "“It is in these, and formed out of them, that the one and unique Catholic Church exists.” (Christ – Our Pascha 285)",
+    "The Catholic Church is a big family of Churches, each with its own bishops. The Latin Church is the biggest. The Ruthenian, Ukrainian and Melkite Churches are Byzantine. Together, they’re one Church!",
+    "Together with the Pope",
+    "What makes all these Churches Catholic? The same catechism tells us.",
+    "“The first among self-governing Churches is the Church of Rome, because its presider is the Pope of Rome, the successor of the apostle Peter.” (Christ – Our Pascha 291)",
+    "The Pope takes Saint Peter’s place, and all these Churches are united with him. So Byzantine and Roman Catholics can receive Communion in each other’s churches!",
+    "And that’s the Byzantine Rite in a nutshell. It’s a form of prayer started in Antioch, and it is one of the many ways that Catholics can pray while still being one church in communion with the Pope! Thanks for learning with me, and until next time, stay holy, my friend."
+   ]
+  },
+  {
+   "id": "what-does-byzantine-mean",
+   "title": "What Does Byzantine Mean?",
+   "about": "A city named for its founder, an emperor's new capital, and a way of praying that spread across the world, for kids.",
+   "video": "media/media/2026/10/lesson-7.mp4",
+   "poster": "media/images/size/w600/2026/10/kids-thumb-22.png",
+   "tags": [
+    "intro-to-byzantine-rite",
+    "catholic-kids-video-lessons",
+    "byzantine-catholic-lessons"
+   ],
+   "date": "2026-10-21",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "Where does the word “Byzantine” come from?",
+     "choices": [
+      "A king named Peter",
+      "The city of Byzantium, named for Byzas",
+      "A kind of bread"
+     ],
+     "answer": 1,
+     "why": "The city was “naturally called Byzantion” after Byzas, its founder."
+    },
+    {
+     "type": "choice",
+     "q": "“Byzantine” is a way of praying that many different peoples share.",
+     "choices": [
+      "True",
+      "False"
+     ],
+     "answer": 0,
+     "why": "True! Greeks, Slavs, Arabs and others pray the Byzantine liturgy, which spread from Constantinople."
+    },
+    {
+     "type": "blank",
+     "q": "Byzantium was renamed ____, after Emperor Constantine.",
+     "words": [
+      "Constantinople",
+      "Antioch",
+      "Rome"
+     ],
+     "answer": "Constantinople",
+     "why": "Constantine made it his capital, and the city took his name: Constantinople."
+    },
+    {
+     "type": "choice",
+     "q": "What did Byzantine Catholics keep?",
+     "choices": [
+      "Their Byzantine prayers, and unity with Rome",
+      "Only the Roman Rite",
+      "Neither one"
+     ],
+     "answer": 0,
+     "why": "They kept their Byzantine way of praying and stayed in communion with the Church of Rome."
+    },
+    {
+     "type": "choice",
+     "q": "Byzantine Catholics and Orthodox Christians pray the same Byzantine liturgy.",
+     "choices": [
+      "True",
+      "False"
+     ],
+     "answer": 0,
+     "why": "True! The difference is unity with the Pope. The Catechism says our communion “lacks little to attain the fullness” (CCC 838)."
+    }
+   ],
+   "transcript": [
+    "Byzantium, Constantinople, Istanbul...what do these 3 names have in common? Well, these are all names of one city, and the word Byzantine comes from this city. Not only that, but Byzantine Rite Catholics get their traditions from here too. Let’s explore more with this lesson. I’m your host, Shalone Cason, and let’s begin in the name of the Father and of the Son and of the Holy Spirit.",
+    "A city named for Byzas",
+    "A long time ago, a leader named Byzas founded a city, and it took his name.",
+    "“Byzas, after whom the city was naturally called Byzantion” (Catholic Encyclopedia, “Constantinople”)",
+    "Byzantion, or Byzantium, was a Greek city on a narrow strait where Europe meets Asia. It was the city of Byzas. So when we say “Byzantine,” we mean “from Byzantium.”",
+    "Constantine’s new capital",
+    "Emperor Constantine, the first Christian emperor, chose Byzantium for his new capital.",
+    "“the solemn inauguration of the new city did not occur until 11 May, 330” (Catholic Encyclopedia, “Constantinople”)",
+    "Constantine gave the city a new name: Constantinople, which means the city of Constantine! It was also called a “New Rome.” Its great church was Hagia Sophia, which means Holy Wisdom. So Byzantium became Constantinople.",
+    "A way of praying that spread",
+    "The way Constantinople prayed spread far beyond the city. The Byzantine Rite was...",
+    "“by far the most widely spread in the world.” (Catholic Encyclopedia, “The Rite of Constantinople”)",
+    "This means that this way of praying spread all over. Missionaries carried the Gospel from Constantinople to many peoples, like the Slavs in Kyiv. Greeks, Slavs, Arabs, and others all prayed this same way. So “Byzantine” means a way of praying!",
+    "Still with the Pope",
+    "A Byzantine catechism tells how the Church of Kyiv stayed close to the Church of Rome. Kyiv",
+    "“remained in communion with the Church of Rome” (Christ – Our Pascha 307)",
+    "Over the years, Rome and Constantinople drifted apart. But the Church of Kyiv kept its Byzantine prayers and stayed united with Rome. Byzantine Catholics get their history and traditions from Constantinople and Kyiv.",
+    "Close to the Orthodox",
+    "The Catechism says Catholics and the Orthodox are very close. The Orthodox community...",
+    "“lacks little to attain the fullness” (Catechism 838)",
+    "This means that it wouldn’t take much for our churches, Catholic and Orthodox, to reunite. That’s because Orthodox Christians pray the same Byzantine liturgy, with the same icons and feasts. The difference is unity with the Pope. Even though we are so close, it will be hard for everyone to agree, soWe pray that one day we’ll all be together again!",
+    "So what does Byzantine mean? It was the name of a city that became Constantinople, the capital of the Roman Empire. It also became the name of the way people from that city prayed, and even though Orthodox and eastern catholics both share the Byzantine tradition, only the Eastern Catholics are in full communion with the Pope. Thanks for learning with us, and until next time, stay holy my friend"
+   ]
+  },
+  {
+   "id": "inside-a-byzantine-church",
+   "title": "Inside a Byzantine Church",
+   "about": "A wall of icons, doors that open to heaven, and Communion from a golden spoon: a look inside a Byzantine church, for kids.",
+   "video": "media/media/2026/10/lesson-9.mp4",
+   "poster": "media/images/size/w600/2026/10/kids-thumb-23-1-1.png",
+   "tags": [
+    "intro-to-byzantine-rite",
+    "catholic-kids-video-lessons",
+    "byzantine-catholic-lessons"
+   ],
+   "date": "2026-10-23",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "What is the wall of icons called?",
+     "choices": [
+      "The iconostasis",
+      "The bell tower",
+      "The font"
+     ],
+     "answer": 0,
+     "why": "The iconostasis is a wall of icons that separates and unites the sanctuary and the nave."
+    },
+    {
+     "type": "choice",
+     "q": "In an icon of Mary, she points us to Jesus.",
+     "choices": [
+      "True",
+      "False"
+     ],
+     "answer": 0,
+     "why": "True! The Mother of God holds Christ and points to him, showing us the way."
+    },
+    {
+     "type": "blank",
+     "q": "The doors in the middle of the iconostasis are called the ____ Doors.",
+     "words": [
+      "Royal",
+      "Front",
+      "Golden"
+     ],
+     "answer": "Royal",
+     "why": "The Royal (or Holy) Doors are in the center of the iconostasis."
+    },
+    {
+     "type": "choice",
+     "q": "How do Byzantine Catholics receive Holy Communion?",
+     "choices": [
+      "From a golden spoon",
+      "From a cup they hold themselves",
+      "They do not receive it"
+     ],
+     "answer": 0,
+     "why": "The priest gives the Body and Blood of Christ with a spoon, for the cleansing from sins."
+    },
+    {
+     "type": "choice",
+     "q": "The Church holds all lawfully recognized rites to be of equal right and dignity.",
+     "choices": [
+      "True",
+      "False"
+     ],
+     "answer": 0,
+     "why": "True! Catechism 1203: all lawful rites are “of equal right and dignity.”"
+    },
+    {
+     "type": "match",
+     "q": "Match each one to what it is.",
+     "pairs": [
+      [
+       "Iconostasis",
+       "A wall of icons"
+      ],
+      [
+       "Royal Doors",
+       "The doors in the middle"
+      ],
+      [
+       "Golden spoon",
+       "How we receive Holy Communion"
+      ]
+     ],
+     "why": "Byzantine churches have a wall of icons called an iconostasis, with the Royal Doors in the middle, and Communion is given with a golden spoon."
+    }
+   ],
+   "transcript": [
+    "What does it look like inside Byzantine Churches? Do they look just like Roman Cathothic churches and why do they take communion with a spoon? Let’s find out with today’s lesson. I’m your host Shalone Cason, and let’s begin in the name of the Father and of the Son and of the Holy Spirit.",
+    "A wall of icons",
+    "The first thing you notice is a wall of icons in front of the altar. It is a wall that...",
+    "“separates and at the same time unites the sanctuary and nave.” (Christ – Our Pascha 600)",
+    "The wall is called the iconostasis. The altar side is like heaven, and the side where the people stand is like our world. The icons look at us from heaven, so it is more like a window than a wall.",
+    "The doors to the Kingdom",
+    "A great Ukrainian archbishop said...",
+    "“the doors to God’s eternal kingdom.” (Christ – Our Pascha 601)",
+    "In the middle of the wall are the Royal Doors. When they open during the Divine Liturgy, it shows that God opens heaven to us. The priest comes out through them to bring us the Gospel and Holy Communion.",
+    "Icons point to Christ",
+    "Every icon points to one person, as the Catechism explains.",
+    "“principally represents Christ.” (Catechism 1159)",
+    "On one side of the Royal Doors is the icon of Christ, blessing us. On the other is Mary, the Mother of God, holding Jesus and pointing to him. Mary always shows us the way to her Son!",
+    "Communion with a spoon",
+    "Byzantine Catholics receive Holy Communion from a golden spoon. The priest gives...",
+    "“the most pure Body and precious Blood of Christ for the cleansing from sins.” (Christ – Our Pascha 646)",
+    "Long ago, an angel touched the prophet Isaiah’s lips with a burning coal, and his sin was taken away. In the same way, Jesus comes to our lips in Holy Communion to make us clean.",
+    "Different, but equal",
+    "The Church says every lawful way of praying is...",
+    "“of equal right and dignity” (Catechism 1203)",
+    "A Roman Catholic church looks different inside, but it teaches the same faith. Both come from the apostles. Together they show us more of Jesus than either one could alone!",
+    "In a nutshell, Byzantine Churches have a wall of icons called an iconostasis, with royal or Holy doors in the middle. They take communion with a spoon, and the differences between Eastern and Western catholic churches reveal other ways we can worship Christ. Thanks for learning with us. I’ve been your host, Shalone, and until next time, stay holy, my friends."
+   ]
+  },
+  {
+   "id": "the-sign-of-the-cross",
+   "title": "The Sign of the Cross",
+   "about": "Why Byzantine Catholics make the Sign of the Cross from the right shoulder to the left, and what the three fingers mean, for kids.",
+   "video": "media/media/2026/10/lesson-10.mp4",
+   "poster": "media/images/size/w600/2026/10/image-1793191089545--1-.png",
+   "tags": [
+    "intro-to-byzantine-rite",
+    "catholic-kids-video-lessons",
+    "byzantine-catholic-lessons"
+   ],
+   "date": "2026-10-27",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "Why do we make the Sign of the Cross?",
+     "choices": [
+      "To remember the Trinity",
+      "To say Goodbye",
+      "To be nice to Others"
+     ],
+     "answer": 0,
+     "why": "Christ – Our Pascha 626: the Christian “professes faith in the Most Holy Trinity.”"
+    },
+    {
+     "type": "choice",
+     "q": "Which shoulder do Byzantine Catholics touch first?",
+     "choices": [
+      "The right",
+      "The left",
+      "Neither"
+     ],
+     "answer": 0,
+     "why": "Christ – Our Pascha 626: “from the right shoulder to the left.”"
+    },
+    {
+     "type": "blank",
+     "q": "Three fingers joined stand for the Holy ____.",
+     "words": [
+      "Trinity",
+      "Angels",
+      "Church"
+     ],
+     "answer": "Trinity",
+     "why": "Christ – Our Pascha 626: joining the first three fingers is “a sign of our profession of faith in the Holy Trinity.”"
+    },
+    {
+     "type": "choice",
+     "q": "The Church holds all lawfully recognized rites to be of equal right and dignity.",
+     "choices": [
+      "True",
+      "False"
+     ],
+     "answer": 0,
+     "why": "True! Catechism 1203: all lawful rites are “of equal right and dignity.”"
+    },
+    {
+     "type": "order",
+     "q": "Put the Byzantine Sign of the Cross in order.",
+     "items": [
+      "Forehead",
+      "Chest",
+      "Right shoulder",
+      "Left shoulder"
+     ],
+     "why": "Christ – Our Pascha 626: “from the forehead to the breast and from the right shoulder to the left.”"
+    }
+   ],
+   "transcript": [
+    "Did you know Byzantine Catholics make the sign of the cross from right to left? Which shoulder do you touch first? They also use their hand to teach themselves about the Trinity. Want to know more? Well, look no further. I’m your host Shalone Cason, and let’s begin in the name of the Father and of the Son and of the Holy Spirit.",
+    "A prayer with your whole body",
+    "The Byzantine catechism says what the Sign of the Cross is.",
+    "“the Christian professes faith in the Most Holy Trinity” (Christ – Our Pascha 626)",
+    "When we make the Sign of the Cross, we say who God is: Father, Son and Holy Spirit. It is a prayer we say with our words and with our hands.",
+    "Right shoulder first",
+    "The catechism tells us where the hand goes.",
+    "“from the forehead to the breast and from the right shoulder to the left” (Christ – Our Pascha 626)",
+    "Byzantine Catholics touch their forehead, then their chest, then the right shoulder, then the left. We trace the cross of Jesus, who died and rose for us!",
+    "Three fingers",
+    "The catechism explains the fingers.",
+    "“Joining the first three fingers of our hand is a sign of our profession of faith in the Holy Trinity” (Christ – Our Pascha 626)",
+    "Three fingers together are for the Trinity. The last two fingers bend down to the palm, for Jesus: he is God and also truly human.",
+    "Different, but equal",
+    "Roman Catholics go left to right. The Church says every lawful way of praying is...",
+    "“of equal right and dignity” (Catechism 1203)",
+    "Roman Catholics touch the left shoulder first. Neither way is wrong. It is the same cross and the same God, and the Church loves both ways.",
+    "And that was the sign of the cross, in the Byzantine Rite, in a nutshell. It is a prayer that uses your whole body. You touch your right shoulder first and use three fingers to represent the Trinity. Thanks for learning with us. I’ve been your host, Shalone, and until next time, stay holy, my friends."
+   ]
+  },
+  {
+   "id": "what-is-infallibility",
+   "title": "What Is Infallibility?",
+   "about": "What it means that the Pope is infallible, and what it doesn't mean, for kids.",
+   "video": "media/media/2026/11/what-is-infallibility.mp4",
+   "poster": "media/images/size/w600/2026/11/kids-thumb.png",
+   "tags": [
+    "all-about-popes",
+    "catholic-kids-video-lessons"
+   ],
+   "date": "2026-11-04",
+   "quiz": [
+    {
+     "type": "choice",
+     "q": "What job did Jesus give Peter?",
+     "choices": [
+      "Strengthen his brothers",
+      "Build a boat",
+      "Count the fish"
+     ],
+     "answer": 0,
+     "why": "Luke 22:32: “you must strengthen your brothers.”"
+    },
+    {
+     "type": "choice",
+     "q": "Infallibility means the Pope always knows who will win the big game.",
+     "choices": [
+      "True",
+      "False"
+     ],
+     "answer": 1,
+     "why": "False! Catechism 891: the gift is for “a doctrine pertaining to faith or morals.”"
+    },
+    {
+     "type": "blank",
+     "q": "Infallible means can't be ____.",
+     "words": [
+      "wrong",
+      "late",
+      "quiet"
+     ],
+     "answer": "wrong",
+     "why": "Infallible means unable to be wrong. Catechism 889: Jesus gave his Church “a share in his own infallibility.”"
+    },
+    {
+     "type": "choice",
+     "q": "The Pope never makes any mistakes at all.",
+     "choices": [
+      "True",
+      "False"
+     ],
+     "answer": 1,
+     "why": "False! The Catholic Encyclopedia says infallibility “is not attributed to every doctrinal act of the pope.”"
+    }
+   ],
+   "transcript": [
+    "We all make mistakes, but can our church’s leader, the Pope, ever be wrong? Let’s learn more in this lesson. I’m your host Shalone Cason, and let’s begin in the name of the Father and of the Son and of the Holy Spirit.",
+    "A gift from Jesus",
+    "The Catechism says Jesus gave his Church",
+    "“a share in his own infallibility.” (Catechism 889)",
+    "Infallible means “can’t be wrong.” Jesus is the Truth. He shares this gift with his whole Church, so that what he taught the apostles is kept safe for us.",
+    "Jesus prayed for Peter",
+    "Jesus told Saint Peter,",
+    "“you must strengthen your brothers.” (Luke 22:32)",
+    "Jesus prayed that Peter’s faith would not fail. Then he gave Peter a job: help the other apostles stay strong. The Pope does that same job for the Church today.",
+    "About faith and being good",
+    "The Pope’s special gift is for teaching",
+    "“a doctrine pertaining to faith or morals” (Catechism 891)",
+    "Faith is what we believe about God. Morals are how God wants us to live. The gift isn’t for math homework, the weather, or who wins the big game!",
+    "Not everything he says",
+    "A Catholic book says infallibility",
+    "“is not attributed to every doctrinal act of the pope” (Catholic Encyclopedia, Infallibility)",
+    "The Pope is a person like us. He can make mistakes, and he goes to confession too. Only his rare, solemn teaching for the whole Church is infallible.",
+    "So can the Pope ever be wrong? Yes, if he’s predicting the weather or answering a math problem. But he can’t be wrong if he teaches on Faith or Morals. Thanks for learning with us. I’ve been your host, Shalone, and until next time, stay holy, my friends."
+   ]
+  }
+ ],
+ "songs": [
+  {
+   "id": "the-eucharist-song",
+   "title": "The Eucharist Song",
+   "about": null,
+   "video": "media/files/2023/07/The-Eucharist-Song.mp4",
+   "poster": "media/images/size/w600/2023/06/3-7.png",
+   "tags": [
+    "songs-by-s-d-cason",
+    "catholic-kids-songs"
+   ],
+   "date": "2023-06-08",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Kylie Keegan"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "📄 Lead sheet",
+     "label": "The Eucharist Song Lead Sheet",
+     "url": "media/files/2024/05/The-Eucharist-Song-Lead-Sheet.pdf"
+    },
+    {
+     "kind": "🎼 Instrumental",
+     "label": "The Eucharist Song Instrumental",
+     "url": "media/files/2024/05/The-Eucharist-Song-Instrumental.mp3"
+    },
+    {
+     "kind": "🎧 Song (audio)",
+     "label": "The Eucharist Song",
+     "url": "media/files/2024/05/The-Eucharist-Song.mp3"
+    },
+    {
+     "kind": "🎬 Video",
+     "label": "The Eucharist Song",
+     "url": "media/files/2023/07/The-Eucharist-Song.mp4"
+    }
+   ]
+  },
+  {
+   "id": "resurrection-of-the-lord",
+   "title": "Resurrection of the Lord",
+   "about": null,
+   "video": "media/files/2023/07/Resurrection-of-the-Lord.mp4",
+   "poster": "media/images/size/w600/2023/06/1-7.png",
+   "tags": [
+    "songs-by-s-d-cason",
+    "catholic-kids-songs"
+   ],
+   "date": "2023-06-08",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "Resurrection of the Lord Byzantine",
+     "url": "media/files/2024/05/Resurrection-of-the-Lord-Byzantine.mp4"
+    },
+    {
+     "kind": "🎬 Video",
+     "label": "Resurrection of the Lord",
+     "url": "media/files/2023/07/Resurrection-of-the-Lord.mp4"
+    }
+   ]
+  },
+  {
+   "id": "priest-indeed",
+   "title": "Priest Indeed",
+   "about": null,
+   "video": "media/files/2023/07/priests-indeed-kids-song.mp4",
+   "poster": "media/images/size/w600/2023/06/2-7.png",
+   "tags": [
+    "songs-by-s-d-cason",
+    "catholic-kids-songs"
+   ],
+   "date": "2023-06-08",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "📄 Lead sheet",
+     "label": "Priest Indeed Lead Sheet",
+     "url": "media/files/2024/05/Priest-Indeed-Lead-Sheet.pdf"
+    },
+    {
+     "kind": "🎬 Video",
+     "label": "Priest Indeed",
+     "url": "media/files/2023/07/priests-indeed-kids-song.mp4"
+    }
+   ]
+  },
+  {
+   "id": "jesus-welcome-by-anthony-moran",
+   "title": "Jesus Welcome (by Anthony Moran)",
+   "about": null,
+   "video": "media/files/2023/07/jesus-welcome2-1.mp4",
+   "poster": "media/images/size/w600/2023/06/Screenshot-2023-06-12-at-6.23.16-PM-1.png",
+   "tags": [
+    "songs-by-anthony-moran",
+    "catholic-kids-songs"
+   ],
+   "date": "2023-06-12",
+   "credits": {
+    "written": [
+     "Anthony Moran"
+    ],
+    "sung": [
+     "Anthony Moran"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "Jesus Welcome (by Anthony Moran)",
+     "url": "media/files/2023/07/jesus-welcome2-1.mp4"
+    }
+   ]
+  },
+  {
+   "id": "the-baptism-song",
+   "title": "The Baptism Song",
+   "about": null,
+   "video": "media/files/2023/07/Baptism-Song-Full-Video-1.mp4",
+   "poster": "media/images/size/w600/2023/06/Screenshot-2023-06-19-at-4.33.02-PM.png",
+   "tags": [
+    "songs-by-s-d-cason",
+    "catholic-kids-songs"
+   ],
+   "date": "2023-06-19",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Adrianna Ortiz"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "📄 Lead sheet",
+     "label": "The Baptism Song Lead Sheet",
+     "url": "media/files/2024/05/The-Baptism-Song-Lead-Sheet.pdf"
+    },
+    {
+     "kind": "🎬 Video",
+     "label": "The Baptism Song",
+     "url": "media/files/2023/07/Baptism-Song-Full-Video-1.mp4"
+    }
+   ]
+  },
+  {
+   "id": "i-believe-in-god-by-anthony-moran",
+   "title": "I Believe in God (by Anthony Moran)",
+   "about": null,
+   "video": "media/sdcason/files/2023/06/I-Believe-in-God.mp4",
+   "poster": "media/images/size/w600/2023/06/Screenshot-2023-06-19-at-5.14.36-PM.png",
+   "tags": [
+    "songs-by-anthony-moran",
+    "catholic-kids-songs"
+   ],
+   "date": "2023-06-19",
+   "credits": {
+    "written": [
+     "Anthony Moran"
+    ],
+    "sung": [
+     "Anthony Moran"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "I Believe in God (by Anthony Moran)",
+     "url": "media/sdcason/files/2023/06/I-Believe-in-God.mp4"
+    }
+   ]
+  },
+  {
+   "id": "he-made-the-sea-by-anthony-moran",
+   "title": "He Made the Sea (by Anthony Moran)",
+   "about": null,
+   "video": "media/files/2023/07/he-made-the-sea.mp4",
+   "poster": "media/images/size/w600/2023/07/Screenshot-2023-07-05-102117.png",
+   "tags": [
+    "songs-by-anthony-moran",
+    "catholic-kids-songs"
+   ],
+   "date": "2023-07-05",
+   "credits": {
+    "written": [
+     "Anthony Moran"
+    ],
+    "sung": [
+     "Anthony Moran"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "He Made the Sea (by Anthony Moran)",
+     "url": "media/files/2023/07/he-made-the-sea.mp4"
+    }
+   ]
+  },
+  {
+   "id": "five-holy-monks",
+   "title": "Five Holy Monks",
+   "about": null,
+   "video": "media/files/2023/07/Five-Holy-Monks.mp4",
+   "poster": "media/images/size/w600/2023/07/Screenshot-2023-07-10-at-10.30.37-AM.png",
+   "tags": [
+    "songs-by-s-d-cason",
+    "catholic-kids-songs"
+   ],
+   "date": "2023-07-10",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "📄 Lead sheet",
+     "label": "Five Holy Monks Lead Sheet",
+     "url": "media/files/2024/05/Five-Holy-Monks-Lead-Sheet.pdf"
+    },
+    {
+     "kind": "🎬 Video",
+     "label": "Five Holy Monks",
+     "url": "media/files/2023/07/Five-Holy-Monks.mp4"
+    }
+   ]
+  },
+  {
+   "id": "body-of-christ-what-is-the-church",
+   "title": "Body of Christ (What is the Church?)",
+   "about": null,
+   "video": "media/files/2023/07/body-of-christ--what-is-the-church--1080.mp4",
+   "poster": "media/images/size/w600/2023/07/Screenshot-2023-07-10-at-1.57.39-PM.png",
+   "tags": [
+    "songs-by-s-d-cason",
+    "catholic-kids-songs"
+   ],
+   "date": "2023-07-10",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎼 Instrumental",
+     "label": "The Body of Christ Instrumental",
+     "url": "media/files/2024/05/The-Body-of-Christ-Instrumental.mp3"
+    },
+    {
+     "kind": "📄 Lead sheet",
+     "label": "Body of Christ Lead Sheet",
+     "url": "media/files/2024/05/Body-of-Christ-Lead-Sheet.pdf"
+    },
+    {
+     "kind": "🎬 Video",
+     "label": "Body of Christ (What is the Church?)",
+     "url": "media/files/2023/07/body-of-christ--what-is-the-church--1080.mp4"
+    }
+   ]
+  },
+  {
+   "id": "love-the-lord-by-anthony-moran",
+   "title": "Love the Lord (by Anthony Moran)",
+   "about": null,
+   "video": "media/files/2023/07/Love-the-Lord-by-Anthony-Moran.mp4",
+   "poster": "media/images/size/w600/2023/07/Screenshot-2023-07-11-at-5.04.50-PM.png",
+   "tags": [
+    "songs-by-anthony-moran",
+    "catholic-kids-songs"
+   ],
+   "date": "2023-07-11",
+   "credits": {
+    "written": [
+     "Anthony Moran"
+    ],
+    "sung": [
+     "Anthony Moran"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "Love the Lord (by Anthony Moran)",
+     "url": "media/files/2023/07/Love-the-Lord-by-Anthony-Moran.mp4"
+    }
+   ]
+  },
+  {
+   "id": "the-sacraments-by-anthony-moran",
+   "title": "The Sacraments (by Anthony Moran)",
+   "about": null,
+   "video": "media/files/2023/07/the-sacraments-by-anthony-moran.mp4",
+   "poster": "media/images/size/w600/2023/07/Screenshot-2023-07-11-at-5.03.41-PM.png",
+   "tags": [
+    "songs-by-anthony-moran",
+    "catholic-kids-songs"
+   ],
+   "date": "2023-07-11",
+   "credits": {
+    "written": [
+     "Anthony Moran"
+    ],
+    "sung": [
+     "Anthony Moran"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "The Sacraments (by Anthony Moran)",
+     "url": "media/files/2023/07/the-sacraments-by-anthony-moran.mp4"
+    }
+   ]
+  },
+  {
+   "id": "8th-commandment-do-not-lie",
+   "title": "8th Commandment (Do Not Lie)",
+   "about": null,
+   "video": "media/files/2023/07/Do-Not-Lie2.mp4",
+   "poster": "media/images/size/w600/2023/07/Screenshot-2023-07-23-at-8.18.12-PM.png",
+   "tags": [
+    "songs-by-s-d-cason",
+    "catholic-kids-songs"
+   ],
+   "date": "2023-07-23",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "8th Commandment (Do Not Lie)",
+     "url": "media/files/2023/07/Do-Not-Lie2.mp4"
+    }
+   ]
+  },
+  {
+   "id": "the-people-came-by-anthony-moran",
+   "title": "The People Came (by Anthony Moran)",
+   "about": null,
+   "video": "media/files/2023/08/The-people-came.mp4",
+   "poster": "media/images/size/w600/2023/08/Screenshot-2023-08-21-at-4.02.20-PM.png",
+   "tags": [
+    "songs-by-anthony-moran",
+    "catholic-kids-songs"
+   ],
+   "date": "2023-08-21",
+   "credits": {
+    "written": [
+     "Anthony Moran"
+    ],
+    "sung": [
+     "Anthony Moran"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "The People Came (by Anthony Moran)",
+     "url": "media/files/2023/08/The-people-came.mp4"
+    }
+   ]
+  },
+  {
+   "id": "the-confession-song",
+   "title": "The Confession Song",
+   "about": null,
+   "video": "media/files/2023/08/The-Confession-Song.mp4",
+   "poster": "media/images/size/w600/2023/08/Screenshot-2023-08-23-at-8.00.09-AM.png",
+   "tags": [
+    "songs-by-s-d-cason",
+    "catholic-kids-songs"
+   ],
+   "date": "2023-08-23",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "The Confession Song",
+     "url": "media/files/2023/08/The-Confession-Song.mp4"
+    }
+   ]
+  },
+  {
+   "id": "who-do-we-believe-in-jesus-christ-by-anthony-moran",
+   "title": "Who Do We Believe In? Jesus Christ (by Anthony Moran)",
+   "about": null,
+   "video": "media/files/2023/09/believe-in-jesus-christ-latest.mp4",
+   "poster": "media/images/size/w600/2023/09/Who-Do-We-Believe-In-Jesus-Christ2.jpg",
+   "tags": [
+    "songs-by-anthony-moran",
+    "catholic-kids-songs"
+   ],
+   "date": "2023-09-13",
+   "credits": {
+    "written": [
+     "Anthony Moran"
+    ],
+    "sung": [
+     "Anthony Moran"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "Who Do We Believe In? Jesus Christ (by Anthony Moran)",
+     "url": "media/files/2023/09/believe-in-jesus-christ-latest.mp4"
+    }
+   ]
+  },
+  {
+   "id": "christ-was-born-by-anthony-moran",
+   "title": "Christ was Born (by Anthony Moran)",
+   "about": null,
+   "video": "media/files/2023/09/Christ-Was-Born.mp4",
+   "poster": "media/images/size/w600/2023/09/Christ-Was-Born2.png",
+   "tags": [
+    "songs-by-anthony-moran",
+    "catholic-kids-songs"
+   ],
+   "date": "2023-09-29",
+   "credits": {
+    "written": [
+     "Anthony Moran"
+    ],
+    "sung": [
+     "Anthony Moran"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "Christ was Born (by Anthony Moran)",
+     "url": "media/files/2023/09/Christ-Was-Born.mp4"
+    }
+   ]
+  },
+  {
+   "id": "his-name-is-jesus-christ-by-anthony-moran",
+   "title": "His Name is Jesus Christ (by Anthony Moran)",
+   "about": null,
+   "video": "media/files/2023/09/His-Name-is-Jesus-Christ.mp4",
+   "poster": "media/images/size/w600/2023/09/His-Name-is-Jesus-Christ2.png",
+   "tags": [
+    "songs-by-anthony-moran",
+    "catholic-kids-songs"
+   ],
+   "date": "2023-09-30",
+   "credits": {
+    "written": [
+     "Anthony Moran"
+    ],
+    "sung": [
+     "Anthony Moran"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "His Name is Jesus Christ (by Anthony Moran)",
+     "url": "media/files/2023/09/His-Name-is-Jesus-Christ.mp4"
+    }
+   ]
+  },
+  {
+   "id": "we-believe-by-anthony-moran",
+   "title": "We Believe (by Anthony Moran)",
+   "about": null,
+   "video": "media/files/2023/10/we-believe.mp4",
+   "poster": "media/images/size/w600/2023/10/we-believe2.jpg",
+   "tags": [
+    "songs-by-anthony-moran",
+    "catholic-kids-songs"
+   ],
+   "date": "2023-10-02",
+   "credits": {
+    "written": [
+     "Anthony Moran"
+    ],
+    "sung": [
+     "Anthony Moran"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "We Believe (by Anthony Moran)",
+     "url": "media/files/2023/10/we-believe.mp4"
+    }
+   ]
+  },
+  {
+   "id": "i-can-sing-by-anthony-moran",
+   "title": "I Can Sing (by Anthony Moran)",
+   "about": null,
+   "video": "media/files/2023/10/I-can-Sing.mp4",
+   "poster": "media/images/size/w600/2023/10/I-can-Sing2.jpg",
+   "tags": [
+    "songs-by-anthony-moran",
+    "catholic-kids-songs"
+   ],
+   "date": "2023-10-06",
+   "credits": {
+    "written": [
+     "Anthony Moran"
+    ],
+    "sung": [
+     "Anthony Moran"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "I Can Sing (by Anthony Moran)",
+     "url": "media/files/2023/10/I-can-Sing.mp4"
+    }
+   ]
+  },
+  {
+   "id": "jesus-said-by-anthony-moran",
+   "title": "Jesus Said (by Anthony Moran)",
+   "about": null,
+   "video": "media/files/2023/10/Jesus-Said.mp4",
+   "poster": "media/images/size/w600/2023/10/Jesus-Said2.jpg",
+   "tags": [
+    "songs-by-anthony-moran",
+    "catholic-kids-songs"
+   ],
+   "date": "2023-10-24",
+   "credits": {
+    "written": [
+     "Anthony Moran"
+    ],
+    "sung": [
+     "Anthony Moran"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "Jesus Said (by Anthony Moran)",
+     "url": "media/files/2023/10/Jesus-Said.mp4"
+    }
+   ]
+  },
+  {
+   "id": "our-father-by-anthony-moran",
+   "title": "Our Father (by Anthony Moran)",
+   "about": null,
+   "video": "media/files/2023/11/Our-Father.mp4",
+   "poster": "media/images/size/w600/2023/11/Our-Father2.jpg",
+   "tags": [
+    "songs-by-anthony-moran",
+    "catholic-kids-songs"
+   ],
+   "date": "2023-11-02",
+   "credits": {
+    "written": [
+     "Anthony Moran"
+    ],
+    "sung": [
+     "Anthony Moran"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "Our Father (by Anthony Moran)",
+     "url": "media/files/2023/11/Our-Father.mp4"
+    }
+   ]
+  },
+  {
+   "id": "hail-mary-by-anthony-moran",
+   "title": "Hail Mary (by Anthony Moran)",
+   "about": null,
+   "video": "media/files/2023/11/Hail-Mary.mp4",
+   "poster": "media/images/size/w600/2023/11/Hail-Mary2.jpg",
+   "tags": [
+    "songs-by-anthony-moran",
+    "catholic-kids-songs"
+   ],
+   "date": "2023-11-08",
+   "credits": {
+    "written": [
+     "Anthony Moran"
+    ],
+    "sung": [
+     "Anthony Moran"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "Hail Mary (by Anthony Moran)",
+     "url": "media/files/2023/11/Hail-Mary.mp4"
+    }
+   ]
+  },
+  {
+   "id": "the-lord-said-to-abraham-by-anthony-moran",
+   "title": "The Lord Said to Abraham (by Anthony Moran)",
+   "about": null,
+   "video": "media/files/2023/11/the-lord-said-to-abraham.mp4",
+   "poster": "media/images/size/w600/2023/11/the-lord-said-to-abraham2.jpg",
+   "tags": [
+    "songs-by-anthony-moran",
+    "catholic-kids-songs"
+   ],
+   "date": "2023-11-10",
+   "credits": {
+    "written": [
+     "Anthony Moran"
+    ],
+    "sung": [
+     "Anthony Moran"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "The Lord Said to Abraham (by Anthony Moran)",
+     "url": "media/files/2023/11/the-lord-said-to-abraham.mp4"
+    }
+   ]
+  },
+  {
+   "id": "preserve-your-heart-in-peace",
+   "title": "Preserve Your Heart in Peace",
+   "about": null,
+   "video": "media/media/2026/09/preserve-your-heart-in-peace.mp4",
+   "poster": "media/images/size/w600/2024/03/preserve-your-heart-lofI-1.jpg",
+   "tags": [
+    "catholic-lofi"
+   ],
+   "date": "2024-03-08",
+   "credits": {
+    "written": [
+     "Catholic LoFi"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "Preserve Your Heart in Peace",
+     "url": "media/media/2026/09/preserve-your-heart-in-peace.mp4"
+    }
+   ]
+  },
+  {
+   "id": "exalted-above-the-hills",
+   "title": "Exalted Above the Hills",
+   "about": null,
+   "video": "media/media/2026/09/exalted-above-the-hills.mp4",
+   "poster": "media/images/size/w600/2024/03/Image-3-14-24-at-9.20-PM-1.jpeg",
+   "tags": [
+    "catholic-lofi"
+   ],
+   "date": "2024-03-14",
+   "credits": {
+    "written": [
+     "Catholic LoFi"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "Exalted Above the Hills",
+     "url": "media/media/2026/09/exalted-above-the-hills.mp4"
+    }
+   ]
+  },
+  {
+   "id": "palm-sunday",
+   "title": "Palm Sunday",
+   "about": null,
+   "video": "media/media/2026/09/palm-sunday.mp4",
+   "poster": "media/images/size/w600/2024/03/Screenshot-2024-03-22-at-12.41.24-PM.png",
+   "tags": [
+    "songs-by-s-d-cason",
+    "catholic-kids-songs"
+   ],
+   "date": "2024-03-22",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "Palm Sunday",
+     "url": "media/media/2026/09/palm-sunday.mp4"
+    }
+   ]
+  },
+  {
+   "id": "your-guilt-is-taken-away-book-of-isaiah-lofi",
+   "title": "Your Guilt is Taken Away (Book of Isaiah LoFi)",
+   "about": null,
+   "video": "media/media/2026/09/your-guilt-is-taken-away-book-of-isaiah-lofi.mp4",
+   "poster": "media/images/size/w600/2024/03/isaiah2.png",
+   "tags": [
+    "catholic-lofi"
+   ],
+   "date": "2024-03-23",
+   "credits": {
+    "written": [
+     "Catholic LoFi"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "Your Guilt is Taken Away (Book of Isaiah LoFi)",
+     "url": "media/media/2026/09/your-guilt-is-taken-away-book-of-isaiah-lofi.mp4"
+    }
+   ]
+  },
+  {
+   "id": "onward-and-forever-more-book-of-isaiah-lofi",
+   "title": "Onward and Forever More (Book of Isaiah LoFi)",
+   "about": null,
+   "video": "media/media/2026/09/onward-and-forever-more-book-of-isaiah-lofi.mp4",
+   "poster": "media/images/size/w600/2024/03/isaiah3.png",
+   "tags": [
+    "catholic-lofi"
+   ],
+   "date": "2024-03-28",
+   "credits": {
+    "written": [
+     "Catholic LoFi"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "Onward and Forever More (Book of Isaiah LoFi)",
+     "url": "media/media/2026/09/onward-and-forever-more-book-of-isaiah-lofi.mp4"
+    }
+   ]
+  },
+  {
+   "id": "your-merciful-mother-virgin-mary-lofi",
+   "title": "Your Merciful Mother (Virgin Mary Lofi)",
+   "about": null,
+   "video": "media/media/2026/09/your-merciful-mother-virgin-mary-lofi.mp4",
+   "poster": "media/images/size/w600/2024/03/your-merciful-mother.jpg",
+   "tags": [
+    "catholic-lofi"
+   ],
+   "date": "2024-03-31",
+   "credits": {
+    "written": [
+     "Catholic LoFi"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "Your Merciful Mother (Virgin Mary Lofi)",
+     "url": "media/media/2026/09/your-merciful-mother-virgin-mary-lofi.mp4"
+    }
+   ]
+  },
+  {
+   "id": "we-just-say-no-by-anthony-moran",
+   "title": "We Just Say No (by Anthony Moran)",
+   "about": null,
+   "video": "media/files/2023/10/we-just-say--no-.mp4",
+   "poster": "media/images/size/w600/2023/10/we-just-say--no-2.jpg",
+   "tags": [
+    "songs-by-anthony-moran",
+    "catholic-kids-songs"
+   ],
+   "date": "2024-04-02",
+   "credits": {
+    "written": [
+     "Anthony Moran"
+    ],
+    "sung": [
+     "Anthony Moran"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "We Just Say No (by Anthony Moran)",
+     "url": "media/files/2023/10/we-just-say--no-.mp4"
+    }
+   ]
+  },
+  {
+   "id": "five-holy-monks-new-version",
+   "title": "Five Holy Monks (New Version)",
+   "about": null,
+   "video": "media/media/2026/09/five-holy-monks-new-version.mp4",
+   "poster": "media/images/size/w600/2024/03/Five-Holy-Monks-thumbnail--1-.jpeg",
+   "tags": [
+    "songs-by-s-d-cason",
+    "catholic-kids-songs"
+   ],
+   "date": "2024-04-03",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "📄 Lead sheet",
+     "label": "Five Holy Monks Lead Sheet",
+     "url": "media/files/2024/05/Five-Holy-Monks-Lead-Sheet.pdf"
+    },
+    {
+     "kind": "🎬 Video",
+     "label": "Five Holy Monks (New Version)",
+     "url": "media/media/2026/09/five-holy-monks-new-version.mp4"
+    }
+   ]
+  },
+  {
+   "id": "when-we-go-to-mass",
+   "title": "When We Go to Mass",
+   "about": null,
+   "video": "media/media/2026/09/when-we-go-to-mass.mp4",
+   "poster": "media/images/size/w600/2024/03/People-in-Church-2400-f002627-1-1.png",
+   "tags": [
+    "songs-by-s-d-cason",
+    "catholic-kids-songs",
+    "songs-with-richard-schletty"
+   ],
+   "date": "2024-04-05",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "📄 Lead sheet",
+     "label": "When We Go to Mass piano-voice-guitar 4.22.2024-rcs2",
+     "url": "media/files/2024/05/When-We-Go-to-Mass-piano-voice-guitar-4.22.2024-rcs2.pdf"
+    },
+    {
+     "kind": "📄 Lead sheet",
+     "label": "When We Go To Mass - simple guitar lead sheet - 4.17.2024",
+     "url": "media/files/2024/05/When-We-Go-To-Mass---simple-guitar-lead-sheet---4.17.2024.pdf"
+    },
+    {
+     "kind": "🎬 Video",
+     "label": "When We Go to Mass",
+     "url": "media/media/2026/09/when-we-go-to-mass.mp4"
+    }
+   ]
+  },
+  {
+   "id": "resurrection-song-byzantine-art-version",
+   "title": "Resurrection Song (Byzantine Art Version)",
+   "about": null,
+   "video": "media/files/2024/05/Resurrection-of-the-Lord-Byzantine.mp4",
+   "poster": "media/images/size/w600/2024/03/resurrection-song-1.jpg",
+   "tags": [
+    "songs-by-s-d-cason",
+    "byzantine-catholic-songs",
+    "catholic-kids-songs"
+   ],
+   "date": "2024-04-06",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "Resurrection of the Lord Byzantine",
+     "url": "media/files/2024/05/Resurrection-of-the-Lord-Byzantine.mp4"
+    }
+   ]
+  },
+  {
+   "id": "those-who-seek-me-virgin-mary-lofi",
+   "title": "Those Who Seek Me (Virgin Mary Lofi)",
+   "about": null,
+   "video": "media/media/2026/09/those-who-seek-me-virgin-mary-lofi.mp4",
+   "poster": "media/images/size/w600/2024/04/thumbnail.jpg",
+   "tags": [
+    "catholic-lofi"
+   ],
+   "date": "2024-04-16",
+   "credits": {
+    "written": [
+     "Catholic LoFi"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "Those Who Seek Me (Virgin Mary Lofi)",
+     "url": "media/media/2026/09/those-who-seek-me-virgin-mary-lofi.mp4"
+    }
+   ]
+  },
+  {
+   "id": "no-more-gloom-book-of-isaiah-lofi",
+   "title": "No More Gloom (Book of Isaiah LoFi)",
+   "about": null,
+   "video": "media/media/2026/09/no-more-gloom-book-of-isaiah-lofi.mp4",
+   "poster": "media/images/size/w600/2024/04/No-More-Gloom.mov.jpg",
+   "tags": [
+    "catholic-lofi"
+   ],
+   "date": "2024-04-16",
+   "credits": {
+    "written": [
+     "Catholic LoFi"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "No More Gloom (Book of Isaiah LoFi)",
+     "url": "media/media/2026/09/no-more-gloom-book-of-isaiah-lofi.mp4"
+    }
+   ]
+  },
+  {
+   "id": "four-marks-of-the-church",
+   "title": "Four Marks of the Church",
+   "about": null,
+   "video": "media/files/2024/05/Marks-of-the-Church.mp4",
+   "poster": "media/images/size/w600/2024/05/marks-of-the-church.jpg",
+   "tags": [
+    "songs-by-s-d-cason",
+    "catholic-kids-songs"
+   ],
+   "date": "2024-05-03",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "Marks of the Church",
+     "url": "media/files/2024/05/Marks-of-the-Church.mp4"
+    },
+    {
+     "kind": "📄 Lead sheet",
+     "label": "Marks of The Church Lead Sheet",
+     "url": "media/files/2024/05/Marks-of-The-Church-Lead-Sheet.png"
+    }
+   ]
+  },
+  {
+   "id": "we-hope-to-go-to-heaven",
+   "title": "We Hope to Go to Heaven",
+   "about": null,
+   "video": "media/files/2024/06/To-Heaven.mp4",
+   "poster": "media/images/size/w600/2024/06/We-Hope-to-Go-to-Heaven.jpg",
+   "tags": [
+    "songs-by-s-d-cason",
+    "catholic-kids-songs",
+    "songs-with-richard-schletty"
+   ],
+   "date": "2024-06-08",
+   "credits": {
+    "written": [
+     "André van Haren",
+     "Richard Schletty",
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Anne Schletty",
+     "Richard Schletty",
+     "Bella Green"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎧 Song (audio)",
+     "label": "We Hope to Go to Heaven - orchestral",
+     "url": "media/files/2024/06/We-Hope-to-Go-to-Heaven---orchestral.mp3"
+    },
+    {
+     "kind": "📄 Lead sheet",
+     "label": "We Hope to Go to Heaven-words and chords-key D-v6",
+     "url": "media/files/2024/06/We-Hope-to-Go-to-Heaven-words-and-chords-key-D-v6.pdf"
+    },
+    {
+     "kind": "📄 Lead sheet",
+     "label": "We Hope to Go to Heaven-Score",
+     "url": "media/files/2024/06/We-Hope-to-Go-to-Heaven-Score.pdf"
+    },
+    {
+     "kind": "🎧 Song (audio)",
+     "label": "We Hope to Go to Heaven (1)",
+     "url": "media/files/2024/06/We-Hope-to-Go-to-Heaven--1-.mp3"
+    },
+    {
+     "kind": "🎬 Video",
+     "label": "Hope to Go to Heaven",
+     "url": "media/files/2024/06/Hope-to-Go-to-Heaven.mp4"
+    },
+    {
+     "kind": "🎬 Video",
+     "label": "We Hope to Go to Heaven",
+     "url": "media/files/2024/06/To-Heaven.mp4"
+    }
+   ]
+  },
+  {
+   "id": "i-love-to-pray",
+   "title": "I Love to Pray",
+   "about": null,
+   "video": "media/files/2024/06/I-Love-to-Pray.mp4",
+   "poster": "media/images/size/w600/2024/06/Screenshot-2024-06-11-at-7.52.55-PM.png",
+   "tags": [
+    "songs-by-s-d-cason",
+    "catholic-kids-songs"
+   ],
+   "date": "2024-06-11",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Dominic Cason",
+     "Amelia Cason",
+     "Shalone Cason",
+     "Adrianna Ortiz",
+     "Kylie Keegan"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "📄 Lead sheet",
+     "label": "i love to pray",
+     "url": "media/files/2024/06/i-love-to-pray.pdf"
+    },
+    {
+     "kind": "🎼 Instrumental",
+     "label": "I Love to Pray instrumental",
+     "url": "media/files/2024/06/I-Love-to-Pray-instrumental.mp3"
+    },
+    {
+     "kind": "🎬 Video",
+     "label": "I Love to Pray",
+     "url": "media/files/2024/06/I-Love-to-Pray.mp4"
+    },
+    {
+     "kind": "🎧 Song (audio)",
+     "label": "I Love to Pray",
+     "url": "media/files/2024/06/I-Love-to-Pray.mp3"
+    }
+   ]
+  },
+  {
+   "id": "pray-hope-don-t-worry",
+   "title": "Pray, Hope, Don't Worry",
+   "about": null,
+   "video": "media/files/2024/07/Pray--Hope--Don-t-Worry.mp4",
+   "poster": "media/images/size/w600/2024/07/Pray--Hope--Don-t-Worry2.jpg",
+   "tags": [
+    "songs-by-s-d-cason",
+    "catholic-kids-songs"
+   ],
+   "date": "2024-07-01",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Adrianna Ortiz"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎼 Instrumental",
+     "label": "Pray, Don’t Worry instrumental",
+     "url": "media/files/2024/07/Pray--Don-t-Worry-instrumental.mp3"
+    },
+    {
+     "kind": "🎧 Song (audio)",
+     "label": "Pray, Don’t Worry 2 - 7:1:24, 7.55 PM",
+     "url": "media/files/2024/07/Pray--Don-t-Worry-2---7-1-24--7.55-PM.mp3"
+    },
+    {
+     "kind": "🎬 Video",
+     "label": "Pray, Hope, Don't Worry",
+     "url": "media/files/2024/07/Pray--Hope--Don-t-Worry.mp4"
+    }
+   ]
+  },
+  {
+   "id": "blessings",
+   "title": "Blessings",
+   "about": null,
+   "video": "media/files/2024/07/Blessings--A-Catholic-Nursery-Rhyme-.mov",
+   "poster": "media/images/size/w600/2024/07/blessings.jpg",
+   "tags": [
+    "songs-by-s-d-cason",
+    "catholic-kids-songs"
+   ],
+   "date": "2024-07-13",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason",
+     "Kylie Keegan"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎧 Song (audio)",
+     "label": "Blessings",
+     "url": "media/files/2024/07/Blessings.mp3"
+    },
+    {
+     "kind": "🎬 Video",
+     "label": "Blessings (A Catholic Nursery Rhyme)",
+     "url": "media/files/2024/07/Blessings--A-Catholic-Nursery-Rhyme-.mov"
+    }
+   ]
+  },
+  {
+   "id": "jesus-teaches-god-is-love",
+   "title": "Jesus Teaches, God is Love",
+   "about": null,
+   "video": "media/files/2024/08/Jesus-Teaches--God-is-Love.mp4",
+   "poster": "media/images/size/w600/2024/08/Screenshot-2024-08-20-at-12.57.13-PM.png",
+   "tags": [
+    "songs-by-s-d-cason",
+    "byzantine-catholic-songs",
+    "catholic-kids-songs"
+   ],
+   "date": "2024-08-20",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ],
+    "backing": [
+     "Dominic Cason",
+     "Amelia Cason"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "Jesus Teaches, God is Love",
+     "url": "media/files/2024/08/Jesus-Teaches--God-is-Love.mp4"
+    }
+   ]
+  },
+  {
+   "id": "the-sign-of-the-cross-song",
+   "title": "The Sign of the Cross Song",
+   "about": null,
+   "video": "media/files/2024/09/The-Sign-of-the-Cross-Song.mp4",
+   "poster": "media/images/size/w600/2024/09/Image-9-20-24-at-5.30-PM.jpeg",
+   "tags": [
+    "songs-by-s-d-cason",
+    "byzantine-catholic-songs",
+    "catholic-kids-songs"
+   ],
+   "date": "2024-09-20",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Adrianna Ortiz",
+     "Shalone Cason"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "The Sign of the Cross Song",
+     "url": "media/files/2024/09/The-Sign-of-the-Cross-Song.mp4"
+    }
+   ]
+  },
+  {
+   "id": "my-whole-body-worships-god",
+   "title": "My Whole Body Worships God",
+   "about": null,
+   "video": "media/files/2024/09/My-Whole-Body-Worships-God-small.mp4",
+   "poster": "media/images/size/w600/2024/10/Image-9-27-24-at-12.08-PM.jpeg",
+   "tags": [
+    "songs-by-s-d-cason",
+    "byzantine-catholic-songs",
+    "catholic-kids-songs"
+   ],
+   "date": "2024-09-26",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "My Whole Body Worships God small",
+     "url": "media/files/2024/09/My-Whole-Body-Worships-God-small.mp4"
+    }
+   ]
+  },
+  {
+   "id": "god-created-it-all",
+   "title": "God Created It All",
+   "about": null,
+   "video": "media/files/2024/10/God-Created-It-All-small.mp4",
+   "poster": "media/images/size/w600/2024/09/god-all0440.jpg",
+   "tags": [
+    "songs-by-s-d-cason",
+    "catholic-kids-songs"
+   ],
+   "date": "2024-09-30",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason",
+     "Adrianna Ortiz",
+     "Kylie Keegan"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "God Created It All-small",
+     "url": "media/files/2024/10/God-Created-It-All-small.mp4"
+    }
+   ]
+  },
+  {
+   "id": "who-is-jesus-christ",
+   "title": "Who is Jesus Christ?",
+   "about": null,
+   "video": "media/files/2024/10/Who-is-Jesus-Christ.mov",
+   "poster": "media/images/size/w600/2024/10/glory-to-jesus.jpg",
+   "tags": [
+    "songs-by-s-d-cason",
+    "catholic-kids-songs"
+   ],
+   "date": "2024-10-27",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ],
+    "backing": [
+     "Kylie Keegan",
+     "Adrianna Ortiz",
+     "Ashley Cason",
+     "Dominic Cason",
+     "Amelia Cason"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "Who is Jesus Christ?",
+     "url": "media/files/2024/10/Who-is-Jesus-Christ.mov"
+    }
+   ]
+  },
+  {
+   "id": "noah-and-the-flood",
+   "title": "Noah and the Flood",
+   "about": null,
+   "video": "media/files/2024/11/Noah-and-the-Flood-new2.mov",
+   "poster": "media/images/size/w600/2024/11/noah-and-the-flood.png",
+   "tags": [
+    "songs-by-s-d-cason",
+    "catholic-kids-songs",
+    "bible-songs-for-kids"
+   ],
+   "date": "2024-11-07",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "Noah and the Flood new2",
+     "url": "media/files/2024/11/Noah-and-the-Flood-new2.mov"
+    }
+   ]
+  },
+  {
+   "id": "the-exodus-song-moses-freed-his-people",
+   "title": "The Exodus Song (Moses Freed His People)",
+   "about": null,
+   "video": "media/files/2024/11/The-Exodus-Song--Moses-Freed-His-People-.mov",
+   "poster": "media/images/size/w600/2024/11/exodus-song.png",
+   "tags": [
+    "songs-by-s-d-cason",
+    "catholic-kids-songs",
+    "bible-songs-for-kids"
+   ],
+   "date": "2024-11-22",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "The Exodus Song (Moses Freed His People)",
+     "url": "media/files/2024/11/The-Exodus-Song--Moses-Freed-His-People-.mov"
+    }
+   ]
+  },
+  {
+   "id": "god-s-our-father",
+   "title": "God's Our Father",
+   "about": null,
+   "video": "media/files/2024/12/God-is-Our-Father.mp4",
+   "poster": "media/images/size/w600/2024/12/God-is-Our-Father.jpg",
+   "tags": [
+    "songs-by-s-d-cason",
+    "catholic-kids-songs"
+   ],
+   "date": "2024-12-20",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Adrianna Ortiz",
+     "Ashley Cason"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "God's Our Father",
+     "url": "media/files/2024/12/God-is-Our-Father.mp4"
+    }
+   ]
+  },
+  {
+   "id": "love-one-another",
+   "title": "Love One Another",
+   "about": null,
+   "video": "media/files/2025/01/Love-One-Another.mp4",
+   "poster": "media/images/size/w600/2025/01/Image-1-4-25-at-4.32-PM-1.jpeg",
+   "tags": [
+    "songs-by-s-d-cason",
+    "catholic-kids-songs"
+   ],
+   "date": "2025-01-04",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "Love One Another",
+     "url": "media/files/2025/01/Love-One-Another.mp4"
+    }
+   ]
+  },
+  {
+   "id": "jesus-wants-us-to-forgive",
+   "title": "Jesus Wants Us to Forgive",
+   "about": null,
+   "video": "media/files/2025/01/Jesus-Taught-Us-to-Forgive.mp4",
+   "poster": "media/images/size/w600/2025/01/Screenshot-2025-01-25-at-7.43.00-PM.png",
+   "tags": [
+    "songs-by-s-d-cason",
+    "catholic-kids-songs"
+   ],
+   "date": "2025-01-25",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ],
+    "backing": [
+     "Adrianna Ortiz",
+     "Amelia Cason"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "Jesus Wants Us to Forgive",
+     "url": "media/files/2025/01/Jesus-Taught-Us-to-Forgive.mp4"
+    }
+   ]
+  },
+  {
+   "id": "who-are-the-saints",
+   "title": "Who are the Saints?",
+   "about": null,
+   "video": "media/files/2025/04/Who-are-the-Saints.mov",
+   "poster": "media/images/size/w600/2025/04/who-are-the-saints.png",
+   "tags": [
+    "songs-by-s-d-cason",
+    "catholic-kids-songs"
+   ],
+   "date": "2025-04-11",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ],
+    "backing": [
+     "Adrianna Ortiz"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "Who are the Saints?",
+     "url": "media/files/2025/04/Who-are-the-Saints.mov"
+    }
+   ]
+  },
+  {
+   "id": "jesus-is-lord",
+   "title": "Jesus is Lord",
+   "about": "Why do we call Jesus, Lord? Find out in this upbeat call and response song!",
+   "video": "media/files/2025/05/Jesus-is-Lord.mp4",
+   "poster": "media/images/size/w600/2025/05/jesus-is-lord-thumbnail.jpg",
+   "tags": [
+    "songs-by-s-d-cason",
+    "catholic-kids-songs"
+   ],
+   "date": "2025-05-23",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ],
+    "animation": [
+     "Shalone Cason"
+    ],
+    "backing": [
+     "Adrianna Ortiz"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "Jesus is Lord",
+     "url": "media/files/2025/05/Jesus-is-Lord.mp4"
+    }
+   ]
+  },
+  {
+   "id": "holy-communion-song",
+   "title": "Holy Communion Song",
+   "about": null,
+   "video": "media/files/2026/05/the-holy-communion-song0001-3745.mp4",
+   "poster": "media/images/size/w600/2026/05/Untitled-1.png",
+   "tags": [
+    "byzantine-catholic-songs",
+    "catholic-kids-songs",
+    "songs-by-s-d-cason"
+   ],
+   "date": "2026-05-07",
+   "credits": {
+    "written": [
+     "Shalone Cason"
+    ],
+    "sung": [
+     "Shalone Cason"
+    ]
+   },
+   "downloads": [
+    {
+     "kind": "🎬 Video",
+     "label": "the holy communion song0001-3745",
+     "url": "media/files/2026/05/the-holy-communion-song0001-3745.mp4"
+    }
+   ]
+  }
+ ]
+}

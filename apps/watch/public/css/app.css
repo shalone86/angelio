@@ -1,0 +1,147 @@
+/* App-specific styles (base.css has the shared look). */
+
+/* Home: shelves that scroll sideways */
+.small-hero { padding-bottom: 4px; }
+.shelf { margin-top: 16px; }
+.shelf-title { font-size: 1.25rem; margin: 0; }
+.shelf-blurb { margin: 2px 0 8px; }
+.shelf-row { display: grid; align-items: start; grid-auto-flow: column; grid-auto-columns: minmax(200px, 240px); gap: 12px; overflow-x: auto;
+  scroll-snap-type: x mandatory; padding: 2px 2px 10px; scrollbar-width: thin; }
+.shelf-row > * { scroll-snap-align: start; }
+.video-card { display: flex; flex-direction: column; gap: 6px; padding: 8px; border-radius: 18px; background: var(--surface);
+  box-shadow: var(--shadow); color: var(--text); text-decoration: none; font-weight: 800; }
+.video-card:active { transform: translateY(3px); box-shadow: none; }
+.thumb { position: relative; display: block; }
+.thumb img, .course-item img, .playlist-item img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 12px; background: var(--blue-soft); display: block; }
+.seen { position: absolute; top: 6px; right: 6px; width: 28px; height: 28px; border-radius: 50%; background: var(--good); color: #fff;
+  display: grid; place-items: center; font-size: .95rem; }
+.count { position: absolute; bottom: 6px; right: 6px; padding: 2px 8px; border-radius: 999px; background: rgb(0 0 0 / .65); color: #fff; font-size: .8rem; }
+.video-title { font-size: 1rem; line-height: 1.25; padding: 0 4px; }
+.tag { display: inline-flex; align-items: center; gap: 4px; font-size: .85rem; color: var(--muted); padding: 0 4px; }
+
+/* Watching */
+.watch { display: flex; flex-direction: column; gap: 12px; }
+.watch-top { display: flex; align-items: center; gap: 10px; }
+.watch-title { font-size: 1.25rem; margin: 0; line-height: 1.2; display: flex; flex-direction: column; }
+.course-of { font-weight: 700; }
+.video-wrap { position: relative; width: 100%; border-radius: 18px; overflow: hidden; background: #000; box-shadow: var(--shadow); }
+.video-wrap video { display: block; width: 100%; aspect-ratio: 16 / 9; max-height: 70vh; background: #000; }
+.big-play { position: absolute; inset: 0; margin: auto; width: 110px; height: 110px; border-radius: 50%; border: 0; font-size: 3rem;
+  background: var(--accent); color: #fff; box-shadow: 0 6px 0 var(--accent-strong); cursor: pointer; }
+.watch-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.up-next { display: flex; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap; padding: 10px; border-radius: 14px;
+  background: var(--yellow-soft); font-weight: 700; }
+.words h3 { margin: 14px 0 4px; font-size: 1.1rem; }
+.words p { margin: 6px 0; line-height: 1.55; }
+
+/* A course: numbered lessons */
+.start-btn { align-self: center; }
+.course-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.course-item { display: grid; grid-template-columns: 44px 120px 1fr; gap: 12px; align-items: center; padding: 8px; border-radius: 16px;
+  background: var(--surface); box-shadow: var(--shadow); color: var(--text); text-decoration: none; font-weight: 800; }
+.course-item.next { outline: 3px solid var(--accent); }
+.course-item .num { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--blue-soft); font-size: 1.1rem; }
+.course-name { display: flex; flex-direction: column; gap: 2px; }
+
+/* Songs: up next, downloads */
+.playlist { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(170px, 200px); gap: 10px; overflow-x: auto; padding-bottom: 8px; }
+.playlist-item { position: relative; display: flex; flex-direction: column; gap: 4px; padding: 6px; border: 0; border-radius: 14px;
+  background: var(--surface); box-shadow: var(--shadow); font: 800 .92rem var(--font-body); color: var(--text); text-align: left; cursor: pointer; }
+.playlist-item:active { transform: translateY(3px); box-shadow: none; }
+.seen-mini { position: absolute; top: 10px; right: 10px; width: 22px; height: 22px; border-radius: 50%; background: var(--good); color: #fff;
+  display: grid; place-items: center; font-size: .75rem; }
+.downloads summary { cursor: pointer; font-weight: 800; }
+.dl-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+
+/* Quiz: the answers right under the question */
+.quiz .answers { margin-top: 4px; }
+.answer-choices { flex-direction: column; align-items: stretch; width: 100%; max-width: 560px; margin: 0 auto; }
+.choice-card.answer { font: 800 1.2rem var(--font-body); text-align: left; padding: 14px 18px; min-height: 60px; }
+.reveal-btn { display: block; width: 100%; max-width: 560px; margin: 0 auto; text-align: center !important; }
+.reveal { max-width: 560px; margin: 0 auto; text-align: center; font: 800 1.6rem var(--font-display); color: var(--good); }
+.why p { margin: 4px 0; font-size: 1.05rem; line-height: 1.5; }
+
+/* Home: today, and "See all" */
+.today { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 10px; }
+.today-card { display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 20px; text-decoration: none; color: var(--text);
+  font-weight: 800; background: linear-gradient(160deg, var(--yellow-soft), var(--surface)); box-shadow: var(--shadow); border: 3px solid var(--yellow); }
+.today-card:active { transform: translateY(3px); box-shadow: none; }
+.today-label { font: 800 .95rem var(--font-body); color: var(--accent-strong); padding: 0 4px; }
+.shelf-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.see-all { flex: none; }
+
+/* Who wrote and sang it: big and tappable */
+.credits { display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border-radius: 18px; background: var(--surface); box-shadow: var(--shadow); }
+.credit-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.credit-label { font: 800 1.05rem var(--font-body); color: var(--muted); min-width: 130px; }
+.person-chip { display: inline-flex; align-items: center; min-height: 44px; padding: 6px 14px; border-radius: 999px; background: var(--purple-soft);
+  color: var(--purple-ink); font: 800 1.1rem var(--font-body); text-decoration: none; box-shadow: 0 3px 0 rgb(124 92 255 / .3); }
+.person-chip:active { transform: translateY(2px); box-shadow: none; }
+.video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+
+/* Quiz: word tiles, put in order, match */
+.tiles { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 12px; }
+.tile-word { font: 800 1.2rem var(--font-body); padding: 12px 18px; min-height: 56px; }
+.tile-word:disabled:not(.right) { opacity: .3; }
+.blank-sentence { margin: 4px auto; max-width: 600px; text-align: center; font: 700 1.5rem/1.6 "Andika", "Nunito", system-ui, sans-serif; }
+.blank-slot { display: inline-block; min-width: 5.5em; margin: 0 4px; padding: 0 10px; border-bottom: 4px dashed var(--accent); border-radius: 6px;
+  color: var(--accent-strong); text-align: center; }
+.blank-slot.filled { border-bottom-style: solid; border-bottom-color: var(--good); background: var(--good-soft); color: var(--text); }
+.order-slots { list-style: none; margin: 0 auto; padding: 0; max-width: 520px; display: flex; flex-direction: column; gap: 8px; }
+.order-slot { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 6px 12px; border-radius: 14px; border: 3px dashed var(--border); background: var(--surface); font: 800 1.15rem var(--font-body); }
+.order-slot .n { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--blue-soft); flex: none; }
+.order-slot.filled { border-style: solid; border-color: var(--good); background: var(--good-soft); }
+.match-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; max-width: 640px; margin: 0 auto; }
+.match-col { display: flex; flex-direction: column; gap: 10px; }
+.match-l, .match-r { font: 800 1.05rem var(--font-body); min-height: 56px; padding: 10px 12px; }
+.match-l.picked { outline: 4px solid var(--accent); }
+.matched.c1 { background: #dff3e4; border-color: #1ea55b; } .matched.c2 { background: #e3efff; border-color: #1d7fe0; }
+.matched.c3 { background: #fff1d6; border-color: #ff8a00; } .matched.c4 { background: #f1e8ff; border-color: #7c5cff; }
+.matched.c5 { background: #ffe3e4; border-color: #e5484d; } .matched.c6 { background: #e6f7f7; border-color: #0aa5a5; }
+
+@media (max-width: 480px) {
+  .shelf-row { grid-auto-columns: minmax(160px, 70vw); }
+  .course-item { grid-template-columns: 36px 96px 1fr; gap: 8px; }
+  .choice-card.answer { font-size: 1.05rem; min-height: 54px; }
+}
+/* Sideways phones: the video gets the height, the buttons sit beside it */
+@media (max-width: 480px) {
+  .credit-label { min-width: 100%; }
+  .blank-sentence { font-size: 1.25rem; }
+  .video-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+}
+@media (orientation: landscape) and (max-height: 520px) {
+  .watch { display: grid; grid-template-columns: minmax(0, 1fr) minmax(200px, 32%); align-items: start; gap: 10px; }
+  .watch > :not(.video-wrap):not(.watch-actions) { grid-column: 1 / -1; }
+  .video-wrap video { max-height: calc(100vh - 110px); }
+  .watch-actions { flex-direction: column; align-items: stretch; }
+  .answer-choices { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); max-width: none; }
+  .choice-card.answer { min-height: 48px; padding: 8px 12px; font-size: 1rem; }
+  .why p { font-size: .95rem; }
+  .blank-sentence { font-size: 1.15rem; margin: 0 auto; }
+  .tiles { margin-top: 6px; }
+  .tile-word, .order-slot, .match-l, .match-r { min-height: 44px; padding: 6px 12px; font-size: 1rem; }
+  .order-slots { display: grid; grid-template-columns: 1fr 1fr; max-width: none; }
+}
+
+/* Grown-ups: quiz review */
+.review { display: flex; flex-direction: column; gap: 12px; }
+.review-quiz h2 { font-size: 1.15rem; margin: 0 0 6px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.review-qs { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 10px; }
+.review-qs ul, .review-qs ol { margin: 4px 0; padding-left: 20px; }
+.review-qs li.ok { font-weight: 800; color: var(--good); }
+.review-qs p { margin: 2px 0; }
+.draft { font-size: .75rem; padding: 2px 8px; border-radius: 999px; background: var(--yellow-soft); color: var(--yellow-ink, #7a5200); }
+
+/* Back to all Angelio games (angelio.org), at the left of the top bar. */
+.hub-link { display: inline-grid; place-items: center; flex: none; width: 38px; height: 38px; border-radius: 12px;
+  background: linear-gradient(#5bb4ff, #bfe3ff); box-shadow: 0 2px 0 #3a8fd9; }
+.hub-link img { width: 30px; height: 30px; border-radius: 9px; }
+.hub-link:active { transform: translateY(2px); box-shadow: none; }
+/* Phones: the menu gets its own row and scrolls sideways instead of being cut off. */
+@media (max-width: 560px) {
+  .topbar { flex-wrap: wrap; row-gap: 6px; }
+  .topbar .nav { margin-left: 0; width: 100%; overflow-x: auto; scrollbar-width: none; flex-wrap: nowrap; }
+  .topbar .nav::-webkit-scrollbar { display: none; }
+  .topbar .nav a { white-space: nowrap; }
+}
