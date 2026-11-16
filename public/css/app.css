@@ -1,0 +1,65 @@
+/* App-specific styles (base.css has the shared look). */
+
+/* Home: a shelf of lessons and a shelf of songs */
+.shelf { margin-top: 18px; }
+.shelf-title { font-size: 1.3rem; margin: 0; }
+.shelf-blurb { margin: 2px 0 10px; }
+.video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+.video-card { display: flex; flex-direction: column; gap: 6px; padding: 8px; border-radius: 18px; background: var(--surface);
+  box-shadow: var(--shadow); color: var(--text); text-decoration: none; font-weight: 800; }
+.video-card img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 12px; background: var(--blue-soft); }
+.video-card:active { transform: translateY(3px); box-shadow: none; }
+.video-title { font-size: 1.05rem; padding: 0 4px; }
+.video-card .stars { padding: 0 4px; }
+
+/* Watching */
+.watch { display: flex; flex-direction: column; gap: 12px; }
+.watch-top { display: flex; align-items: center; gap: 10px; }
+.watch-title { font-size: 1.3rem; margin: 0; line-height: 1.2; }
+.video-wrap { width: 100%; border-radius: 18px; overflow: hidden; background: #000; box-shadow: var(--shadow); }
+.video-wrap video { display: block; width: 100%; aspect-ratio: 16 / 9; max-height: 70vh; background: #000; }
+.watch-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.words h3 { margin: 14px 0 4px; font-size: 1.1rem; }
+.words p { margin: 6px 0; line-height: 1.55; }
+
+/* Quiz: words as answers, big enough for small fingers */
+.answer-choices { flex-direction: column; align-items: stretch; width: 100%; max-width: 520px; margin: 0 auto; }
+.choice-card.answer { font: 800 1.25rem var(--font-body); text-align: left; padding: 14px 18px; min-height: 60px; }
+.why p { margin: 4px 0; font-size: 1.1rem; }
+
+/* Sing along: the words, big */
+.lyrics-title { margin: 0 0 6px; font-size: 1.2rem; }
+.stanza { margin: 10px 0; }
+.stanza p { margin: 2px 0; font: 700 1.35rem/1.45 "Andika", "Nunito", system-ui, sans-serif; }
+.stanza.chorus { padding: 8px 12px; border-radius: 14px; background: var(--yellow-soft); }
+.stanza.chorus p { font-style: italic; }
+
+@media (max-width: 480px) {
+  .video-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .video-title { font-size: .92rem; }
+  .stanza p { font-size: 1.15rem; }
+  .choice-card.answer { font-size: 1.1rem; min-height: 54px; }
+}
+/* Sideways phones: the video gets the height, the buttons sit beside it */
+@media (orientation: landscape) and (max-height: 520px) {
+  .watch { display: grid; grid-template-columns: minmax(0, 1fr) minmax(200px, 34%); align-items: start; gap: 10px; }
+  .watch-top, .watch .words, .watch .lyrics, .watch > .shelf-title, .watch > .video-grid { grid-column: 1 / -1; }
+  .video-wrap video { max-height: calc(100vh - 120px); }
+  .watch-actions { flex-direction: column; align-items: stretch; }
+  .answer-choices { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); max-width: none; }
+  .choice-card.answer { min-height: 50px; padding: 8px 12px; font-size: 1.05rem; }
+  .why p { font-size: 1rem; }
+}
+
+/* Back to all Angelio games (angelio.org), at the left of the top bar. */
+.hub-link { display: inline-grid; place-items: center; flex: none; width: 38px; height: 38px; border-radius: 12px;
+  background: linear-gradient(#5bb4ff, #bfe3ff); box-shadow: 0 2px 0 #3a8fd9; }
+.hub-link img { width: 30px; height: 30px; border-radius: 9px; }
+.hub-link:active { transform: translateY(2px); box-shadow: none; }
+/* Phones: the menu gets its own row and scrolls sideways instead of being cut off. */
+@media (max-width: 560px) {
+  .topbar { flex-wrap: wrap; row-gap: 6px; }
+  .topbar .nav { margin-left: 0; width: 100%; overflow-x: auto; scrollbar-width: none; flex-wrap: nowrap; }
+  .topbar .nav::-webkit-scrollbar { display: none; }
+  .topbar .nav a { white-space: nowrap; }
+}
