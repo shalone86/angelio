@@ -1,43 +1,35 @@
 # Angelio
 
-The hub for our kids' learning apps: **https://angelio.org**
+Free learning games, video lessons and songs for kids, everything read aloud, at **[angelio.org](https://angelio.org)**.
+All of Angelio lives in this one repo.
 
-- `public/`: the hub page (`js/apps.js` lists the apps, live and coming soon).
-- `worker/index.js`: forwards `angelio.org/<app>/…` to each app's own Worker through a service binding, stripping the prefix. The apps use relative links, so they work under a path unchanged.
-- `ROADMAP.md`: what's next.
+| Folder | What | Lives at |
+|---|---|---|
+| `hub/` | the angelio.org home page, Sticker World, the admin pages, and the router that puts every app under its path | angelio.org |
+| `apps/snap` | Snap & Split (PreK) | /snap/ |
+| `apps/regroup` | Regroup! (1–3) | /regroup/ |
+| `apps/doubles` | Doubles (1–3) | /doubles/ |
+| `apps/grammar` | Grammar! (1–3) | /grammar/ |
+| `apps/fractions` | Fraction Feast | /fractions/ |
+| `apps/letters` | Letter Lane (PreK–K) | /letters/ |
+| `apps/read` | Read Aloud (1–3) | /read/ |
+| `apps/watch` | Watch & Sing: video lessons, courses, quizzes, songs and albums | (preview) |
+| `apps/articulate` | Articulate (speech practice) | /articulate/ and articulate.shalonely.com |
+| `template/` | the app template (and, for now, the source of the shared kit) | |
 
-## Add an app
-
-1. Build it from `shalone86/app-template` and deploy it as its own Worker (no custom domain needed).
-2. Add it to `APPS` in `worker/index.js`, add a service binding in `wrangler.jsonc`, and add a card in `public/js/apps.js`. `npm test` checks the three agree.
-3. In the app, give `public/sw.js` its own `APP` name, and make `S.init("<app>:v1")` unique: all apps share angelio.org.
-4. `npx wrangler deploy` here.
-
-Moving an app that had its own domain: set `HOME_URL` and `STORE_KEY` in its `wrangler.jsonc` vars; the old address then sends visitors to the hub with their saved progress.
-
-## Develop
-
-```bash
-npm install
-npm test
-npx wrangler deploy
-```
-
-## Run your own copy
-
-This is open source (MIT). You don't need to code to use it, just visit [angelio.org](https://angelio.org).
-If you do code and want your own copy, or want to change it for your class:
+Each app is still its own Cloudflare Worker, with its own `wrangler.jsonc`. The apps were brought in with their
+full history (their old repos are archives now).
 
 ```bash
-git clone https://github.com/shalone86/angelio.git && cd angelio
-npm install
-npm test
-npx wrangler deploy                       # optional: your own Cloudflare Worker with the nicer voice
+npm install              # once, at the top: one shared install for every app
+npm test                 # every app's tests
+npm run deploy -- watch  # deploy one app (hub, letters, …); refuses if there's uncommitted work
+npm run kit-check        # where an app's copy of the shared kit differs from the template's
 ```
 
-Before deploying your own copy, change `"name"` in `wrangler.jsonc` and remove the `routes` and
-`vars` lines (those belong to angelio.org). Building a new app? Start from
-[shalone86/app-template](https://github.com/shalone86/app-template). Fixes and question corrections
-are welcome, see [CONTRIBUTING.md](CONTRIBUTING.md).
+What's next is in [ROADMAP.md](ROADMAP.md): the Angelio Studio, so every lesson, song, quiz and game can be
+edited without code.
 
-The code is MIT licensed ([LICENSE](LICENSE)). The name "Angelio" and its logo are not part of the license.
+## License
+
+MIT, see [LICENSE](LICENSE). The name "Angelio" and its logo are not part of the license.
