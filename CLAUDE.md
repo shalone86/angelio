@@ -1,5 +1,12 @@
 # Notes for AI assistants working in this repo
 
+- **One repo:** all of Angelio is here: `hub/` (angelio.org), `apps/<name>/` (each app, still its own Worker
+  with its own wrangler.jsonc), `template/` (the app template). The old per-app repos (snap-split, regroup,
+  doubles, grammar, fractions, letterlane, readaloud, watch, articulation, app-template) are archives: work here.
+  `npm install` once at the top; `npm test` runs every suite; deploy with `npm run deploy -- <app>` (it refuses
+  uncommitted work). `npm run kit-check` shows kit drift between apps.
+- **The Studio comes first** (ROADMAP.md): the owner must be able to edit everything without code or AI.
+
 - This is part of **Angelio** (angelio.org), the owner's brand of free kids' learning apps. The
   hub is shalone86/angelio; shared building blocks come from shalone86/app-template.
 - **Reminder for the owner:** after finishing any new feature or app, remind the owner about the

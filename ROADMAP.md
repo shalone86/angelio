@@ -54,6 +54,10 @@ without AI or code (like Ghost was). Decisions so far:
   (thumbnail from a frame, MP3 made from a song's video); quiz builder (choice, word tiles, order, match);
   drafts and publish; history and undo; trash; export everything.
 
+Progress: **one repo done** (Nov 16, 2026: hub/, apps/*, template/, with every app's history; shared install,
+`npm test` for everything, safe deploy, kit check). Next: the kit shared for real (no copies), and Watch & Sing's
+content as the master copy (no longer imported from Ghost).
+
 Order: (1) one repo + all content as validated data files (Watch & Sing first) → (2) Studio v1 for
 Watch & Sing → (3) Studio for every game's content → (4) "New app" wizard → (5) open-source kit
 (the H5P idea for kids: learning games, video courses and song albums with a visual studio, run on Cloudflare).
