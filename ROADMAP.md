@@ -35,6 +35,31 @@ Phase 1 (done, free codes, no payments):
 Phase 2 (when sharing publicly): payments (Stripe or Lemon Squeezy) that create a code automatically
 and email it, plus terms and a refund policy.
 
+## NOW: the Angelio Studio (decided Nov 16, 2026; before any other new features)
+
+Why: with the kids videos and songs moving in, the owner must be able to see, add and edit everything
+without AI or code (like Ghost was). Decisions so far:
+- **Content lives in GitHub** as plain data files; every Studio save is a commit (history, undo), and
+  Cloudflare republishes. Videos, pictures and downloads live in R2 (bucket `watch-media`).
+- **People:** the owner first; can add people as full admins or limited to some sections (Cloudflare
+  Access for sign-in, roles kept with the content). Visitors and kids still have no accounts and no data.
+- **One repo** for all of Angelio (apps, modules, kit, content, studio); the per-app repos become archives.
+- **Kids site retires:** kids.methodiusmedia.com was never promoted; Watch & Sing (shalone86/watch,
+  preview at watch.ariyandhamma.workers.dev) replaces it. The Methodius hub points to Angelio
+  (maybe two tabs: Learn and Watch).
+- **Three layers:** the kit (voice, stickers, stars, offline), modules (game templates: video lessons +
+  quiz, songs & albums, phonics, number blocks, sentences, Sticker World…, each declaring its content's
+  shape) and content (everything she writes). An app = modules + content + name + icon + address.
+- **Studio v1:** library of everything; editors with a live preview using the real game code; uploads
+  (thumbnail from a frame, MP3 made from a song's video); quiz builder (choice, word tiles, order, match);
+  drafts and publish; history and undo; trash; export everything.
+
+Order: (1) one repo + all content as validated data files (Watch & Sing first) → (2) Studio v1 for
+Watch & Sing → (3) Studio for every game's content → (4) "New app" wizard → (5) open-source kit
+(the H5P idea for kids: learning games, video courses and song albums with a visual studio, run on Cloudflare).
+After (2): sdcourses' Lesson Studio gets "Send to Angelio" (upload the video and thumbnail, save the lesson
+and its quiz through the Studio; true/false → two choices, fill-ins get two "wrong words" for word tiles).
+
 ## Recorded sounds (Nov 2026)
 
 The robot voice can't say lone letter sounds well ("tuh" comes out "too", "ih" like "eh"). A grown-up records each
