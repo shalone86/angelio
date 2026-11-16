@@ -227,7 +227,11 @@ const library = { source: SITE, built: new Date().toISOString().slice(0, 10), co
 // Videos, pictures and downloads are served from our own storage (tools/copy-media.sh copies them):
 // https://kids.methodiusmedia.com/content/media/x.mp4 → media/media/x.mp4
 const GHOST_CONTENT = `${SITE}/content/`;
-const ours = (u) => (typeof u === "string" && u.startsWith(GHOST_CONTENT) ? `media/${decodeURIComponent(u.slice(GHOST_CONTENT.length))}` : u);
+// (A few posts use a file from the gallery's Ghost, sdcason.com: those go under media/sdcason/.)
+const GALLERY_CONTENT = "https://sdcason.com/content/";
+const ours = (u) => (typeof u !== "string" ? u
+  : u.startsWith(GHOST_CONTENT) ? `media/${decodeURIComponent(u.slice(GHOST_CONTENT.length))}`
+  : u.startsWith(GALLERY_CONTENT) ? `media/sdcason/${decodeURIComponent(u.slice(GALLERY_CONTENT.length))}` : u);
 for (const x of [...lessons, ...songs]) {
   x.video = ours(x.video); x.poster = ours(x.poster);
   for (const d of x.downloads ?? []) d.url = ours(d.url);

@@ -22,6 +22,7 @@ type_of() {
 jq -r '[(.lessons + .songs)[] | .video, .poster, (.downloads[]?.url)] | map(select(. != null and startswith("media/"))) | unique[]
   | "\(.[6:])\t\(.[6:] | split("/") | map(@uri) | join("/"))"' "$LIB" | while IFS=$'\t' read -r key path; do
   url="$GHOST$path"
+  case "$key" in sdcason/*) url="https://sdcason.com/content/${path#sdcason/}" ;; esac # from the gallery's Ghost
   grep -qxF "$key" "$DONE" && continue
   if ! curl -sS -f -m 900 -o "$WORK/file" "$url"; then echo "FAILED download: $key"; continue; fi
   size=$(stat -c %s "$WORK/file")
