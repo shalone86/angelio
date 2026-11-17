@@ -156,23 +156,38 @@ async function playPieces(text, rate, id, server) {
 }
 
 /** Say text aloud (if read-aloud is on, or force). rate: 0.65 for slowly. Resolves when done. Never throws. */
-export async function speak(text, { force = false, rate: speed = 1 } = {}) {
-  if (!text || (!settings().readAloud && !force)) return;
-  stop();
+/** The text as the voice will say it: "9" → "Nine.", symbols out, a full stop at the end. */
+function cleanText(text) {
   let clean = String(text ?? "")
     .replace(/[▲●◡▬♠⎵]/g, "")
     .replace(/_{2,}/g, "blank")
     .replace(/\s+/g, " ")
     .trim();
+  if (!clean) return "";
+  if (/^\d+$/.test(clean)) return `${numberToWords(Number(clean))}.`;
+  if (!/\s/.test(clean) && /^[a-z]/.test(clean)) clean = clean[0].toUpperCase() + clean.slice(1);
+  if (!/[.!?]$/.test(clean)) clean += ".";
+  return clean;
+}
+
+/**
+ * Load these lines now (numbers a board will count, for example), so saying them later is instant.
+ * Counting fast used to cut each number off while the next one loaded, and the count could stop early.
+ */
+export function warmUp(texts) {
+  if (!player) return;
+  const voice = settings().voice;
+  useServer().then((ok) => {
+    if (!ok) return;
+    for (const t of new Set(texts.map(cleanText).filter(Boolean))) serverUrl(t, voice).catch(() => {});
+  }).catch(() => {});
+}
+
+export async function speak(text, { force = false, rate: speed = 1 } = {}) {
+  if (!text || (!settings().readAloud && !force)) return;
+  stop();
+  const clean = cleanText(text);
   if (!clean) return;
-  if (/^\d+$/.test(clean)) {
-    clean = `${numberToWords(Number(clean))}.`;
-  } else {
-    if (!/\s/.test(clean) && /^[a-z]/.test(clean)) {
-      clean = clean[0].toUpperCase() + clean.slice(1);
-    }
-    if (!/[.!?]$/.test(clean)) clean += ".";
-  }
   const id = playId;
   const rate = (settings().slow ? 0.8 : 1) * speed;
   try {

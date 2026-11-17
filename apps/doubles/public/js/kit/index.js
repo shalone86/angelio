@@ -1,14 +1,14 @@
 import * as Store from "./store.js";
 import { sfx } from "./sound.js";
 import { spoken, numberToWords } from "./speech.js";
-import { speak, stop as stopSpeak, browserVoices } from "./tts.js";
+import { speak, stop as stopSpeak, browserVoices, warmUp } from "./tts.js";
 import { confetti, clearFx } from "./fx.js";
 import { keepDockVisible } from "./dock.js";
 import { starsHtml, viewGrownups, installClickSounds } from "./ui.js";
 
 Store.init("doubles:v1", {});
 
-export { sfx, spoken, numberToWords, speak, stopSpeak, browserVoices, confetti, clearFx };
+export { sfx, spoken, numberToWords, speak, stopSpeak, browserVoices, warmUp, confetti, clearFx };
 export * from "../doubles.js";
 export * from "../sense.js";
 

@@ -4,7 +4,7 @@
 // the final answer before the child either interacts or answers.
 // Every board also attaches `stageEl.revealSolution = () => ...` for correct answers & 2nd-mistake reveals.
 
-import { el, sfx, speak, beadBarSvg, beadColorFor } from "./kit/index.js";
+import { el, sfx, speak, warmUp, beadBarSvg, beadColorFor } from "./kit/index.js";
 
 function tenAndUnitSvg(n) {
   const tens = Math.floor(n / 10);
@@ -365,6 +365,7 @@ export function renderExerciseBoard(q, stageEl, onPick) {
     for (let g = 0; g < q.groups; g++) {
       running += q.each;
       const stepTotal = running;
+      warmUp([String(stepTotal)]); // ready before it's tapped
       const nest = el("button", {
         class: "group-nest-card",
         title: "Tap to count this group!",
@@ -463,6 +464,7 @@ export function renderExerciseBoard(q, stageEl, onPick) {
     const rowsContainer = el("div", { class: "array-rows-container" });
     for (let r = 0; r < q.rows; r++) {
       const cum = (r + 1) * q.cols;
+      warmUp([String(cum)]);
       const rowEl = el("button", {
         class: "array-row-btn",
         html: `
@@ -820,6 +822,7 @@ export function renderExerciseBoard(q, stageEl, onPick) {
     };
     renderBars(1);
 
+    warmUp(Array.from({ length: q.answer }, (_, i) => String((i + 1) * q.known))); // every total the bars will reach
     const addBarBtn = el("button", {
       class: "btn small pill action-helper-btn",
       html: `➕ Tap to Add Another Bar of ${q.known} (Total: ${q.known} / ${q.product})`,
@@ -898,6 +901,7 @@ export function renderExerciseBoard(q, stageEl, onPick) {
  */
 function enableBeadCounting(root) {
   let running = 0, busy = false;
+  warmUp(Array.from({ length: 20 }, (_, i) => String(i + 1))); // 1–20, so counting never waits
   root.addEventListener("click", (e) => {
     if (e.target.closest("button, .choice-tile-btn")) return;
     const group = e.target.closest(".gold-ten-col, .ten-bar-wrap, .unit-bar-wrap");
