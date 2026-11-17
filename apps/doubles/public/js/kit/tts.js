@@ -183,7 +183,21 @@ export function warmUp(texts) {
   }).catch(() => {});
 }
 
-export async function speak(text, { force = false, rate: speed = 1 } = {}) {
+// What's being said now, so a game can wait until the voice is quiet (see whenQuiet).
+let lastSpeech = Promise.resolve();
+/** Say text aloud (if read-aloud is on, or force). rate: 0.65 for slowly. Resolves when done. Never throws. */
+export function speak(text, opts) {
+  const p = speakNow(text, opts);
+  lastSpeech = p;
+  return p;
+}
+/** Resolves when the voice has finished, including anything said while waiting. */
+export async function whenQuiet() {
+  let p;
+  do { p = lastSpeech; await p.catch(() => {}); } while (p !== lastSpeech);
+}
+
+async function speakNow(text, { force = false, rate: speed = 1 } = {}) {
   if (!text || (!settings().readAloud && !force)) return;
   stop();
   const clean = cleanText(text);

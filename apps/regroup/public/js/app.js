@@ -6,7 +6,7 @@ import { PLACES, WORLDS, OPS, STAGES, stageById, makeStage, exampleFor, starsFor
 import { Game } from "./game.js";
 import { viewMat } from "./mat.js";
 import * as B from "./board.js";
-import { speak, stop, browserVoices, preload } from "./tts.js";
+import { speak, stop, browserVoices, preload, whenQuiet } from "./tts.js";
 import { health } from "./api.js";
 import { sfx } from "./sound.js";
 import * as S from "./store.js";
@@ -280,14 +280,24 @@ function viewPlay(id) {
 }
 
 function nextButton(dock, label) {
-  dock.innerHTML = `<button class="btn big primary pulse" data-next>${label}</button>`;
+  dock.innerHTML = `<button class="btn big primary pulse next-auto" data-next><span class="next-fill" aria-hidden="true"></span><span class="next-label">${label}</span></button>`;
+  const btn = dock.querySelector("[data-next]");
   return new Promise((resolve) => {
-    const go = () => { document.removeEventListener("keydown", onKey); resolve(); };
+    let done = false, timer = 0;
+    const go = () => { if (done) return; done = true; clearTimeout(timer); document.removeEventListener("keydown", onKey); resolve(); };
     const onKey = (e) => { if (e.key === "Enter") go(); };
-    dock.querySelector("[data-next]").onclick = go;
+    btn.onclick = go;
     document.addEventListener("keydown", onKey);
+    // Little ones may not know to tap Next: once the voice is done, the button fills up and goes on by itself.
+    if (S.settings().autoNext !== false) whenQuiet().then(() => {
+      if (done || !btn.isConnected) return;
+      btn.style.setProperty("--auto-next", `${AUTO_NEXT_MS}ms`);
+      btn.classList.add("counting");
+      timer = setTimeout(() => { if (btn.isConnected) go(); }, AUTO_NEXT_MS);
+    });
   });
 }
+const AUTO_NEXT_MS = 5000;
 
 function finishStage(stage, mistakes) {
   const next = STAGES[STAGES.indexOf(stage) + 1];
@@ -364,6 +374,7 @@ async function viewGrownups() {
       <div class="card">
         ${toggle("readAloud", "Read aloud", "Says every step out loud, for kids who are still learning to read.")}
         ${toggle("slow", "Slower voice", "")}
+        <label class="set"><span><b>Go on by itself</b><br><span class="muted small">After each question, the Next button fills up and goes on after a few seconds, for little ones who don't tap it yet.</span></span><input type="checkbox" data-k="autoNext" ${s.autoNext !== false ? "checked" : ""}></label>
         ${toggle("sounds", "Sound effects", "Pops, whooshes and dings.")}
         ${toggle("blocks", "Start with blocks showing", "Kids can always tap 🧱 to show or hide the blocks.")}
         <label class="set"><span><b>Voice</b><br><span class="muted small" data-voice-status>Checking…</span></span>

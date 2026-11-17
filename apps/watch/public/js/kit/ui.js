@@ -2,7 +2,7 @@
 // the grown-ups settings card, and a click sound for every button.
 
 import * as S from "./store.js";
-import { speak, stop, browserVoices } from "./tts.js";
+import { speak, stop, browserVoices, whenQuiet } from "./tts.js";
 import { health } from "./api.js";
 import { sfx } from "./sound.js";
 import { confetti } from "./fx.js";
@@ -24,14 +24,24 @@ export const starsFor = (mistakes) => (mistakes === 0 ? 3 : mistakes <= 3 ? 2 : 
 
 /** A big pulsing button in the dock; resolves when pressed (or Enter). */
 export function nextButton(dock, label) {
-  dock.innerHTML = `<button class="btn big primary pulse" data-next>${label}</button>`;
+  dock.innerHTML = `<button class="btn big primary pulse next-auto" data-next><span class="next-fill" aria-hidden="true"></span><span class="next-label">${label}</span></button>`;
+  const btn = dock.querySelector("[data-next]");
   return new Promise((resolve) => {
-    const go = () => { document.removeEventListener("keydown", onKey); resolve(); };
+    let done = false, timer = 0;
+    const go = () => { if (done) return; done = true; clearTimeout(timer); document.removeEventListener("keydown", onKey); resolve(); };
     const onKey = (e) => { if (e.key === "Enter") go(); };
-    dock.querySelector("[data-next]").onclick = go;
+    btn.onclick = go;
     document.addEventListener("keydown", onKey);
+    // Little ones may not know to tap Next: once the voice is done, the button fills up and goes on by itself.
+    if (S.settings().autoNext !== false) whenQuiet().then(() => {
+      if (done || !btn.isConnected) return;
+      btn.style.setProperty("--auto-next", `${AUTO_NEXT_MS}ms`);
+      btn.classList.add("counting");
+      timer = setTimeout(() => { if (btn.isConnected) go(); }, AUTO_NEXT_MS);
+    });
   });
 }
+const AUTO_NEXT_MS = 5000;
 
 /** Show a message in the speech bubble and say it. */
 export function say(bubble, text) {
@@ -105,6 +115,7 @@ export async function viewGrownups(app, { extraToggles = [], about = "" } = {}) 
         ${toggle("readAloud", "Read aloud", "Says every step out loud, for kids who are still learning to read.")}
         ${toggle("slow", "Slower voice", "")}
         ${toggle("sounds", "Sound effects", "")}
+        <label class="set"><span><b>Go on by itself</b><br><span class="muted small">After each question, the Next button fills up and goes on after a few seconds, for little ones who don't tap it yet.</span></span><input type="checkbox" data-k="autoNext" ${s.autoNext !== false ? "checked" : ""}></label>
         ${extraToggles.map(([k, label, sub]) => toggle(k, label, sub)).join("")}
         <label class="set"><span><b>Voice</b><br><span class="muted small" data-voice-status>Checking…</span></span>
           <select data-k="ttsSource"><option value="auto">Best available</option><option value="server">Cloudflare voice</option><option value="browser">This device's voice</option></select></label>
