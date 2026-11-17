@@ -97,12 +97,20 @@
     for (const l of Object.keys(LETTERS)) add(LETTERS[l].sound, l, keyword(l)[0], "Letters");
     const gradeName = { 2: "Kindergarten chunks", 3: "1st grade chunks", 4: "2nd grade chunks", 5: "3rd grade chunks" };
     for (const p of PATTERNS) {
-      if (p.syllables) continue; // big words are said whole, then slowly
       for (const spec of [...p.pictures.map(([s]) => s), ...p.words]) {
-        for (const c of chunks(spec)) add(c.s, c.t, wordOf(spec), c.t.length === 1 && LETTERS[c.t] ? "Letters" : gradeName[p.grade]);
+        // Big words (3rd grade) break into word parts like "pump" and "kin": a tab of their own.
+        for (const c of chunks(spec, p.syllables)) {
+          if (c.silent) continue;
+          const group = p.syllables ? "3rd grade word parts" : c.t.length === 1 && LETTERS[c.t] ? "Letters" : gradeName[p.grade];
+          add(c.s, c.t, wordOf(spec), group);
+        }
       }
     }
-    const order = ["Letters", ...Object.values(gradeName)];
+    // Sounds the "How it works" cards say ({{ul}}, {{kuh}}…) that no word uses: they need recordings too.
+    const { LESSONS } = await import("/letters/js/lessons.js");
+    const said = [...PATTERNS.map((p) => p.say), ...Object.values(LESSONS).map((l) => l.voice)].join(" ");
+    for (const [, snd] of said.matchAll(/\{\{([^}]+)\}\}/g)) if (!out.has(snd)) add(snd, "the How it works cards", null, "3rd grade word parts");
+    const order = ["Letters", ...Object.values(gradeName), "3rd grade word parts"];
     return order.map((g) => ({ name: g, items: [...out.values()].filter((x) => x.group === g) })).filter((g) => g.items.length);
   }
 
@@ -175,7 +183,7 @@
     $("#list").innerHTML = groups[tab].items.map((x) => `
       <div class="snd">
         <div><div class="name">${esc(x.sound)} ${has(x.sound) ? '<span class="ok">✓ done</span>' : ""}</div>
-          <div class="muted">the sound of ${[...x.uses].map(([c, ws]) => `<b>${esc(c)}</b> in ${ws.map(esc).join(", ")}`).join(" · ")} <i>(say only the sound)</i></div></div>
+          <div class="muted">${[...x.uses].map(([c, ws]) => (ws.length ? `the sound of <b>${esc(c)}</b> in ${ws.map(esc).join(", ")}` : `said in ${esc(c)}`)).join(" · ")} <i>(say only the sound)</i></div></div>
         <div class="btns">
           <button class="ghost" data-robot="${esc(x.sound)}" title="How the robot says it">🤖</button>
           <button class="rec" data-rec="${esc(x.sound)}">⏺ Record</button>

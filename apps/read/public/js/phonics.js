@@ -121,7 +121,7 @@ export const PATTERNS = [
   {
     id: "g3-syllables", grade: 5, title: "Big Words in Chunks", emoji: "🧩", focus: [], syllables: true,
     teach: "Break a big word into <b>chunks</b> (syllables), read each chunk, then put them together: <b>rab · bit</b>, <b>pump · kin</b>.",
-    say: "Big words are easy if you break them into chunks. Each chunk has one vowel sound. Read each chunk, then put them together: rab, bit, rabbit! Pump, kin, pumpkin!",
+    say: "Big words are easy if you break them into chunks. Each chunk has one vowel sound. Read each chunk, then put them together: {{rab}}, {{bit}}, rabbit! {{pump}}, {{kin}}, pumpkin!",
     pictures: [["rab|bit", "🐰"], ["pic|nic", "🧺"], ["rain|bow", "🌈"], ["pump|kin", "🎃"], ["cup|cake", "🧁"], ["ro:roh|bot", "🤖"], ["drag|on", "🐉"], ["pop|corn", "🍿"], ["rock|et", "🚀"], ["sun|flow|er", "🌻"]],
     words: ["nap|kin", "kit|ten", "sun|set", "bas|ket", "hun|dred", "mag|net", "in|sect", "fan|tas|tic", "won|der|ful", "ad|ven|ture"],
     sentences: [
@@ -150,7 +150,7 @@ export const PATTERNS = [
   {
     id: "g3-endings", grade: 5, title: "Endings: -tion, -ture, -le", emoji: "🕯️", focus: ["tion", "ture", "le"], syllables: true,
     teach: "Some endings have their own sound: <b>tion</b> says shun (sta<b>tion</b>), <b>ture</b> says cher (pic<b>ture</b>), and <b>le</b> says ul (can<b>dle</b>).",
-    say: "Some word endings have their very own sound. T, i, o, n says shun, like station. T, u, r, e says cher, like picture. And l, e at the end says ul, like candle, and turtle.",
+    say: "Some word endings have their very own sound. T, i, o, n says {{shun}}, like station. T, u, r, e says {{cher}}, like picture. And l, e at the end says {{ul}}, like candle, and turtle.",
     pictures: [["lo:loh|tion", "🧴"], ["sta:stay|tion", "🚉"], ["pic|ture", "🖼️"], ["can|dle:dul", "🕯️"], ["tur|tle:tul", "🐢"], ["ap|ple:pul", "🍎"], ["bot|tle:tul", "🍼"], ["puz|zle:zul", "🧩"]],
     words: ["ac|tion", "na:nay|tion", "mo:moh|tion", "fu:fyoo|ture", "na:nay|ture", "crea:cree|ture", "lit|tle:tul", "ta:tay|ble:bul", "sim|ple:pul", "gig|gle:gul"],
     sentences: [

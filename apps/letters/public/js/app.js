@@ -234,7 +234,7 @@ function chunkWord(spec, q, { tag = "button", cls = "" } = {}) {
 const ASK = {
   // Phonics: tap each chunk to hear it, sound out the word, find the picture.
   async "sound-out"(q, ctx) {
-    if (!patternById(q.pattern).syllables) preloadSounds(q.chunks.map((c) => c.s)); // ready before "Sound it out"
+    preloadSounds(q.chunks.map((c) => c.s)); // ready before a tap or "Sound it out"
     ctx.board.innerHTML = `
       <div class="word-big">${chunkWord(q.chunks, q)}</div>
       <button class="btn big blend-btn" data-own-sound>${patternById(q.pattern).syllables ? "🐢 Hear it slowly" : "👉 Sound it out"}</button>`;
@@ -243,7 +243,7 @@ const ASK = {
       const c = q.chunks[i];
       t.classList.add("heard"); FX.pop(t, 1.1); sfx.key(i + 1);
       sayRun++;
-      speak(c.silent ? "This one is quiet!" : patternById(q.pattern).syllables ? c.s : snd(c.s), { force: true });
+      speak(c.silent ? "This one is quiet!" : snd(c.s), { force: true }); // a recording when there is one (word parts too)
     });
     const pat = patternById(q.pattern);
     ctx.board.querySelector(".blend-btn").onclick = () => pat.syllables
