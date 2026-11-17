@@ -407,10 +407,26 @@ topbarHeight(); addEventListener("resize", topbarHeight);
 installClickSounds();
 jingleOnce("watch", () => S.settings().sounds);
 app.innerHTML = `<p class="center muted">Loading…</p>`;
-fetch("data/library.json").then((r) => r.json()).then((j) => { LIB = j; route(); })
+// Hidden lessons and songs (the Studio's "Hide") don't show, and drop out of their courses and albums.
+// In the Studio's preview (?studio) everything shows, and the Studio sends its unsaved library to draw.
+const STUDIO = new URLSearchParams(location.search).has("studio");
+function visible(j) {
+  if (STUDIO) return j;
+  const lessons = (j.lessons ?? []).filter((x) => !x.hidden), songs = (j.songs ?? []).filter((x) => !x.hidden);
+  const L = new Set(lessons.map((x) => x.id)), Sg = new Set(songs.map((x) => x.id));
+  return { ...j, lessons, songs,
+    courses: (j.courses ?? []).map((c) => ({ ...c, items: c.items.filter((id) => L.has(id)) })).filter((c) => c.items.length),
+    albums: (j.albums ?? []).map((a) => ({ ...a, items: a.items.filter((id) => Sg.has(id)) })).filter((a) => a.items.length) };
+}
+if (STUDIO) addEventListener("message", (e) => {
+  if (e.origin !== location.origin || e.data?.type !== "studio") return;
+  if (e.data.library) LIB = e.data.library;
+  if (e.data.go && location.hash !== e.data.go) location.hash = e.data.go; else route();
+});
+fetch("data/library.json", { cache: "no-cache" }).then((r) => r.json()).then((j) => { LIB = visible(j); route(); if (STUDIO) parent.postMessage({ type: "studio-ready" }, location.origin); })
   .catch(() => { app.innerHTML = `<p class="center">Couldn't load the videos. Check the internet connection and try again.</p>`; });
 keepDockVisible();
-if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {});
+if (!STUDIO && "serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {});
 
 // Apps saved to a home screen stay paused in memory for days. When this one comes back after 10 minutes
 // or more, it checks for a newer version and reloads into it, but only on its home page (never mid-game).

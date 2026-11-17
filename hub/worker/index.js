@@ -22,8 +22,11 @@ export const APPS = {
 
 import { normalizeCode, newCode, codeStatus, day, month } from "./codes.js";
 import { stripeApi } from "./stripe.js";
+import { studioApi, backupToGitHub } from "./studio.js";
 
 export default {
+  // Every night: copy the Studio's library into GitHub (does nothing without a GITHUB_TOKEN secret).
+  async scheduled(event, env, ctx) { ctx.waitUntil(backupToGitHub(env).then((r) => console.log("studio backup", JSON.stringify(r)))); },
   async fetch(request, env) {
     const url = new URL(request.url);
     if (url.pathname.startsWith("/api/stripe/")) return stripeApi(request, url, env).catch((e) => json({ error: String(e?.message ?? e) }, 500));
@@ -125,6 +128,7 @@ async function api(request, url, env) {
     await new Promise((r) => setTimeout(r, 800)); // slow down guessing
     return json({ error: "wrong admin key" }, 401);
   }
+  if (url.pathname.startsWith("/api/admin/studio/")) return studioApi(request, url, env);
   const kv = env.CODES;
   if (route === "GET /api/admin/codes") {
     const codes = [];

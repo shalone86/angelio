@@ -1,3 +1,5 @@
+// RETIRED (Nov 17, 2026): Watch & Sing's content is now edited in the Angelio Studio (angelio.org/studio) and lives in R2
+// (content/watch/library.json). Running this would only rewrite the app's fallback copy, not what people see.
 #!/usr/bin/env node
 // Build the video library (public/data/library.json) from the Ghost kids site, so lessons, songs,
 // quizzes and downloads are never typed in twice. Run:  node tools/import-ghost.mjs

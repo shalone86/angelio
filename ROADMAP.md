@@ -54,6 +54,15 @@ without AI or code (like Ghost was). Decisions so far:
   (thumbnail from a frame, MP3 made from a song's video); quiz builder (choice, word tiles, order, match);
   drafts and publish; history and undo; trash; export everything.
 
+Progress, Nov 17, 2026: **Studio v1 for Watch & Sing is live** at angelio.org/studio (admin key). Her choices: saves go live
+at once (R2 `watch-media`: content/watch/library.json; the watch Worker serves it as data/library.json), every save keeps
+the old version (content/watch/history/, History → Look / Bring back), nightly + "Back up now" copy to GitHub once a
+GITHUB_TOKEN secret is on the angelio Worker; sign-in is her admin key (helpers with Cloudflare Access later). Editors:
+lessons (video and picture uploads, picture from a video frame, courses, quiz builder: pick/true-false/blank/order/match,
+"checked, ready for kids", words), songs (credits, downloads with uploads, albums, lead sheet link), courses and albums
+(order). Hide instead of delete; live preview with the real Watch & Sing (?studio). Rules in hub/public/js/watch-content.js
+(nothing broken can be saved). The Ghost import is retired. Next: MP3 made from a song's video in the Studio, drafts,
+trash, export, then the Studio for the games' content.
 Progress: **one repo done** (Nov 16, 2026: hub/, apps/*, template/, with every app's history; shared install,
 `npm test` for everything, safe deploy, kit check). Next: the kit shared for real (no copies), and Watch & Sing's
 content as the master copy (no longer imported from Ghost).

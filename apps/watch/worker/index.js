@@ -30,6 +30,8 @@ export default {
     // Old address: carry saved progress over to the new one (worker/moved.js).
     const moved = movedResponse(url, env);
     if (moved) return moved;
+    // The library: the Angelio Studio's live copy in R2 (content/watch/library.json), else the one in the app.
+    if (url.pathname === "/data/library.json") return library(request, env);
     if (url.pathname.startsWith("/media/")) return media(request, env, url);
     if (!url.pathname.startsWith("/api/")) return env.ASSETS.fetch(request);
 
@@ -106,6 +108,7 @@ async function media(request, env, url) {
   if (!env.MEDIA) return new Response("media isn't set up", { status: 503 });
   if (request.method !== "GET" && request.method !== "HEAD") return new Response(null, { status: 405 });
   const key = decodeURIComponent(url.pathname.slice("/media/".length));
+  if (key.startsWith("content/")) return new Response("not found", { status: 404 }); // the Studio's files aren't media
   if (!key || key.includes("..")) return new Response("not found", { status: 404 });
   const range = request.headers.get("range");
   const obj = request.method === "HEAD" ? await env.MEDIA.head(key) : await env.MEDIA.get(key, range ? { range: request.headers } : {});
@@ -128,3 +131,10 @@ async function media(request, env, url) {
 
 const json = (body, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } });
+
+/** The Studio's live library from R2, never cached for long (a save shows at once); the app's own copy if there's none. */
+export async function library(request, env) {
+  const obj = env.MEDIA ? await env.MEDIA.get("content/watch/library.json").catch(() => null) : null;
+  if (!obj) return env.ASSETS.fetch(request);
+  return new Response(obj.body, { headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-cache", etag: obj.httpEtag } });
+}
