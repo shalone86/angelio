@@ -139,6 +139,15 @@ let clipFor = () => null;
 export function setClips(fn) { clipFor = fn; }
 const MARK = /\{\{([^}]+)\}\}/g;
 /** The text without {{ }} marks, for showing on screen. */
+/** Fetch these sounds now (recordings, or the voice for ones nobody recorded), so they play straight away later. */
+export function preloadSounds(sounds) {
+  if (typeof fetch === "undefined") return;
+  for (const s of sounds) {
+    if (!s) continue;
+    const url = clipFor(s);
+    if (url) fetch(url).catch(() => {});
+  }
+}
 export const unmark = (t) => String(t ?? "").replace(MARK, "$1");
 
 function pieces(text) {
@@ -147,7 +156,7 @@ function pieces(text) {
   const flush = () => {
     const t = buf.replace(/^[\s,;:]+/, "").trim();
     buf = "";
-    if (!t) return;
+    if (!t || !/[\p{L}\p{N}]/u.test(t)) return; // nothing to say (a lone "." between two sounds)
     // One clip per sentence, so stock lines ("Great job!") are made once and reused.
     for (const s of t.split(/(?<=[.!?])\s+/)) if (s) out.push({ text: s });
   };

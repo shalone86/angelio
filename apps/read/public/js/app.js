@@ -5,7 +5,7 @@ import { jingleOnce } from "./kit/jingle.js";
 S.init("readaloud:v1", {});
 
 import { createRouter } from "./kit/router.js";
-import { speak, stop, unmark } from "./kit/tts.js";
+import { speak, stop, unmark, preloadSounds } from "./kit/tts.js";
 import { addSoundVoiceSetting } from "./clips.js";
 import { sfx } from "./kit/sound.js";
 import * as FX from "./kit/fx.js";
@@ -236,6 +236,7 @@ function chunkWord(spec, q, { tag = "button", cls = "" } = {}) {
 const ASK = {
   // Phonics: tap each chunk to hear it, sound out the word, find the picture.
   async "sound-out"(q, ctx) {
+    if (!patternById(q.pattern).syllables) preloadSounds(q.chunks.map((c) => c.s)); // ready before "Sound it out"
     ctx.board.innerHTML = `
       <div class="word-big">${chunkWord(q.chunks, q)}</div>
       <button class="btn big blend-btn" data-own-sound>${patternById(q.pattern).syllables ? "🐢 Hear it slowly" : "👉 Sound it out"}</button>`;
@@ -324,6 +325,7 @@ const ASK = {
   },
   // K: tap each letter for its sound, blend, pick the picture.
   async blend(q, ctx) {
+    preloadSounds(q.letters.map((l) => LETTERS[l].sound)); // ready before "Blend", so the sounds come one right after another
     ctx.board.innerHTML = `
       <div class="sound-boxes">${q.letters.map((l, i) => `<button class="sound-box" data-own-sound data-i="${i}" aria-label="letter ${l}"><span class="abc">${l}</span></button>`).join("")}</div>
       <button class="btn big blend-btn" data-own-sound>👉 Blend</button>`;
@@ -335,6 +337,7 @@ const ASK = {
   },
   // K: hear a word, put its letters in the sound boxes.
   async build(q, ctx) {
+    preloadSounds(q.tiles.map((l) => LETTERS[l]?.sound));
     ctx.board.innerHTML = `
       <div class="sound-card small"><span class="pic big" aria-hidden="true">${q.emoji}</span></div>
       <div class="sound-boxes">${q.letters.map((_, i) => `<button class="sound-box empty" data-own-sound data-slot="${i}" aria-label="box ${i + 1}"></button>`).join("")}</div>`;
