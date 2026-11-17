@@ -15,7 +15,7 @@ export const LESSONS = {
   "p-first-sounds": {
     emoji: "👂", title: "The first sound", rule: "Say a word slowly. The <b>first sound</b> tells you its first letter.",
     exampleHtml: `<div class="lesson-pair"><span class="lesson-focus pic big">🐶</span><span class="lesson-focus"><b>d</b>og</span><span class="lesson-focus abc">d</span></div>`,
-    voice: "Say a word slowly, and listen to the very first sound. Dog. Duh, dog. Dog starts with duh, the letter d!",
+    voice: "Say a word slowly, and listen to the very first sound. Dog. {{duh}}, dog. Dog starts with {{duh}}, the letter d!",
   },
   "p-rhymes": {
     emoji: "🎵", title: "Rhyming words", rule: "Words that <b>rhyme</b> sound the same at the end: c<b>at</b>, h<b>at</b>.",
@@ -35,12 +35,12 @@ export const LESSONS = {
   "k-blend": {
     emoji: "🧩", title: "Blend the sounds", rule: "Tap each letter to hear its sound. Then press <b>Blend</b> and slide the sounds together into a word!",
     exampleHtml: `<div class="lesson-pair"><span class="lesson-focus abc">c</span><span class="lesson-focus abc">a</span><span class="lesson-focus abc">t</span><span class="lesson-focus">→ <span class="pic big">🐱</span></span></div>`,
-    voice: "Tap each letter to hear its sound. Kuh. Ah. Tuh. Now slide them together, faster and faster: kuh-ah-tuh, cat! Then find the picture.",
+    voice: "Tap each letter to hear its sound. {{kuh}}. {{ah}}. {{tuh}}. Now slide them together, faster and faster: {{kuh}} {{ah}} {{tuh}}, cat! Then find the picture.",
   },
   "k-build": {
     emoji: "🏗️", title: "Build a word", rule: "Listen to each sound in the word, and put a letter in a box for each sound.",
     exampleHtml: `<div class="lesson-pair"><span class="lesson-focus pic big">☀️</span><span class="lesson-focus abc">s</span><span class="lesson-focus abc">u</span><span class="lesson-focus abc">n</span></div>`,
-    voice: "Listen to each sound in a word. Sun. Sss. Uh. Nnn. One letter for each sound: s, u, n. Tap the letters to fill the boxes!",
+    voice: "Listen to each sound in a word. Sun. {{sss}}. {{uh}}. {{nnn}}. One letter for each sound: s, u, n. Tap the letters to fill the boxes!",
   },
 };
 

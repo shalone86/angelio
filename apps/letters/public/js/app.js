@@ -201,13 +201,13 @@ function rightLine(q) {
 // with a little gap, so a quick word like "cat" isn't one blur. Anything else that talks stops it.
 let sayRun = 0;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-async function sayInOrder(tiles, sounds) {
+async function sayInOrder(tiles, sounds, gap = 450) {
   const run = ++sayRun;
   for (let i = 0; i < tiles.length && run === sayRun; i++) {
     tiles[i].classList.add("blending");
     if (sounds[i]) await speak(snd(sounds[i]), { force: true }); else await sleep(500); // a quiet letter: just a pause
     tiles[i].classList.remove("blending");
-    if (run === sayRun) await sleep(450);
+    if (run === sayRun) await sleep(gap);
   }
 }
 /** Big words: say it at normal speed, then slowly while the chunks light up. */
@@ -327,8 +327,8 @@ const ASK = {
       <button class="btn big blend-btn" data-own-sound>👉 Blend</button>`;
     const boxes = [...ctx.board.querySelectorAll(".sound-box")];
     boxes.forEach((b, i) => b.onclick = () => { b.classList.add("heard"); FX.pop(b, 1.1); sfx.key(i + 1); sayRun++; speak(snd(LETTERS[q.letters[i]].sound), { force: true }); });
-    // Light the boxes left to right, one sound each, with a little gap (not the word: that's the child's job).
-    ctx.board.querySelector(".blend-btn").onclick = () => sayInOrder(boxes, q.letters.map((l) => LETTERS[l].sound));
+    // Light the boxes left to right, one sound right after another, so it sounds like blending (not the word: that's the child's job).
+    ctx.board.querySelector(".blend-btn").onclick = () => sayInOrder(boxes, q.letters.map((l) => LETTERS[l].sound), 100); // quick, one after another: that's blending
     await choose(ctx, q, q.choices.map(pictureOnly).join(""), { onWrong: (v) => `That's ${v}. Tap the letters and blend again.` });
   },
   // K: hear a word, put its letters in the sound boxes.

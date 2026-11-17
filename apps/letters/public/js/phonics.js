@@ -46,7 +46,7 @@ export const PATTERNS = [
   {
     id: "k-sh-ch-th", grade: 2, title: "sh, ch, th", emoji: "🐚", focus: ["sh", "ch", "th"],
     teach: "Two letters can make <b>one sound</b>: <b>sh</b> says shh, <b>ch</b> says ch, <b>th</b> says th.",
-    say: "Sometimes two letters work together to make one sound. S, h says shh, like ship. C, h says ch, like chick. T, h says th, like bath.",
+    say: "Sometimes two letters work together to make one sound. S, h says {{shh}}, like ship. C, h says {{chuh}}, like chick. T, h says {{thuh}}, like bath.",
     pictures: [["sh|i|p", "🚢"], ["sh|e|ll", "🐚"], ["f|i|sh", "🐟"], ["d|i|sh", "🍽️"], ["ch|i|ck", "🐤"], ["ch|i|p", "🍟"], ["b|a|th", "🛁"], ["l|u|n|ch", "🍱"]],
     words: ["sh|o|p", "sh|u|t", "c|a|sh", "ch|i|n", "m|u|ch", "r|i|ch", "th|i|n", "m|a|th", "w|i|th", "th|e|m"],
     sentences: [["A red ship.", "🚢"], ["I see a fish.", "🐟"], ["The chick is wet.", "🐤"], ["A hot bath.", "🛁"], ["Chips on a dish.", "🍟"], ["A big shell.", "🐚"]],
@@ -55,7 +55,7 @@ export const PATTERNS = [
   {
     id: "g1-ck-ing", grade: 3, title: "ck and -ing", emoji: "🦆", focus: ["ck", "ing", "unk"],
     teach: "<b>ck</b> says k at the end of a word: du<b>ck</b>. <b>ing</b> says ing: r<b>ing</b>, k<b>ing</b>.",
-    say: "C, k together say kuh, at the end of a word, like duck. And i, n, g says ing, like ring, and king!",
+    say: "C, k together say {{kuh}}, at the end of a word, like duck. And i, n, g says {{ing}}, like ring, and king!",
     pictures: [["d|u|ck", "🦆"], ["s|o|ck", "🧦"], ["r|o|ck", "🪨"], ["c|l|o|ck", "🕰️"], ["t|r|u|ck", "🚚"], ["r|ing", "💍"], ["k|ing", "🤴"], ["s|k|unk", "🦨"]],
     words: ["b|a|ck", "p|i|ck", "l|u|ck", "n|e|ck", "s|ing", "w|ing", "th|ing", "d|u|ck|s", "j|unk", "s|t|i|ck"],
     sentences: [["The duck can swim fast.", "🦆"], ["A king has a big ring.", "🤴"], ["My sock is on the rug.", "🧦"], ["The truck is stuck in the mud.", "🚚"], ["Tick tock goes the clock.", "🕰️"], ["A skunk sat on a rock.", "🦨"]],
@@ -63,7 +63,7 @@ export const PATTERNS = [
   {
     id: "g1-blends", grade: 3, title: "Blends: fr, fl, st, nd…", emoji: "🐸", focus: ["fr", "fl", "dr", "cr", "sl", "sn", "tr", "gr", "cl", "pl", "st", "nd", "ft", "lk", "nt", "mp"],
     teach: "In a <b>blend</b>, two letters stick together into one chunk. You hear <b>both</b> sounds, quickly: <b>fr</b>og, <b>fl</b>ag, ha<b>nd</b>.",
-    say: "In a blend, two letters stick together into one chunk, and you hear both sounds, quickly. Fff, rrr, fr, like frog. Fff, lll, fl, like flag. At the end too: hand!",
+    say: "In a blend, two letters stick together into one chunk, and you hear both sounds, quickly. {{fff}}, {{rrr}}, {{fruh}}, like frog. {{fff}}, {{lll}}, {{fluh}}, like flag. At the end too: hand!",
     pictures: [["fr|o|g", "🐸"], ["fl|a|g", "🚩"], ["dr|u|m", "🥁"], ["cr|a|b", "🦀"], ["sl|e|d", "🛷"], ["h|a|nd", "✋"], ["g|i|ft", "🎁"], ["m|i|lk", "🥛"], ["t|e|nt", "⛺"]],
     words: ["st|o|p", "sn|a|p", "tr|i|p", "gr|i|n", "cl|a|p", "pl|a|n", "b|e|nd", "j|u|mp", "l|a|mp", "f|a|st:sst"],
     sentences: [["The frog sat on a log.", "🐸"], ["A crab is on the sand.", "🦀"], ["Dad has a red flag.", "🚩"], ["We sled down the hill.", "🛷"], ["I can hit the drum.", "🥁"], ["The milk is in a cup.", "🥛"]],
@@ -71,7 +71,7 @@ export const PATTERNS = [
   {
     id: "g1-magic-e", grade: 3, title: "Magic e", emoji: "🪄", focus: ["a", "i", "o", "u", "e"], magic: true,
     teach: "A <b>magic e</b> at the end is quiet, but it makes the vowel <b>say its name</b>: c<b>a</b>k<b>e</b>, k<b>i</b>t<b>e</b>, b<b>o</b>n<b>e</b>.",
-    say: "When a word ends in e, the e is quiet, but it's magic! It makes the vowel say its name. Cake: the a says ay. Kite: the i says eye. Bone: the o says oh.",
+    say: "When a word ends in e, the e is quiet, but it's magic! It makes the vowel say its name. Cake: the a says {{ay}}. Kite: the i says {{eye}}. Bone: the o says {{oh}}.",
     pictures: [["c|a:ay|k|e:", "🎂"], ["k|i:eye|t|e:", "🪁"], ["b|o:oh|n|e:", "🦴"], ["r|o:oh|s:z|e:", "🌹"], ["f|i:eye|v|e:", "5️⃣"], ["s|n|a:ay|k|e:", "🐍"], ["p|l|a:ay|t|e:", "🍽️"], ["h|o:oh|m|e:", "🏠"], ["c|u:yoo|b|e:", "🧊"]],
     words: ["m|a:ay|d|e:", "t|i:eye|m|e:", "h|o:oh|p|e:", "c|u:yoo|t|e:", "l|i:eye|k|e:", "g|a:ay|t|e:", "n|o:oh|t|e:", "r|i:eye|d|e:", "t|u:oo|b|e:", "s|a:ay|m|e:"],
     sentences: [["I ate a big cake.", "🎂"], ["The dog has a bone.", "🦴"], ["A snake is in the grass.", "🐍"], ["I like the red rose.", "🌹"], ["My kite is up so high.", "🪁"], ["We went home for lunch.", "🏠"]],
@@ -80,7 +80,7 @@ export const PATTERNS = [
   {
     id: "g2-ai-ee", grade: 4, title: "ai, ay, ee, ea", emoji: "🐌", focus: ["ai", "ay", "ee", "ea"],
     teach: "<b>Vowel teams</b>: two vowels, one sound. <b>ai</b> and <b>ay</b> say ay (r<b>ai</b>n, d<b>ay</b>). <b>ee</b> and <b>ea</b> say ee (b<b>ee</b>, l<b>ea</b>f).",
-    say: "Vowel teams are two vowels that make one sound. A, i and a, y both say ay, like rain, and day. E, e and e, a both say ee, like bee, and leaf. When two vowels go walking, the first one does the talking!",
+    say: "Vowel teams are two vowels that make one sound. A, i and a, y both say {{ay}}, like rain, and day. E, e and e, a both say {{ee}}, like bee, and leaf. When two vowels go walking, the first one does the talking!",
     pictures: [["r|ai|n", "🌧️"], ["s|n|ai|l", "🐌"], ["t|r|ai|n", "🚂"], ["b|ee", "🐝"], ["t|r|ee", "🌳"], ["sh|ee|p", "🐑"], ["f|ee|t", "🦶"], ["l|ea|f", "🍃"], ["p|ea|ch", "🍑"], ["s|ea|l", "🦭"]],
     words: ["w|ai|t", "p|ai|n|t", "d|ay", "p|l|ay", "s|t|ay", "s|ee|d", "g|r|ee|n", "w|ee|k", "b|ea|ch", "r|ea|d"],
     sentences: [["The train went down the track in the rain.", "🚂"], ["A little snail sat on a green leaf.", "🐌"], ["Three sheep ate grass under the big tree.", "🐑"], ["We ate a sweet peach at the beach today.", "🍑"], ["The busy bee flew from tree to tree.", "🐝"], ["A seal lay in the sun on the warm sand.", "🦭"]],
@@ -88,7 +88,7 @@ export const PATTERNS = [
   {
     id: "g2-oa-ow-igh", grade: 4, title: "oa, ow, igh", emoji: "🌙", focus: ["oa", "ow", "igh"],
     teach: "<b>oa</b> and <b>ow</b> say oh (b<b>oa</b>t, sn<b>ow</b>). <b>igh</b> says eye (n<b>igh</b>t). The g and h are quiet!",
-    say: "O, a says oh, like boat. O, w can say oh too, like snow. And i, g, h together say eye, like night, and light. The g and the h are quiet.",
+    say: "O, a says {{oh}}, like boat. O, w can say {{oh}} too, like snow. And i, g, h together say {{eye}}, like night, and light. The g and the h are quiet.",
     pictures: [["b|oa|t", "⛵"], ["g|oa|t", "🐐"], ["s|oa|p", "🧼"], ["c|oa|t", "🧥"], ["s|n|ow:oh", "❄️"], ["b|ow:oh", "🎀"], ["b|ow:oh|l", "🥣"], ["n|igh|t", "🌙"], ["l|igh|t", "💡"], ["f|l|igh|t", "✈️"]],
     words: ["r|oa|d", "t|oa|s|t", "g|r|ow:oh", "s|l|ow:oh", "s|h|ow:oh", "r|igh|t", "h|igh", "b|r|igh|t", "f|igh|t", "m|igh|t"],
     sentences: [["The goat ate a coat on the boat.", "🐐"], ["At night, the light of the moon is bright.", "🌙"], ["We made a snowman in the cold white snow.", "⛄"], ["Wash your hands with soap and warm water.", "🧼"], ["A plane took flight high up in the sky.", "✈️"], ["Mom tied a pink bow on the gift.", "🎀"]],
@@ -96,7 +96,7 @@ export const PATTERNS = [
   {
     id: "g2-r-vowels", grade: 4, title: "ar, or, er, ir, ur", emoji: "⭐", focus: ["ar", "or", "er", "ir", "ur"],
     teach: "An <b>r</b> after a vowel changes its sound: <b>ar</b> (st<b>ar</b>), <b>or</b> (c<b>or</b>n), and <b>er, ir, ur</b> all say er (b<b>ir</b>d, t<b>ur</b>tle).",
-    say: "When r comes after a vowel, it bosses the vowel and changes its sound. A, r says ar, like star. O, r says or, like corn. And e, r, i, r, and u, r all say er, like her, bird, and turtle.",
+    say: "When r comes after a vowel, it bosses the vowel and changes its sound. A, r says {{ar}}, like star. O, r says {{or}}, like corn. And e, r, i, r, and u, r all say {{er}}, like her, bird, and turtle.",
     pictures: [["c|ar", "🚗"], ["s|t|ar", "⭐"], ["sh|ar|k", "🦈"], ["c|or|n", "🌽"], ["f|or|k", "🍴"], ["h|or|s|e:", "🐴"], ["b|ir|d", "🐦"], ["g|ir|l", "👧"], ["sh|ir|t", "👕"], ["p|ur|s|e:", "👛"]],
     words: ["f|ar|m", "d|ar|k", "p|ar|k", "s|t|or|m", "sh|or|t", "h|er", "f|ir|s|t", "t|ur|n", "h|ur|t", "f|er|n"],
     sentences: [["A shark swam far out in the dark sea.", "🦈"], ["The girl in the red shirt fed the bird.", "🐦"], ["We ate corn with a fork at the farm.", "🌽"], ["Look at that bright star in the dark sky.", "⭐"], ["The horse ran across the park in the storm.", "🐴"], ["We drove to the market in our little car.", "🚗"]],
@@ -104,7 +104,7 @@ export const PATTERNS = [
   {
     id: "g2-oi-ou", grade: 4, title: "oi, oy, ou, ow", emoji: "🐮", focus: ["oi", "oy", "ou", "ow"],
     teach: "<b>oi</b> and <b>oy</b> say oy (c<b>oi</b>n, b<b>oy</b>). <b>ou</b> and <b>ow</b> say ow, like when you're hurt (h<b>ou</b>se, c<b>ow</b>).",
-    say: "O, i and o, y both say oy, like coin, and boy. O, u and o, w can both say ow, like when you bump your knee! House. Cow.",
+    say: "O, i and o, y both say {{oy}}, like coin, and boy. O, u and o, w can both say {{ow}}, like when you bump your knee! House. Cow.",
     pictures: [["c|oi|n", "🪙"], ["b|oy", "👦"], ["t|oy", "🧸"], ["c|l|ou|d", "☁️"], ["h|ou|s|e:", "🏠"], ["m|ou|s|e:", "🐭"], ["c|ow", "🐮"], ["ow|l", "🦉"], ["c|r|ow|n", "👑"], ["c|l|ow|n", "🤡"]],
     words: ["s|oi|l", "j|oi|n", "j|oy", "t|oy|s", "ou|t", "l|ou|d", "r|ou|n|d", "d|ow|n", "t|ow|n", "h|ow"],
     sentences: [["The boy found a shiny coin on the ground.", "🪙"], ["A brown cow stood by the little house.", "🐮"], ["An owl hoots at night from the oak tree.", "🦉"], ["The clown has a big red crown on his head.", "🤡"], ["My toy mouse is round and soft and gray.", "🐭"], ["A dark cloud came, and then it began to rain.", "☁️"]],
@@ -112,7 +112,7 @@ export const PATTERNS = [
   {
     id: "g2-tch-dge", grade: 4, title: "tch and dge", emoji: "🌉", focus: ["tch", "dge"],
     teach: "Three letters, one sound! <b>tch</b> says ch (wa<b>tch</b>), and <b>dge</b> says j (bri<b>dge</b>), after a short vowel.",
-    say: "Here are three letters that make just one sound! T, c, h says chuh, like watch, and catch. D, g, e says juh, like bridge, and badge. They come right after a short vowel.",
+    say: "Here are three letters that make just one sound! T, c, h says {{chuh}}, like watch, and catch. D, g, e says {{juh}}, like bridge, and badge. They come right after a short vowel.",
     pictures: [["w|a:aw|tch", "⌚"], ["c|a|tch", "⚾"], ["p|a|tch", "🩹"], ["b|r|i|dge", "🌉"], ["b|a|dge", "📛"], ["j|u|dge", "🧑‍⚖️"]],
     words: ["m|a|tch", "i|tch", "f|e|tch", "d|i|tch", "s|k|e|tch", "e|dge", "l|e|dge", "f|u|dge", "h|e|dge", "n|u|dge"],
     sentences: [["Dad will catch the ball with his big mitt.", "⚾"], ["We walked across the old stone bridge.", "🌉"], ["The judge sat at a tall desk in the court.", "🧑‍⚖️"], ["My new watch has a red band and a bell.", "⌚"], ["Mom sewed a patch on my torn jeans.", "🩹"], ["The scout got a shiny new badge today.", "📛"]],
