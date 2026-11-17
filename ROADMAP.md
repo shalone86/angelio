@@ -73,8 +73,14 @@ wherever a sound is marked `{{tuh}}` in spoken text (kit `tts.js` → `setClips`
 
 ## Next apps
 
-- ~~**Phonics & reading, PreK–K**~~: live as **Letter Lane** (angelio.org/letters/), Nov 2026, with Kindergarten sh/ch/th and three-word sentences. Next: more letter groups (j v w x y z qu), sight words, letter tracing; real recorded letter sounds instead of the voice.
-- ~~**Reading, grades 1–3**~~: live as **Read Aloud** (angelio.org/read/), Nov 2026: phonics chunks (blends, magic e, vowel teams, bossy r, tch/dge, syllables, silent letters, -tion/-ture/-le) in words and sentences, sharing `phonics.js` with Letter Lane. Next: **say it out loud** checks on the sentences (reuse Articulate's recorder; family codes are on), sight words, short stories with comprehension questions.
+- ~~**Phonics & reading, PreK–K**~~: live as **Letter Lane** (angelio.org/letters/). Nov 17, 2026: follows the Hooked on
+  Phonics outline, two levels per grade: PreK all 26 letters, big/little both ways, first sounds, rhymes, beats; K short
+  vowels one at a time, blend/build, -ck, sh ch th, compound words, adding -s. Next: sight words, letter tracing.
+- ~~**Reading, grades 1–3**~~: live as **Read Aloud** (angelio.org/read/). Nov 17, 2026: 1st blends (start/end), two-part
+  words, -ing/-er/-ed/-es/-ly; 2nd long vowels (magic e, teams, y), bossy r, oi/ou, soft c/g, silent letters, tch/dge;
+  3rd big words, oo/aw, prefixes, -tion/-ture/-le, -ful/-less/-ness. 8 questions a level incl. spell-it and
+  pick-the-sentence. Both apps share `reading.js`/`phonics.js` (`grades.js` picks the grades). Next: **say it out loud**
+  checks on the sentences (Articulate's recorder; family codes), sight words, short stories with comprehension questions.
 - **Spelling** (1–3, owner asked Nov 17, 2026; later): hear a word, build it from letter tiles, then the
   spelling patterns in the same order as Read Aloud (short vowels, -ck, blends, magic e, vowel teams, -ed/-ing
   endings, plurals); weekly word lists a parent can type in. Coming-soon card is on the hub.
