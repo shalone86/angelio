@@ -62,7 +62,7 @@
       </div>
       <p class="muted">Each of you records the whole list. In the apps, grown-ups pick Mom's or Dad's voice (⚙️); a sound
         only one of you recorded uses that one, and the robot says the rest.</p>
-      <p class="tip">Tips: a quiet room, phone about a hand away. Press <b>⏺</b>, say just the sound, short and clear
+      <p class="tip"><b>Say only the big sound</b> (for <b>sss</b>, just “sssss”), not the example words under it: those only show which sound is meant, and the games add “like sun” themselves.<br>Tips: a quiet room, phone about a hand away. Press <b>⏺</b>, say just the sound, short and clear
         (for <b>t</b> a quick "t" with only a whisper of air, not "tuh-uh"), then it stops by itself. Silence before and after
         is trimmed for you, and the volume is evened out. Not happy? Record it again.</p>
       <p class="muted" id="count"></p>
@@ -175,7 +175,7 @@
     $("#list").innerHTML = groups[tab].items.map((x) => `
       <div class="snd">
         <div><div class="name">${esc(x.sound)} ${has(x.sound) ? '<span class="ok">✓ done</span>' : ""}</div>
-          <div class="muted">${[...x.uses].map(([c, ws]) => `<b>${esc(c)}</b> in ${ws.map(esc).join(", ")}`).join(" · ")}</div></div>
+          <div class="muted">the sound of ${[...x.uses].map(([c, ws]) => `<b>${esc(c)}</b> in ${ws.map(esc).join(", ")}`).join(" · ")} <i>(say only the sound)</i></div></div>
         <div class="btns">
           <button class="ghost" data-robot="${esc(x.sound)}" title="How the robot says it">🤖</button>
           <button class="rec" data-rec="${esc(x.sound)}">⏺ Record</button>
