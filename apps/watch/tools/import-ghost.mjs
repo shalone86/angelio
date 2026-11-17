@@ -42,6 +42,8 @@ const ALBUMS = [
   { tag: "catholic-kids-ambience-music", emoji: "🕯️" },
 ];
 const SONG_TAGS = new Set(["catholic-kids-songs", "catholic-lofi", "catholic-kids-ambience-music", "monastery-music-volume-1"]);
+// MP3s made from song videos (tools/song-mp3s.sh): { song id: "media/audio/<id>.mp3" }.
+const SONG_AUDIO = JSON.parse(fs.readFileSync(new URL("../content/song-audio.json", import.meta.url), "utf8"));
 
 const slugify = (t) => t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 50).replace(/-$/, "");
 
@@ -182,6 +184,8 @@ for (const p of posts.sort((a, b) => a.published_at.localeCompare(b.published_at
       const downloads = downloadsFor(base.title, files);
       // The song's own video can always be saved.
       if (!downloads.some((d) => d.url === base.video)) downloads.push({ kind: "🎬 Video", label: base.title, url: base.video });
+      // An MP3 made from the video (tools/song-mp3s.sh) when Ghost has none.
+      if (!downloads.some((d) => /\.mp3$/i.test(d.url)) && SONG_AUDIO[base.id]) downloads.splice(downloads.length - 1, 0, { kind: "🎧 Song (audio)", label: base.title, url: SONG_AUDIO[base.id] });
       songs.push({ ...base, credits: parseCredits(html) ?? creditsFromTags(tags), downloads });
     } else {
       lessons.push({ ...base, quiz: parseQuiz(html), transcript: parseTranscript(html) });
