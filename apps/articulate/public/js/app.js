@@ -497,7 +497,9 @@ function backTabs(c) {
     const p = c.p;
     const myNote = lang && p.esl?.[lang];
     const otherNotes = Object.entries(p.esl ?? {}).filter(([l]) => l !== lang);
+    const howSay = [myNote, p.how, p.tip].filter(Boolean).join(" ");
     tabs.push(["how", "How", `
+      <button class="btn read-how" data-say="${esc(howSay)}" data-read-tab>🔊 Read it to me</button>
       ${myNote ? `<div class="callout"><h3>🌍 For ${esc(languageName(lang))} speakers</h3><p>${esc(myNote)}</p></div>` : ""}
       <p>${esc(p.how)}</p><p class="tip">💡 ${esc(p.tip)}</p>
       <p class="tags">${p.manner ? `<a class="tag" href="#/learn/${MANNERS[p.manner].lesson}">${esc(p.manner)}</a>` : ""}
@@ -521,7 +523,8 @@ function backTabs(c) {
       const p = phonemeById[id];
       return `<div class="sound-row">${say(w)} <a href="#/c/s-${id}">${esc(p.label)} ${ipa(p.ipa)}</a></div>`;
     }).join("") : `<p>Nothing — it’s silent!</p>`}</div>
-      <p class="tip">💡 ${esc(g.note)}</p><p class="muted small">${esc(GRAPHEME_TYPES[g.type].blurb)}</p>`]);
+      <p class="tip">💡 ${esc(g.note)}</p><p class="muted small">${esc(GRAPHEME_TYPES[g.type].blurb)}</p>
+      <button class="btn read-how" data-say="${esc(`${g.note} ${GRAPHEME_TYPES[g.type].blurb}`)}" data-read-tab>🔊 Read it to me</button>`]);
     tabs.push(["words", "Words", `<div class="pos">${g.words.map((w) => say(w)).join("")}</div>`]);
   } else {
     tabs.push(["how", "About", `
@@ -653,6 +656,7 @@ $app.addEventListener("click", async (e) => {
     cs.tab = t.dataset.tab;
     document.querySelectorAll("[data-tab]").forEach((b) => b.setAttribute("aria-selected", String(b === t)));
     document.querySelectorAll("[data-panel]").forEach((p) => (p.hidden = p.dataset.panel !== cs.tab));
+    document.querySelector(`[data-panel="${cs.tab}"] [data-read-tab]`)?.click(); // read the How tab aloud when it's opened
     return;
   }
   if (t.dataset.target) {

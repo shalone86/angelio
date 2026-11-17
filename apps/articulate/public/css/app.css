@@ -517,3 +517,6 @@ body.kid .keys { display: none; }
   .bottom-bar .flip-btn { min-height: 72px; }
   body:has(.bottom-bar) { padding-bottom: 8px; }
 }
+
+/* "Read it to me" at the top of the How tab */
+.read-how { margin: 2px 0 10px; }
