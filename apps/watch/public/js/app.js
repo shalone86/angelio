@@ -72,6 +72,10 @@ function start(video) {
   video.play().catch(() => { big.hidden = false; }); // some browsers only play after a tap
 }
 
+// Songs that have a lead sheet (made at angelio.org/admin/leadsheet.html), asked once.
+let sheetIds;
+const leadSheets = () => (sheetIds ??= fetch("/api/leadsheets").then((r) => (r.ok ? r.json() : { ids: [] })).then((j) => j.ids ?? []).catch(() => []));
+
 // ───────── home ─────────
 
 const card = (href, item, extra = "") => `
@@ -370,11 +374,18 @@ function viewSongs(songId, albumId) {
     list.innerHTML = rest.slice(0, album || queue ? 60 : 12).map((x) => `
       <button class="playlist-item" data-song="${x.id}"><img src="${esc(x.poster ?? "")}" alt="" loading="lazy"><span>${esc(x.title)}</span>${watched(x.id) ? "<span class=\"seen-mini\">✓</span>" : ""}</button>`).join("");
     list.querySelectorAll("[data-song]").forEach((b) => b.onclick = () => show(songById(b.dataset.song), true));
-    const counts = {};
-    song.downloads.forEach((d) => { counts[d.kind] = (counts[d.kind] ?? 0) + 1; });
-    app.querySelector(".dl-list").innerHTML = song.downloads.length
-      ? song.downloads.map((d) => `<a class="btn small" href="${esc(d.url)}" download target="_blank" rel="noopener">${d.kind}${counts[d.kind] > 1 ? `: ${esc(d.label)}` : ""}</a>`).join("")
-      : `<p class="muted small">No downloads for this song yet.</p>`;
+    const fill = (sheets) => {
+      // A lead sheet made in the lead sheet maker replaces the old PDF one.
+      const made = sheets.includes(song.id);
+      const dls = song.downloads.filter((d) => !(made && /lead sheet/i.test(d.kind)));
+      const counts = {};
+      dls.forEach((d) => { counts[d.kind] = (counts[d.kind] ?? 0) + 1; });
+      app.querySelector(".dl-list").innerHTML = (made ? `<a class="btn small" href="/leadsheet/?id=${encodeURIComponent(song.id)}">📄 Lead sheet</a>` : "")
+        + (dls.length ? dls.map((d) => `<a class="btn small" href="${esc(d.url)}" download target="_blank" rel="noopener">${d.kind}${counts[d.kind] > 1 ? `: ${esc(d.label)}` : ""}</a>`).join("")
+          : made ? "" : `<p class="muted small">No downloads for this song yet.</p>`);
+    };
+    fill([]);
+    leadSheets().then(fill);
   };
   show(s, false);
   start(video);

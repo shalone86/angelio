@@ -72,6 +72,9 @@ export default {
 //   GET  /api/clip?set=f&id=tuh&v=…  → audio/wav
 //   POST /api/admin/clip?set=f&id=tuh  (body: audio/wav) · POST /api/admin/clip/delete?set=f&id=tuh
 
+/** A song id as Watch & Sing writes it ("the-eucharist-song"), or null. */
+const sheetId = (s) => (/^[a-z0-9][a-z0-9-]{0,79}$/.test(String(s ?? "")) ? s : null);
+
 /** A sound's name as the apps say it ("tuh", "shh", "fruh"): lowercase letters only. */
 /** Whose recordings: "f" (Mom) or "m" (Dad). */
 const clipSet = (x) => (x === "m" ? "m" : "f");
@@ -104,6 +107,19 @@ async function api(request, url, env) {
     if (!wav) return json({ error: "no recording" }, 404);
     return new Response(wav, { headers: { "content-type": "audio/wav", "cache-control": "public, max-age=31536000, immutable" } });
   }
+  // Lead sheets (made at /admin/leadsheet.html): one per song, by the song's Watch & Sing id.
+  if (route === "GET /api/leadsheets") {
+    const ids = [];
+    let cursor;
+    do { const r = await env.CODES.list({ prefix: "leadsheet:", cursor }); ids.push(...r.keys.map((k) => k.name.slice(10))); cursor = r.list_complete ? null : r.cursor; } while (cursor);
+    return new Response(JSON.stringify({ ids }), { headers: { "content-type": "application/json", "cache-control": "public, max-age=60" } });
+  }
+  if (route === "GET /api/leadsheet") {
+    const id = sheetId(url.searchParams.get("id"));
+    const sheet = id && (await env.CODES.get(`leadsheet:${id}`));
+    if (!sheet) return json({ error: "no lead sheet" }, 404);
+    return new Response(sheet, { headers: { "content-type": "application/json", "cache-control": "public, max-age=60" } });
+  }
   if (!url.pathname.startsWith("/api/admin/")) return json({ error: "not found" }, 404);
   if (!(await sameSecret(request.headers.get("x-admin-key"), env.ADMIN_KEY))) {
     await new Promise((r) => setTimeout(r, 800)); // slow down guessing
@@ -135,6 +151,23 @@ async function api(request, url, env) {
     index[set][id] = Date.now();
     await kv.put("clips:index", JSON.stringify(index));
     return json({ id, set, v: index[set][id] });
+  }
+  if (route === "POST /api/admin/leadsheet") {
+    const id = sheetId(url.searchParams.get("id"));
+    if (!id) return json({ error: "bad song id" }, 400);
+    const text = await request.text();
+    if (text.length > 300_000) return json({ error: "lead sheet is too big" }, 400);
+    let sheet;
+    try { sheet = JSON.parse(text); } catch { return json({ error: "not JSON" }, 400); }
+    if (!sheet || typeof sheet !== "object" || typeof sheet.text !== "string") return json({ error: "a lead sheet needs its words (text)" }, 400);
+    sheet.id = id; sheet.saved = new Date().toISOString();
+    await kv.put(`leadsheet:${id}`, JSON.stringify(sheet));
+    return json({ ok: true, id, saved: sheet.saved });
+  }
+  if (route === "POST /api/admin/leadsheet/delete") {
+    const id = sheetId(url.searchParams.get("id"));
+    if (id) await kv.delete(`leadsheet:${id}`);
+    return json({ ok: true });
   }
   if (route === "POST /api/admin/clip/delete") {
     const id = clipId(url.searchParams.get("id")), set = clipSet(url.searchParams.get("set"));

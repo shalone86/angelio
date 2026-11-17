@@ -81,6 +81,12 @@ wherever a sound is marked `{{tuh}}` in spoken text (kit `tts.js` → `setClips`
   3rd big words, oo/aw, prefixes, -tion/-ture/-le, -ful/-less/-ness. 8 questions a level incl. spell-it and
   pick-the-sentence. Both apps share `reading.js`/`phonics.js` (`grades.js` picks the grades). Next: **say it out loud**
   checks on the sentences (Articulate's recorder; family codes), sight words, short stories with comprehension questions.
+- ~~**Lead sheet maker**~~: live Nov 17, 2026 at angelio.org/admin/leadsheet.html (admin key). Her pick: the vamp card's
+  content in the color-chords look (each section's chord loop as colored tiles, colored chord tags over the words,
+  chorus boxed, guitar chord boxes, melody staff per section). Melody from a Logic MIDI file or played in on a MIDI
+  keyboard (Chrome/Edge); key −/+ and Print on angelio.org/leadsheet/?id=<song>; Watch & Sing song pages link it (and
+  hide the old PDF). Code: hub/public/js/leadsheet.js, abcjs 6.7.2 (MIT) in hub/public/vendor. Next ideas: melodies
+  pulled from the vocals (less reliable than MIDI), ukulele boxes, sing-along that follows the melody.
 - **Spelling** (1–3, owner asked Nov 17, 2026; later): hear a word, build it from letter tiles, then the
   spelling patterns in the same order as Read Aloud (short vowels, -ck, blends, magic e, vowel teams, -ed/-ing
   endings, plurals); weekly word lists a parent can type in. Coming-soon card is on the hub.

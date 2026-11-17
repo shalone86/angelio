@@ -1,0 +1,41 @@
+/* Lead sheets (js/leadsheet.js): the vamp as colored chord tiles, the words with colored chord tags, the chorus
+   in a box, guitar chord boxes, and the melody staff. Prints on one or two pages. */
+.ls-sheet { --ink: #1d2433; --muted: #6b7385; --paper: #fffaf0; color: var(--ink); background: var(--paper); font: 17px/1.5 Nunito, system-ui, sans-serif;
+  padding: 28px 32px 32px; border-radius: 18px; max-width: 860px; margin: 0 auto; }
+.ls-title { font: 800 clamp(1.8rem, 6vw, 2.4rem)/1.05 "Baloo 2", sans-serif; margin: 0; }
+.ls-by { color: var(--muted); font-size: .9rem; margin: 4px 0 14px; }
+.ls-lab { font: 800 .78rem Nunito, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 14px 0 6px; }
+.ls-tiles { display: flex; align-items: center; gap: 10px; }
+.ls-tile { flex: 1; min-width: 0; background: var(--c); color: #fff; border-radius: 16px; text-align: center; padding: 8px 2px 6px;
+  font: 800 clamp(1.4rem, 5.5vw, 2.1rem)/1 "Baloo 2", sans-serif; box-shadow: 0 5px 0 color-mix(in srgb, var(--c) 70%, #000); }
+.ls-beats { display: flex; justify-content: center; gap: 5px; margin-top: 6px; }
+.ls-beats i { width: 7px; height: 7px; border-radius: 50%; background: #ffffffa0; }
+.ls-rep { font-size: 1.6rem; color: var(--muted); flex: none; }
+.ls-song { columns: 2 300px; column-gap: 34px; margin-top: 12px; }
+.ls-sec { break-inside: avoid; margin: 0 0 14px; }
+.ls-pill { display: inline-block; font: 800 .85rem "Baloo 2", sans-serif; color: #fff; background: var(--ink); border-radius: 99px; padding: 1px 12px; margin: 2px 0 4px; }
+.ls-pill small { font: 700 .72rem Nunito, sans-serif; opacity: .8; margin-left: 4px; }
+.ls-chorus { background: #fff; border: 3px dashed #e6d8b8; border-radius: 16px; padding: 8px 14px 6px; }
+.ls-chorus .ls-line { font-weight: 800; }
+.ls-again { display: flex; align-items: center; gap: 8px; }
+.ls-muted { color: var(--muted); font-size: .9rem; }
+.ls-line { font-size: 1.12rem; line-height: 1.5; }
+.ls-line.has-chords { padding-top: 1.15em; }
+.ls-ch { position: relative; display: inline-block; width: 0; }
+.ls-ch::before { content: attr(data-c); position: absolute; left: 0; bottom: 1.05em; font: 800 .82rem/1 "Baloo 2", sans-serif; color: #fff; background: var(--c);
+  padding: 2px 7px; border-radius: 99px; white-space: nowrap; }
+.ls-only-chords { display: flex; gap: 6px; flex-wrap: wrap; }
+.ls-tag { font: 800 .95rem "Baloo 2", sans-serif; color: #fff; background: var(--c); padding: 1px 10px; border-radius: 99px; }
+.ls-boxes { display: flex; flex-wrap: wrap; gap: 14px; }
+.ls-boxed { text-align: center; color: var(--ink); border-top: 6px solid var(--c); border-radius: 6px; padding-top: 4px; width: 84px; }
+.ls-boxed b { font: 800 1rem "Baloo 2", sans-serif; display: block; }
+.ls-tune { border-top: 2px dashed #e6d8b8; margin-top: 18px; padding-top: 4px; break-inside: avoid; }
+.ls-staff svg { max-width: 100%; }
+@media (max-width: 560px) { .ls-sheet { padding: 18px 16px 22px; border-radius: 0; } .ls-tiles { gap: 6px; } .ls-rep { font-size: 1.2rem; } }
+@media print {
+  @page { margin: 12mm; }
+  body { background: #fff !important; }
+  .ls-sheet { background: #fff; padding: 0; max-width: none; }
+  .ls-tile, .ls-ch::before, .ls-tag, .ls-pill { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .no-print { display: none !important; }
+}

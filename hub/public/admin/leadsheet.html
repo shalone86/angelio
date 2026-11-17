@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lead sheet maker · Angelio</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="/css/leadsheet.css">
+  <style>
+    :root { --ink: #1d2433; --muted: #6b7385; --line: #e6dcc8; --accent: #ff7a59; --bad: #d4383e; --good: #16a34a; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 15px/1.45 Nunito, system-ui, sans-serif; color: var(--ink); background: #f3efe6; }
+    header { display: flex; align-items: center; gap: 10px; padding: 10px 16px; background: #fff; border-bottom: 2px solid var(--line); flex-wrap: wrap; }
+    header h1 { font: 800 1.3rem "Baloo 2", sans-serif; margin: 0; flex: 1; }
+    .wrap { display: grid; grid-template-columns: minmax(330px, 440px) 1fr; gap: 16px; padding: 16px; align-items: start; }
+    @media (max-width: 900px) { .wrap { grid-template-columns: 1fr; } }
+    .card { background: #fff; border-radius: 16px; padding: 12px 14px; margin-bottom: 12px; box-shadow: 0 3px 0 var(--line); }
+    .card h2 { font: 800 1.05rem "Baloo 2", sans-serif; margin: 0 0 8px; }
+    label { display: block; font-weight: 800; font-size: .85rem; margin: 8px 0 3px; }
+    input, select, textarea { font: inherit; width: 100%; padding: 8px 10px; border: 2px solid var(--line); border-radius: 10px; background: #fff; color: inherit; }
+    textarea { font: 14px/1.45 ui-monospace, Menlo, monospace; min-height: 380px; resize: vertical; white-space: pre; }
+    .row { display: flex; gap: 8px; } .row > * { flex: 1; min-width: 0; }
+    button, .btn { font: 800 .95rem Nunito, sans-serif; border: 0; border-radius: 99px; padding: 9px 14px; background: #f3efe6; color: inherit; cursor: pointer; min-height: 42px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+    button.main { background: var(--accent); color: #fff; }
+    button.rec { background: var(--bad); color: #fff; }
+    button:disabled { opacity: .5; cursor: default; }
+    .btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .muted { color: var(--muted); font-size: .88rem; }
+    .problems { margin: 6px 0 0; padding-left: 18px; color: var(--bad); font-weight: 700; }
+    .ok { color: var(--good); font-weight: 800; }
+    .err { color: var(--bad); font-weight: 800; }
+    .help summary { cursor: pointer; font-weight: 800; }
+    .help code { background: #f3efe6; padding: 0 4px; border-radius: 4px; }
+    #preview .ls-sheet { box-shadow: 0 3px 0 var(--line); }
+    .count { font: 800 2.4rem "Baloo 2"; text-align: center; color: var(--bad); min-height: 1.2em; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>🎼 Lead sheet maker</h1>
+  <select id="song" aria-label="Song" style="max-width: 320px"><option value="">Pick a song…</option></select>
+  <button class="main" id="save" disabled>💾 Save</button>
+  <a class="btn" id="open" target="_blank" hidden>Open the lead sheet ↗</a>
+</header>
+<div class="card" id="keybox" hidden style="margin:16px">
+  <h2>Admin key</h2>
+  <p class="muted">The same key as the other admin pages. It stays on this device.</p>
+  <div class="row"><input id="keyin" type="password" autocomplete="current-password"><button class="main" id="keygo" style="flex:none">Use it</button></div>
+</div>
+<div class="wrap">
+  <div>
+    <div class="card">
+      <h2>About the song</h2>
+      <label for="title">Title</label><input id="title">
+      <div class="row"><div><label for="words">Words by</label><input id="words"></div><div><label for="tune">Tune (if borrowed)</label><input id="tune" placeholder="Baa, Baa, Black Sheep"></div></div>
+      <div class="row">
+        <div><label for="key">Key</label><select id="key"></select></div>
+        <div><label for="meter">Time</label><select id="meter"><option>4/4</option><option>3/4</option><option>6/8</option><option>2/4</option></select></div>
+        <div><label for="tempo">Beats a minute</label><input id="tempo" type="number" min="40" max="220" value="100"></div>
+      </div>
+      <label for="license">Sharing</label><select id="license"><option value="CC0">Free to share (CC0)</option><option value="">Not said</option></select>
+    </div>
+    <div class="card">
+      <h2>Words and chords</h2>
+      <details class="help"><summary>How to type it</summary>
+        <p class="muted">Paste one of your old sheets as it is (chords on the line above the words), or put chords inside the words: <code>[G]The Eu[F]charist</code>.
+          Section names go on their own line: <code>VERSE 1</code>, <code>CHORUS</code>, <code>INTRO</code>. A section name again with nothing under it means "sing it again".
+          A line of only chords is played (an intro). <code>Loop: C G F Dm/C</code> sets a section's vamp yourself.</p>
+        <p class="muted">For the melody: a hyphen splits a word into its sung parts, one note each (<code>spe-cial</code>, <code>Eu-cha-rist</code>), and <code>_</code> holds a word for one more note. The hyphens don't show on the sheet.</p>
+      </details>
+      <textarea id="text" spellcheck="false" placeholder="VERSE 1&#10;C&#10;Je-sus had a spe-cial meal,&#10;     G&#10;Last Sup-per was its name."></textarea>
+    </div>
+    <div class="card">
+      <h2>Melody</h2>
+      <p class="muted">Pick which section the tune is for (usually the first verse and the chorus), then load a MIDI file from Logic (just the melody track) or play it on your MIDI keyboard.</p>
+      <label for="msec">For the section</label><select id="msec"></select>
+      <div class="btns">
+        <label class="btn" style="margin:0">📂 MIDI file<input id="midifile" type="file" accept=".mid,.midi,audio/midi" hidden></label>
+        <button id="play">🎹 Play it in</button>
+        <button id="hear">▶ Hear it</button>
+        <button id="clear">✕ Clear</button>
+      </div>
+      <div id="trackbox" hidden><label for="track">Which track is the melody?</label><select id="track"></select></div>
+      <div id="recbox" hidden>
+        <p class="count" id="count"></p>
+        <p class="muted" id="recmsg">One bar of clicks, then play. Press Stop when you're done.</p>
+        <button class="rec" id="stop">■ Stop</button>
+      </div>
+      <p id="melmsg" class="muted"></p>
+      <ul class="problems" id="problems"></ul>
+    </div>
+    <p id="status" class="muted"></p>
+  </div>
+  <div id="preview"><div class="card"><p class="muted">Pick a song to start.</p></div></div>
+</div>
+<script src="/vendor/abcjs-6.7.2/abcjs-basic-min.js"></script>
+<script type="module">
+import { renderSheet, parseSheet, readMidi, quantize, keyName, esc } from "/js/leadsheet.js";
+const $ = (id) => document.getElementById(id);
+const KEYS = ["C", "G", "D", "A", "E", "F", "Bb", "Eb", "Ab", "Am", "Em", "Bm", "Dm", "Gm", "Cm"];
+$("key").innerHTML = KEYS.map((k) => `<option>${k}</option>`).join("");
+let adminKey = (() => { try { return localStorage.getItem("angelio:admin") || sessionStorage.getItem("angelio:admin") || ""; } catch { return ""; } })();
+let songs = [], id = "", sheet = blank(), dirty = false;
+function blank() { return { title: "", words: "", tune: "", license: "CC0", key: "C", meter: "4/4", tempo: 100, text: "", melodies: {} }; }
+const status = (t, cls = "muted") => { $("status").className = cls; $("status").textContent = t; };
+
+// ── songs ──
+fetch("/watch/data/library.json").then((r) => r.json()).then((lib) => {
+  songs = lib.songs.slice().sort((a, b) => a.title.localeCompare(b.title));
+  return fetch("/api/leadsheets").then((r) => r.json()).catch(() => ({ ids: [] }));
+}).then(({ ids }) => {
+  $("song").innerHTML += songs.map((s) => `<option value="${esc(s.id)}">${ids.includes(s.id) ? "✅ " : ""}${esc(s.title)}</option>`).join("");
+  const want = new URLSearchParams(location.search).get("id");
+  if (want) { $("song").value = want; pick(); }
+});
+$("song").onchange = pick;
+async function pick() {
+  if (dirty && !confirm("Leave this song without saving?")) return;
+  id = $("song").value; dirty = false;
+  if (!id) return;
+  history.replaceState(null, "", `?id=${id}`);
+  const song = songs.find((s) => s.id === id);
+  const r = await fetch(`/api/leadsheet?id=${id}`);
+  sheet = r.ok ? { ...blank(), ...(await r.json()) } : { ...blank(), title: song?.title ?? "", words: song?.credits?.written?.join(" & ") ?? "" };
+  try { const draft = JSON.parse(localStorage.getItem(`ls:draft:${id}`) || "null"); if (draft && draft.edited > (Date.parse(sheet.saved || 0) || 0) && confirm("You have unsaved changes to this song from before. Use them?")) { sheet = draft; dirty = true; } } catch { /* ignore */ }
+  for (const k of ["title", "words", "tune", "license", "key", "meter", "tempo", "text"]) $(k).value = sheet[k] ?? "";
+  $("save").disabled = false;
+  $("open").hidden = !r.ok; $("open").href = `/leadsheet/?id=${id}`;
+  draw();
+}
+// ── edits ──
+for (const k of ["title", "words", "tune", "license", "key", "meter", "tempo", "text"]) $(k).addEventListener("input", () => {
+  sheet[k] = k === "tempo" ? Number($(k).value) || 100 : $(k).value;
+  if (k === "text") { // a pasted old sheet: its header lines fill the boxes
+    const m = parseSheet(sheet.text).meta;
+    for (const f of ["title", "words", "tune", "license"]) if (m[f] && !$(f).value) { $(f).value = m[f]; sheet[f] = m[f]; }
+  }
+  changed();
+});
+function changed() {
+  dirty = true; status("Not saved yet.");
+  try { localStorage.setItem(`ls:draft:${id}`, JSON.stringify({ ...sheet, edited: Date.now() })); } catch { /* ignore */ }
+  clearTimeout(changed.t); changed.t = setTimeout(draw, 250);
+}
+function draw() {
+  if (!id) return;
+  const sections = parseSheet(sheet.text).sections.filter((s) => !s.repeat && s.lines.some((l) => l.type === "words"));
+  const cur = $("msec").value;
+  $("msec").innerHTML = sections.map((s) => `<option${sheet.melodies[s.name]?.length ? ' data-has="1"' : ""}>${esc(s.name)}</option>`).join("");
+  $("msec").querySelectorAll("option").forEach((o) => { if (o.dataset.has) o.textContent += " 🎵"; o.value = o.textContent.replace(" 🎵", ""); });
+  if (sections.some((s) => s.name === cur)) $("msec").value = cur;
+  const { problems } = renderSheet($("preview"), sheet, {});
+  $("problems").innerHTML = problems.map((p) => `<li>${esc(p)}</li>`).join("");
+  const n = sheet.melodies[$("msec").value]?.length ?? 0;
+  $("melmsg").textContent = n ? `${$("msec").value}: ${n} notes.` : "No melody for this section yet.";
+}
+$("msec").onchange = draw;
+// ── save ──
+$("save").onclick = async () => {
+  if (!adminKey) { $("keybox").hidden = false; $("keyin").focus(); return; }
+  status("Saving…");
+  const r = await fetch(`/api/admin/leadsheet?id=${id}`, { method: "POST", headers: { "x-admin-key": adminKey, "content-type": "application/json" }, body: JSON.stringify(sheet) });
+  if (r.status === 401) { adminKey = ""; $("keybox").hidden = false; status("That admin key didn't work.", "err"); return; }
+  if (!r.ok) { status(`Couldn't save: ${(await r.json().catch(() => ({}))).error ?? r.status}`, "err"); return; }
+  dirty = false; try { localStorage.removeItem(`ls:draft:${id}`); } catch { /* ignore */ }
+  status("Saved. It's on the song's page now.", "ok"); $("open").hidden = false;
+  const o = $("song").selectedOptions[0]; if (o && !o.textContent.startsWith("✅")) o.textContent = "✅ " + o.textContent;
+};
+$("keygo").onclick = () => { adminKey = $("keyin").value.trim(); try { localStorage.setItem("angelio:admin", adminKey); } catch { /* ignore */ } $("keybox").hidden = true; $("save").click(); };
+addEventListener("beforeunload", (e) => { if (dirty) e.preventDefault(); });
+
+// ── melody: MIDI file ──
+let file = null;
+const meterArr = () => sheet.meter.split("/").map(Number);
+$("midifile").onchange = async () => {
+  const f = $("midifile").files[0]; $("midifile").value = "";
+  if (!f) return;
+  try { file = readMidi(new Uint8Array(await f.arrayBuffer())); } catch (e) { status(e.message, "err"); return; }
+  if (!file.tracks.length) { status("That MIDI file has no notes.", "err"); return; }
+  if (file.tempo && !sheet.text) { sheet.tempo = file.tempo; $("tempo").value = file.tempo; }
+  if (file.meter) { const m = `${file.meter[0]}/${file.meter[1]}`; if ([...$("meter").options].some((o) => o.value === m)) { sheet.meter = m; $("meter").value = m; } }
+  if (file.key && KEYS.includes(file.key)) { sheet.key = file.key; $("key").value = file.key; }
+  $("track").innerHTML = file.tracks.map((t, i) => `<option value="${i}">${esc(t.name)} (${t.notes.length} notes)</option>`).join("");
+  $("trackbox").hidden = file.tracks.length < 2;
+  useTrack();
+};
+$("track").onchange = useTrack;
+function useTrack() {
+  const t = file.tracks[Number($("track").value) || 0];
+  setMelody(quantize(t.notes, file.ppq, meterArr()));
+}
+function setMelody(notes) {
+  sheet.melodies = { ...sheet.melodies, [$("msec").value]: notes };
+  changed(); draw();
+}
+$("clear").onclick = () => { delete sheet.melodies[$("msec").value]; changed(); draw(); };
+
+// ── melody: play it in on a MIDI keyboard (Chrome / Edge) ──
+let ac;
+const audio = () => (ac ??= new AudioContext());
+function beep(at, high) { const o = audio().createOscillator(), g = ac.createGain(); o.frequency.value = high ? 1600 : 1000; g.gain.setValueAtTime(0.3, at); g.gain.exponentialRampToValueAtTime(0.001, at + 0.06); o.connect(g).connect(ac.destination); o.start(at); o.stop(at + 0.07); }
+let rec = null;
+$("play").onclick = async () => {
+  if (!navigator.requestMIDIAccess) { status("This browser can't hear a MIDI keyboard. Use Chrome or Edge, or load a MIDI file from Logic.", "err"); return; }
+  let midi;
+  try { midi = await navigator.requestMIDIAccess(); } catch { status("The browser wasn't allowed to use the MIDI keyboard.", "err"); return; }
+  const inputs = [...midi.inputs.values()];
+  if (!inputs.length) { status("No MIDI keyboard found. Plug it in, then try again.", "err"); return; }
+  const beat = 60 / (sheet.tempo || 100), perBar = meterArr()[0], t0 = audio().currentTime + 0.3, startMs = performance.now() + 300 + perBar * beat * 1000;
+  rec = { on: new Map(), notes: [], startMs, inputs, ticker: 0 };
+  for (let i = 0; i < 400; i++) beep(t0 + i * beat, i % perBar === 0); // count-in, then the click keeps going
+  $("recbox").hidden = false; $("play").disabled = true;
+  const tick = () => { if (!rec) return; const left = Math.ceil((rec.startMs - performance.now()) / (beat * 1000)); $("count").textContent = left > 0 ? left : "● Play!"; rec.ticker = requestAnimationFrame(tick); };
+  tick();
+  for (const inp of inputs) inp.onmidimessage = (e) => {
+    const [st, p, v] = e.data, ms = e.timeStamp - rec.startMs;
+    if ((st & 0xf0) === 0x90 && v > 0) rec.on.set(p, ms);
+    else if (((st & 0xf0) === 0x80 || ((st & 0xf0) === 0x90 && v === 0)) && rec.on.has(p)) { const s = rec.on.get(p); rec.on.delete(p); if (ms > 0) rec.notes.push([p, Math.max(0, s), ms - Math.max(0, s)]); }
+  };
+};
+$("stop").onclick = async () => {
+  if (!rec) return;
+  for (const inp of rec.inputs) inp.onmidimessage = null;
+  cancelAnimationFrame(rec.ticker);
+  await ac.close(); ac = null; // stops the clicks
+  const ms = 60000 / (sheet.tempo || 100);
+  if (rec.notes.length) setMelody(quantize(rec.notes, ms, meterArr())); else status("No notes were played.", "err");
+  rec = null; $("recbox").hidden = true; $("play").disabled = false;
+};
+// ── hear the melody ──
+$("hear").onclick = () => {
+  const notes = sheet.melodies[$("msec").value];
+  if (!notes?.length) return;
+  const six = 60 / (sheet.tempo || 100) / 4, t0 = audio().currentTime + 0.1;
+  for (const [p, s, l] of notes) {
+    const o = ac.createOscillator(), g = ac.createGain(), at = t0 + s * six, end = at + l * six * 0.95;
+    o.type = "triangle"; o.frequency.value = 440 * 2 ** ((p - 69) / 12);
+    g.gain.setValueAtTime(0, at); g.gain.linearRampToValueAtTime(0.25, at + 0.02); g.gain.setValueAtTime(0.25, end - 0.05); g.gain.linearRampToValueAtTime(0, end);
+    o.connect(g).connect(ac.destination); o.start(at); o.stop(end + 0.01);
+  }
+};
+await document.fonts.ready;
+</script>
+</body>
+</html>
