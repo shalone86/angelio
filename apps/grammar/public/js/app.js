@@ -184,21 +184,9 @@ jingleOnce("grammar", () => S.settings().sounds); // the app's little logo sound
 route();
 keepDockVisible();
 
-// Offline support. A new version only reloads the page when it's safe: never on the very first
-// visit (that "change" is just the offline files installing), and never in the middle of a game.
-// If an update arrives during a game, it's applied the next time the child is back home.
+// Offline support. Updates never reload the page by themselves (a tap during a reload would open a
+// game and then drop the child back on Home). The offline files fetch fresh copies first, so the next
+// visit is up to date anyway.
 if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
-  const hadController = !!navigator.serviceWorker.controller;
-  let updateReady = false;
-  const reloadIfSafe = () => {
-    const inGame = document.body.classList.contains("in-game") || /^#\/(play|watch|sense)\//.test(location.hash);
-    if (updateReady && !inGame) location.reload();
-  };
-  navigator.serviceWorker.addEventListener("controllerchange", () => {
-    if (!hadController) return;
-    updateReady = true;
-    reloadIfSafe();
-  });
-  window.addEventListener("hashchange", reloadIfSafe);
   navigator.serviceWorker.register("sw.js").then((reg) => reg.update()).catch(() => {});
 }

@@ -355,11 +355,9 @@ installClickSounds();
 jingleOnce("fractions", () => S.settings().sounds); // the app's little logo sound, on the first tap
 route();
 keepDockVisible();
-if ("serviceWorker" in navigator && location.protocol === "https:") {
-  // Update quietly: never reload on the first visit or in the middle of a game.
-  const hadController = !!navigator.serviceWorker.controller;
-  navigator.serviceWorker.register("sw.js").catch(() => {});
-  navigator.serviceWorker.addEventListener("controllerchange", () => {
-    if (hadController && !document.body.classList.contains("in-game") && !/^#\/play/.test(location.hash)) location.reload();
-  });
+// Offline support. Updates never reload the page by themselves (a tap during a reload would open a
+// game and then drop the child back on Home). The offline files fetch fresh copies first, so the next
+// visit is up to date anyway.
+if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+  navigator.serviceWorker.register("sw.js").then((reg) => reg.update()).catch(() => {});
 }
