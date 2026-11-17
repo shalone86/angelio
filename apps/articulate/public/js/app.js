@@ -123,7 +123,15 @@ document.addEventListener("click", async (e) => {
   e.preventDefault();
   document.querySelectorAll(".playing").forEach((x) => x.classList.remove("playing"));
   b.classList.add("playing");
-  try { await speak(b.dataset.say, { slow: b.dataset.slow === "1" }); }
+  // Long readings (the How tab) go one sentence at a time: the voice server stops at 300 characters.
+  // Tapping something else takes "playing" off this button, which stops the rest.
+  const text = b.dataset.say, parts = text.length > 250 ? text.split(/(?<=[.!?])\s+/).filter(Boolean) : [text];
+  try {
+    for (const part of parts) {
+      if (!b.classList.contains("playing")) break;
+      await speak(part, { slow: b.dataset.slow === "1" });
+    }
+  }
   catch (err) { toast(`🔇 ${err.message}`); }
   finally { b.classList.remove("playing"); }
 });
