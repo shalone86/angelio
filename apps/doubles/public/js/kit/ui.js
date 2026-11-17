@@ -72,7 +72,8 @@ export function showFinish(app, { id, stars, mistakes, title, done, again, next,
         <a class="btn big ${isPerfect ? "" : "primary pulse"}" href="${again}" data-again>
           🔁 ${isPerfect ? "Play again" : "Try Again for Perfect!"}
         </a>
-        ${next ? `<a class="btn big ${isPerfect ? "primary" : ""}" href="${next.href}">${next.label}</a>` : `<a class="btn big ${isPerfect ? "primary" : ""}" href="#/">🏠 Home</a>`}
+        <a class="btn big" href="#/">🏠 Home</a>
+        ${next ? `<a class="btn big ${isPerfect ? "primary" : ""}" href="${next.href}">${next.label}</a>` : ""}
       </div>
     </section>`;
   speak(

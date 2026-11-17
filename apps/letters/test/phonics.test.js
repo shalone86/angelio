@@ -18,7 +18,7 @@ test("every pattern: enough pictures, words and sentences; chunks spell the word
       const ch = chunks(spec, p.syllables);
       assert.equal(ch.map((c) => c.t).join(""), wordOf(spec), spec);
       for (const c of ch) assert.ok(c.silent || (c.s && !/undefined/.test(c.s)), `${spec}: chunk ${c.t} has no sound`);
-      if (p.focus.length || p.magic) assert.ok(focusIndexes(p, ch).length > 0 || p.id === "g1-blends", `${p.id}: ${spec} shows the pattern`);
+      if (p.focus.length || p.magic) assert.ok(focusIndexes(p, ch).length > 0, `${p.id}: ${spec} shows the pattern`);
     }
     const all = [...p.pictures.map(([s]) => wordOf(s)), ...p.words.map(wordOf)];
     assert.equal(new Set(all).size, all.length, `${p.id}: repeated word`);
@@ -35,8 +35,7 @@ test("every pattern: enough pictures, words and sentences; chunks spell the word
 });
 
 test("blends are one chunk, highlighted, in every picture word", () => {
-  const p = PATTERNS.find((x) => x.id === "g1-blends");
-  for (const spec of [...p.pictures.map(([s]) => s), ...p.words]) {
+  for (const p of PATTERNS.filter((x) => x.id.startsWith("g1-blends"))) for (const spec of [...p.pictures.map(([s]) => s), ...p.words]) {
     const ch = chunks(spec), f = focusIndexes(p, ch);
     assert.equal(f.length, 1, spec);
     assert.equal(ch[f[0]].t.length, 2, spec);
@@ -44,11 +43,19 @@ test("blends are one chunk, highlighted, in every picture word", () => {
   }
 });
 
-test("questions: the answer is always a choice, no duplicate choices", () => {
+test("questions: eight per level; the answer is always a choice, no duplicate choices; spelling tiles hold every chunk", () => {
   for (const p of PATTERNS) for (let seed = 1; seed < 300; seed++) {
     const qs = makePhonics(p, seeded(seed));
-    assert.equal(qs.length, 6);
+    assert.equal(qs.length, 8, p.id);
+    assert.equal(qs.filter((q) => q.type === "build-chunks").length, 2, `${p.id}: two spelling questions`);
+    if (p.grade >= 3) assert.equal(qs.filter((q) => q.type === "pick-sentence").length, 1, `${p.id}: a pick-the-sentence question`);
     for (const q of qs) {
+      if (q.type === "build-chunks") {
+        const left = [...q.tiles];
+        for (const c of q.chunks) { const i = left.indexOf(c.t); assert.ok(i >= 0, `${p.id}: ${q.word} needs tile ${c.t}`); left.splice(i, 1); }
+        assert.ok(left.length >= 2, `${p.id}: ${q.word} has look-alike tiles`);
+        continue;
+      }
       const vals = q.choices.map((c) => c.word);
       assert.ok(vals.includes(q.answer), `${p.id}: ${q.answer} in ${vals}`);
       assert.equal(new Set(vals).size, vals.length, `${p.id}: ${vals}`);

@@ -178,3 +178,22 @@ button.chunk.blending { background: var(--yellow); transform: translateY(-6px); 
   .picture-card.emoji-only .pic { font-size: 2.6rem; }
   .lesson-word .chunk { font-size: 1.3rem; } .lesson-word .pic { font-size: 1.3rem; }
 }
+/* Level 1 / Level 2 inside a grade */
+.level-title { margin: 14px 0 8px; font: 800 1.05rem "Baloo 2", sans-serif; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.level-title span { font: 700 .88rem Nunito, sans-serif; color: var(--muted, #6b7280); }
+/* Spell it: chunk tiles can be whole word parts (plant, -ing) */
+.chunk-tile .abc { font-size: clamp(1.5rem, 6vw, 2.4rem) !important; white-space: nowrap; }
+.chunk-boxes .sound-box { min-width: 64px; width: auto; padding: 0 10px; }
+.chunk-boxes .sound-box .abc { white-space: nowrap; }
+/* Pick the sentence: three sentences, one under another, each with its own 🔊 */
+.sentence-choices { display: flex; flex-direction: column; gap: 8px; align-items: stretch; width: 100%; max-width: 640px; margin: 0 auto; }
+.pick-row { display: flex; gap: 8px; align-items: center; }
+.sentence-card { flex: 1; text-align: left; font: 700 clamp(1.05rem, 3.6vw, 1.35rem)/1.35 Andika, Nunito, sans-serif; padding: 12px 16px; min-height: 56px; }
+.say-row { flex: none; width: 48px; height: 48px; }
+/* 8 progress dots and 4 buttons on a narrow phone: smaller dots so nothing goes off the edge */
+@media (max-width: 460px) {
+  .play-top { gap: 6px; }
+  .play-top .dots { gap: 4px; min-width: 0; }
+  .play-top .dots i { width: 10px; height: 10px; }
+}
+.tiles .chunk-tile { flex: 0 0 auto; min-width: 72px; }

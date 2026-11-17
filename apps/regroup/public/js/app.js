@@ -330,7 +330,8 @@ function showFinish({ id, stars, mistakes, title, done, again, next }) {
       ${line ? `<p class="muted">${esc(line)}</p>` : ""}
       <div class="row center">
         <a class="btn big${st.big ? "" : " primary"}" href="${again}" data-again>🔁 ${st.big ? "Play again" : "Try for giant!"}</a>
-        ${next ? `<a class="btn big${st.big ? " primary" : ""}" href="${next.href}">${next.label}</a>` : `<a class="btn big${st.big ? " primary" : ""}" href="#/">🏠 Home</a>`}
+        <a class="btn big" href="#/">🏠 Home</a>
+        ${next ? `<a class="btn big${st.big ? " primary" : ""}" href="${next.href}">${next.label}</a>` : ""}
       </div>
       <p><a class="btn world-link" href="${STICKER_WORLD}">🌍 Play in Sticker World</a></p>
     </section>`;

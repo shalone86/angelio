@@ -3,6 +3,7 @@
 import { GROUPS, LETTERS, keyword } from "./reading.js";
 import { snd } from "./letter-sounds.js";
 import { PATTERNS, chunks, focusIndexes, wordOf } from "./phonics.js";
+import { APP_GRADES } from "./grades.js";
 
 const letterRow = (group) => `<div class="lesson-letters">${group.map((l) => `
   <span class="lesson-letter lesson-focus"><span class="abc">${l}</span><span class="pic" aria-hidden="true">${keyword(l)[1]}</span></span>`).join("")}</div>`;
@@ -12,6 +13,7 @@ export const LESSONS = {
   "p-letters-1": { emoji: "🌱", title: "Letters make sounds", rule: "Every letter makes a sound. Listen, and say it too!", exampleHtml: letterRow(GROUPS[0]), voice: `Every letter makes a sound. ${lettersVoice(GROUPS[0])}` },
   "p-letters-2": { emoji: "🌿", title: "More letters", rule: "Here are six more letters and their sounds.", exampleHtml: letterRow(GROUPS[1]), voice: `Here are more letters! ${lettersVoice(GROUPS[1])} c and k make the same sound!` },
   "p-letters-3": { emoji: "🌳", title: "Even more letters", rule: "Seven more letters. You're learning so many!", exampleHtml: letterRow(GROUPS[2]), voice: `Seven more letters! ${lettersVoice(GROUPS[2])}` },
+  "p-letters-4": { emoji: "🌻", title: "The last letters", rule: "The last seven letters! <b>x</b> is special: it says ks at the end, like in fo<b>x</b>. <b>q</b> always brings <b>u</b>: qu.", exampleHtml: letterRow(GROUPS[3]), voice: `The last seven letters! ${lettersVoice(GROUPS[3])} X is special: you hear it at the end of a word, like fox. And q always comes with its friend u!` },
   "p-first-sounds": {
     emoji: "👂", title: "The first sound", rule: "Say a word slowly. The <b>first sound</b> tells you its first letter.",
     exampleHtml: `<div class="lesson-pair"><span class="lesson-focus pic big">🐶</span><span class="lesson-focus"><b>d</b>og</span><span class="lesson-focus abc">d</span></div>`,
@@ -28,7 +30,7 @@ export const LESSONS = {
     voice: "Words have beats. Let's clap banana. Ba. Na. Na. Three beats! Tap the drum once for each beat, then press done.",
   },
   "k-big-little": {
-    emoji: "🔠", title: "Big and little letters", rule: "Every letter has a <b>big</b> shape and a <b>little</b> shape. They make the same sound.",
+    emoji: "🔠", title: "Big and little letters", rule: "Every letter has a <b>big</b> shape and a <b>little</b> shape. They make the same sound. Find the little one, then the big one!",
     exampleHtml: `<div class="lesson-pair"><span class="lesson-focus abc">A a</span><span class="lesson-focus abc">B b</span><span class="lesson-focus abc">D d</span></div>`,
     voice: "Every letter has a big shape and a little shape. Big A, little a. Big B, little b. They make the same sound. Big letters start names and sentences!",
   },
@@ -45,7 +47,7 @@ export const LESSONS = {
 };
 
 // Phonics levels: how to say the pattern, three example words in chunks, then "let's practice".
-for (const p of PATTERNS.filter((x) => x.grade <= 2)) {
+for (const p of PATTERNS.filter((x) => APP_GRADES.includes(x.grade))) {
   const ex = p.pictures.slice(0, 3);
   const word = ([spec, emoji]) => {
     const ch = chunks(spec, p.syllables), f = new Set(focusIndexes(p, ch));

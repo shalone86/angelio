@@ -6,7 +6,7 @@ test("every letter has a sound and picture words that really start with it", () 
   for (const l of ALL_LETTERS) {
     assert.ok(LETTERS[l]?.sound, l);
     assert.ok(LETTERS[l].words.length >= 2, `${l}: at least two pictures`);
-    for (const [w] of LETTERS[l].words) assert.equal(w[0], l, `${w} starts with ${l}`);
+    for (const [w] of LETTERS[l].words) assert.ok(LETTERS[l].ends ? w.endsWith(l) : w[0] === l, `${w} ${LETTERS[l].ends ? "ends" : "starts"} with ${l}`);
   }
   assert.equal(new Set(ALL_LETTERS).size, ALL_LETTERS.length);
 });
@@ -21,7 +21,7 @@ test("thousands of questions: the answer is always a choice, no repeats in a cho
   for (const s of STAGES) for (let seed = 1; seed < 400; seed++) {
     const qs = makeStage(s, seed);
     assert.equal(qs.length, PER_STAGE, s.id);
-    if (s.type === "letters") assert.equal(new Set(qs.slice(0, 4).map((q) => q.letter)).size, 4, `${s.id}: four different letters`);
+    if (s.type === "letters") assert.equal(new Set(qs.slice(0, 5).map((q) => q.letter)).size, 5, `${s.id}: five different letters`);
     for (const q of qs) {
       assert.ok(q.prompt && q.say && !/undefined|NaN/.test(q.say + q.prompt), `${s.id}: ${q.prompt}`);
       if (q.choices) {
@@ -31,7 +31,7 @@ test("thousands of questions: the answer is always a choice, no repeats in a cho
         if (typeof q.choices[0] === "string") assert.ok(!(vals.includes("c") && vals.includes("k")), `${s.id}: c and k together`);
       }
       if (q.type === "rhyme") for (const c of q.choices) if (c.word !== q.answer) assert.ok(!rhymes(c.word, q.word), `${q.word}/${c.word}`);
-      if (q.type === "letters-picture") assert.equal(q.choices.filter((c) => c.word[0] === q.letter || (q.letter === "c" && c.word[0] === "k") || (q.letter === "k" && c.word[0] === "c")).length, 1, `${q.prompt}: one right picture`);
+      if (q.type === "letters-picture") assert.equal(q.choices.filter((c) => (q.ends ? c.word.endsWith(q.letter) : c.word[0] === q.letter) || (q.letter === "c" && c.word[0] === "k") || (q.letter === "k" && c.word[0] === "c")).length, 1, `${q.prompt}: one right picture`);
       if (q.type === "build") for (const l of q.letters) assert.ok(q.tiles.includes(l), `${q.word}: tile ${l}`);
     }
   }

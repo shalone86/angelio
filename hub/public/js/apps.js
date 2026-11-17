@@ -35,11 +35,11 @@ export const APP_LIST = [
   },
   {
     name: "Letter Lane", path: "letters", subject: "language", grades: "PreK–K", emoji: "🔤",
-    blurb: "Letters and their sounds, rhymes, beats, blending your first words, and sh, ch, th in little sentences.",
+    blurb: "All 26 letters and their sounds, rhymes and beats, then short vowels, blending and building words, and little sentences.",
   },
   {
     name: "Read Aloud", path: "read", subject: "language", grades: "Grades 1–3", emoji: "📖",
-    blurb: "Sound out words chunk by chunk (sh, igh, ar, magic e, -tion), then read sentences that grow with each grade.",
+    blurb: "Blends, endings, long vowels, bossy r, prefixes and more: sound out, spell, and read sentences that grow with each grade.",
   },
   {
     name: "Watch & Sing", path: "watch", subject: "faith", grades: "All ages", emoji: "🎵",

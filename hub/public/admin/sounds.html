@@ -85,7 +85,7 @@
   // ── which sounds the reading apps say (from their own word lists) ──
   async function soundList() {
     const { LETTERS, keyword } = await import("/letters/js/letter-sounds.js");
-    const { PATTERNS, chunks, wordOf } = await import("/letters/js/phonics.js");
+    const { PATTERNS, chunks, wordOf, focusIndexes } = await import("/letters/js/phonics.js");
     const out = new Map(); // sound → { sound, uses: Map(chunk → [words]) , group }
     const add = (sound, chunk, word, group) => {
       if (!sound) return;
@@ -99,8 +99,10 @@
     for (const p of PATTERNS) {
       for (const spec of [...p.pictures.map(([s]) => s), ...p.words]) {
         // Big words (3rd grade) break into word parts like "pump" and "kin": a tab of their own.
-        for (const c of chunks(spec, p.syllables)) {
+        const ch = chunks(spec, p.syllables), focus = new Set(p.wordParts ? focusIndexes(p, ch) : []);
+        for (const [i, c] of ch.entries()) {
           if (c.silent) continue;
+          if (p.wordParts && !focus.has(i)) continue; // whole words (sun, jump): the voice says those well
           const group = p.syllables ? "3rd grade word parts" : c.t.length === 1 && LETTERS[c.t] ? "Letters" : gradeName[p.grade];
           add(c.s, c.t, wordOf(spec), group);
         }

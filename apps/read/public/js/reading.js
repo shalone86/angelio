@@ -1,21 +1,34 @@
-// Read Aloud: grades 1 to 3 phonics. Sound out words in chunks (sh, igh, ar, magic e, -tion), then read them
-// in sentences that grow with each grade. Pure data and question making (no DOM); tested in test/.
-// Shares phonics.js with Letter Lane (PreK and K), which uses the Kindergarten patterns.
+// The reading levels, PreK to 3rd grade: letters and their sounds, first sounds, rhymes, beats, big and
+// little letters, blending and building words, then the phonics lessons in phonics.js.
+// Pure data and question making (no DOM); tested in test/reading.test.js.
 //
 import { PATTERNS, makePhonics, patternById } from "./phonics.js";
 
-// Letter order follows the common early-phonics groups: s a t p i n, then m d g o c k, then e u r h b f l.
+// Letter order follows the common early-phonics groups: s a t p i n, then m d g o c k, then e u r h b f l,
+// then the rest (j v w x y z q).
+//
+// Shared by Letter Lane (PreK, K) and Read Aloud (1st to 3rd grade): grades.js says which grades an app shows.
+import { APP_GRADES } from "./grades.js";
 
-export const GRADES = [
-  { n: 3, title: "1st Grade", emoji: "🦉", blurb: "ck and -ing, blends, and magic e, in words and sentences." },
-  { n: 4, title: "2nd Grade", emoji: "🦅", blurb: "Vowel teams (ai, ee, oa, igh), bossy r (ar, or, er), oi and ou, tch and dge." },
-  { n: 5, title: "3rd Grade", emoji: "🦁", blurb: "Big words in chunks, silent letters, and endings like -tion, -ture and -le." },
+const ALL_GRADES = [
+  { n: 1, title: "PreK", emoji: "🐣", blurb: "Big and little letters and all 26 letter sounds, then first sounds, rhymes and beats.",
+    levels: ["Letters and their sounds", "Listening for sounds"] },
+  { n: 2, title: "Kindergarten", emoji: "🦊", blurb: "Short vowels one at a time, blending and building words, -ck, sh ch th, two words in one, adding -s, and little sentences.",
+    levels: ["Short a, i, o: blend and build", "Short u and e, and more"] },
+  { n: 3, title: "1st Grade", emoji: "🦉", blurb: "Blends at the start and end, two-part words, and the endings -ing, -er, -ed, -es and -ly.",
+    levels: ["Blends", "Two-part words and endings"] },
+  { n: 4, title: "2nd Grade", emoji: "🦅", blurb: "Long vowels (magic e, ai, ee, oa, igh, y), bossy r, oi and ou, soft c and g, silent letters, tch and dge.",
+    levels: ["Long vowels", "Bossy r, oi and ou, soft c and g, silent letters"] },
+  { n: 5, title: "3rd Grade", emoji: "🦁", blurb: "Big words in chunks, oo and aw, prefixes (un-, re-), and endings like -tion, -ful and -ness.",
+    levels: ["Big words, oo and aw, beginnings", "Endings"] },
 ];
+export const GRADES = ALL_GRADES.filter((g) => APP_GRADES.includes(g.n));
 
 export const GROUPS = [
   ["s", "a", "t", "p", "i", "n"],
   ["m", "d", "g", "o", "c", "k"],
   ["e", "u", "r", "h", "b", "f", "l"],
+  ["j", "v", "w", "x", "y", "z", "q"],
 ];
 export const ALL_LETTERS = GROUPS.flat();
 
@@ -49,13 +62,31 @@ export const CVC = [
   ["nut", "🥜"], ["leg", "🦵"], ["lip", "👄"], ["pot", "🍲"], ["fin", "🦈"],
 ];
 
-export const STAGES = [
-  // Phonics patterns (phonics.js): taught alone, in words, then in sentences.
-  // phonics.js is shared with Letter Lane; Read Aloud uses the grade 1 to 3 patterns.
-  ...PATTERNS.filter((p) => p.grade >= 3).map((p) => ({ id: p.id, grade: p.grade, type: "phonics", pattern: p.id, title: p.title, emoji: p.emoji })),
+const phonics = (grade, level) => PATTERNS.filter((p) => p.grade === grade && p.level === level)
+  .map((p) => ({ id: p.id, grade, level, type: "phonics", pattern: p.id, title: p.title, emoji: p.emoji }));
+
+const ALL_STAGES = [
+  // PreK, Level 1: the letters
+  { id: "p-letters-1", grade: 1, level: 1, type: "letters", group: 0, title: "Letters s a t p i n", emoji: "🌱" },
+  { id: "p-letters-2", grade: 1, level: 1, type: "letters", group: 1, title: "Letters m d g o c k", emoji: "🌿" },
+  { id: "p-letters-3", grade: 1, level: 1, type: "letters", group: 2, title: "Letters e u r h b f l", emoji: "🌳" },
+  { id: "p-letters-4", grade: 1, level: 1, type: "letters", group: 3, title: "Letters j v w x y z q", emoji: "🌻" },
+  { id: "k-big-little", grade: 1, level: 1, type: "case", title: "Big and Little Letters", emoji: "🔠" },
+  // PreK, Level 2: listening for sounds
+  { id: "p-first-sounds", grade: 1, level: 2, type: "first", title: "First Sounds", emoji: "👂" },
+  { id: "p-rhymes", grade: 1, level: 2, type: "rhyme", title: "Rhyme Time", emoji: "🎵" },
+  { id: "p-beats", grade: 1, level: 2, type: "beats", title: "Clap the Beats", emoji: "🥁" },
+  // Kindergarten: short vowels one at a time (phonics.js), then blend and build any short-vowel word
+  ...phonics(2, 1),
+  { id: "k-blend", grade: 2, level: 1, type: "blend", title: "Blend It!", emoji: "🧩" },
+  { id: "k-build", grade: 2, level: 1, type: "build", title: "Build It!", emoji: "🏗️" },
+  ...phonics(2, 2),
+  // 1st to 3rd grade (Read Aloud): phonics.js, two levels each
+  ...[3, 4, 5].flatMap((g) => [...phonics(g, 1), ...phonics(g, 2)]),
 ];
+export const STAGES = ALL_STAGES.filter((s) => APP_GRADES.includes(s.grade));
 export const stageById = (id) => STAGES.find((s) => s.id === id);
-export const PER_STAGE = 6;
+export const PER_STAGE = 8;
 
 // ───────── random ─────────
 export function seeded(seed) {
@@ -82,22 +113,22 @@ function letterChoices(answer, pool, n, rand) {
 export function makeQuestion(stage, k, rand) {
   switch (stage.type) {
     case "letters": {
-      // Questions 1–4: hear a letter's sound and find it. 5–6: which picture starts with a letter?
+      // Questions 1–5: hear a letter's sound and find it. 6–8: which picture starts (x: ends) with a letter?
       const group = GROUPS[stage.group];
       const l = stage._order ? stage._order[k % stage._order.length] : group[k % group.length];
-      if (k < 4) {
+      if (k < 5) {
         return { type: "letters", letter: l, prompt: `Find the letter that says ${LETTERS[l].sound}`, say: `Find the letter that says ${soundSay(l)}.`,
-          answer: l, choices: letterChoices(l, group, 3, rand), picture: keyword(l) };
+          answer: l, choices: letterChoices(l, group, 4, rand), picture: keyword(l) };
       }
-      const right = pick(rand, LETTERS[l].words);
-      const wrong = others(group.filter((x) => !sameSound(x, l)), [l], 2, rand).map((x) => pick(rand, LETTERS[x].words));
-      return { type: "letters-picture", letter: l, prompt: `Which one starts with ${l}?`, say: `Which one starts with ${l}? ${soundSay(l)}.`,
+      const right = pick(rand, LETTERS[l].words), ends = !!LETTERS[l].ends;
+      const wrong = others(group.filter((x) => !sameSound(x, l) && !LETTERS[x].ends), [l], 2, rand).map((x) => pick(rand, LETTERS[x].words));
+      return { type: "letters-picture", letter: l, ends, prompt: `Which one ${ends ? "ends" : "starts"} with ${l}?`, say: `Which one ${ends ? "ends" : "starts"} with ${l}? ${soundSay(l)}.`,
         answer: right[0], choices: shuffle([right, ...wrong], rand).map(([w, e]) => ({ word: w, emoji: e })) };
     }
     case "first": {
-      const l = pick(rand, ALL_LETTERS);
+      const l = pick(rand, ALL_LETTERS.filter((x) => !LETTERS[x].ends));
       const [w, e] = pick(rand, LETTERS[l].words);
-      return { type: "first", word: w, emoji: e, prompt: `${w} starts with…`, say: `${w}. What sound does ${w} start with?`, answer: l, choices: letterChoices(l, ALL_LETTERS, 3, rand) };
+      return { type: "first", word: w, emoji: e, prompt: `${w} starts with…`, say: `${w}. What sound does ${w} start with?`, answer: l, choices: letterChoices(l, ALL_LETTERS, 4, rand) };
     }
     case "rhyme": {
       const [a, b] = pick(rand, RHYMES);
@@ -111,8 +142,11 @@ export function makeQuestion(stage, k, rand) {
       return { type: "beats", word: w, emoji: e, parts, prompt: `How many beats in ${w}?`, say: `${w}. ${parts.join("... ")}. Tap the drum for each beat!`, answer: parts.length };
     }
     case "case": {
-      const l = pick(rand, ALL_LETTERS);
-      return { type: "case", letter: l, prompt: `Find little ${l}`, say: `This is big ${l.toUpperCase()}. Find little ${l}.`, answer: l, choices: letterChoices(l, ALL_LETTERS, 3, rand), big: l.toUpperCase() };
+      // Every other question goes the other way: little letter shown, find the big one.
+      const l = pick(rand, ALL_LETTERS), choices = letterChoices(l, ALL_LETTERS, 4, rand);
+      if (k % 2) return { type: "case", up: true, letter: l, prompt: `Find big ${l.toUpperCase()}`, say: `This is little ${l}. Find big ${l.toUpperCase()}.`,
+        answer: l.toUpperCase(), choices: choices.map((x) => x.toUpperCase()), big: l.toUpperCase(), shown: l };
+      return { type: "case", letter: l, prompt: `Find little ${l}`, say: `This is big ${l.toUpperCase()}. Find little ${l}.`, answer: l, choices, big: l.toUpperCase(), shown: l.toUpperCase() };
     }
     case "blend": {
       const [w, e] = pick(rand, CVC);
