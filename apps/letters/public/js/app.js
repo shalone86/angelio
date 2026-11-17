@@ -6,7 +6,7 @@ S.init("letters:v1", {});
 
 import { createRouter } from "./kit/router.js";
 import { speak, stop, unmark, preloadSounds } from "./kit/tts.js";
-import { addSoundVoiceSetting } from "./clips.js";
+import { addSoundVoiceSetting, voicePickerHtml, wireVoicePicker } from "./clips.js";
 import { sfx } from "./kit/sound.js";
 import * as FX from "./kit/fx.js";
 import { keepDockVisible } from "./kit/dock.js";
@@ -52,6 +52,7 @@ function viewHome() {
       <h1 class="title">Letter Lane</h1>
       <p class="lede">Letters, sounds, rhymes, and your very first words!</p>
       <a class="btn big primary play-btn" href="#/play/${next.id}">▶ Play</a>
+      ${voicePickerHtml()}
       <nav class="grade-jump" aria-label="Jump to a grade">
         ${GRADES.map((g) => `<button type="button" class="grade-chip" data-grade="${g.n}">${g.emoji} ${esc(g.title)}</button>`).join("")}
       </nav>
@@ -70,6 +71,7 @@ function viewHome() {
         </div>`).join("")}
       </section>`).join("")}
     ${stickerBook()}`;
+  wireVoicePicker(app, speak);
   app.querySelectorAll("[data-grade]").forEach((btn) => {
     btn.onclick = () => {
       S.setSetting("lastGrade", Number(btn.dataset.grade));

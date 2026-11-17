@@ -33,3 +33,20 @@ export function addSoundVoiceSetting(app) {
   sel.value = S.settings().soundVoice === "m" ? "m" : "f";
   sel.onchange = () => { S.setSetting("soundVoice", sel.value); };
 }
+
+/** Home-page picker: "Who says the sounds? 👩 Mom · 👨 Dad". Tapping one picks it and plays a sample in that voice. */
+export function voicePickerHtml() {
+  const v = S.settings().soundVoice === "m" ? "m" : "f";
+  return `<div class="voice-pick" role="group" aria-label="Who says the sounds?">
+      <span class="vp-label">Who says the sounds?</span>
+      <button type="button" class="vp${v === "f" ? " on" : ""}" data-voice-pick="f" aria-pressed="${v === "f"}"><span aria-hidden="true">👩</span> Mom</button>
+      <button type="button" class="vp${v === "m" ? " on" : ""}" data-voice-pick="m" aria-pressed="${v === "m"}"><span aria-hidden="true">👨</span> Dad</button>
+    </div>`;
+}
+export function wireVoicePicker(root, speak) {
+  root.querySelectorAll("[data-voice-pick]").forEach((b) => b.onclick = () => {
+    S.setSetting("soundVoice", b.dataset.voicePick);
+    root.querySelectorAll("[data-voice-pick]").forEach((x) => { const on = x === b; x.classList.toggle("on", on); x.setAttribute("aria-pressed", on); });
+    speak(`{{sss}}, {{ah}}, {{tuh}}.`, { force: true }); // three sounds in the chosen voice
+  });
+}

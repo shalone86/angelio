@@ -197,3 +197,10 @@ button.chunk.blending { background: var(--yellow); transform: translateY(-6px); 
   .play-top .dots i { width: 10px; height: 10px; }
 }
 .tiles .chunk-tile { flex: 0 0 auto; min-width: 72px; }
+/* Who says the sounds? Mom / Dad (home page) */
+.voice-pick { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; margin: 14px auto 4px; }
+.vp-label { font-weight: 800; width: 100%; text-align: center; }
+.vp { font: 800 1.15rem "Baloo 2", Nunito, sans-serif; min-height: 52px; min-width: 120px; padding: 6px 18px; border-radius: 999px; cursor: pointer;
+  border: 3px solid var(--border, #e5d9c3); background: var(--card, #fff); color: inherit; }
+.vp span { font-size: 1.5rem; vertical-align: -3px; }
+.vp.on { border-color: var(--accent, #ff8a00); background: color-mix(in srgb, var(--accent, #ff8a00) 16%, var(--card, #fff)); box-shadow: 0 3px 0 var(--accent, #ff8a00); }
