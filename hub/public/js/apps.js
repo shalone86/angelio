@@ -4,6 +4,7 @@
 export const SUBJECTS = [
   { id: "math", title: "Math", emoji: "🔢" },
   { id: "language", title: "Reading & Writing", emoji: "📖" },
+  { id: "faith", title: "Faith: Watch & Sing", emoji: "⛪" },
   { id: "history", title: "History", emoji: "🗺️" },
 ];
 
@@ -39,6 +40,10 @@ export const APP_LIST = [
   {
     name: "Read Aloud", path: "read", subject: "language", grades: "Grades 1–3", emoji: "📖",
     blurb: "Sound out words chunk by chunk (sh, igh, ar, magic e, -tion), then read sentences that grow with each grade.",
+  },
+  {
+    name: "Watch & Sing", path: "watch", subject: "faith", grades: "All ages", emoji: "🎵",
+    blurb: "Catholic video lessons with little quizzes, and songs to sing along with.",
   },
   // Coming soon (see ROADMAP.md)
   { name: "Writing Skills", subject: "language", grades: "Grades 1–4", emoji: "📝", blurb: "From sentences to paragraphs: build, fix and grow your writing." },

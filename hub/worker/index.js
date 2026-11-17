@@ -15,6 +15,7 @@ export const APPS = {
   fractions: "FRACTIONS", // Fraction Feast (fractions Worker)
   letters: "LETTERS", // Letter Lane (letters Worker)
   read: "READALOUD", // Read Aloud (readaloud Worker)
+  watch: "WATCH", // Watch & Sing (watch Worker): the kids video lessons, quizzes and songs
   // Articulate also keeps its own address (articulate.shalonely.com): both work, no redirect.
   articulate: "ARTICULATE", // Articulate (articulation Worker)
 };
@@ -46,6 +47,15 @@ export default {
         return out;
       }
       return res;
+    }
+
+    // The shared fonts: usable from the apps' other addresses (fonts need CORS), kept for a month.
+    if (url.pathname.startsWith("/fonts/")) {
+      const res = await env.ASSETS.fetch(request);
+      const out = new Response(res.body, res);
+      out.headers.set("access-control-allow-origin", "*");
+      if (res.ok) out.headers.set("cache-control", "public, max-age=2592000");
+      return out;
     }
 
     return env.ASSETS.fetch(request);

@@ -400,3 +400,19 @@ fetch("data/library.json").then((r) => r.json()).then((j) => { LIB = j; route();
   .catch(() => { app.innerHTML = `<p class="center">Couldn't load the videos. Check the internet connection and try again.</p>`; });
 keepDockVisible();
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {});
+
+// Apps saved to a home screen stay paused in memory for days. When this one comes back after 10 minutes
+// or more, it checks for a newer version and reloads into it, but only on its home page (never mid-game).
+if (location.protocol === "https:") {
+  const version = () => fetch("sw.js", { cache: "no-store" }).then((r) => r.text())
+    .then((t) => (t.match(/const VERSION = "([^"]+)"/) || [])[1] ?? null).catch(() => null);
+  let mine = null, hiddenAt = 0;
+  version().then((v) => { mine = v; });
+  document.addEventListener("visibilitychange", async () => {
+    if (document.hidden) { hiddenAt = Date.now(); return; }
+    if (!mine || !hiddenAt || Date.now() - hiddenAt < 10 * 60 * 1000) return;
+    const now = await version();
+    const onHome = /^#?\/?$/.test(location.hash) && !document.body.classList.contains("in-game");
+    if (now && now !== mine && onHome) location.reload();
+  });
+}
