@@ -75,6 +75,9 @@ wherever a sound is marked `{{tuh}}` in spoken text (kit `tts.js` → `setClips`
 
 - ~~**Phonics & reading, PreK–K**~~: live as **Letter Lane** (angelio.org/letters/), Nov 2026, with Kindergarten sh/ch/th and three-word sentences. Next: more letter groups (j v w x y z qu), sight words, letter tracing; real recorded letter sounds instead of the voice.
 - ~~**Reading, grades 1–3**~~: live as **Read Aloud** (angelio.org/read/), Nov 2026: phonics chunks (blends, magic e, vowel teams, bossy r, tch/dge, syllables, silent letters, -tion/-ture/-le) in words and sentences, sharing `phonics.js` with Letter Lane. Next: **say it out loud** checks on the sentences (reuse Articulate's recorder; family codes are on), sight words, short stories with comprehension questions.
+- **Spelling** (1–3, owner asked Nov 17, 2026; later): hear a word, build it from letter tiles, then the
+  spelling patterns in the same order as Read Aloud (short vowels, -ck, blends, magic e, vowel teams, -ed/-ing
+  endings, plurals); weekly word lists a parent can type in. Coming-soon card is on the hub.
 - **Writing skills** (1–4): build and expand sentences ("The dog ran." → "The big dog ran fast."), fix run-ons, order sentences into a paragraph, topic sentences.
 - ~~**Fractions**~~: live as **Fraction Feast** (angelio.org/fractions/). Next ideas: animate equivalent fractions (cut each half into 2 → 4 quarters), fractions greater than 1, grade 4.
 - **Multiplication & division beyond Doubles** (3–4): arrays → area model, dealing into groups, remainders.
