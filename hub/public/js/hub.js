@@ -1,5 +1,5 @@
-// The hub page: one card per app, in a section per subject (the menu links to #math, #language,
-// #history). Live apps open at angelio.org/<path>/; the rest show as "soon".
+// The hub page: a tile per live app, in a section per subject (the menu links to #math, #language,
+// #faith). Live apps open at angelio.org/<path>/; the rest are one "coming soon" row.
 
 import { SUBJECTS, APP_LIST } from "./apps.js";
 import { jingleOnce } from "./jingle.js";
@@ -7,14 +7,45 @@ import { jingleOnce } from "./jingle.js";
 const ESC = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ESC[c]);
 
-const card = (a) => a.path
-  ? `<a class="cardc" href="/${a.path}/"><img src="/${a.path}/icon.svg" alt="" width="72" height="72" loading="lazy"><b>${esc(a.name)}</b><small>${esc(a.grades)}</small><p>${esc(a.blurb)}</p></a>`
-  : `<div class="cardc soon" aria-disabled="true"><span class="em" aria-hidden="true">${a.emoji}</span><b>${esc(a.name)}</b><small>${esc(a.grades)} · soon</small><p>${esc(a.blurb)}</p></div>`;
+// Each live game is a big icon tile (tap: play); 🔊 reads its name and what it is. Coming-soon games
+// are one small row at the bottom, so the page stays short.
+const tile = (a) => `
+  <div class="tile">
+    <a class="tile-go" href="/${a.path}/" aria-label="${esc(a.name)}: ${esc(a.blurb)}">
+      <img src="/${a.path}/icon.svg" alt="" width="88" height="88" loading="lazy">
+      <b>${esc(a.name)}</b><small>${esc(a.grades)}</small><p>${esc(a.blurb)}</p>
+    </a>
+    <button type="button" class="tile-say" data-say="${esc(`${a.name}. ${a.blurb}`)}" aria-label="Hear about ${esc(a.name)}">🔊</button>
+  </div>`;
 
 document.getElementById("apps").innerHTML = SUBJECTS.map((s) => {
-  const apps = APP_LIST.filter((a) => a.subject === s.id).sort((x, y) => Number(!x.path) - Number(!y.path));
-  return apps.length ? `<section class="subject" id="${s.id}"><h2>${s.emoji} ${esc(s.title)}</h2><div class="grid">${apps.map(card).join("")}</div></section>` : "";
+  const live = APP_LIST.filter((a) => a.subject === s.id && a.path);
+  return live.length ? `<section class="subject" id="${s.id}" style="--c:${s.color}"><h2><span aria-hidden="true">${s.emoji}</span> ${esc(s.title)}</h2><div class="tiles">${live.map(tile).join("")}</div></section>` : "";
 }).join("");
+
+const soon = APP_LIST.filter((a) => !a.path);
+document.getElementById("soon").innerHTML = soon.length ? `<section class="soon-row" aria-label="Coming soon"><h3>Coming soon</h3>
+  <div>${soon.map((a) => `<span class="chip" title="${esc(a.blurb)}"><span aria-hidden="true">${a.emoji}</span> ${esc(a.name)}</span>`).join("")}</div></section>` : "";
+
+// 🔊 on a tile: the games' own voice (any app's /api/tts works through the hub), or the device voice.
+let playing;
+document.addEventListener("click", async (e) => {
+  const b = e.target.closest("[data-say]");
+  if (!b) return;
+  const text = b.dataset.say;
+  try { playing?.pause(); speechSynthesis?.cancel(); } catch { /* ignore */ }
+  b.classList.add("saying");
+  const done = () => b.classList.remove("saying");
+  try {
+    const r = await fetch(`/snap/api/tts?${new URLSearchParams({ text, voice: "", v: "4" })}`);
+    if (!r.ok) throw new Error("voice");
+    playing = new Audio(URL.createObjectURL(await r.blob()));
+    playing.onended = done;
+    await playing.play();
+  } catch {
+    try { const u = new SpeechSynthesisUtterance(text); u.onend = done; speechSynthesis.speak(u); } catch { done(); }
+  }
+});
 
 // A soft halo chime on the first tap of a visit (browsers don't allow sound before a tap).
 jingleOnce("angelio");

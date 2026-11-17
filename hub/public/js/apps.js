@@ -2,10 +2,10 @@
 // Keep in step with APPS in worker/index.js and the service bindings in wrangler.jsonc (npm test checks).
 
 export const SUBJECTS = [
-  { id: "math", title: "Math", emoji: "🔢" },
-  { id: "language", title: "Reading & Writing", emoji: "📖" },
-  { id: "faith", title: "Faith: Watch & Sing", emoji: "⛪" },
-  { id: "history", title: "History", emoji: "🗺️" },
+  { id: "math", title: "Math", emoji: "🔢", color: "#ff8a00" },
+  { id: "language", title: "Reading & Writing", emoji: "📖", color: "#14a37f" },
+  { id: "faith", title: "Watch & Sing", emoji: "🎵", color: "#ff7a59" },
+  { id: "history", title: "History", emoji: "🗺️", color: "#7c5cff" },
 ];
 
 export const APP_LIST = [
@@ -46,6 +46,7 @@ export const APP_LIST = [
     blurb: "Catholic video lessons with little quizzes, and songs to sing along with.",
   },
   // Coming soon (see ROADMAP.md)
+  { name: "Spelling", subject: "language", grades: "Grades 1–3", emoji: "🔤", blurb: "Hear a word, build it letter by letter, and learn the spelling patterns." },
   { name: "Writing Skills", subject: "language", grades: "Grades 1–4", emoji: "📝", blurb: "From sentences to paragraphs: build, fix and grow your writing." },
   { name: "Catholic History", subject: "history", grades: "All ages", emoji: "⛪", blurb: "Saints, the early Church and the great moments, on drag-and-drop timelines." },
   { name: "World History", subject: "history", grades: "All ages", emoji: "🌍", blurb: "Timelines and maps you build yourself, to remember who, where and when." },

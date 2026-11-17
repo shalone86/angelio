@@ -98,3 +98,44 @@ footer { text-align: center; color: var(--muted); font-size: .85rem; margin-top:
   color: #4a3300; box-shadow: 0 4px 0 #d99a12; cursor: pointer; text-decoration: none; }
 .pill:active { transform: translateY(3px); box-shadow: none; }
 .row-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* ───────── Kid-first home (tiles) ───────── */
+.hero { padding: 6px 0 18px; }
+.hero h1 { margin: 2px 0 6px; font-size: clamp(2.2rem, 8vw, 3.4rem); }
+.hero .lede { margin-bottom: 4px; font-size: 1.02rem; }
+.feather { font-size: 2.8rem; }
+.sky { height: 420px; }
+@media (max-width: 560px) {
+  nav { grid-template-columns: 1fr 1fr 1.25fr auto; }
+  nav a.gu { padding: 6px 12px; }
+}
+nav a.gu { font-size: 1.05rem; }
+.subject { margin-top: 18px; padding: 14px 14px 18px; border-radius: 30px; background: color-mix(in srgb, var(--c) 12%, var(--card)); box-shadow: 0 6px 0 color-mix(in srgb, var(--c) 30%, transparent); }
+.subject h2 { margin: 0 0 12px 6px; color: color-mix(in srgb, var(--c) 75%, var(--ink)); font-size: 1.45rem; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+.tile { position: relative; }
+.tile-go { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; height: 100%; padding: 16px 10px 14px; border-radius: 26px;
+  background: var(--card); color: var(--ink); text-decoration: none; box-shadow: 0 6px 0 color-mix(in srgb, var(--c) 35%, #fff); transition: transform .15s; }
+.tile-go:hover { transform: translateY(-4px) rotate(-1deg); }
+.tile-go:active { transform: translateY(4px); box-shadow: 0 2px 0 color-mix(in srgb, var(--c) 35%, #fff); }
+.tile-go img { width: 88px; height: 88px; border-radius: 22px; box-shadow: 0 4px 10px rgb(0 0 0 / .12); }
+.tile-go b { font: 800 1.15rem/1.15 "Baloo 2", sans-serif; margin-top: 4px; }
+.tile-go small { background: color-mix(in srgb, var(--c) 16%, #fff); color: color-mix(in srgb, var(--c) 70%, #000); font-weight: 800; font-size: .74rem; padding: 1px 9px; border-radius: 999px; }
+.tile-go p { display: none; margin: 4px 0 0; color: var(--muted); font-size: .86rem; line-height: 1.3; }
+@media (min-width: 720px) { .tiles { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); } .tile-go p { display: block; } }
+.tile-say { position: absolute; top: 8px; right: 8px; width: 44px; height: 44px; border-radius: 50%; border: 0; font-size: 1.15rem; cursor: pointer;
+  background: color-mix(in srgb, var(--c) 18%, #fff); box-shadow: 0 3px 0 color-mix(in srgb, var(--c) 35%, #fff); }
+.tile-say.saying { animation: say-pulse .8s ease-in-out infinite; }
+@keyframes say-pulse { 50% { transform: scale(1.15); } }
+.world-banner { margin-top: 22px; }
+.soon-row { margin-top: 22px; text-align: center; }
+.soon-row h3 { margin: 0 0 8px; font: 800 1.1rem "Baloo 2", sans-serif; color: var(--muted); }
+.soon-row .chip { display: inline-block; margin: 3px; padding: 4px 12px; border-radius: 999px; border: 2px dashed #b9d8f5; color: var(--muted); font-weight: 700; font-size: .9rem; }
+.gu-title { font: 800 1.5rem "Baloo 2", sans-serif; margin: 40px 0 0; padding-top: 18px; border-top: 3px dotted #b9d8f5; }
+.gu-title + .panel { margin-top: 12px; }
+@media (prefers-color-scheme: dark) {
+  .subject { background: color-mix(in srgb, var(--c) 14%, var(--card)); box-shadow: 0 6px 0 #0b1526; }
+  .tile-go { box-shadow: 0 6px 0 #0b1526; } .tile-say { background: #253a5c; box-shadow: none; }
+  .subject h2 { color: color-mix(in srgb, var(--c) 55%, #fff); } .tile-go small { background: #253a5c; color: #ffd9b8; }
+  .soon-row .chip { border-color: #2b4470; }
+}
