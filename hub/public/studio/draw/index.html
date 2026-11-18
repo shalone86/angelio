@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <title>Drawings · Angelio Studio</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#2b2b2e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Drawings">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="pixel.css">
+  <style>
+    body { -webkit-user-select: none; user-select: none; padding: 0 max(16px, env(safe-area-inset-left)) 0 max(16px, env(safe-area-inset-right)); }
+    input, textarea { -webkit-user-select: text; user-select: text; }
+    .cl { max-width: 640px; margin: 0 auto; padding: calc(14px + env(safe-area-inset-top)) 0 calc(40px + env(safe-area-inset-bottom)); display: grid; gap: 14px; }
+    .cl h1 { font: 800 28px/1.1 var(--serif); margin: 0; display: flex; align-items: center; gap: 10px; }
+    .cl h1 img { width: 30px; height: 30px; }
+    .cl-tabs { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+    .cl-tabs button { flex: none; font: 700 15px/1 var(--sans); padding: 11px 14px; border-radius: 99px; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); }
+    .cl-tabs button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+    .cl-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+    .cl-head b { font: 800 15px var(--sans); }
+    .cl-bar { height: 8px; border-radius: 99px; background: var(--rule); overflow: hidden; }
+    .cl-bar i { display: block; height: 100%; background: var(--ok); }
+    .cl-note { font-size: 14px; color: var(--muted); margin: 0; }
+    .cl-list { display: grid; gap: 8px; list-style: none; margin: 0; padding: 0; }
+    .cl-item { display: grid; grid-template-columns: 64px minmax(0, 1fr) 52px; gap: 12px; align-items: center; background: var(--paper); border: 1px solid var(--rule); border-radius: 14px; padding: 8px; }
+    .cl-item.done { opacity: .62; }
+    .cl-open { all: unset; display: contents; cursor: pointer; }
+    .cl-thumb { width: 64px; height: 64px; border-radius: 10px; background: #fff; image-rendering: pixelated; display: grid; place-items: center; font: 700 12px var(--sans); color: #9a9; border: 1px dashed var(--rule); }
+    .cl-thumb.drawn { border-style: solid; }
+    .cl-text { min-width: 0; }
+    .cl-text strong { display: block; font: 800 17px/1.2 var(--sans); }
+    .cl-text small { display: block; color: var(--muted); font-size: 13px; line-height: 1.35; margin-top: 2px; }
+    .cl-text code { font-size: 12px; color: var(--muted); }
+    .cl-check { width: 52px; height: 52px; border-radius: 12px; border: 2px solid var(--rule); background: var(--bg); font: 800 24px/1 var(--sans); color: var(--ok); display: grid; place-items: center; }
+    .cl-check[aria-pressed="true"] { background: var(--ok); color: #fff; border-color: var(--ok); }
+    .cl-check[disabled] { opacity: .35; }
+    .cl-tips { background: var(--paper); border: 1px solid var(--rule); border-radius: 14px; padding: 10px 14px; font-size: 14px; }
+    .cl-tips summary { font: 800 15px var(--sans); cursor: pointer; padding: 4px 0; }
+    .cl-tips ul { margin: 6px 0 4px; padding-left: 18px; color: var(--muted); }
+    .cl-more { display: flex; gap: 8px; flex-wrap: wrap; }
+    .cl-more .btn { flex: 1 1 auto; }
+    .key { position: fixed; inset: 0; z-index: 80; background: rgba(0,0,0,.45); display: grid; place-items: center; padding: 16px; }
+    .key > div { background: var(--bg); border-radius: 16px; padding: 18px; width: min(380px, 100%); display: grid; gap: 10px; }
+    .key input { font: 500 17px var(--sans); padding: 11px 12px; border-radius: 10px; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); }
+    #editor:empty { display: none; }
+  </style>
+</head>
+<body>
+  <main class="cl" id="list" aria-live="polite"></main>
+  <div id="editor"></div>
+  <button id="go-home" data-label="← Checklist" hidden></button>
+  <div class="key" id="key" hidden><div>
+    <strong>Studio key</strong>
+    <span class="small muted">The same admin key as the rest of the Angelio Studio.</span>
+    <input id="keyIn" type="password" autocomplete="current-password" aria-label="Admin key">
+    <span class="small bad" id="keyErr"></span>
+    <button class="btn primary" id="keyGo">Open</button>
+  </div></div>
+  <script src="ask.js"></script>
+  <script src="reference.js"></script>
+  <script src="px-icons.js"></script>
+  <script src="pixels.js"></script>
+  <script type="module" src="draw.js"></script>
+</body>
+</html>

@@ -22,7 +22,7 @@ export const APPS = {
 
 import { normalizeCode, newCode, codeStatus, day, month } from "./codes.js";
 import { stripeApi } from "./stripe.js";
-import { studioApi, backupToGitHub, READING_LIVE } from "./studio.js";
+import { studioApi, backupToGitHub, READING_LIVE, ART_LIVE } from "./studio.js";
 
 export default {
   // Every night: copy the Studio's library into GitHub (does nothing without a GITHUB_TOKEN secret).
@@ -116,6 +116,12 @@ async function api(request, url, env) {
     const obj = env.WATCH_MEDIA ? await env.WATCH_MEDIA.get(READING_LIVE) : null;
     if (!obj) return json({ error: "no saved lessons" }, 404);
     return new Response(obj.body, { headers: { "content-type": "application/json", "cache-control": "public, max-age=60", etag: obj.httpEtag } });
+  }
+  // Her drawings (the Studio's Drawings page): everyone may read them (Claude and the games load them here).
+  if (route === "GET /api/art") {
+    const obj = env.WATCH_MEDIA ? await env.WATCH_MEDIA.get(ART_LIVE) : null;
+    if (!obj) return json({ drawings: {}, favorites: [], done: {} });
+    return new Response(obj.body, { headers: { "content-type": "application/json", "cache-control": "public, max-age=20", "access-control-allow-origin": "*", etag: obj.httpEtag } });
   }
   // Lead sheets (made at /admin/leadsheet.html): one per song, by the song's Watch & Sing id.
   if (route === "GET /api/leadsheets") {

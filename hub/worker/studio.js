@@ -10,6 +10,7 @@
 import { validateLibrary, prepareForSave } from "../public/js/watch-content.js";
 import { validateReading } from "../public/js/reading-content.js";
 import * as phonics from "../../apps/letters/public/js/phonics.js";
+import { checkDrawing, artSlug, emptyArt } from "../public/js/art-content.js";
 
 const TYPES = { "video/mp4": "mp4", "video/quicktime": "mov", "video/webm": "webm", "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp", "image/gif": "gif", "audio/mpeg": "mp3", "audio/mp4": "m4a", "audio/wav": "wav", "application/pdf": "pdf" };
 const REPO = "shalone86/angelio";
@@ -29,6 +30,17 @@ const DOCS = {
 };
 export const LIVE = DOCS.watch.live;
 export const READING_LIVE = DOCS.reading.live;
+
+// Her drawings (the Studio's Drawings page): one small document with every drawing, her favorites and her checklist
+// ticks. Each save keeps the drawing's old version in content/art/history/<slug>/; a deleted one goes to content/art/trash/.
+// Anyone can read them (GET /api/art): Claude and the games load them from there.
+export const ART_LIVE = "content/art/drawings.json";
+async function readArt(env) {
+  const obj = await env.WATCH_MEDIA.get(ART_LIVE);
+  return { art: emptyArt(obj ? await obj.json() : null), version: obj?.etag ?? null };
+}
+const writeArt = (env, art) => env.WATCH_MEDIA.put(ART_LIVE, JSON.stringify(art), { httpMetadata: { contentType: "application/json" } });
+const stamp = () => new Date().toISOString().replace(/[:.]/g, "-");
 
 /** A document and its version (the R2 etag), or the app's own copy if the Studio hasn't saved it yet. */
 async function current(env, doc) {
@@ -104,6 +116,38 @@ export async function studioApi(request, url, env) {
     return json({ ok: true, url: `media/${key}` });
   }
 
+  // ── drawings ──
+  if (route === "GET /art") { const { art, version } = await readArt(env); return json({ ...art, version }); }
+  if (request.method === "POST" && path.startsWith("/art/")) {
+    const body = await request.json().catch(() => null);
+    if (!body) return json({ error: "That wasn't readable." }, 400);
+    const { art } = await readArt(env);
+    if (route === "POST /art/save") {
+      let checked;
+      try { checked = checkDrawing(body); } catch (e) { return json({ error: e.message }, 400); }
+      const { slug, drawing } = checked, old = art.drawings[slug];
+      if (old) await env.WATCH_MEDIA.put(`content/art/history/${slug}/${stamp()}.json`, JSON.stringify(old), { httpMetadata: { contentType: "application/json" } });
+      art.drawings[slug] = { ...drawing, saved: new Date().toISOString() };
+      await writeArt(env, art);
+      return json({ ok: true, slug, art });
+    }
+    const slug = artSlug(body.slug);
+    if (!slug) return json({ error: "Which drawing?" }, 400);
+    if (route === "POST /art/delete") {
+      if (!art.drawings[slug]) return json({ error: "That drawing isn't saved" }, 404);
+      await env.WATCH_MEDIA.put(`content/art/trash/${slug}-${stamp()}.json`, JSON.stringify(art.drawings[slug]), { httpMetadata: { contentType: "application/json" } });
+      delete art.drawings[slug]; art.favorites = art.favorites.filter((x) => x !== slug);
+      await writeArt(env, art);
+      return json({ ok: true, art });
+    }
+    if (route === "POST /art/favorite" || route === "POST /art/done") {
+      if (route === "POST /art/favorite") art.favorites = body.on ? [...new Set([...art.favorites, slug])] : art.favorites.filter((x) => x !== slug);
+      else if (body.on) art.done[slug] = true; else delete art.done[slug];
+      await writeArt(env, art);
+      return json({ ok: true, art });
+    }
+  }
+
   if (route === "POST /backup") return json(await backupToGitHub(env));
   return json({ error: "not found" }, 404);
 }
@@ -116,11 +160,14 @@ async function gitBlobSha(bytes) {
   return [...new Uint8Array(await crypto.subtle.digest("SHA-1", all))].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 const SOUND_BATCH = 10; // sounds per run: keeps each run under Cloudflare's limit on requests
+const ART_BATCH = 15; // drawings per run
 
 /**
  * Copy into the repo (each file only if it changed), with the GITHUB_TOKEN secret:
  *   apps/watch/public/data/library.json  ← Watch & Sing's library (R2)
  *   backup/leadsheets.json               ← every lead sheet (KV leadsheet:*)
+ *   art/drawings/<slug>.json             ← her drawings (R2 content/art/drawings.json), ART_BATCH changed ones a run;
+ *                                          art/ticks.json her favorites and checklist ticks; KV backup:art remembers what's in GitHub
  *   backup/sounds/<m|f>/<sound>.wav      ← Dad's and Mom's recorded sounds (KV clip:*), SOUND_BATCH new ones a run;
  *                                          KV backup:sounds remembers which version of each is in GitHub
  * Returns { ok, commits, soundsLeft, notes } — "Back up now" calls again while soundsLeft > 0.
@@ -149,6 +196,22 @@ export async function backupToGitHub(env) {
       if (!r.same) out.commits++;
     }
     if (!env.CODES) return out;
+    // 1b. drawings, a few changed ones each run (each is its own file, so GitHub shows what changed)
+    const artObj = await env.WATCH_MEDIA?.get(ART_LIVE);
+    if (artObj) {
+      const art = emptyArt(await artObj.json()), sent = (await env.CODES.get("backup:art", "json")) ?? {};
+      const enc = (x) => new TextEncoder().encode(JSON.stringify(x, null, 1) + "\n");
+      const files = [...Object.entries(art.drawings).map(([slug, d]) => [`art/drawings/${slug}.json`, enc(d)]), ["art/ticks.json", enc({ favorites: art.favorites, done: art.done })]];
+      const todo = [];
+      for (const [p, bytes] of files) { const sha = await gitBlobSha(bytes); if (sent[p] !== sha) todo.push([p, bytes]); }
+      for (const [p, bytes] of todo.slice(0, ART_BATCH)) {
+        const r = await putFile(p, bytes, `Studio backup: drawing ${p.replace(/^art\/(drawings\/)?|\.json$/g, "")}`);
+        sent[p] = r.sha;
+        if (!r.same) out.commits++;
+      }
+      await env.CODES.put("backup:art", JSON.stringify(sent));
+      out.soundsLeft += Math.max(0, todo.length - ART_BATCH);
+    }
     // 2. lead sheets, all in one file
     const sheets = {};
     let cursor;
@@ -171,7 +234,7 @@ export async function backupToGitHub(env) {
       if (!r.same) out.commits++;
     }
     await env.CODES.put("backup:sounds", JSON.stringify(done));
-    out.soundsLeft = Math.max(0, todo.length - SOUND_BATCH);
+    out.soundsLeft += Math.max(0, todo.length - SOUND_BATCH);
   } catch (e) { return { ...out, ok: false, error: e.message }; }
   return out;
 }
