@@ -100,20 +100,62 @@ async function gitBlobSha(bytes) {
   all.set(head); all.set(bytes, head.length);
   return [...new Uint8Array(await crypto.subtle.digest("SHA-1", all))].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
-/** Copy the live library into the repo (one commit, only if it changed). Needs the GITHUB_TOKEN secret. */
+const SOUND_BATCH = 10; // sounds per run: keeps each run under Cloudflare's limit on requests
+
+/**
+ * Copy into the repo (each file only if it changed), with the GITHUB_TOKEN secret:
+ *   apps/watch/public/data/library.json  ← Watch & Sing's library (R2)
+ *   backup/leadsheets.json               ← every lead sheet (KV leadsheet:*)
+ *   backup/sounds/<m|f>/<sound>.wav      ← Dad's and Mom's recorded sounds (KV clip:*), SOUND_BATCH new ones a run;
+ *                                          KV backup:sounds remembers which version of each is in GitHub
+ * Returns { ok, commits, soundsLeft, notes } — "Back up now" calls again while soundsLeft > 0.
+ */
 export async function backupToGitHub(env) {
   if (!env.GITHUB_TOKEN) return { ok: false, error: "Backups to GitHub need a GITHUB_TOKEN secret on the angelio Worker (see the Studio's help)." };
-  const obj = await env.WATCH_MEDIA?.get(LIVE);
-  if (!obj) return { ok: true, note: "Nothing saved in the Studio yet." };
-  const text = JSON.stringify(await obj.json(), null, 1) + "\n", bytes = new TextEncoder().encode(text);
-  const api = `https://api.github.com/repos/${REPO}/contents/${REPO_PATH}`;
   const headers = { authorization: `Bearer ${env.GITHUB_TOKEN}`, accept: "application/vnd.github+json", "user-agent": "angelio-studio", "x-github-api-version": "2022-11-28" };
-  const cur = await fetch(`${api}?ref=main`, { headers });
-  if (!cur.ok && cur.status !== 404) return { ok: false, error: `GitHub said ${cur.status} when reading the file.` };
-  const sha = cur.ok ? (await cur.json()).sha : undefined;
-  if (sha && sha === (await gitBlobSha(bytes))) return { ok: true, note: "Already backed up." };
-  const put = await fetch(api, { method: "PUT", headers: { ...headers, "content-type": "application/json" },
-    body: JSON.stringify({ message: "Studio backup: Watch & Sing library", content: b64(bytes), branch: "main", ...(sha ? { sha } : {}) }) });
-  if (!put.ok) return { ok: false, error: `GitHub said ${put.status} when saving.` };
-  return { ok: true, commit: (await put.json()).commit?.sha?.slice(0, 7) };
+  const url = (p) => `https://api.github.com/repos/${REPO}/contents/${p.split("/").map(encodeURIComponent).join("/")}`;
+  const shaOf = async (p) => { const r = await fetch(`${url(p)}?ref=main`, { headers }); if (r.status === 404) return null; if (!r.ok) throw new Error(`GitHub said ${r.status} reading ${p}`); return (await r.json()).sha; };
+  /** Write one file; `sha` is GitHub's current one (undefined = look it up). Returns the new sha, or the old one if nothing changed. */
+  const putFile = async (p, bytes, message, sha) => {
+    if (sha === undefined) sha = await shaOf(p);
+    if (sha && sha === (await gitBlobSha(bytes))) return { sha, same: true };
+    const r = await fetch(url(p), { method: "PUT", headers: { ...headers, "content-type": "application/json" }, body: JSON.stringify({ message, content: b64(bytes), branch: "main", ...(sha ? { sha } : {}) }) });
+    if (r.status === 409 || r.status === 422) return putFile(p, bytes, message, await shaOf(p)); // our idea of its sha was old
+    if (!r.ok) throw new Error(`GitHub said ${r.status} saving ${p}`);
+    return { sha: (await r.json()).content?.sha, same: false };
+  };
+  const out = { ok: true, commits: 0, soundsLeft: 0, notes: [] };
+  try {
+    // 1. Watch & Sing's library
+    const obj = await env.WATCH_MEDIA?.get(LIVE);
+    if (obj) {
+      const r = await putFile(REPO_PATH, new TextEncoder().encode(JSON.stringify(await obj.json(), null, 1) + "\n"), "Studio backup: Watch & Sing library");
+      if (!r.same) out.commits++;
+    }
+    if (!env.CODES) return out;
+    // 2. lead sheets, all in one file
+    const sheets = {};
+    let cursor;
+    do { const l = await env.CODES.list({ prefix: "leadsheet:", cursor }); for (const k of l.keys) sheets[k.name.slice(10)] = await env.CODES.get(k.name, "json"); cursor = l.list_complete ? null : l.cursor; } while (cursor);
+    if (Object.keys(sheets).length) {
+      const r = await putFile("backup/leadsheets.json", new TextEncoder().encode(JSON.stringify(sheets, null, 1) + "\n"), "Studio backup: lead sheets");
+      if (!r.same) out.commits++;
+    }
+    // 3. recorded sounds, a few new or re-recorded ones each run
+    const index = { f: {}, m: {}, ...((await env.CODES.get("clips:index", "json")) ?? {}) };
+    const done = (await env.CODES.get("backup:sounds", "json")) ?? {};
+    const todo = [];
+    for (const set of ["m", "f"]) for (const [id, v] of Object.entries(index[set] ?? {})) if (done[`${set}:${id}`]?.v !== v) todo.push({ set, id, v });
+    for (const t of todo.slice(0, SOUND_BATCH)) {
+      const wav = await env.CODES.get(`clip:${t.set}:${t.id}`, "arrayBuffer");
+      if (!wav) continue;
+      const k = `${t.set}:${t.id}`;
+      const r = await putFile(`backup/sounds/${t.set}/${t.id}.wav`, new Uint8Array(wav), `Studio backup: ${t.set === "m" ? "Dad" : "Mom"}'s "${t.id}"`, done[k]?.sha ?? null);
+      done[k] = { v: t.v, sha: r.sha };
+      if (!r.same) out.commits++;
+    }
+    await env.CODES.put("backup:sounds", JSON.stringify(done));
+    out.soundsLeft = Math.max(0, todo.length - SOUND_BATCH);
+  } catch (e) { return { ...out, ok: false, error: e.message }; }
+  return out;
 }

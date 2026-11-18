@@ -92,7 +92,20 @@ $("saveBtn").onclick = async () => {
 };
 addEventListener("beforeunload", (e) => { if (lib && dirty()) e.preventDefault(); });
 $("backupBtn").onclick = async () => {
-  try { const j = await (await api("/backup", { method: "POST" })).json(); toast(j.ok ? (j.commit ? `Backed up to GitHub (${j.commit}) ✓` : j.note ?? "Backed up ✓") : j.error, 6000); } catch { /* shown */ }
+  // The library, lead sheets and recorded sounds; sounds go a few at a time, so keep asking until none are left.
+  const btn = $("backupBtn"); btn.disabled = true;
+  let commits = 0;
+  try {
+    for (let round = 0; round < 60; round++) {
+      const j = await (await api("/backup", { method: "POST" })).json();
+      if (!j.ok) { toast(j.error, 7000); break; }
+      commits += j.commits ?? 0;
+      if (j.soundsLeft > 0) { toast(`Backing up the recorded sounds… ${j.soundsLeft} to go`, 60000); continue; }
+      toast(commits ? "Backed up to GitHub ✓ (Watch & Sing, lead sheets and sounds)" : "Everything was already backed up ✓", 6000);
+      break;
+    }
+  } catch { /* shown */ }
+  btn.disabled = false;
 };
 
 // ───────── preview ─────────

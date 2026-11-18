@@ -89,3 +89,51 @@ test("backup without a GitHub key says how to turn it on", async () => {
   assert.equal(r.ok, false);
   assert.match(r.error, /GITHUB_TOKEN/);
 });
+
+test("backup: library, lead sheets, and the sounds in batches; only what changed goes up again", async () => {
+  const kv = new Map();
+  const index = { m: {}, f: {} };
+  for (let i = 0; i < 25; i++) { const set = i < 18 ? "m" : "f"; index[set][`snd${i}`] = 100 + i; kv.set(`clip:${set}:snd${i}`, new Uint8Array([82, 73, 70, 70, i]).buffer); }
+  kv.set("clips:index", JSON.stringify(index));
+  kv.set("leadsheet:the-eucharist-song", JSON.stringify({ title: "The Eucharist Song", text: "VERSE\n[C]Jesus" }));
+  kv.set("leadsheet:priest-indeed", JSON.stringify({ title: "Priest Indeed", text: "VERSE\n[G]Hi" }));
+  const CODES = {
+    async get(k, type) { const v = kv.get(k); if (v == null) return null; return type === "json" ? JSON.parse(v) : type === "arrayBuffer" ? v : v; },
+    async put(k, v) { kv.set(k, v); },
+    async list({ prefix }) { return { keys: [...kv.keys()].filter((k) => k.startsWith(prefix)).map((name) => ({ name })), list_complete: true }; },
+  };
+  // pretend GitHub: path → { sha, content }
+  const repo = new Map(); let shaN = 0, puts = 0;
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = async (u, opts = {}) => {
+    const path = decodeURIComponent(new URL(u).pathname.replace("/repos/shalone86/angelio/contents/", ""));
+    if (!opts.method || opts.method === "GET") return repo.has(path) ? new Response(JSON.stringify({ sha: repo.get(path).sha })) : new Response("", { status: 404 });
+    const body = JSON.parse(opts.body);
+    if ((repo.get(path)?.sha ?? null) !== (body.sha ?? null)) return new Response("", { status: 409 });
+    const bytes = Buffer.from(body.content, "base64");
+    const sha = (await import("node:crypto")).createHash("sha1").update(Buffer.concat([Buffer.from(`blob ${bytes.length}\0`), bytes])).digest("hex"); // like GitHub
+    puts++; shaN++; repo.set(path, { sha, content: body.content });
+    return new Response(JSON.stringify({ content: { sha }, commit: { sha: `c${shaN}` } }));
+  };
+  try {
+    const e = { ...env(), CODES, GITHUB_TOKEN: "t" };
+    await e.WATCH_MEDIA.put("content/watch/library.json", JSON.stringify({ lessons: [] }));
+    const run = async () => (await call(e, "POST", "/backup")).json();
+    const r1 = await run();
+    assert.ok(r1.ok, JSON.stringify(r1));
+    assert.equal(r1.soundsLeft, 15);
+    assert.ok(repo.has("apps/watch/public/data/library.json") && repo.has("backup/leadsheets.json"));
+    assert.deepEqual(Object.keys(JSON.parse(Buffer.from(repo.get("backup/leadsheets.json").content, "base64").toString())).sort(), ["priest-indeed", "the-eucharist-song"]);
+    assert.equal((await run()).soundsLeft, 5);
+    assert.equal((await run()).soundsLeft, 0);
+    assert.equal([...repo.keys()].filter((p) => p.startsWith("backup/sounds/m/")).length, 18);
+    assert.equal([...repo.keys()].filter((p) => p.startsWith("backup/sounds/f/")).length, 7);
+    const before = puts;
+    const again = await run();
+    assert.equal(again.commits, 0); assert.equal(puts, before); // nothing changed, nothing sent
+    // Dad re-records one sound: only that one goes up
+    index.m.snd3 = 999; kv.set("clips:index", JSON.stringify(index)); kv.set("clip:m:snd3", new Uint8Array([1, 2, 3]).buffer);
+    const r = await run();
+    assert.equal(r.commits, 1); assert.equal(puts, before + 1);
+  } finally { globalThis.fetch = realFetch; }
+});
