@@ -38,6 +38,7 @@ export const sfx = {
   key: (n = 0) => tone(SCALE[Number(n) % 10], { dur: 0.09, type: "square", vol: 0.05 }), // number pad: each digit its own note
   back: () => tone(300, { dur: 0.08, type: "triangle", vol: 0.1, slide: 0.7 }), // delete
   submit: () => tone(740, { dur: 0.07, type: "triangle", vol: 0.1 }), // ✓
+  go: () => tone(784, { dur: 0.08, type: "triangle", vol: 0.12, slide: 1.3 }), // start / skip forward
   select: () => { tone(600, { dur: 0.06, type: "triangle", vol: 0.1 }); tone(900, { at: 0.05, dur: 0.06, type: "triangle", vol: 0.08 }); }, // a choice button
   tap: () => tone(1046, { dur: 0.05, type: "sine", vol: 0.12 }), // tapping something on the board
   toggle: () => { tone(500, { dur: 0.04, type: "square", vol: 0.04 }); tone(700, { at: 0.04, dur: 0.04, type: "square", vol: 0.04 }); },
@@ -51,9 +52,15 @@ export const sfx = {
   snap: () => { tone(880, { dur: 0.08, type: "square", vol: 0.06 }); tone(1320, { at: 0.06, dur: 0.1, type: "triangle" }); }, // 10 snap into 1
   crack: () => { tone(700, { dur: 0.06, type: "square", vol: 0.06 }); tone(350, { at: 0.05, dur: 0.12, type: "triangle", slide: 0.6 }); }, // 1 breaks into 10
   away: (n = 0) => tone(700 - Math.min(n, 12) * 35, { dur: 0.12, type: "sine", vol: 0.12, slide: 0.5 }), // take a block away (lower each time)
+  // grammar actions
+  space: () => tone(440, { dur: 0.05, type: "triangle", vol: 0.12, slide: 0.5 }), // finger space inserted
+  cap: () => tone(988, { dur: 0.08, type: "sine", vol: 0.14, slide: 1.5 }), // letter capitalized chime
+  symbol: () => tone(784, { dur: 0.07, type: "triangle", vol: 0.11 }), // Montessori symbol placed
   // results
   right: () => { tone(660, { dur: 0.1 }); tone(990, { at: 0.09, dur: 0.18 }); },
+  chime: () => { tone(660, { dur: 0.1 }); tone(990, { at: 0.09, dur: 0.18 }); },
   oops: () => tone(220, { dur: 0.22, type: "triangle", vol: 0.14, slide: 0.8 }),
+  bonk: () => tone(220, { dur: 0.22, type: "triangle", vol: 0.14, slide: 0.8 }),
   win: () => [523, 659, 784, 1047].forEach((f, i) => tone(f, { at: i * 0.11, dur: 0.22, type: "triangle", vol: 0.16 })),
   fanfare: () => [523, 659, 784, 659, 784, 1047, 1319].forEach((f, i) => tone(f, { at: i * 0.12, dur: i === 6 ? 0.5 : 0.16, type: "triangle", vol: 0.16 })),
 };

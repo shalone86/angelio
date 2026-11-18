@@ -102,6 +102,12 @@ comics and seasons are a welcome "bonus shelf", not required.
 - Pillar 4 (~6): the Our Father, line by line; the Hail Mary; the Glory Be; the Jesus Prayer; the Rosary; morning and night
   prayers. (How to pray is already well covered.)
 
+**Videos: the stopping point** (owner, Nov 18). Most of the 63 videos will be redone (years old, some talking head, clip or
+generated art, some robot voice): Pico Parish pixel style throughout, her face in each one (the kids love it), East and West
+together, up to date. The old scripts are a head start. The video set is finished when every pillar lesson (~45) and every
+church history stop (~25) has its new video and quiz: about 70 in all. Old videos stay up until their new one replaces them;
+saints, popes and seasonal extras beyond that are a bonus shelf. Music stays open-ended.
+
 **Church history, East and West, very short** (owner, Nov 18): one walk from Pentecost to today, joined to the salvation
 history timeline, so parents have it in one place. Fenced: about 25 stops, a couple per few centuries; each stop is one short
 card (and maybe a video) with a saint or pope; a drag-the-stops-in-order game. Draft stops, for her to change:
@@ -113,6 +119,12 @@ Our Lady of Guadalupe (1531) · the Council of Trent and the missionaries (St Fr
 Martin de Porres and St Rose of Lima · St Kateri Tekakwitha · St Thérèse · Lourdes and Fátima · martyrs under communism (Blessed
 Stepinac and the Greek Catholic martyrs) · the Second Vatican Council · St John Paul II and St Teresa of Calcutta · today: one
 Church, East and West, in every country. Keep contested history as gently hedged as the sources are.
+Not a separate game: a Watch & Sing course ("Church history"), each stop a short video with its quiz. Two new kinds of quiz
+question for it (and reusable anywhere): **timeline** (drag the events into order along a line, with dates shown after) and
+**map** (tap where it happened on a simple world or Mediterranean map). The Studio's quiz builder gets both.
+
+**Games for Angelio** (still to talk through): the half-dozen real games the owner wants (see the master roadmap's web games)
+go through the same finish-line filter: a last level, then done.
 
 **Things that need upkeep, and the fix:**
 - The robot voice (a Cloudflare AI model that can be retired): Mom and Dad record the fixed lines (539 sentences listed by

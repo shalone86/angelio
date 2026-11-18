@@ -58,7 +58,9 @@ export const sfx = {
   symbol: () => tone(784, { dur: 0.07, type: "triangle", vol: 0.11 }), // Montessori symbol placed
   // results
   right: () => { tone(660, { dur: 0.1 }); tone(990, { at: 0.09, dur: 0.18 }); },
+  chime: () => { tone(660, { dur: 0.1 }); tone(990, { at: 0.09, dur: 0.18 }); },
   oops: () => tone(220, { dur: 0.22, type: "triangle", vol: 0.14, slide: 0.8 }),
+  bonk: () => tone(220, { dur: 0.22, type: "triangle", vol: 0.14, slide: 0.8 }),
   win: () => [523, 659, 784, 1047].forEach((f, i) => tone(f, { at: i * 0.11, dur: 0.22, type: "triangle", vol: 0.16 })),
   fanfare: () => [523, 659, 784, 659, 784, 1047, 1319].forEach((f, i) => tone(f, { at: i * 0.12, dur: i === 6 ? 0.5 : 0.16, type: "triangle", vol: 0.16 })),
 };

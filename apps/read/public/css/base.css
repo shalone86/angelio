@@ -246,3 +246,6 @@ body.in-game .topbar { display: none; }
 .next-auto.counting .next-fill { animation: next-fill var(--auto-next, 5s) linear forwards; }
 @keyframes next-fill { to { width: 100%; } }
 @media (prefers-reduced-motion: reduce) { .next-auto.counting .next-fill { animation-timing-function: steps(5); } }
+
+/* Our own sticker drawings (kit/ui.js stickerHtml): sized like an emoji */
+.art-sticker { width: 1em; height: 1em; vertical-align: -0.15em; display: inline-block; }

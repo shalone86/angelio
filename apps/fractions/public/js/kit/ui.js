@@ -58,12 +58,12 @@ export function nextButton(dock, label) {
 const AUTO_NEXT_MS = 5000;
 
 /** Show a message in the speech bubble and say it. */
-export function say(bubble, text) {
+export function say(bubble, text, { speakText = true, spokenOverride = null } = {}) {
   const p = bubble.querySelector(".say");
   p.innerHTML = text;
-  bubble.lastSaid = spoken(text);
+  bubble.lastSaid = spoken(spokenOverride ?? text);
   bubble.animate?.([{ transform: "scale(1)" }, { transform: "scale(1.03)" }, { transform: "scale(1)" }], { duration: 300 });
-  speak(bubble.lastSaid);
+  if (speakText) speak(bubble.lastSaid);
 }
 
 /** Mark a progress dot: green when solved alone, yellow when it needed a mistake or a hint. */
@@ -134,6 +134,16 @@ export async function viewGrownups(app, { extraToggles = [], about = "" } = {}) 
         ${extraToggles.map(([k, label, sub]) => toggle(k, label, sub)).join("")}
         <label class="set"><span><b>Voice</b><br><span class="muted small" data-voice-status>Checking…</span></span>
           <select data-k="ttsSource"><option value="auto">Best available</option><option value="server">Cloudflare voice</option><option value="browser">This device's voice</option></select></label>
+        <label class="set"><span><b>Cloudflare Voice Character</b><br><span class="muted small">Aura-2 Neural Voice (Helena is warm & clear for single numbers)</span></span>
+          <select data-k="voice">
+            <option value="helena">Helena (Warm & Natural)</option>
+            <option value="thalia">Thalia (Clear & Bright)</option>
+            <option value="luna">Luna (Gentle & Calm)</option>
+            <option value="asteria">Asteria (Lively)</option>
+            <option value="aurora">Aurora (Expressive)</option>
+            <option value="apollo">Apollo (Friendly)</option>
+            <option value="orion">Orion (Deep)</option>
+          </select></label>
         <label class="set"><span><b>Passcode</b><br><span class="muted small">Only if APP_PASSCODE is set on the Worker.</span></span><input type="password" data-k="passcode" value="${esc(s.passcode)}" autocomplete="off"></label>
         <div class="row"><button class="btn small" data-test>🔊 Test the voice</button><button class="btn small danger" data-reset>Reset progress</button></div>
       </div>
@@ -141,6 +151,8 @@ export async function viewGrownups(app, { extraToggles = [], about = "" } = {}) 
       <p class="muted small">Progress is saved in this browser only. Nothing is sent anywhere except the sentences read aloud, if the Cloudflare voice is on (they aren't stored).</p>
     </section>`;
   app.querySelector('[data-k="ttsSource"]').value = s.ttsSource;
+  const voiceSelect = app.querySelector('[data-k="voice"]');
+  if (voiceSelect && s.voice) voiceSelect.value = s.voice;
   app.querySelectorAll("[data-k]").forEach((el) => {
     el.onchange = () => S.setSetting(el.dataset.k, el.type === "checkbox" ? el.checked : el.value);
   });

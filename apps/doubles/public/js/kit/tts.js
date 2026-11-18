@@ -1,14 +1,20 @@
 // Read-aloud: the server voice (Workers AI / Deepgram Aura-2 English) when it's there,
 // otherwise the browser's own English voice. Young kids hear every step instead of reading it.
+//
+// Reliability fixes carried over from the articulation app:
+// - Chrome's speechSynthesis can get stuck: speak() right after cancel() is dropped, or onend
+//   never fires. We keep a reference to the utterance, wait a beat after cancel(), and time out.
+// - One <audio> element is reused, and every playback promise settles (ended, paused, error or
+//   timeout), so a failed clip can never block the game.
 
 import { settings } from "./store.js";
-import { health, serverTts } from "./api.js";
 import { numberToWords } from "./speech.js";
+import { health, serverTts } from "./api.js";
 
 const cache = new Map(); // `${voice}|${text}` → Promise<object URL>
 const player = typeof Audio !== "undefined" ? new Audio() : null;
 let playId = 0;
-let utterance;
+let utterance; // Chrome drops events for garbage-collected utterances
 
 export function browserVoices() {
   if (typeof speechSynthesis === "undefined") return [];
@@ -22,6 +28,8 @@ function pickVoice() {
     ?? voices.find((v) => /en[-_]US/i.test(v.lang)) ?? voices[0] ?? null;
 }
 
+// When the Cloudflare voice fails (for example the free daily allowance is used up), use the
+// device voice for a while instead of trying (and waiting for) the server before every sentence.
 const RETRY_SERVER_MS = 10 * 60 * 1000;
 let serverFailedAt = 0;
 
@@ -133,7 +141,7 @@ function pieces(text) {
   const out = [];
   for (const sentence of String(text).split(/(?<=[.!?])\s+/)) {
     if (!sentence.trim()) continue;
-    const rec = lineClip(sentence);
+    const rec = lineClip(sentence) || lineClip(sentence.replace(/\.$/, "")); // the voice may have added the full stop
     if (rec) out.push({ clip: rec, text: unmark(sentence) }); else out.push(...piecesOf(sentence));
   }
   return out;
@@ -161,7 +169,7 @@ function piecesOf(text) {
 
 async function playPieces(text, rate, id, server) {
   const list = pieces(text);
-  const whole = player && lineClip(text); // the whole thing, recorded in one go
+  const whole = player && (lineClip(text) || lineClip(text.replace(/\.$/, ""))); // the whole thing, recorded in one go
   if (whole) { try { await playThrough(whole, rate); return; } catch { /* fall back to the pieces */ } }
   const voice = settings().voice;
   const urls = list.map((p) => (p.clip || !server ? null : serverUrl(p.text, voice)));
@@ -187,25 +195,22 @@ async function playPieces(text, rate, id, server) {
   }
 }
 
-/** Say text aloud (if read-aloud is on, or force). rate: 0.65 for slowly. Resolves when done. Never throws. */
-/** The text as the voice will say it: "9" → "Nine.", symbols out, a full stop at the end. */
+/** The text as the voice will say it: symbols out, "____" → "blank", "9" → "Nine.", a full stop at the end. */
 function cleanText(text) {
   let clean = String(text ?? "")
     .replace(/[▲●◡▬♠⎵]/g, "")
     .replace(/_{2,}/g, "blank")
+    .replace(/\bpronouns\b/gi, "pro-nouns").replace(/\bpronoun\b/gi, "pro-noun")
     .replace(/\s+/g, " ")
     .trim();
   if (!clean) return "";
   if (/^\d+$/.test(clean)) return `${numberToWords(Number(clean))}.`;
-  if (!/\s/.test(clean) && /^[a-z]/.test(clean)) clean = clean[0].toUpperCase() + clean.slice(1);
+  if (!/\s/.test(clean) && /^[a-z]/.test(clean)) clean = clean[0].toUpperCase() + clean.slice(1); // a lone word sounds warmer as a sentence
   if (!/[.!?]$/.test(clean)) clean += ".";
   return clean;
 }
 
-/**
- * Load these lines now (numbers a board will count, for example), so saying them later is instant.
- * Counting fast used to cut each number off while the next one loaded, and the count could stop early.
- */
+/** Load these lines now (numbers a board will count, for example), so saying them later is instant. */
 export function warmUp(texts) {
   if (!player) return;
   const voice = settings().voice;
@@ -213,6 +218,20 @@ export function warmUp(texts) {
     if (!ok) return;
     for (const t of new Set(texts.map(cleanText).filter(Boolean))) serverUrl(t, voice).catch(() => {});
   }).catch(() => {});
+}
+/** Like warmUp, gently: a few at a time after a short wait, and it stops if the server isn't answering. */
+export function preload(texts) {
+  if (!player || typeof fetch === "undefined") return;
+  const queue = [...new Set(texts.map(cleanText).filter(Boolean))];
+  let failures = 0;
+  const worker = async () => {
+    while (queue.length && failures < 3) {
+      const text = queue.shift();
+      if (!settings().readAloud || !(await useServer())) return;
+      try { await serverUrl(text, settings().voice); } catch { failures++; }
+    }
+  };
+  setTimeout(() => { for (let i = 0; i < 3; i++) worker(); }, 1500);
 }
 
 // What's being said now, so a game can wait until the voice is quiet (see whenQuiet).
@@ -230,24 +249,23 @@ export async function whenQuiet() {
   do { p = lastSpeech; await p.catch(() => {}); } while (p !== lastSpeech);
 }
 
-async function speakNow(text, { force = false, rate: speed = 1 } = {}) {
+async function speakNow(raw, { force = false, rate: speed = 1 } = {}) {
+  const text = cleanText(raw);
   if (!text || (!settings().readAloud && !force)) return;
   stop();
-  const clean = cleanText(text);
-  if (!clean) return;
   const id = playId;
   const rate = (settings().slow ? 0.8 : 1) * speed;
   try {
     if (player && (await useServer())) {
       try {
-        return await playPieces(clean, rate, id, true);
+        return await playPieces(text, rate, id, true);
       } catch (e) {
         if (!/play/i.test(String(e?.message))) serverFailedAt = Date.now();
         if (id !== playId) return;
         console.warn("Server voice failed, using the device voice", e);
       }
     }
-    await playPieces(clean, rate, id, false);
+    await playPieces(text, rate, id, false);
   } catch (e) { console.warn(e); }
 }
 

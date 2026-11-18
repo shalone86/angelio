@@ -27,6 +27,7 @@ function load() {
   try {
     const s = JSON.parse(localStorage.getItem(KEY) ?? "null");
     if (s) {
+      if (s.stages && !s.levels) s.levels = s.stages; // Regroup saved its levels as "stages" before the shared kit
       if (!s.settings?.voiceV2 && s.settings?.voice === "thalia") delete s.settings.voice;
       if (s.settings) s.settings.voiceV2 = true;
       return { ...structuredClone(DEFAULTS), ...s, settings: { ...DEFAULTS.settings, ...s.settings } };

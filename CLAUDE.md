@@ -4,7 +4,10 @@
   with its own wrangler.jsonc), `template/` (the app template). The old per-app repos (snap-split, regroup,
   doubles, grammar, fractions, letterlane, readaloud, watch, articulation, app-template) are archives: work here.
   `npm install` once at the top; `npm test` runs every suite; deploy with `npm run deploy -- <app>` (it refuses
-  uncommitted work). `npm run kit-check` shows kit drift between apps.
+  uncommitted work).
+- **The shared kit has one master copy: `kit/`** (voice, stickers, store, finish screen, Next button…). Never edit an app's
+  `public/js/kit/` copy: change `kit/`, run `npm run kit-sync`, bump each app's sw.js VERSION, test, commit. `npm test` fails
+  if any copy drifts. Articulate isn't on the kit (older, separate design).
 - **The Studio comes first** (ROADMAP.md): the owner must be able to edit everything without code or AI.
 - **The Studio holds the master copy of content** (angelio.org/studio, R2 bucket `watch-media`): Watch & Sing's library
   (`content/watch/library.json`) and the reading lessons (`content/reading/lessons.json`, Letter Lane + Read Aloud). The copies

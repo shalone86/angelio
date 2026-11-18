@@ -4,8 +4,8 @@
 
 import { PLACES, digits } from "./math.js";
 import { words, wordParts, expandedParts, expanded } from "./sense.js";
-import { speak, stop } from "./tts.js";
-import { sfx } from "./sound.js";
+import { speak, stop } from "./kit/tts.js";
+import { sfx } from "./kit/sound.js";
 import * as B from "./board.js";
 
 const PRESETS = [7, 42, 305, 1284, 5000, 9999];

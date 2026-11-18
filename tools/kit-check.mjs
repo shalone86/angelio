@@ -1,15 +1,14 @@
-// The shared kit (public/js/kit/*.js) is still copied into each app. This lists where the copies differ
-// from the template's, so they can be brought back together (and then shared for real).
+// Does every app's copy of the shared kit match the master (kit/)? With --strict (npm test), any difference
+// is an error: change kit/ and run `npm run kit-sync` instead of editing an app's copy.
 import fs from "node:fs";
-import crypto from "node:crypto";
-const hash = (f) => crypto.createHash("sha1").update(fs.readFileSync(f)).digest("hex").slice(0, 8);
-const kitOf = (d) => [`${d}/public/js/kit`, `${d}/public/js`].find((k) => fs.existsSync(`${k}/tts.js`));
-const ref = "template/public/js/kit";
-const files = fs.readdirSync(ref).filter((f) => f.endsWith(".js"));
-for (const d of ["hub", ...fs.readdirSync("apps").map((a) => `apps/${a}`)]) {
-  const k = kitOf(d);
-  if (!k) { console.log(`${d}: no kit`); continue; }
-  const diff = files.filter((f) => fs.existsSync(`${k}/${f}`) && hash(`${k}/${f}`) !== hash(`${ref}/${f}`));
-  const missing = files.filter((f) => !fs.existsSync(`${k}/${f}`));
-  console.log(`${d}: ${diff.length ? `differs: ${diff.join(", ")}` : "same as the template"}${missing.length ? ` · not there: ${missing.join(", ")}` : ""}`);
+import { KIT_APPS, KIT_FILES } from "./kit-sync.mjs";
+const bad = [];
+for (const d of KIT_APPS) {
+  const dest = `${d}/public/js/kit`;
+  const diff = KIT_FILES.filter((f) => !fs.existsSync(`${dest}/${f}`) || !fs.readFileSync(`kit/${f}`).equals(fs.readFileSync(`${dest}/${f}`)));
+  if (diff.length) bad.push(`${d}: ${diff.join(", ")}`);
 }
+if (bad.length) {
+  console.log(`The shared kit differs from kit/ in:\n  ${bad.join("\n  ")}\nChange kit/ (the master), then run: npm run kit-sync`);
+  if (process.argv.includes("--strict")) process.exit(1);
+} else console.log(`kit: all ${KIT_APPS.length} apps match kit/ (${KIT_FILES.length} files).`);

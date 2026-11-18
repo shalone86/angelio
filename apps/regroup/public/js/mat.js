@@ -3,8 +3,8 @@
 
 import { PLACES } from "./math.js";
 import * as B from "./board.js";
-import { speak, stop } from "./tts.js";
-import { sfx } from "./sound.js";
+import { speak, stop } from "./kit/tts.js";
+import { sfx } from "./kit/sound.js";
 
 const MAX = 19;
 

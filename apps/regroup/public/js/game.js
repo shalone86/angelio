@@ -3,9 +3,9 @@
 
 import { PLACES, OPS, count, digits, lengthOf, plan } from "./math.js";
 import * as B from "./board.js";
-import { speak, stop } from "./tts.js";
-import { sfx } from "./sound.js";
-import { vary, leadIn, praise, tryAgain } from "./vary.js";
+import { speak, stop } from "./kit/tts.js";
+import { sfx } from "./kit/sound.js";
+import { vary, leadIn, praise, tryAgain } from "./kit/vary.js";
 
 class Abort extends Error {}
 

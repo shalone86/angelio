@@ -58,12 +58,12 @@ export function nextButton(dock, label) {
 const AUTO_NEXT_MS = 5000;
 
 /** Show a message in the speech bubble and say it. */
-export function say(bubble, text) {
+export function say(bubble, text, { speakText = true, spokenOverride = null } = {}) {
   const p = bubble.querySelector(".say");
   p.innerHTML = text;
-  bubble.lastSaid = spoken(text);
+  bubble.lastSaid = spoken(spokenOverride ?? text);
   bubble.animate?.([{ transform: "scale(1)" }, { transform: "scale(1.03)" }, { transform: "scale(1)" }], { duration: 300 });
-  speak(bubble.lastSaid);
+  if (speakText) speak(bubble.lastSaid);
 }
 
 /** Mark a progress dot: green when solved alone, yellow when it needed a mistake or a hint. */

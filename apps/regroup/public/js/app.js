@@ -6,19 +6,20 @@ import { PLACES, WORLDS, OPS, STAGES, stageById, makeStage, exampleFor, starsFor
 import { Game } from "./game.js";
 import { viewMat } from "./mat.js";
 import * as B from "./board.js";
-import { speak, stop, browserVoices, preload, whenQuiet } from "./tts.js";
-import { health } from "./api.js";
-import { sfx } from "./sound.js";
-import * as S from "./store.js";
+import { speak, stop, browserVoices, preload, whenQuiet } from "./kit/tts.js";
+import { health } from "./kit/api.js";
+import { sfx } from "./kit/sound.js";
+import * as S from "./kit/store.js";
+S.init("regroup:v1", { blocks: true }); // the shared kit's storage, with Regroup's own setting (and its saved progress)
 import { viewSense } from "./senseview.js";
-import { showLesson } from "./lesson.js";
+import { showLesson } from "./kit/lesson.js";
 import { introFor } from "./lessons.js";
-import { keepDockVisible } from "./dock.js";
+import { keepDockVisible } from "./kit/dock.js";
 import { SENSE_LEVELS, words } from "./sense.js";
 import { viewShow } from "./show.js";
-import { jingleOnce } from "./jingle.js";
-import { vary } from "./vary.js";
-import { STICKER_WORLD } from "./stickers.js";
+import { jingleOnce } from "./kit/jingle.js";
+import { vary } from "./kit/vary.js";
+import { STICKER_WORLD } from "./kit/stickers.js";
 
 const app = document.getElementById("app");
 const ESC = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
@@ -45,8 +46,8 @@ const placeChips = (places) => PLACES.slice(0, places).reverse().map((p, k) => `
 
 /** The stage the big Play button opens: first unfinished, then the first without 3 stars. */
 function nextStage() {
-  return STAGES.find((s) => !S.stageProgress(s.id).done)
-    ?? STAGES.find((s) => S.stageProgress(s.id).stars < 3)
+  return STAGES.find((s) => !S.progress(s.id).done)
+    ?? STAGES.find((s) => S.progress(s.id).stars < 3)
     ?? STAGES[0];
 }
 
@@ -116,7 +117,7 @@ function viewHome() {
         </div>
         <div class="stage-grid">
           ${STAGES.filter((s) => s.world === w.n).map((s) => {
-            const pr = S.stageProgress(s.id);
+            const pr = S.progress(s.id);
             return `<div class="stage-card${pr.done ? " done" : ""}${s.id === next.id ? " next" : ""}">
               <a class="stage-main" href="#/play/${s.id}"><span class="stage-emoji">${OPS[s.op].emoji}</span><b>${OPS[s.op].title}</b>${starsHtml(pr.stars)}</a>
               <a class="stage-watch" href="#/watch/${s.id}" aria-label="Watch how: ${OPS[s.op].title}">🎬 Watch how</a>
@@ -165,7 +166,7 @@ function senseSection() {
       </div>
       <div class="stage-grid">
         ${SENSE_LEVELS.map((L) => {
-          const pr = S.stageProgress(L.id);
+          const pr = S.progress(L.id);
           return `<div class="stage-card${pr.done ? " done" : ""}">
             <a class="stage-main" href="#/sense/${L.id}"><span class="stage-emoji">${L.emoji}</span><span>${placeChips(L.places)}</span><b>${L.title}</b>${starsHtml(pr.stars)}</a>
           </div>`;
@@ -252,8 +253,8 @@ function viewPlay(id) {
   let game = null;
   let alive = true;
   const blocksOn = wireToggles(shell, () => game);
-  const problems = makeStage(stage, Date.now(), S.seenProblems(stage.id));
-  S.rememberProblems(stage.id, problems.map((p) => `${p.op}:${p.a}:${p.b}`));
+  const problems = makeStage(stage, Date.now(), S.seenQuestions(stage.id));
+  S.rememberQuestions(stage.id, problems.map((p) => `${p.op}:${p.a}:${p.b}`), 25);
   let mistakes = 0;
 
   (async () => {
@@ -314,7 +315,7 @@ function finishStage(stage, mistakes) {
 function showFinish({ id, stars, mistakes, title, done, again, next }) {
   document.body.classList.remove("in-game");
   const perfect = mistakes === 0;
-  const st = S.finishStage(id, stars, pick(STICKERS), perfect);
+  const st = S.finishLevel(id, stars, pick(STICKERS), perfect);
   sfx.fanfare();
   B.confetti(perfect ? 100 : 45);
   const line = st.grew ? "Your sticker grew into a GIANT sticker!"

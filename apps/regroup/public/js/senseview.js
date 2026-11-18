@@ -5,12 +5,12 @@
 import { PLACES } from "./math.js";
 import { wordParts, expandedParts, makeRound, explain, words, senseLevel, SENSE_LEVELS, QUESTIONS_PER_ROUND } from "./sense.js";
 import * as B from "./board.js";
-import { speak, stop } from "./tts.js";
-import { sfx } from "./sound.js";
-import * as S from "./store.js";
-import { showLesson } from "./lesson.js";
+import { speak, stop } from "./kit/tts.js";
+import { sfx } from "./kit/sound.js";
+import * as S from "./kit/store.js";
+import { showLesson } from "./kit/lesson.js";
 import { senseIntro } from "./lessons.js";
-import { leadIn } from "./vary.js";
+import { leadIn } from "./kit/vary.js";
 
 const pick = (a) => a[Math.floor(Math.random() * a.length)];
 

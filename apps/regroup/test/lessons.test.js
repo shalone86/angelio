@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { STAGES } from "../public/js/math.js";
 import { SENSE_LEVELS } from "../public/js/sense.js";
 import { introFor, senseIntro } from "../public/js/lessons.js";
-import { vary, leadIn } from "../public/js/vary.js";
+import { vary, leadIn } from "../public/js/kit/vary.js";
 
 test("every level has a complete 'How it works' card", () => {
   const cards = [...STAGES.map(introFor), ...SENSE_LEVELS.map(senseIntro)];

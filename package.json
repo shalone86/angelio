@@ -3,11 +3,16 @@
   "private": true,
   "type": "module",
   "description": "All of Angelio in one repo: the hub, every app, and the app template.",
-  "workspaces": ["hub", "apps/*", "template"],
+  "workspaces": [
+    "hub",
+    "apps/*",
+    "template"
+  ],
   "scripts": {
-    "test": "node tools/each.mjs test",
+    "test": "node tools/kit-check.mjs --strict && node tools/each.mjs test",
     "deploy": "node tools/deploy.mjs",
-    "kit-check": "node tools/kit-check.mjs"
+    "kit-check": "node tools/kit-check.mjs",
+    "kit-sync": "node tools/kit-sync.mjs"
   },
   "license": "MIT"
 }

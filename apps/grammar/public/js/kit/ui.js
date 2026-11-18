@@ -13,6 +13,7 @@ import { STICKER_WORLD } from "./stickers.js";
 const ESC = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
 export const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ESC[c]);
 export const pick = (a) => a[Math.floor(Math.random() * a.length)];
+// Things that are fun to place in the Sticker World: animals, vehicles, buildings, nature, treats.
 export const STICKERS = ["🦄", "🚀", "🦖", "🌈", "🐙", "🎈", "🦋", "🐢", "🌟", "🐝", "🦕", "🐼", "🐬", "🐶", "🐱", "🐴", "🐑", "🐸",
   "🦉", "🐞", "🦊", "🐻", "🐧", "🐳", "🦒", "🐘", "🐰", "🦆", "🚂", "🚁", "⛵", "🚒", "🚜", "🎠", "🏰", "🏡", "⛪", "🌳", "🌻",
   "🍄", "🌷", "⛲", "🧸", "🪁", "🍩", "🍦", "🍉", "🕊️", "👼", "🐟",
@@ -31,6 +32,7 @@ export const stickerHtml = (e) => (String(e).startsWith("art:")
   : esc(e));
 
 export const starsHtml = (n) => `<span class="stars" aria-label="${n} of 3 stars">${"★".repeat(n)}<span class="off">${"★".repeat(3 - n)}</span></span>`;
+// 3 stars only with no mistakes, matching the giant sticker (any mistake: a mini sticker and a yellow dot).
 export const starsFor = (mistakes) => (mistakes === 0 ? 3 : mistakes <= 3 ? 2 : 1);
 
 /** A big pulsing button in the dock; resolves when pressed (or Enter). */
@@ -132,10 +134,10 @@ export async function viewGrownups(app, { extraToggles = [], about = "" } = {}) 
         ${extraToggles.map(([k, label, sub]) => toggle(k, label, sub)).join("")}
         <label class="set"><span><b>Voice</b><br><span class="muted small" data-voice-status>Checking…</span></span>
           <select data-k="ttsSource"><option value="auto">Best available</option><option value="server">Cloudflare voice</option><option value="browser">This device's voice</option></select></label>
-        <label class="set"><span><b>Cloudflare Voice Character</b><br><span class="muted small">Aura-2 Neural Voice (Helena and Thalia are great for kids)</span></span>
+        <label class="set"><span><b>Cloudflare Voice Character</b><br><span class="muted small">Aura-2 Neural Voice (Helena is warm & clear for single numbers)</span></span>
           <select data-k="voice">
+            <option value="helena">Helena (Warm & Natural)</option>
             <option value="thalia">Thalia (Clear & Bright)</option>
-            <option value="helena">Helena (Warm & Natural - SLP favorite)</option>
             <option value="luna">Luna (Gentle & Calm)</option>
             <option value="asteria">Asteria (Lively)</option>
             <option value="aurora">Aurora (Expressive)</option>

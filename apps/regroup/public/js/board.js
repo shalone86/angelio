@@ -6,7 +6,7 @@
 // the new ones and reveal the real pieces when they land. The board is always the truth.
 
 import { PLACES } from "./math.js";
-import { sfx } from "./sound.js";
+import { sfx } from "./kit/sound.js";
 
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms * speed()));
 const reduced = () => typeof matchMedia !== "undefined" && matchMedia("(prefers-reduced-motion: reduce)").matches;
