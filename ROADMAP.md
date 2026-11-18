@@ -87,6 +87,12 @@ wherever a sound is marked `{{tuh}}` in spoken text (kit `tts.js` → `setClips`
 
 ## Next apps
 
+- ~~**PreK math beyond counting**~~: Nov 18, 2026, in **Snap & Split** (kept as the one PreK math app, so Math stays 4 tiles):
+  topics Numbers (blocks), Shapes (find, more shapes, shapes all around), Colors & sorting (find a color, sort by color, sort
+  by shape, which one doesn't belong), Patterns (AB, ABB/AAB, ABC/AABB), More or fewer (more/fewer, same, big and small,
+  longer, taller). Shapes are drawn (apps/snap/public/js/prek.js + prek-view.js). Next ideas: position words (above, below,
+  next to), making your own pattern, counting to 20.
+
 - ~~**Phonics & reading, PreK–K**~~: live as **Letter Lane** (angelio.org/letters/). Nov 17, 2026: follows the Hooked on
   Phonics outline, two levels per grade: PreK all 26 letters, big/little both ways, first sounds, rhymes, beats; K short
   vowels one at a time, blend/build, -ck, sh ch th, compound words, adding -s. Next: sight words, letter tracing.

@@ -13,7 +13,13 @@ import { keepDockVisible } from "./kit/dock.js";
 import { showLesson } from "./kit/lesson.js";
 import { vary, leadIn, praise } from "./kit/vary.js";
 import { esc, pick, starsHtml, starsFor, nextButton, say, markDot, showFinish, stickerBook, viewGrownups, installClickSounds, wireVoiceToggle } from "./kit/ui.js";
-import { LEVELS, levelById, PER_LEVEL, makeLevel, choicesFor, sentence } from "./problems.js";
+import { LEVELS, PER_LEVEL, makeLevel, choicesFor, sentence } from "./problems.js";
+import { PREK_LEVELS, TOPICS, makePrekLevel } from "./prek.js";
+import { runPrekQuestion, prekLessonFor } from "./prek-view.js";
+
+// Every level, in order: numbers (blocks, problems.js), then shapes, colors & sorting, patterns, more or fewer (prek.js).
+const ALL = [...LEVELS.map((l) => ({ ...l, topic: "numbers" })), ...PREK_LEVELS];
+const levelById = (id) => ALL.find((l) => l.id === id);
 
 const app = document.getElementById("app");
 const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
@@ -24,7 +30,8 @@ const route = createRouter([
   [/^free$/, viewFree],
   [/^grownups$/, () => viewGrownups(app, {
     extraToggles: [["sentences", "Show number sentences", "After each problem, show 3 + 2 = 5 under the blocks."]],
-    about: `<p>Snap & Split is for ages 3 to 5: counting, putting together and taking apart, up to 10. Everything is said out loud, so no reading is needed.</p>
+    about: `<p>Snap & Split is PreK math, for ages 3 to 5: numbers (counting, putting together and taking apart, up to 10), shapes,
+      colors and sorting, patterns, and comparing (more, fewer, the same, bigger, longer, taller). Everything is said out loud, so no reading is needed.</p>
       <p><b>Snap:</b> a blue group and a yellow group. Kids tap the blocks and they snap together into a ten-frame (two rows of five). The colors stay, so they can still see the 3 and the 2 inside the 5.</p>
       <p><b>Split:</b> kids tap blocks to take them away. Each one moves into the "take away" box, so both parts stay visible.</p>
       <p><b>Counting:</b> tapping a block counts it out loud (one, two, three…). Answer buttons show the number and its dots.</p>
@@ -82,7 +89,7 @@ const introFor = (level) => LESSONS[level.type];
 // ───────────────────────── home ─────────────────────────
 
 function nextLevel() {
-  return LEVELS.find((l) => !S.progress(l.id).done) ?? LEVELS.find((l) => S.progress(l.id).stars < 3) ?? LEVELS[0];
+  return ALL.find((l) => !S.progress(l.id).done) ?? ALL.find((l) => S.progress(l.id).stars < 3) ?? ALL[0];
 }
 
 function viewHome() {
@@ -94,12 +101,24 @@ function viewHome() {
       <p class="lede">Snap blocks together. Split them apart. Count them all!</p>
       <a class="btn big primary play-btn" href="#/play/${next.id}">▶ Play</a>
       <p class="muted small">${next.emoji} ${esc(next.title)}</p>
+      <nav class="grade-jump" aria-label="Jump to a topic">${TOPICS.map((t) => `<button type="button" class="grade-chip" data-topic="${t.id}">${t.emoji} ${esc(t.title)}</button>`).join("")}</nav>
     </section>
-    <div class="level-grid">
-      ${LEVELS.map((l) => `<a class="level-card${l.id === next.id ? " next" : ""}" href="#/play/${l.id}"><span class="emoji">${l.emoji}</span>${esc(l.title)}${starsHtml(S.progress(l.id).stars)}</a>`).join("")}
-      <a class="level-card free" href="#/free"><span class="emoji">🧱</span>Free play</a>
-    </div>
+    ${TOPICS.map((t) => `
+      <section class="grade" id="topic-${t.id}">
+        <h2 class="grade-title"><span aria-hidden="true">${t.emoji}</span> ${esc(t.title)}</h2>
+        <p class="muted grade-blurb">${esc(t.blurb)}</p>
+        <div class="level-grid">
+          ${ALL.filter((l) => l.topic === t.id).map((l) => `<a class="level-card${l.id === next.id ? " next" : ""}" href="#/play/${l.id}"><span class="emoji">${l.emoji}</span>${esc(l.title)}${starsHtml(S.progress(l.id).stars)}</a>`).join("")}
+          ${t.id === "numbers" ? `<a class="level-card free" href="#/free"><span class="emoji">🧱</span>Free play</a>` : ""}
+        </div>
+      </section>`).join("")}
     ${stickerBook()}`;
+  app.querySelectorAll("[data-topic]").forEach((b) => b.onclick = () => {
+    S.setSetting("lastTopic", b.dataset.topic);
+    document.getElementById(`topic-${b.dataset.topic}`)?.scrollIntoView({ behavior: "smooth" });
+  });
+  const last = S.settings().lastTopic;
+  if (last && last !== "numbers") setTimeout(() => document.getElementById(`topic-${last}`)?.scrollIntoView({ behavior: "auto" }), 0);
 }
 
 // ───────────────────────── a level ─────────────────────────
@@ -124,28 +143,30 @@ function viewPlay(id) {
   const bubble = app.querySelector(".bubble"), dock = app.querySelector(".dock"), stage = app.querySelector(".stage");
   bubble.querySelector(".replay").onclick = () => speak(bubble.lastSaid, { force: true });
   let alive = true, mistakes = 0;
-  const problems = makeLevel(level, Date.now());
+  const prek = level.topic !== "numbers";
+  if (prek) S.setSetting("lastTopic", level.topic); // Home opens at this topic next time
+  const problems = prek ? makePrekLevel(level, Date.now(), PER_LEVEL) : makeLevel(level, Date.now());
   const ctx = { bubble, dock, stage, max: level.max, alive: () => alive, miss: () => { mistakes++; } };
 
   (async () => {
     // "How it works" card first (Listen / Skip / Start), like Grammar and Doubles.
     bubble.querySelector(".say").textContent = "Here's how it works!";
-    await showLesson(stage, introFor(level));
+    await showLesson(stage, prek ? prekLessonFor(level) : introFor(level));
     for (let k = 0; k < problems.length; k++) {
       if (!alive) return;
       app.querySelectorAll("[data-dot]").forEach((d) => d.classList.toggle("now", +d.dataset.dot === k));
       ctx.k = k;
       const before = mistakes;
-      await runProblem(problems[k], ctx);
+      await (prek ? runPrekQuestion(problems[k], ctx) : runProblem(problems[k], ctx));
       if (!alive) return;
       markDot(app, k, mistakes > before); // yellow if it took a mistake
       S.solvedOne();
       await nextButton(dock, k < problems.length - 1 ? "Next ▶" : "Finish 🏁");
     }
     if (!alive) return;
-    const nx = LEVELS[LEVELS.indexOf(level) + 1];
+    const nx = ALL[ALL.indexOf(level) + 1];
     showFinish(app, {
-      id: level.id, stars: starsFor(mistakes), mistakes, title: pick(["You did it!", "Super snapping!", "Great counting!", "Wow!"]),
+      id: level.id, stars: starsFor(mistakes), mistakes, title: pick(prek ? ["You did it!", "Super job!", "Wonderful!", "Wow!"] : ["You did it!", "Super snapping!", "Great counting!", "Wow!"]),
       done: `${PER_LEVEL} done.`, again: `#/play/${level.id}`, onAgain: route,
       next: nx ? { href: `#/play/${nx.id}`, label: `Next: ${nx.emoji} ${nx.title} ▶` } : null,
     });
