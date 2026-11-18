@@ -385,21 +385,15 @@ export function spellQuestion(pattern, spec, emoji, rand) {
     answer: w, tiles: shuffle([...ch.map((c) => c.t), ...extra], rand) };
 }
 
-/** Three sentences one word apart: the real one, and two with a lesson word swapped in. Read carefully! */
+/**
+ * Pick the sentence: the picture of one sentence and three sentences of the lesson to read (each has its own
+ * picture, so exactly one goes with it). Reading all three, not just the first word, finds it.
+ */
 export function pickSentence(pattern, [text, emoji], rand) {
-  const words = text.split(/\s+/);
-  const lessonWords = [...pattern.pictures.map(([s]) => wordOf(s)), ...pattern.words.map(wordOf)];
-  const bare = (w) => w.toLowerCase().replace(/[^a-z']/g, "");
-  const spots = words.map((w, i) => ((patternWord(pattern, w) || lessonWords.includes(bare(w))) && bare(w).length > 2 ? i : -1)).filter((i) => i >= 0);
-  if (!spots.length) return null;
-  const i = spots[Math.floor(rand() * spots.length)];
-  const swap = (w, nw) => w.replace(/[A-Za-z']+/, w[0] === w[0].toUpperCase() ? nw[0].toUpperCase() + nw.slice(1) : nw);
-  const subs = shuffle(lessonWords.filter((x) => x !== bare(words[i])), rand).slice(0, 2);
-  if (subs.length < 2) return null;
-  const variants = subs.map((nw) => words.map((w, j) => (j === i ? swap(w, nw) : w)).join(" "));
-  if (new Set([text, ...variants]).size < 3) return null;
-  return { type: "pick-sentence", text, emoji, prompt: "Which sentence matches the picture?", say: "Look at the picture. Read each sentence carefully. Which one matches?",
-    answer: text, choices: shuffle([text, ...variants], rand).map((t) => ({ word: t })) };
+  const others = shuffle(pattern.sentences.filter(([t, e]) => t !== text && e !== emoji), rand).slice(0, 2).map(([t]) => t);
+  if (others.length < 2) return null;
+  return { type: "pick-sentence", text, emoji, prompt: "Which sentence goes with the picture?", say: "Look at the picture. Read each sentence. Which one goes with the picture?",
+    answer: text, choices: shuffle([text, ...others], rand).map((t) => ({ word: t })) };
 }
 
 /** Highlight a pattern inside a word for display: which chunk indexes are part of the pattern. */

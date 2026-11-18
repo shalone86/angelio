@@ -333,7 +333,7 @@ function showFinish({ id, stars, mistakes, title, done, again, next }) {
         <a class="btn big" href="#/">🏠 Home</a>
         ${next ? `<a class="btn big${st.big ? " primary" : ""}" href="${next.href}">${next.label}</a>` : ""}
       </div>
-      <p><a class="btn world-link" href="${STICKER_WORLD}">🌍 Play in Sticker World</a></p>
+      <p class="finish-links"><a class="btn world-link" href="https://angelio.org/"><img src="https://angelio.org/icon.svg" alt="" width="22" height="22" style="vertical-align:-5px;border-radius:6px"> All Angelio games</a> <a class="btn world-link" href="${STICKER_WORLD}">🌍 Sticker World</a></p>
     </section>`;
   speak(st.grew ? "Wow! Your sticker grew into a giant sticker!"
     : st.isNew && st.big ? vary("giant", ["You did it with no mistakes! You got a giant sticker!", "Perfect! Here's a giant sticker!"])

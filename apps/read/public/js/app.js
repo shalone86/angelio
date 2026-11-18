@@ -152,7 +152,7 @@ function hintFor(q) {
     case "beats": return `Say it slowly and clap: ${q.parts.join("… ")}.`;
     case "case": return `Little ${q.letter} is the small shape of big ${q.big}. Trace them in the air!`;
     case "build-chunks": return `Say it slowly: ${q.chunks.filter((c) => !c.silent).map((c) => snd(c.s)).join("… ")}. Find each chunk in order.`;
-    case "pick-sentence": return "Read every word slowly. Only one sentence matches the picture. Tap a word to hear it.";
+    case "pick-sentence": return "Read each sentence, then look at the picture. Which one tells about it?";
     case "blend": return "Tap each letter to hear its sound, then press Blend and listen.";
     case "build": return `Say it slowly: ${q.letters.map((l) => snd(LETTERS[l].sound)).join("… ")}. One letter for each sound.`;
     case "sound-out": return `Tap each chunk and say its sound: ${q.chunks.filter((c) => !c.silent).map((c) => snd(c.s)).join("… ")}. Now say them faster!`;
@@ -313,7 +313,7 @@ const ASK = {
         done = true;
         const usedT = new Set();
         want.forEach((w, i) => { const j = q.tiles.findIndex((x, k) => x === w && !usedT.has(k)); usedT.add(j); filled[i] = j; });
-        paint(); ctx.tell("Here's the answer.", `Here's how to spell it: ${want.join(", ")}. ${q.word}.`);
+        paint(); ctx.tell("Here's the answer.", `Here's how to spell it: ${want.map((c) => [...c].map((l) => l.toUpperCase()).join(" ")).join(", ")}. ${q.word}.`); // letter names (S, T, E W), not chunk sounds
         setTimeout(resolve, 1500);
       };
       tiles.forEach((t, ti) => t.onclick = () => {
@@ -327,12 +327,12 @@ const ASK = {
       slots.forEach((s, i) => s.onclick = () => { if (done || filled[i] == null) return; tiles[filled[i]].disabled = false; filled[i] = null; paint(); });
     });
   },
-  // Phonics (1st grade on): a picture and three sentences one word apart. Tap any word to hear it.
+  // Phonics (1st grade on): a picture and three of the lesson's sentences; one goes with it.
   async "pick-sentence"(q, ctx) {
     ctx.board.innerHTML = `<div class="sound-card"><span class="pic big" aria-hidden="true">${q.emoji}</span></div>`;
     ctx.dock.innerHTML = "";
     await choose(ctx, q, q.choices.map((c) => `<div class="pick-row"><button class="choice-card sentence-card" data-v="${esc(c.word)}">${esc(c.word)}</button><button class="icon-btn say-row" data-own-sound data-say-row="${esc(c.word)}" aria-label="Hear it">🔊</button></div>`).join(""),
-      { onWrong: () => "Look at the picture again, and read each word slowly. One word is different." });
+      { onWrong: () => "Look at the picture again, and read each sentence. Which one tells about it?" });
   },
   // PreK: hear a sound, find its letter.
   async letters(q, ctx) {
