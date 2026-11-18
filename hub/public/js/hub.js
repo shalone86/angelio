@@ -23,6 +23,32 @@ document.getElementById("apps").innerHTML = SUBJECTS.map((s) => {
   return live.length ? `<section class="subject" id="${s.id}" style="--c:${s.color}"><h2><span aria-hidden="true">${s.emoji}</span> ${esc(s.title)}</h2><div class="tiles">${live.map(tile).join("")}</div></section>` : "";
 }).join("");
 
+// Watch & Sing's box: the app, plus today's course, lesson and song (the same picks as inside the app).
+const ofTheDay = (list, salt) => {
+  const d = new Date(), day = Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 86400000);
+  return list.length ? list[(day * 7 + salt) % list.length] : null;
+};
+const dayTile = (href, label, title, pic, emoji) => `
+  <div class="tile day">
+    <a class="tile-go" href="${href}" aria-label="${esc(label)}: ${esc(title)}">
+      <span class="day-pic">${pic ? `<img src="/watch/${esc(pic)}" alt="" loading="lazy">` : ""}${emoji ? `<span class="day-emoji" aria-hidden="true">${esc(emoji)}</span>` : ""}</span>
+      <small>${esc(label)}</small><b>${esc(title)}</b>
+    </a>
+    <button type="button" class="tile-say" data-say="${esc(`${label}: ${title}`)}" aria-label="Hear it">🔊</button>
+  </div>`;
+const faithTiles = document.querySelector("#faith .tiles");
+if (faithTiles) fetch("/watch/data/library.json").then((r) => r.json()).then((lib) => {
+  const lessons = lib.lessons.filter((x) => !x.hidden), songs = lib.songs.filter((x) => !x.hidden);
+  const ids = new Set(lessons.map((x) => x.id));
+  const courses = lib.courses.map((c) => ({ ...c, items: c.items.filter((i) => ids.has(i)) })).filter((c) => c.items.length);
+  const course = ofTheDay(courses, 5), lesson = ofTheDay(lessons, 0), song = ofTheDay(songs, 3);
+  const first = course && lessons.find((l) => l.id === course.items[0]);
+  faithTiles.insertAdjacentHTML("beforeend",
+    (course ? dayTile(`/watch/#/course/${course.id}`, "Course of the day", course.title, first?.poster, course.emoji) : "")
+    + (lesson ? dayTile(`/watch/#/lesson/${lesson.id}`, "Lesson of the day", lesson.title, lesson.poster) : "")
+    + (song ? dayTile(`/watch/#/song/${song.id}`, "Song of the day", song.title, song.poster) : ""));
+}).catch(() => {});
+
 const soon = APP_LIST.filter((a) => !a.path);
 document.getElementById("soon").innerHTML = soon.length ? `<section class="soon-row" aria-label="Coming soon"><h3>Coming soon</h3>
   <div>${soon.map((a) => `<span class="chip" title="${esc(a.blurb)}"><span aria-hidden="true">${a.emoji}</span> ${esc(a.name)}</span>`).join("")}</div></section>` : "";

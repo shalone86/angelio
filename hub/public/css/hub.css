@@ -139,3 +139,11 @@ nav a.gu { font-size: 1.05rem; }
   .subject h2 { color: color-mix(in srgb, var(--c) 55%, #fff); } .tile-go small { background: #253a5c; color: #ffd9b8; }
   .soon-row .chip { border-color: #2b4470; }
 }
+
+/* Watch & Sing's "of the day" tiles: the video's picture instead of an app icon */
+.tile.day .tile-go { gap: 6px; padding-top: 12px; }
+.day-pic { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 16px; overflow: hidden; background: color-mix(in srgb, var(--c) 18%, #fff); display: grid; place-items: center; }
+.day-pic img { width: 100%; height: 100%; object-fit: cover; }
+.day-emoji { position: absolute; left: 8px; bottom: 6px; font-size: 1.6rem; filter: drop-shadow(0 2px 2px #0005); }
+.tile.day b { font-size: 1.02rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.tile.day .tile-say { top: 18px; right: 14px; }
