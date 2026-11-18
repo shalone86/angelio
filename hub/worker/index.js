@@ -81,7 +81,8 @@ const sheetId = (s) => (/^[a-z0-9][a-z0-9-]{0,79}$/.test(String(s ?? "")) ? s : 
 /** A sound's name as the apps say it ("tuh", "shh", "fruh"): lowercase letters only. */
 /** Whose recordings: "f" (Mom) or "m" (Dad). */
 const clipSet = (x) => (x === "m" ? "m" : "f");
-const clipId = (x) => (/^[a-z][a-z' -]{0,19}$/.test(String(x ?? "")) ? String(x) : null);
+// A sound ("tuh") or a whole line ("line-" + a hash of its words, see the apps' tts.js lineId).
+const clipId = (x) => (/^([a-z][a-z' -]{0,19}|line-[0-9a-z]{1,8})$/.test(String(x ?? "")) ? String(x) : null);
 
 const json = (body, status = 200) => new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json", "cache-control": "no-store" } });
 
@@ -155,7 +156,8 @@ async function api(request, url, env) {
     const id = clipId(url.searchParams.get("id")), set = clipSet(url.searchParams.get("set"));
     if (!id) return json({ error: "bad sound name" }, 400);
     const wav = await request.arrayBuffer();
-    if (wav.byteLength < 100 || wav.byteLength > 400_000) return json({ error: "recording is empty or too long" }, 400);
+    const most = id.startsWith("line-") ? 3_000_000 : 400_000; // a line can be about 30 seconds; a sound, a few
+    if (wav.byteLength < 100 || wav.byteLength > most) return json({ error: "recording is empty or too long" }, 400);
     await kv.put(`clip:${set}:${id}`, wav);
     const index = { f: {}, m: {}, ...((await kv.get("clips:index", "json")) ?? {}) };
     index[set][id] = Date.now();

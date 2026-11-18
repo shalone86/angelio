@@ -1,0 +1,2202 @@
+{
+ "note": "Made by tools/voice-lines.mjs. Each line is one sentence; {{sound}} means say that sound.",
+ "built": "2026-11-18",
+ "groups": [
+  {
+   "name": "Every game",
+   "lines": [
+    {
+     "text": "Yes!",
+     "where": "When an answer is right"
+    },
+    {
+     "text": "You got it!",
+     "where": "When an answer is right"
+    },
+    {
+     "text": "Great job!",
+     "where": "When an answer is right"
+    },
+    {
+     "text": "That's right!",
+     "where": "When an answer is right"
+    },
+    {
+     "text": "Awesome!",
+     "where": "When an answer is right"
+    },
+    {
+     "text": "Super!",
+     "where": "When an answer is right"
+    },
+    {
+     "text": "Nice work!",
+     "where": "When an answer is right"
+    },
+    {
+     "text": "Wonderful!",
+     "where": "When an answer is right"
+    },
+    {
+     "text": "Way to go!",
+     "where": "When an answer is right"
+    },
+    {
+     "text": "Perfect!",
+     "where": "When an answer is right"
+    },
+    {
+     "text": "Your guardian angel is cheering for you!",
+     "where": "When an answer is right"
+    },
+    {
+     "text": "Way to let your light shine!",
+     "where": "When an answer is right"
+    },
+    {
+     "text": "Not quite.",
+     "where": "When an answer is wrong"
+    },
+    {
+     "text": "Try again!",
+     "where": "When an answer is wrong"
+    },
+    {
+     "text": "Almost!",
+     "where": "When an answer is wrong"
+    },
+    {
+     "text": "Give it another try.",
+     "where": "When an answer is wrong"
+    },
+    {
+     "text": "Hmm, not that one.",
+     "where": "When an answer is wrong"
+    },
+    {
+     "text": "So close!",
+     "where": "When an answer is wrong"
+    },
+    {
+     "text": "Look again.",
+     "where": "When an answer is wrong"
+    },
+    {
+     "text": "Oops!",
+     "where": "When an answer is wrong"
+    },
+    {
+     "text": "Let's try once more.",
+     "where": "When an answer is wrong"
+    },
+    {
+     "text": "Let's try this one!",
+     "where": "Before each new question"
+    },
+    {
+     "text": "How about this one?",
+     "where": "Before each new question"
+    },
+    {
+     "text": "Here's another one!",
+     "where": "Before each new question"
+    },
+    {
+     "text": "Ready for the next one?",
+     "where": "Before each new question"
+    },
+    {
+     "text": "Give this one a try!",
+     "where": "Before each new question"
+    },
+    {
+     "text": "Ooh, try this one!",
+     "where": "Before each new question"
+    },
+    {
+     "text": "Here comes a new one!",
+     "where": "Before each new question"
+    },
+    {
+     "text": "Your turn again!",
+     "where": "Before each new question"
+    },
+    {
+     "text": "Let's do another!",
+     "where": "Before each new question"
+    },
+    {
+     "text": "Can you solve this one?",
+     "where": "Before each new question"
+    },
+    {
+     "text": "Wow!",
+     "where": "The finish screen"
+    },
+    {
+     "text": "Your sticker grew into a giant sticker!",
+     "where": "The finish screen"
+    },
+    {
+     "text": "giant",
+     "where": "The finish screen"
+    },
+    {
+     "text": "You did it with no mistakes!",
+     "where": "The finish screen"
+    },
+    {
+     "text": "You got a giant sticker!",
+     "where": "The finish screen"
+    },
+    {
+     "text": "Here's a giant sticker!",
+     "where": "The finish screen"
+    },
+    {
+     "text": "mini",
+     "where": "The finish screen"
+    },
+    {
+     "text": "You did it!",
+     "where": "The finish screen"
+    },
+    {
+     "text": "You got a mini sticker.",
+     "where": "The finish screen"
+    },
+    {
+     "text": "Play again with no mistakes to make it giant!",
+     "where": "The finish screen"
+    },
+    {
+     "text": "Here's a mini sticker.",
+     "where": "The finish screen"
+    },
+    {
+     "text": "No mistakes next time makes it giant!",
+     "where": "The finish screen"
+    },
+    {
+     "text": "No mistakes!",
+     "where": "The finish screen"
+    },
+    {
+     "text": "[data-again]",
+     "where": "The finish screen"
+    },
+    {
+     "text": "sticker-book",
+     "where": "The finish screen"
+    },
+    {
+     "text": "stickers",
+     "where": "The finish screen"
+    },
+    {
+     "text": "title=",
+     "where": "The finish screen"
+    }
+   ]
+  },
+  {
+   "name": "Snap & Split",
+   "lines": [
+    {
+     "text": "Tap each block one time as you count.",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "One, two, three.",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "The last number you say tells how many.",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "Three blocks!",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "Two groups snap together into one bigger group.",
+     "where": "How it works: 🧲Snap to 5"
+    },
+    {
+     "text": "Two blue blocks and one yellow block.",
+     "where": "How it works: 🧲Snap to 5"
+    },
+    {
+     "text": "Snap!",
+     "where": "How it works: 🧲Snap to 5"
+    },
+    {
+     "text": "Then count them all.",
+     "where": "How it works: 🧲Snap to 5"
+    },
+    {
+     "text": "Two and one make three!",
+     "where": "How it works: 🧲Snap to 5"
+    },
+    {
+     "text": "Tap blocks to take them away.",
+     "where": "How it works: ✂️Split from 5"
+    },
+    {
+     "text": "Then count how many are left.",
+     "where": "How it works: ✂️Split from 5"
+    },
+    {
+     "text": "Four blocks, take away one.",
+     "where": "How it works: ✂️Split from 5"
+    },
+    {
+     "text": "Three are left!",
+     "where": "How it works: ✂️Split from 5"
+    },
+    {
+     "text": "Listen carefully!",
+     "where": "How it works: 🔀Snap or split"
+    },
+    {
+     "text": "Sometimes you snap groups together and count them all.",
+     "where": "How it works: 🔀Snap or split"
+    },
+    {
+     "text": "Sometimes you take some away and count what's left.",
+     "where": "How it works: 🔀Snap or split"
+    },
+    {
+     "text": "Let's learn shapes!",
+     "where": "How it works: 🔷Find the shape"
+    },
+    {
+     "text": "A circle is round, like a ball.",
+     "where": "How it works: 🔷Find the shape"
+    },
+    {
+     "text": "A square has four sides, all the same.",
+     "where": "How it works: 🔷Find the shape"
+    },
+    {
+     "text": "A triangle has three sides.",
+     "where": "How it works: 🔷Find the shape"
+    },
+    {
+     "text": "And a rectangle has four sides, two long and two short.",
+     "where": "How it works: 🔷Find the shape"
+    },
+    {
+     "text": "Listen for the shape, and tap it!",
+     "where": "How it works: 🔷Find the shape"
+    },
+    {
+     "text": "Here are more shapes!",
+     "where": "How it works: ⭐More shapes"
+    },
+    {
+     "text": "A star has five points.",
+     "where": "How it works: ⭐More shapes"
+    },
+    {
+     "text": "A heart is for love.",
+     "where": "How it works: ⭐More shapes"
+    },
+    {
+     "text": "An oval is like an egg.",
+     "where": "How it works: ⭐More shapes"
+    },
+    {
+     "text": "And a diamond is like a kite.",
+     "where": "How it works: ⭐More shapes"
+    },
+    {
+     "text": "Shapes are all around us!",
+     "where": "How it works: 🍕Shapes all around"
+    },
+    {
+     "text": "A pizza slice is a triangle.",
+     "where": "How it works: 🍕Shapes all around"
+    },
+    {
+     "text": "A ball is a circle.",
+     "where": "How it works: 🍕Shapes all around"
+    },
+    {
+     "text": "A door is a rectangle.",
+     "where": "How it works: 🍕Shapes all around"
+    },
+    {
+     "text": "Look at the picture, and find its shape!",
+     "where": "How it works: 🍕Shapes all around"
+    },
+    {
+     "text": "Let's find colors!",
+     "where": "How it works: 🎨Find the color"
+    },
+    {
+     "text": "Red, blue, yellow, green, orange, and purple.",
+     "where": "How it works: 🎨Find the color"
+    },
+    {
+     "text": "Listen for the color, and tap it!",
+     "where": "How it works: 🎨Find the color"
+    },
+    {
+     "text": "Sorting means putting things that go together in the same basket.",
+     "where": "How it works: 🧺Sort by color"
+    },
+    {
+     "text": "Look at each one.",
+     "where": "How it works: 🧺Sort by color"
+    },
+    {
+     "text": "Is it red, or blue?",
+     "where": "How it works: 🧺Sort by color"
+    },
+    {
+     "text": "Then tap its basket!",
+     "where": "How it works: 🧺Sort by color"
+    },
+    {
+     "text": "Three are the same, and one is different.",
+     "where": "How it works: 🤔Which one doesn't belong?"
+    },
+    {
+     "text": "It could be a different color, a different shape, or a different size.",
+     "where": "How it works: 🤔Which one doesn't belong?"
+    },
+    {
+     "text": "Find the one that doesn't belong!",
+     "where": "How it works: 🤔Which one doesn't belong?"
+    },
+    {
+     "text": "A pattern repeats, again and again.",
+     "where": "How it works: 🔁What comes next?"
+    },
+    {
+     "text": "Red, blue, red, blue.",
+     "where": "How it works: 🔁What comes next?"
+    },
+    {
+     "text": "Say it out loud!",
+     "where": "How it works: 🔁What comes next?"
+    },
+    {
+     "text": "What comes next?",
+     "where": "How it works: 🔁What comes next?"
+    },
+    {
+     "text": "Red!",
+     "where": "How it works: 🔁What comes next?"
+    },
+    {
+     "text": "More means a bigger number.",
+     "where": "How it works: ⚖️Which has more?"
+    },
+    {
+     "text": "Fewer means a smaller number.",
+     "where": "How it works: ⚖️Which has more?"
+    },
+    {
+     "text": "Four apples is more than two apples.",
+     "where": "How it works: ⚖️Which has more?"
+    },
+    {
+     "text": "Two apples is fewer.",
+     "where": "How it works: ⚖️Which has more?"
+    },
+    {
+     "text": "Count each group to check!",
+     "where": "How it works: ⚖️Which has more?"
+    },
+    {
+     "text": "Count both groups.",
+     "where": "How it works: 🟰More, fewer or the same?"
+    },
+    {
+     "text": "Which has more?",
+     "where": "How it works: 🟰More, fewer or the same?"
+    },
+    {
+     "text": "Which has fewer?",
+     "where": "How it works: 🟰More, fewer or the same?"
+    },
+    {
+     "text": "And if they have the same number, tap the button that says same!",
+     "where": "How it works: 🟰More, fewer or the same?"
+    },
+    {
+     "text": "Some things are bigger and some are smaller.",
+     "where": "How it works: 🐘Big and small"
+    },
+    {
+     "text": "Some are longer and some are shorter.",
+     "where": "How it works: 🐘Big and small"
+    },
+    {
+     "text": "Some are taller.",
+     "where": "How it works: 🐘Big and small"
+    },
+    {
+     "text": "Look carefully, and compare!",
+     "where": "How it works: 🐘Big and small"
+    }
+   ]
+  },
+  {
+   "name": "Regroup!",
+   "lines": [
+    {
+     "text": "Add one lane at a time, starting with the ones.",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "When a lane gets ten or more, trade ten of them for one of the next lane, and it moves left.",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "For example, 27 plus 15: 7 plus 5 is 12 ones.",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "That's ten or more, so ten ones become one ten.",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "The answer is 42.",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "Take away one lane at a time, starting with the ones.",
+     "where": "How it works: ➖Take away"
+    },
+    {
+     "text": "If there aren't enough, trade one from the next lane for ten, and it moves right.",
+     "where": "How it works: ➖Take away"
+    },
+    {
+     "text": "For example, 42 minus 17: 2 take away 7?",
+     "where": "How it works: ➖Take away"
+    },
+    {
+     "text": "Not enough!",
+     "where": "How it works: ➖Take away"
+    },
+    {
+     "text": "Trade one ten for ten ones.",
+     "where": "How it works: ➖Take away"
+    },
+    {
+     "text": "Now 12 take away 7 is 5.",
+     "where": "How it works: ➖Take away"
+    },
+    {
+     "text": "The answer is 25.",
+     "where": "How it works: ➖Take away"
+    },
+    {
+     "text": "Look at the sign first!",
+     "where": "How it works: 🔀Mix it up"
+    },
+    {
+     "text": "When you add and a lane gets ten or more, trade it to the left.",
+     "where": "How it works: 🔀Mix it up"
+    },
+    {
+     "text": "When you take away and a lane doesn't have enough, trade from the left, and it moves right.",
+     "where": "How it works: 🔀Mix it up"
+    },
+    {
+     "text": "For example, 258 plus 167: 8 plus 7 is 15 ones.",
+     "where": "How it works: ➕Add"
+    },
+    {
+     "text": "The answer is 425.",
+     "where": "How it works: ➕Add"
+    },
+    {
+     "text": "For example, 432 minus 158: 2 take away 8?",
+     "where": "How it works: ➖Take away"
+    },
+    {
+     "text": "Now 12 take away 8 is 4.",
+     "where": "How it works: ➖Take away"
+    },
+    {
+     "text": "The answer is 274.",
+     "where": "How it works: ➖Take away"
+    },
+    {
+     "text": "For example, 2476 plus 1658: 6 plus 8 is 14 ones.",
+     "where": "How it works: ➕Add"
+    },
+    {
+     "text": "The answer is 4134.",
+     "where": "How it works: ➕Add"
+    },
+    {
+     "text": "For example, 5203 minus 1847: 3 take away 7?",
+     "where": "How it works: ➖Take away"
+    },
+    {
+     "text": "Now 13 take away 7 is 6.",
+     "where": "How it works: ➖Take away"
+    },
+    {
+     "text": "The answer is 3356.",
+     "where": "How it works: ➖Take away"
+    },
+    {
+     "text": "Each digit's place tells what it's worth.",
+     "where": "How it works: 🐸TOTens & Ones"
+    },
+    {
+     "text": "47 is 40 plus 7.",
+     "where": "How it works: 🐸TOTens & Ones"
+    },
+    {
+     "text": "We say it: forty-seven.",
+     "where": "How it works: 🐸TOTens & Ones"
+    },
+    {
+     "text": "347 is 300 plus 40 plus 7.",
+     "where": "How it works: 🦊HTOHundreds"
+    },
+    {
+     "text": "We say it: three hundred forty-seven.",
+     "where": "How it works: 🦊HTOHundreds"
+    },
+    {
+     "text": "2347 is 2000 plus 300 plus 40 plus 7.",
+     "where": "How it works: 🐳ThHTOThousands"
+    },
+    {
+     "text": "We say it: two thousand three hundred forty-seven.",
+     "where": "How it works: 🐳ThHTOThousands"
+    }
+   ]
+  },
+  {
+   "name": "Doubles",
+   "lines": [
+    {
+     "text": "Welcome to Mirror Doubles!",
+     "where": "How it works: Mirror Doubles (1+1 to 10+10)"
+    },
+    {
+     "text": "Doubling means adding the exact same number twice, like two wings on a ladybug.",
+     "where": "How it works: Mirror Doubles (1+1 to 10+10)"
+    },
+    {
+     "text": "Look at the example: 4 beads on the left plus 4 beads on the right makes 8 beads in all!",
+     "where": "How it works: Mirror Doubles (1+1 to 10+10)"
+    },
+    {
+     "text": "Welcome to Fair Halves!",
+     "where": "How it works: Fair Halves (Split in 2!)"
+    },
+    {
+     "text": "Finding half is the opposite of doubling.",
+     "where": "How it works: Fair Halves (Split in 2!)"
+    },
+    {
+     "text": "We split an even number equally into two baskets so both baskets get the exact same amount.",
+     "where": "How it works: Fair Halves (Split in 2!)"
+    },
+    {
+     "text": "Half of 10 is 5, because 5 plus 5 makes 10!",
+     "where": "How it works: Fair Halves (Split in 2!)"
+    },
+    {
+     "text": "Welcome to Near-Doubles!",
+     "where": "How it works: Near-Doubles (Double + 1)"
+    },
+    {
+     "text": "When two numbers are neighbors on the number line, like 5 plus 6, just double the smaller number and add 1 more!",
+     "where": "How it works: Near-Doubles (Double + 1)"
+    },
+    {
+     "text": "Double 5 is 10, plus 1 more is 11!",
+     "where": "How it works: Near-Doubles (Double + 1)"
+    },
+    {
+     "text": "Welcome to Double Detective!",
+     "where": "How it works: Double Detective (□ + □)"
+    },
+    {
+     "text": "Here you see the total, and you have to find which twin number was doubled to make it.",
+     "where": "How it works: Double Detective (□ + □)"
+    },
+    {
+     "text": "For 12, the twin number is 6, because 6 plus 6 equals 12!",
+     "where": "How it works: Double Detective (□ + □)"
+    },
+    {
+     "text": "Welcome to Big Doubles!",
+     "where": "How it works: Big Doubles (10+10 to 50+50)"
+    },
+    {
+     "text": "To double a two-digit number like 12, double the tens first, and then double the ones!",
+     "where": "How it works: Big Doubles (10+10 to 50+50)"
+    },
+    {
+     "text": "Double 10 is 20, and double 2 is 4, which makes 24!",
+     "where": "How it works: Big Doubles (10+10 to 50+50)"
+    },
+    {
+     "text": "Welcome to Skip-Counting Stones!",
+     "where": "How it works: Skip Counting (2s, 5s, 10s)"
+    },
+    {
+     "text": "When we skip-count, we add the same number on every hop.",
+     "where": "How it works: Skip Counting (2s, 5s, 10s)"
+    },
+    {
+     "text": "Counting by 5s goes 5, 10, 15, 20, 25!",
+     "where": "How it works: Skip Counting (2s, 5s, 10s)"
+    },
+    {
+     "text": "Find the number that belongs on the orange stone.",
+     "where": "How it works: Skip Counting (2s, 5s, 10s)"
+    },
+    {
+     "text": "Welcome to Equal Groups!",
+     "where": "How it works: Equal Groups (Groups of Beads)"
+    },
+    {
+     "text": "Multiplication is a fast way to add equal groups.",
+     "where": "How it works: Equal Groups (Groups of Beads)"
+    },
+    {
+     "text": "The multiplication sign means groups of.",
+     "where": "How it works: Equal Groups (Groups of Beads)"
+    },
+    {
+     "text": "So 3 times 4 means 3 groups of 4, which is 4 plus 4 plus 4 equals 12!",
+     "where": "How it works: Equal Groups (Groups of Beads)"
+    },
+    {
+     "text": "Welcome to Multiplication Arrays!",
+     "where": "How it works: Array Rows × Columns"
+    },
+    {
+     "text": "An array lines up beads in neat rows and columns.",
+     "where": "How it works: Array Rows × Columns"
+    },
+    {
+     "text": "For 3 times 5, we have 3 rows with 5 beads in each row: 5, 10, 15 beads in all!",
+     "where": "How it works: Array Rows × Columns"
+    },
+    {
+     "text": "Welcome to Double and Double-Double!",
+     "where": "How it works: Double (×2) & Double-Double (×4)"
+    },
+    {
+     "text": "Multiplying by 2 is just doubling once.",
+     "where": "How it works: Double (×2) & Double-Double (×4)"
+    },
+    {
+     "text": "Multiplying by 4 is doubling twice!",
+     "where": "How it works: Double (×2) & Double-Double (×4)"
+    },
+    {
+     "text": "To solve 4 times 6, double 6 to get 12, then double 12 to get 24!",
+     "where": "How it works: Double (×2) & Double-Double (×4)"
+    },
+    {
+     "text": "Welcome to Times 10 and Times 5!",
+     "where": "How it works: Times 10 & Half for Times 5"
+    },
+    {
+     "text": "Multiplying by 10 is easy with Golden Ten-Bars: 10 times 6 is 6 tens, which is 60.",
+     "where": "How it works: Times 10 & Half for Times 5"
+    },
+    {
+     "text": "And since 5 is half of 10, 5 times 6 is half of 60, which is 30!",
+     "where": "How it works: Times 10 & Half for Times 5"
+    },
+    {
+     "text": "Welcome to Fair-Share Division!",
+     "where": "How it works: Fair-Share Division (Deal Onto Plates)"
+    },
+    {
+     "text": "Division means sharing a total equally.",
+     "where": "How it works: Fair-Share Division (Deal Onto Plates)"
+    },
+    {
+     "text": "For 12 divided by 3, we deal 12 treats equally onto 3 plates, and each plate gets 4 treats!",
+     "where": "How it works: Fair-Share Division (Deal Onto Plates)"
+    },
+    {
+     "text": "Welcome to Grouping Division!",
+     "where": "How it works: How Many Groups? (÷ by Bundling)"
+    },
+    {
+     "text": "We can also divide by packing items into boxes of the same size.",
+     "where": "How it works: How Many Groups? (÷ by Bundling)"
+    },
+    {
+     "text": "If we have 15 beads and pack 5 beads in each box, we fill 3 boxes!",
+     "where": "How it works: How Many Groups? (÷ by Bundling)"
+    },
+    {
+     "text": "Welcome to Fact Family Triangles!",
+     "where": "How it works: Fact Family Triangles (× & ÷)"
+    },
+    {
+     "text": "Multiplication and division are partners that use the exact same three numbers.",
+     "where": "How it works: Fact Family Triangles (× & ÷)"
+    },
+    {
+     "text": "If 3 times 4 equals 12, then 12 divided by 3 equals 4!",
+     "where": "How it works: Fact Family Triangles (× & ÷)"
+    },
+    {
+     "text": "Welcome to Missing Factor Mystery!",
+     "where": "How it works: Missing Factor Mystery (4 × □ = 20)"
+    },
+    {
+     "text": "When a multiplication equation has a missing number, like 4 times blank equals 20, count by 4s until you reach 20: 4, 8, 12, 16, 20 — that is 5 fours!",
+     "where": "How it works: Missing Factor Mystery (4 × □ = 20)"
+    },
+    {
+     "text": "Welcome to Doubles, Halves, × & ÷ Mix!",
+     "where": "How it works: Doubles, Halves, × & ÷ Mix"
+    },
+    {
+     "text": "Put all your doubling, halving, multiplication, and division powers together!",
+     "where": "How it works: Doubles, Halves, × & ÷ Mix"
+    },
+    {
+     "text": "Let's solve 5 fun challenges together!",
+     "where": "How it works: Doubles, Halves, × & ÷ Mix"
+    }
+   ]
+  },
+  {
+   "name": "Fraction Feast",
+   "lines": [
+    {
+     "text": "Fair shares are equal parts.",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "Every part is the same size.",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "This pizza is cut into four fair shares.",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "This one isn't fair: some pieces are big and some are small.",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "Sharing fairly is a way to love our neighbor!",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "When we cut something into two equal parts, each part is one half.",
+     "where": "How it works: 🥧Halves & Fourths"
+    },
+    {
+     "text": "When we cut it into four equal parts, each part is one fourth.",
+     "where": "How it works: 🥧Halves & Fourths"
+    },
+    {
+     "text": "Like the four candles of the Advent wreath: light one, and one fourth are lit!",
+     "where": "How it works: 🥧Halves & Fourths"
+    },
+    {
+     "text": "Tap a part to shade it.",
+     "where": "How it works: 🥧Halves & Fourths"
+    },
+    {
+     "text": "Count the equal parts.",
+     "where": "How it works: 🍞How Many Parts?"
+    },
+    {
+     "text": "Two parts are called halves.",
+     "where": "How it works: 🍞How Many Parts?"
+    },
+    {
+     "text": "Three parts are called thirds.",
+     "where": "How it works: 🍞How Many Parts?"
+    },
+    {
+     "text": "Four parts are called fourths.",
+     "where": "How it works: 🍞How Many Parts?"
+    },
+    {
+     "text": "Two thirds means two of the three equal parts.",
+     "where": "How it works: 🎨Shade It!"
+    },
+    {
+     "text": "Tap the parts to shade them, then press check.",
+     "where": "How it works: 🎨Shade It!"
+    },
+    {
+     "text": "The top number counts the shaded parts.",
+     "where": "How it works: 🔢Name the Fraction"
+    },
+    {
+     "text": "The bottom number counts all the equal parts.",
+     "where": "How it works: 🔢Name the Fraction"
+    },
+    {
+     "text": "Three parts are shaded, out of four equal parts.",
+     "where": "How it works: 🔢Name the Fraction"
+    },
+    {
+     "text": "That's three fourths.",
+     "where": "How it works: 🔢Name the Fraction"
+    },
+    {
+     "text": "The space from zero to one is cut into equal jumps.",
+     "where": "How it works: 📏Number Line"
+    },
+    {
+     "text": "For two fourths, the bottom number says four jumps in all.",
+     "where": "How it works: 📏Number Line"
+    },
+    {
+     "text": "Take two jumps from zero.",
+     "where": "How it works: 📏Number Line"
+    },
+    {
+     "text": "That's two fourths.",
+     "where": "How it works: 📏Number Line"
+    },
+    {
+     "text": "Different fractions can be the same amount.",
+     "where": "How it works: 🟰Equal Fractions"
+    },
+    {
+     "text": "One half and two fourths cover the same part of the bar, so they are equal.",
+     "where": "How it works: 🟰Equal Fractions"
+    },
+    {
+     "text": "Like sharing loaves of bread: more, smaller pieces can be the same amount of bread.",
+     "where": "How it works: 🟰Equal Fractions"
+    },
+    {
+     "text": "When the bottom numbers are the same, more parts is bigger.",
+     "where": "How it works: ⚖️Bigger or Smaller?"
+    },
+    {
+     "text": "When the top numbers are the same, more cuts make smaller pieces.",
+     "where": "How it works: ⚖️Bigger or Smaller?"
+    },
+    {
+     "text": "So one eighth is less than one half.",
+     "where": "How it works: ⚖️Bigger or Smaller?"
+    },
+    {
+     "text": "Look at the bars!",
+     "where": "How it works: ⚖️Bigger or Smaller?"
+    }
+   ]
+  },
+  {
+   "name": "Letter Lane",
+   "lines": [
+    {
+     "text": "Every letter makes a sound.",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "s says {{sss}}, like sun.",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "a says {{ah}}, like apple.",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "t says {{tuh}}, like tiger.",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "p says {{puh}}, like pig.",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "i says {{ih}}, like iguana.",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "n says {{nnn}}, like nose.",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "Say the sounds with me!",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "Here are more letters!",
+     "where": "How it works: 🌿Letters m d g o c k"
+    },
+    {
+     "text": "m says {{mmm}}, like moon.",
+     "where": "How it works: 🌿Letters m d g o c k"
+    },
+    {
+     "text": "d says {{duh}}, like dog.",
+     "where": "How it works: 🌿Letters m d g o c k"
+    },
+    {
+     "text": "g says {{guh}}, like goat.",
+     "where": "How it works: 🌿Letters m d g o c k"
+    },
+    {
+     "text": "o says {{aw}}, like octopus.",
+     "where": "How it works: 🌿Letters m d g o c k"
+    },
+    {
+     "text": "c says {{kuh}}, like cat.",
+     "where": "How it works: 🌿Letters m d g o c k"
+    },
+    {
+     "text": "k says {{kuh}}, like kite.",
+     "where": "How it works: 🌿Letters m d g o c k"
+    },
+    {
+     "text": "c and k make the same sound!",
+     "where": "How it works: 🌿Letters m d g o c k"
+    },
+    {
+     "text": "Seven more letters!",
+     "where": "How it works: 🌳Letters e u r h b f l"
+    },
+    {
+     "text": "e says {{eh}}, like egg.",
+     "where": "How it works: 🌳Letters e u r h b f l"
+    },
+    {
+     "text": "u says {{uh}}, like umbrella.",
+     "where": "How it works: 🌳Letters e u r h b f l"
+    },
+    {
+     "text": "r says {{rrr}}, like rabbit.",
+     "where": "How it works: 🌳Letters e u r h b f l"
+    },
+    {
+     "text": "h says {{huh}}, like hat.",
+     "where": "How it works: 🌳Letters e u r h b f l"
+    },
+    {
+     "text": "b says {{buh}}, like bus.",
+     "where": "How it works: 🌳Letters e u r h b f l"
+    },
+    {
+     "text": "f says {{fff}}, like fish.",
+     "where": "How it works: 🌳Letters e u r h b f l"
+    },
+    {
+     "text": "l says {{lll}}, like lion.",
+     "where": "How it works: 🌳Letters e u r h b f l"
+    },
+    {
+     "text": "The last seven letters!",
+     "where": "How it works: 🌻Letters j v w x y z q"
+    },
+    {
+     "text": "j says {{juh}}, like juice.",
+     "where": "How it works: 🌻Letters j v w x y z q"
+    },
+    {
+     "text": "v says {{vvv}}, like van.",
+     "where": "How it works: 🌻Letters j v w x y z q"
+    },
+    {
+     "text": "w says {{wuh}}, like worm.",
+     "where": "How it works: 🌻Letters j v w x y z q"
+    },
+    {
+     "text": "x says {{ks}}, like fox.",
+     "where": "How it works: 🌻Letters j v w x y z q"
+    },
+    {
+     "text": "y says {{yuh}}, like yo-yo.",
+     "where": "How it works: 🌻Letters j v w x y z q"
+    },
+    {
+     "text": "z says {{zzz}}, like zebra.",
+     "where": "How it works: 🌻Letters j v w x y z q"
+    },
+    {
+     "text": "q says {{kwuh}}, like queen.",
+     "where": "How it works: 🌻Letters j v w x y z q"
+    },
+    {
+     "text": "X is special: you hear it at the end of a word, like fox.",
+     "where": "How it works: 🌻Letters j v w x y z q"
+    },
+    {
+     "text": "And q always comes with its friend u!",
+     "where": "How it works: 🌻Letters j v w x y z q"
+    },
+    {
+     "text": "Every letter has a big shape and a little shape.",
+     "where": "How it works: 🔠Big and Little Letters"
+    },
+    {
+     "text": "Big A, little a.",
+     "where": "How it works: 🔠Big and Little Letters"
+    },
+    {
+     "text": "Big B, little b.",
+     "where": "How it works: 🔠Big and Little Letters"
+    },
+    {
+     "text": "They make the same sound.",
+     "where": "How it works: 🔠Big and Little Letters"
+    },
+    {
+     "text": "Big letters start names and sentences!",
+     "where": "How it works: 🔠Big and Little Letters"
+    },
+    {
+     "text": "Say a word slowly, and listen to the very first sound.",
+     "where": "How it works: 👂First Sounds"
+    },
+    {
+     "text": "Dog.",
+     "where": "How it works: 👂First Sounds"
+    },
+    {
+     "text": "{{duh}}, dog.",
+     "where": "How it works: 👂First Sounds"
+    },
+    {
+     "text": "Dog starts with {{duh}}, the letter d!",
+     "where": "How it works: 👂First Sounds"
+    },
+    {
+     "text": "Words that rhyme sound the same at the end.",
+     "where": "How it works: 🎵Rhyme Time"
+    },
+    {
+     "text": "Cat, hat.",
+     "where": "How it works: 🎵Rhyme Time"
+    },
+    {
+     "text": "They both end with at!",
+     "where": "How it works: 🎵Rhyme Time"
+    },
+    {
+     "text": "Cat and dog don't rhyme.",
+     "where": "How it works: 🎵Rhyme Time"
+    },
+    {
+     "text": "Words have beats.",
+     "where": "How it works: 🥁Clap the Beats"
+    },
+    {
+     "text": "Let's clap banana.",
+     "where": "How it works: 🥁Clap the Beats"
+    },
+    {
+     "text": "Ba.",
+     "where": "How it works: 🥁Clap the Beats"
+    },
+    {
+     "text": "Na.",
+     "where": "How it works: 🥁Clap the Beats"
+    },
+    {
+     "text": "Three beats!",
+     "where": "How it works: 🥁Clap the Beats"
+    },
+    {
+     "text": "Tap the drum once for each beat, then press done.",
+     "where": "How it works: 🥁Clap the Beats"
+    },
+    {
+     "text": "The letter a says {{ah}}, like apple, and cat.",
+     "where": "How it works: 🐱Short a"
+    },
+    {
+     "text": "Let's sound out words with {{ah}} in the middle!",
+     "where": "How it works: 🐱Short a"
+    },
+    {
+     "text": "Let's practice: cat, hat, bat!",
+     "where": "How it works: 🐱Short a"
+    },
+    {
+     "text": "The letter i says {{ih}}, like insect, and pig.",
+     "where": "How it works: 🐷Short i"
+    },
+    {
+     "text": "Let's sound out words with {{ih}} in the middle!",
+     "where": "How it works: 🐷Short i"
+    },
+    {
+     "text": "Let's practice: pig, pin, fin!",
+     "where": "How it works: 🐷Short i"
+    },
+    {
+     "text": "The letter o says {{aw}}, like octopus, and dog.",
+     "where": "How it works: 🦊Short o"
+    },
+    {
+     "text": "Let's sound out words with {{aw}} in the middle!",
+     "where": "How it works: 🦊Short o"
+    },
+    {
+     "text": "Let's practice: dog, log, pot!",
+     "where": "How it works: 🦊Short o"
+    },
+    {
+     "text": "Tap each letter to hear its sound.",
+     "where": "How it works: 🧩Blend It!"
+    },
+    {
+     "text": "{{kuh}}.",
+     "where": "How it works: 🧩Blend It!"
+    },
+    {
+     "text": "{{ah}}.",
+     "where": "How it works: 🧩Blend It!"
+    },
+    {
+     "text": "{{tuh}}.",
+     "where": "How it works: 🧩Blend It!"
+    },
+    {
+     "text": "Now slide them together, faster and faster: {{kuh}} {{ah}} {{tuh}}, cat!",
+     "where": "How it works: 🧩Blend It!"
+    },
+    {
+     "text": "Then find the picture.",
+     "where": "How it works: 🧩Blend It!"
+    },
+    {
+     "text": "Listen to each sound in a word.",
+     "where": "How it works: 🏗️Build It!"
+    },
+    {
+     "text": "Sun.",
+     "where": "How it works: 🏗️Build It!"
+    },
+    {
+     "text": "{{sss}}.",
+     "where": "How it works: 🏗️Build It!"
+    },
+    {
+     "text": "{{uh}}.",
+     "where": "How it works: 🏗️Build It!"
+    },
+    {
+     "text": "{{nnn}}.",
+     "where": "How it works: 🏗️Build It!"
+    },
+    {
+     "text": "One letter for each sound: s, u, n.",
+     "where": "How it works: 🏗️Build It!"
+    },
+    {
+     "text": "Tap the letters to fill the boxes!",
+     "where": "How it works: 🏗️Build It!"
+    },
+    {
+     "text": "The letter u says {{uh}}, like umbrella, and sun.",
+     "where": "How it works: ☀️Short u"
+    },
+    {
+     "text": "Let's sound out words with {{uh}} in the middle!",
+     "where": "How it works: ☀️Short u"
+    },
+    {
+     "text": "Let's practice: sun, bus, bug!",
+     "where": "How it works: ☀️Short u"
+    },
+    {
+     "text": "The letter e says {{eh}}, like egg, and bed.",
+     "where": "How it works: 🐔Short e"
+    },
+    {
+     "text": "Let's sound out words with {{eh}} in the middle!",
+     "where": "How it works: 🐔Short e"
+    },
+    {
+     "text": "Let's practice: bed, hen, ten!",
+     "where": "How it works: 🐔Short e"
+    },
+    {
+     "text": "C and k together make one sound, {{kuh}}, at the end of a word.",
+     "where": "How it works: 🦆ck at the end"
+    },
+    {
+     "text": "Duck.",
+     "where": "How it works: 🦆ck at the end"
+    },
+    {
+     "text": "Sock.",
+     "where": "How it works: 🦆ck at the end"
+    },
+    {
+     "text": "Rock.",
+     "where": "How it works: 🦆ck at the end"
+    },
+    {
+     "text": "Two letters, one sound!",
+     "where": "How it works: 🦆ck at the end"
+    },
+    {
+     "text": "Let's practice: duck, sock, rock!",
+     "where": "How it works: 🦆ck at the end"
+    },
+    {
+     "text": "Sometimes two letters work together to make one sound.",
+     "where": "How it works: 🐚sh, ch, th"
+    },
+    {
+     "text": "S, h says {{shh}}, like ship.",
+     "where": "How it works: 🐚sh, ch, th"
+    },
+    {
+     "text": "C, h says {{chuh}}, like chick.",
+     "where": "How it works: 🐚sh, ch, th"
+    },
+    {
+     "text": "T, h says {{thuh}}, like bath.",
+     "where": "How it works: 🐚sh, ch, th"
+    },
+    {
+     "text": "Let's practice: ship, shell, fish!",
+     "where": "How it works: 🐚sh, ch, th"
+    },
+    {
+     "text": "Sometimes two little words stick together to make one big word!",
+     "where": "How it works: 🌅Two Words in One"
+    },
+    {
+     "text": "Sun, set: sunset.",
+     "where": "How it works: 🌅Two Words in One"
+    },
+    {
+     "text": "Bath, tub: bathtub.",
+     "where": "How it works: 🌅Two Words in One"
+    },
+    {
+     "text": "Read each little word, then put them together!",
+     "where": "How it works: 🌅Two Words in One"
+    },
+    {
+     "text": "Let's practice: sunset, bathtub, hotdog!",
+     "where": "How it works: 🌅Two Words in One"
+    },
+    {
+     "text": "Add an s to the end of a word when there is more than one!",
+     "where": "How it works: 🐱Adding -s"
+    },
+    {
+     "text": "One cat, two cats.",
+     "where": "How it works: 🐱Adding -s"
+    },
+    {
+     "text": "One dog, two dogs.",
+     "where": "How it works: 🐱Adding -s"
+    },
+    {
+     "text": "We also add s for what one person does: he runs, she sits.",
+     "where": "How it works: 🐱Adding -s"
+    },
+    {
+     "text": "Let's practice: cats, dogs, pigs!",
+     "where": "How it works: 🐱Adding -s"
+    },
+    {
+     "text": "Sound out each word, then put the words together and read the whole sentence.",
+     "where": "How it works: 📖Read Little Sentences"
+    },
+    {
+     "text": "Some little words, like the, and a, we just know by heart!",
+     "where": "How it works: 📖Read Little Sentences"
+    },
+    {
+     "text": "Let's practice: cat, pig, dog!",
+     "where": "How it works: 📖Read Little Sentences"
+    }
+   ]
+  },
+  {
+   "name": "Read Aloud",
+   "lines": [
+    {
+     "text": "In a blend, two letters stick together into one chunk, and you hear both sounds, quickly.",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "{{fff}}, {{rrr}}, {{fruh}}, like frog.",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "{{fff}}, {{lll}}, {{fluh}}, like flag.",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "{{sss}}, {{tuh}}, {{stuh}}, like stop!",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "Let's practice: frog, flag, drum!",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "Blends can come at the end of a word too, and you still hear both sounds.",
+     "where": "How it works: ⛺Blends at the End"
+    },
+    {
+     "text": "{{nnd}}, like hand.",
+     "where": "How it works: ⛺Blends at the End"
+    },
+    {
+     "text": "{{nnt}}, like tent.",
+     "where": "How it works: ⛺Blends at the End"
+    },
+    {
+     "text": "{{mmp}}, like jump.",
+     "where": "How it works: ⛺Blends at the End"
+    },
+    {
+     "text": "Say every sound!",
+     "where": "How it works: ⛺Blends at the End"
+    },
+    {
+     "text": "Let's practice: hand, gift, milk!",
+     "where": "How it works: ⛺Blends at the End"
+    },
+    {
+     "text": "Long words come in parts.",
+     "where": "How it works: 🐰Two-Part Words"
+    },
+    {
+     "text": "Read one part, then the next, then put them together: rab, bit, rabbit!",
+     "where": "How it works: 🐰Two-Part Words"
+    },
+    {
+     "text": "Muf, fin, muffin!",
+     "where": "How it works: 🐰Two-Part Words"
+    },
+    {
+     "text": "Let's practice: rabbit, picnic, kitten!",
+     "where": "How it works: 🐰Two-Part Words"
+    },
+    {
+     "text": "Some words get an ending.",
+     "where": "How it works: 🎤Endings: -ing, -er"
+    },
+    {
+     "text": "I, n, g says {{ing}}: jump, jumping!",
+     "where": "How it works: 🎤Endings: -ing, -er"
+    },
+    {
+     "text": "E, r says {{er}}: farm, farmer, a person who farms.",
+     "where": "How it works: 🎤Endings: -ing, -er"
+    },
+    {
+     "text": "Read the word, then the ending.",
+     "where": "How it works: 🎤Endings: -ing, -er"
+    },
+    {
+     "text": "Let's practice: jumping, singing, reading!",
+     "where": "How it works: 🎤Endings: -ing, -er"
+    },
+    {
+     "text": "E, d at the end means it already happened.",
+     "where": "How it works: 🌱Ending: -ed"
+    },
+    {
+     "text": "It can sound three ways!",
+     "where": "How it works: 🌱Ending: -ed"
+    },
+    {
+     "text": "{{tuh}}, like jumped.",
+     "where": "How it works: 🌱Ending: -ed"
+    },
+    {
+     "text": "{{duh}}, like played.",
+     "where": "How it works: 🌱Ending: -ed"
+    },
+    {
+     "text": "And {{id}}, like planted.",
+     "where": "How it works: 🌱Ending: -ed"
+    },
+    {
+     "text": "Let's practice: rained, planted, painted!",
+     "where": "How it works: 🌱Ending: -ed"
+    },
+    {
+     "text": "E, s says {{iz}}, for more than one: box, boxes.",
+     "where": "How it works: 🐢Endings: -es, -ly"
+    },
+    {
+     "text": "Dish, dishes.",
+     "where": "How it works: 🐢Endings: -es, -ly"
+    },
+    {
+     "text": "L, y says {{lee}}, and tells how something happens: slow, slowly.",
+     "where": "How it works: 🐢Endings: -es, -ly"
+    },
+    {
+     "text": "Loud, loudly.",
+     "where": "How it works: 🐢Endings: -es, -ly"
+    },
+    {
+     "text": "Let's practice: boxes, foxes, dishes!",
+     "where": "How it works: 🐢Endings: -es, -ly"
+    },
+    {
+     "text": "When a word ends in e, the e is quiet, but it's magic!",
+     "where": "How it works: 🪄Magic e"
+    },
+    {
+     "text": "It makes the vowel say its name.",
+     "where": "How it works: 🪄Magic e"
+    },
+    {
+     "text": "Cake: the a says {{ay}}.",
+     "where": "How it works: 🪄Magic e"
+    },
+    {
+     "text": "Kite: the i says {{eye}}.",
+     "where": "How it works: 🪄Magic e"
+    },
+    {
+     "text": "Bone: the o says {{oh}}.",
+     "where": "How it works: 🪄Magic e"
+    },
+    {
+     "text": "Let's practice: cake, kite, bone!",
+     "where": "How it works: 🪄Magic e"
+    },
+    {
+     "text": "Vowel teams are two vowels that make one sound.",
+     "where": "How it works: 🐌ai, ay, ee, ea"
+    },
+    {
+     "text": "A, i and a, y both say {{ay}}, like rain, and day.",
+     "where": "How it works: 🐌ai, ay, ee, ea"
+    },
+    {
+     "text": "E, e and e, a both say {{ee}}, like bee, and leaf.",
+     "where": "How it works: 🐌ai, ay, ee, ea"
+    },
+    {
+     "text": "When two vowels go walking, the first one does the talking!",
+     "where": "How it works: 🐌ai, ay, ee, ea"
+    },
+    {
+     "text": "Let's practice: rain, snail, train!",
+     "where": "How it works: 🐌ai, ay, ee, ea"
+    },
+    {
+     "text": "O, a says {{oh}}, like boat.",
+     "where": "How it works: 🌙oa, ow, igh"
+    },
+    {
+     "text": "O, w can say {{oh}} too, like snow.",
+     "where": "How it works: 🌙oa, ow, igh"
+    },
+    {
+     "text": "And i, g, h together say {{eye}}, like night, and light.",
+     "where": "How it works: 🌙oa, ow, igh"
+    },
+    {
+     "text": "The g and the h are quiet.",
+     "where": "How it works: 🌙oa, ow, igh"
+    },
+    {
+     "text": "Let's practice: boat, goat, soap!",
+     "where": "How it works: 🌙oa, ow, igh"
+    },
+    {
+     "text": "When y comes at the end of a word, it acts like a vowel.",
+     "where": "How it works: 🐶y says ee or eye"
+    },
+    {
+     "text": "In longer words it says {{ee}}, like happy, and puppy.",
+     "where": "How it works: 🐶y says ee or eye"
+    },
+    {
+     "text": "In short words it says {{eye}}, like fly, and sky!",
+     "where": "How it works: 🐶y says ee or eye"
+    },
+    {
+     "text": "Let's practice: baby, puppy, bunny!",
+     "where": "How it works: 🐶y says ee or eye"
+    },
+    {
+     "text": "When r comes after a vowel, it bosses the vowel and changes its sound.",
+     "where": "How it works: ⭐ar, or, er, ir, ur"
+    },
+    {
+     "text": "A, r says {{ar}}, like star.",
+     "where": "How it works: ⭐ar, or, er, ir, ur"
+    },
+    {
+     "text": "O, r says {{or}}, like corn.",
+     "where": "How it works: ⭐ar, or, er, ir, ur"
+    },
+    {
+     "text": "And e, r, i, r, and u, r all say {{er}}, like her, bird, and turtle.",
+     "where": "How it works: ⭐ar, or, er, ir, ur"
+    },
+    {
+     "text": "Let's practice: car, star, shark!",
+     "where": "How it works: ⭐ar, or, er, ir, ur"
+    },
+    {
+     "text": "O, i and o, y both say {{oy}}, like coin, and boy.",
+     "where": "How it works: 🐮oi, oy, ou, ow"
+    },
+    {
+     "text": "O, u and o, w can both say {{ow}}, like when you bump your knee!",
+     "where": "How it works: 🐮oi, oy, ou, ow"
+    },
+    {
+     "text": "House.",
+     "where": "How it works: 🐮oi, oy, ou, ow"
+    },
+    {
+     "text": "Cow.",
+     "where": "How it works: 🐮oi, oy, ou, ow"
+    },
+    {
+     "text": "Let's practice: coin, boy, toy!",
+     "where": "How it works: 🐮oi, oy, ou, ow"
+    },
+    {
+     "text": "C and g have a soft sound too!",
+     "where": "How it works: 🦒Soft c and g"
+    },
+    {
+     "text": "When e, i, or y comes after them, c says {{sss}}, like city, and ice.",
+     "where": "How it works: 🦒Soft c and g"
+    },
+    {
+     "text": "And g says {{juh}}, like gem, and giraffe.",
+     "where": "How it works: 🦒Soft c and g"
+    },
+    {
+     "text": "Let's practice: city, ice, mice!",
+     "where": "How it works: 🦒Soft c and g"
+    },
+    {
+     "text": "Some letters are silent, they don't make any sound!",
+     "where": "How it works: 🤫Silent Letters: kn, wr, mb"
+    },
+    {
+     "text": "In k, n, the k is quiet: knot, knit.",
+     "where": "How it works: 🤫Silent Letters: kn, wr, mb"
+    },
+    {
+     "text": "In w, r, the w is quiet: write.",
+     "where": "How it works: 🤫Silent Letters: kn, wr, mb"
+    },
+    {
+     "text": "And in m, b, the b is quiet: lamb, thumb.",
+     "where": "How it works: 🤫Silent Letters: kn, wr, mb"
+    },
+    {
+     "text": "Let's practice: knot, knife, knit!",
+     "where": "How it works: 🤫Silent Letters: kn, wr, mb"
+    },
+    {
+     "text": "Here are three letters that make just one sound!",
+     "where": "How it works: 🌉tch and dge"
+    },
+    {
+     "text": "T, c, h says {{chuh}}, like watch, and catch.",
+     "where": "How it works: 🌉tch and dge"
+    },
+    {
+     "text": "D, g, e says {{juh}}, like bridge, and badge.",
+     "where": "How it works: 🌉tch and dge"
+    },
+    {
+     "text": "They come right after a short vowel.",
+     "where": "How it works: 🌉tch and dge"
+    },
+    {
+     "text": "Let's practice: watch, catch, patch!",
+     "where": "How it works: 🌉tch and dge"
+    },
+    {
+     "text": "Big words are easy if you break them into chunks.",
+     "where": "How it works: 🧩Big Words in Chunks"
+    },
+    {
+     "text": "Each chunk has one vowel sound.",
+     "where": "How it works: 🧩Big Words in Chunks"
+    },
+    {
+     "text": "Read each chunk, then put them together: {{rab}}, {{bit}}, rabbit!",
+     "where": "How it works: 🧩Big Words in Chunks"
+    },
+    {
+     "text": "{{pump}}, {{kin}}, pumpkin!",
+     "where": "How it works: 🧩Big Words in Chunks"
+    },
+    {
+     "text": "Let's practice: rabbit, picnic, rainbow!",
+     "where": "How it works: 🧩Big Words in Chunks"
+    },
+    {
+     "text": "Here are more vowel teams.",
+     "where": "How it works: 🌙oo, ew, ue, au, aw"
+    },
+    {
+     "text": "O, o, and e, w, and u, e all say {{oo}}, like moon, stew, and blue.",
+     "where": "How it works: 🌙oo, ew, ue, au, aw"
+    },
+    {
+     "text": "A, u and a, w both say {{aw}}, like haul, and saw.",
+     "where": "How it works: 🌙oo, ew, ue, au, aw"
+    },
+    {
+     "text": "Let's practice: moon, spoon, boot!",
+     "where": "How it works: 🌙oo, ew, ue, au, aw"
+    },
+    {
+     "text": "A prefix is a word part at the start that changes the meaning.",
+     "where": "How it works: 🔓Beginnings: un-, re-, dis-, pre-"
+    },
+    {
+     "text": "U, n means not: unlock, unhappy.",
+     "where": "How it works: 🔓Beginnings: un-, re-, dis-, pre-"
+    },
+    {
+     "text": "R, e means again: replay.",
+     "where": "How it works: 🔓Beginnings: un-, re-, dis-, pre-"
+    },
+    {
+     "text": "D, i, s means not: dislike.",
+     "where": "How it works: 🔓Beginnings: un-, re-, dis-, pre-"
+    },
+    {
+     "text": "P, r, e means before: preschool.",
+     "where": "How it works: 🔓Beginnings: un-, re-, dis-, pre-"
+    },
+    {
+     "text": "Let's practice: unlock, unpack, untie!",
+     "where": "How it works: 🔓Beginnings: un-, re-, dis-, pre-"
+    },
+    {
+     "text": "Some word endings have their very own sound.",
+     "where": "How it works: 🕯️Endings: -tion, -ture, -le"
+    },
+    {
+     "text": "T, i, o, n says {{shun}}, like station.",
+     "where": "How it works: 🕯️Endings: -tion, -ture, -le"
+    },
+    {
+     "text": "T, u, r, e says {{cher}}, like picture.",
+     "where": "How it works: 🕯️Endings: -tion, -ture, -le"
+    },
+    {
+     "text": "And l, e at the end says {{ul}}, like candle, and turtle.",
+     "where": "How it works: 🕯️Endings: -tion, -ture, -le"
+    },
+    {
+     "text": "Let's practice: lotion, station, picture!",
+     "where": "How it works: 🕯️Endings: -tion, -ture, -le"
+    },
+    {
+     "text": "These endings change a word's meaning.",
+     "where": "How it works: 🎨Endings: -ful, -less, -ness"
+    },
+    {
+     "text": "F, u, l means full of: playful, thankful.",
+     "where": "How it works: 🎨Endings: -ful, -less, -ness"
+    },
+    {
+     "text": "L, e, s, s means without: fearless.",
+     "where": "How it works: 🎨Endings: -ful, -less, -ness"
+    },
+    {
+     "text": "N, e, s, s turns a word into a thing: kind, kindness.",
+     "where": "How it works: 🎨Endings: -ful, -less, -ness"
+    },
+    {
+     "text": "Let's practice: colorful, playful, thankful!",
+     "where": "How it works: 🎨Endings: -ful, -less, -ness"
+    }
+   ]
+  },
+  {
+   "name": "Grammar!",
+   "lines": [
+    {
+     "text": "Every kind of word has its own shape and color.",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "Article: a small light blue triangle.",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "Introduces a noun.",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "Adjective: a medium blue triangle.",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "Describes a noun.",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "Noun: a big black triangle.",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "Person, place, or thing.",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "Verb: a red circle.",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "Action or state of being.",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "Now let's practice!",
+     "where": "How it works: ▶ Play"
+    },
+    {
+     "text": "Let's build sentences!",
+     "where": "How it works: 🧩 Sentence Scramble"
+    },
+    {
+     "text": "Every sentence starts with a capital letter and ends with a punctuation mark.",
+     "where": "How it works: 🧩 Sentence Scramble"
+    },
+    {
+     "text": "Tap or drag the words in order so the sentence makes sense!",
+     "where": "How it works: 🧩 Sentence Scramble"
+    },
+    {
+     "text": "Welcome to Capital Starts!",
+     "where": "How it works: 🔠 Capital Starts"
+    },
+    {
+     "text": "The very first word of every sentence must begin with a big capital letter.",
+     "where": "How it works: 🔠 Capital Starts"
+    },
+    {
+     "text": "Look at all the words in the sentence and tap the word that needs a capital start!",
+     "where": "How it works: 🔠 Capital Starts"
+    },
+    {
+     "text": "Welcome to Finger Spaces!",
+     "where": "How it works: 👉 Finger Spaces"
+    },
+    {
+     "text": "Words need a comfy space between them so we can read them clearly.",
+     "where": "How it works: 👉 Finger Spaces"
+    },
+    {
+     "text": "Find the two words that got squished together and tap right between the letters where they should split!",
+     "where": "How it works: 👉 Finger Spaces"
+    },
+    {
+     "text": "Welcome to Ending Punctuation!",
+     "where": "How it works: 🛑 End Marks: . ? !"
+    },
+    {
+     "text": "Every sentence ends with a mark in the orange box.",
+     "where": "How it works: 🛑 End Marks: . ? !"
+    },
+    {
+     "text": "Use a period for a telling sentence, a question mark when asking a question, and an exclamation mark for big excitement!",
+     "where": "How it works: 🛑 End Marks: . ? !"
+    },
+    {
+     "text": "Names of people and pets, and the word I by itself, are special!",
+     "where": "How it works: 👤 Capital \"I\" & Names"
+    },
+    {
+     "text": "They always start with a capital letter, even in the middle of a sentence.",
+     "where": "How it works: 👤 Capital \"I\" & Names"
+    },
+    {
+     "text": "Welcome to Nouns!",
+     "where": "How it works: ▲ Montessori Nouns ▲"
+    },
+    {
+     "text": "A noun is a naming word for a person, place, animal, or thing.",
+     "where": "How it works: ▲ Montessori Nouns ▲"
+    },
+    {
+     "text": "We mark every noun with a big black triangle.",
+     "where": "How it works: ▲ Montessori Nouns ▲"
+    },
+    {
+     "text": "In the example below, puppy is a noun because a puppy is an animal!",
+     "where": "How it works: ▲ Montessori Nouns ▲"
+    },
+    {
+     "text": "Welcome to Action Verbs!",
+     "where": "How it works: ● Montessori Verbs ●"
+    },
+    {
+     "text": "A verb is an action word that tells what someone or something does, like run, jump, or sing.",
+     "where": "How it works: ● Montessori Verbs ●"
+    },
+    {
+     "text": "We mark verbs with a bright red circle.",
+     "where": "How it works: ● Montessori Verbs ●"
+    },
+    {
+     "text": "In this example, jumped is the action verb!",
+     "where": "How it works: ● Montessori Verbs ●"
+    },
+    {
+     "text": "Welcome to Adjectives!",
+     "where": "How it works: 🔷 Articles & Adjectives ▲"
+    },
+    {
+     "text": "An adjective is a describing word that tells what kind, what color, or how many, like fluffy, red, or two.",
+     "where": "How it works: 🔷 Articles & Adjectives ▲"
+    },
+    {
+     "text": "We mark adjectives with a medium blue triangle.",
+     "where": "How it works: 🔷 Articles & Adjectives ▲"
+    },
+    {
+     "text": "Here, fluffy describes the kitten!",
+     "where": "How it works: 🔷 Articles & Adjectives ▲"
+    },
+    {
+     "text": "Plural means more than one!",
+     "where": "How it works: 🐾 Plural Nouns (-s & -es)"
+    },
+    {
+     "text": "Most words add S to mean more than one, like dogs.",
+     "where": "How it works: 🐾 Plural Nouns (-s & -es)"
+    },
+    {
+     "text": "Words ending in S, X, Z, CH, or SH add E-S, like boxes or foxes.",
+     "where": "How it works: 🐾 Plural Nouns (-s & -es)"
+    },
+    {
+     "text": "Pick the right plural word to fill the orange space!",
+     "where": "How it works: 🐾 Plural Nouns (-s & -es)"
+    },
+    {
+     "text": "Say an before a word that starts with a vowel sound, like an apple, or an owl.",
+     "where": "How it works: 🍎 A or An?"
+    },
+    {
+     "text": "Say a before other sounds, like a dog, or a candle.",
+     "where": "How it works: 🍎 A or An?"
+    },
+    {
+     "text": "Listen to the next word to choose!",
+     "where": "How it works: 🍎 A or An?"
+    },
+    {
+     "text": "Use I, or we, for the one doing the action: I run.",
+     "where": "How it works: 🙋 I or Me? We or Us?"
+    },
+    {
+     "text": "We pray.",
+     "where": "How it works: 🙋 I or Me? We or Us?"
+    },
+    {
+     "text": "Use me, or us, for the one getting the action: Mom hugged me.",
+     "where": "How it works: 🙋 I or Me? We or Us?"
+    },
+    {
+     "text": "Grandma called us.",
+     "where": "How it works: 🙋 I or Me? We or Us?"
+    },
+    {
+     "text": "Tip: with a friend, try it alone first.",
+     "where": "How it works: 🙋 I or Me? We or Us?"
+    },
+    {
+     "text": "Sam and I went, because I went!",
+     "where": "How it works: 🙋 I or Me? We or Us?"
+    },
+    {
+     "text": "Welcome to Grade 1 All-Stars!",
+     "where": "How it works: 🌟 Grade 1 All-Stars"
+    },
+    {
+     "text": "Mix of word ordering, capitals, spacing, and punctuation.",
+     "where": "How it works: 🌟 Grade 1 All-Stars"
+    },
+    {
+     "text": "Let's practice 5 fun questions together!",
+     "where": "How it works: 🌟 Grade 1 All-Stars"
+    },
+    {
+     "text": "Pronoun: a tall purple triangle.",
+     "where": "How it works: 🔺 Montessori Colors & Symbols"
+    },
+    {
+     "text": "Replaces a noun.",
+     "where": "How it works: 🔺 Montessori Colors & Symbols"
+    },
+    {
+     "text": "Adverb: a small orange circle.",
+     "where": "How it works: 🔺 Montessori Colors & Symbols"
+    },
+    {
+     "text": "Describes a verb.",
+     "where": "How it works: 🔺 Montessori Colors & Symbols"
+    },
+    {
+     "text": "Proper nouns are special names for days of the week, months, holidays, cities, and people.",
+     "where": "How it works: 🏛️ Proper Nouns"
+    },
+    {
+     "text": "Tap every proper noun to give it a capital letter!",
+     "where": "How it works: 🏛️ Proper Nouns"
+    },
+    {
+     "text": "Commas help readers pause in the right spot!",
+     "where": "How it works: 🍎 Commas in a List"
+    },
+    {
+     "text": "Use commas between items in a list of three, between the day and year in a date, and between a city and state.",
+     "where": "How it works: 🍎 Commas in a List"
+    },
+    {
+     "text": "Tap the sentence that has the commas in the right place!",
+     "where": "How it works: 🍎 Commas in a List"
+    },
+    {
+     "text": "A contraction squishes two words together and uses an apostrophe to show where letters were left out!",
+     "where": "How it works: ✂️ Apostrophe Contractions"
+    },
+    {
+     "text": "For example, do not becomes don't, and I am becomes I'm.",
+     "where": "How it works: ✂️ Apostrophe Contractions"
+    },
+    {
+     "text": "Welcome to pro-nouns!",
+     "where": "How it works: 🟪 Montessori Pronouns ▲"
+    },
+    {
+     "text": "A pro-noun is a little word that takes the place of a noun or name, like she, he, they, we, I, or you.",
+     "where": "How it works: 🟪 Montessori Pronouns ▲"
+    },
+    {
+     "text": "We mark pro-nouns with a tall purple triangle.",
+     "where": "How it works: 🟪 Montessori Pronouns ▲"
+    },
+    {
+     "text": "In this example, She takes the place of a person's name!",
+     "where": "How it works: 🟪 Montessori Pronouns ▲"
+    },
+    {
+     "text": "Welcome to Adverbs!",
+     "where": "How it works: 🟠 Montessori Adverbs ●"
+    },
+    {
+     "text": "An adverb describes an action verb and tells how, when, or where something happened.",
+     "where": "How it works: 🟠 Montessori Adverbs ●"
+    },
+    {
+     "text": "Many adverbs end in L-Y, like quickly, softly, or loudly.",
+     "where": "How it works: 🟠 Montessori Adverbs ●"
+    },
+    {
+     "text": "We mark adverbs with a small orange circle!",
+     "where": "How it works: 🟠 Montessori Adverbs ●"
+    },
+    {
+     "text": "Past tense verbs tell about actions that already happened yesterday or before!",
+     "where": "How it works: ⏳ Past Tense Verbs"
+    },
+    {
+     "text": "Many verbs add E-D like climbed, while special verbs change spelling, like eat becomes ate and go becomes went!",
+     "where": "How it works: ⏳ Past Tense Verbs"
+    },
+    {
+     "text": "Some plural nouns are tricky and change their spelling instead of adding S!",
+     "where": "How it works: 🐭 Irregular Plurals"
+    },
+    {
+     "text": "One mouse becomes two mice, one child becomes many children, and one sheep stays sheep!",
+     "where": "How it works: 🐭 Irregular Plurals"
+    },
+    {
+     "text": "A complete sentence must have two parts: a subject that tells who or what, and a verb that tells what happened!",
+     "where": "How it works: ⚖️ Sentence vs Fragment"
+    },
+    {
+     "text": "If one part is missing, it is called a fragment.",
+     "where": "How it works: ⚖️ Sentence vs Fragment"
+    },
+    {
+     "text": "For one thing, say is for now, and was for before.",
+     "where": "How it works: 🔔 Is or Are? Was or Were?"
+    },
+    {
+     "text": "For more than one, or for you, say are for now, and were for before.",
+     "where": "How it works: 🔔 Is or Are? Was or Were?"
+    },
+    {
+     "text": "Look for clues like yesterday or last night!",
+     "where": "How it works: 🔔 Is or Are? Was or Were?"
+    },
+    {
+     "text": "One person or thing has, and does: Lily has a puppy.",
+     "where": "How it works: 🎒 Has, Have, Had · Do, Does"
+    },
+    {
+     "text": "I, you, we, and they have, and do: We have two cats.",
+     "where": "How it works: 🎒 Has, Have, Had · Do, Does"
+    },
+    {
+     "text": "If it already happened, everyone had: Yesterday I had a cold.",
+     "where": "How it works: 🎒 Has, Have, Had · Do, Does"
+    },
+    {
+     "text": "When one person does it now, add an S: Mia runs.",
+     "where": "How it works: 🏃 Sees, Runs, Gives · Saw, Ran, Gave"
+    },
+    {
+     "text": "Max sees.",
+     "where": "How it works: 🏃 Sees, Runs, Gives · Saw, Ran, Gave"
+    },
+    {
+     "text": "When it's I, you, we, or they, no S: we run, they see.",
+     "where": "How it works: 🏃 Sees, Runs, Gives · Saw, Ran, Gave"
+    },
+    {
+     "text": "And when it already happened, the word changes: saw, ran, and gave!",
+     "where": "How it works: 🏃 Sees, Runs, Gives · Saw, Ran, Gave"
+    },
+    {
+     "text": "Welcome to Grade 2 All-Stars!",
+     "where": "How it works: 🏆 Grade 2 All-Stars"
+    },
+    {
+     "text": "Challenge round covering Grade 2 conventions and grammar!",
+     "where": "How it works: 🏆 Grade 2 All-Stars"
+    },
+    {
+     "text": "Preposition: a green crescent, like a bridge.",
+     "where": "How it works: 🔺 Montessori Colors & Symbols"
+    },
+    {
+     "text": "Position or direction.",
+     "where": "How it works: 🔺 Montessori Colors & Symbols"
+    },
+    {
+     "text": "Conjunction: a pink bar, like a ribbon that joins.",
+     "where": "How it works: 🔺 Montessori Colors & Symbols"
+    },
+    {
+     "text": "Connects words or ideas.",
+     "where": "How it works: 🔺 Montessori Colors & Symbols"
+    },
+    {
+     "text": "Interjection: a gold keyhole shape.",
+     "where": "How it works: 🔺 Montessori Colors & Symbols"
+    },
+    {
+     "text": "Expresses strong feeling.",
+     "where": "How it works: 🔺 Montessori Colors & Symbols"
+    },
+    {
+     "text": "Quotation marks hug the exact words a person says out loud!",
+     "where": "How it works: 💬 Dialogue Quotations"
+    },
+    {
+     "text": "Put quotation marks at the beginning and end of what was spoken, with the punctuation mark tucked inside.",
+     "where": "How it works: 💬 Dialogue Quotations"
+    },
+    {
+     "text": "Possessive nouns show who owns something!",
+     "where": "How it works: 🐕 Possessive Nouns"
+    },
+    {
+     "text": "Add apostrophe S for one owner, like the cat's collar.",
+     "where": "How it works: 🐕 Possessive Nouns"
+    },
+    {
+     "text": "Put the apostrophe after the S for more than one owner, like the puppies' tails!",
+     "where": "How it works: 🐕 Possessive Nouns"
+    },
+    {
+     "text": "Welcome to Prepositions!",
+     "where": "How it works: 🟢 Montessori Prepositions ◡"
+    },
+    {
+     "text": "A preposition is a bridge word that shows where or when, like in, on, under, over, or into.",
+     "where": "How it works: 🟢 Montessori Prepositions ◡"
+    },
+    {
+     "text": "We mark prepositions with a green crescent bridge.",
+     "where": "How it works: 🟢 Montessori Prepositions ◡"
+    },
+    {
+     "text": "Here, under shows where the puppy hid!",
+     "where": "How it works: 🟢 Montessori Prepositions ◡"
+    },
+    {
+     "text": "Welcome to Conjunctions!",
+     "where": "How it works: 🌸 Montessori Conjunctions ▬"
+    },
+    {
+     "text": "A conjunction is a linking word that joins words or ideas together, like and, but, or, so, and because.",
+     "where": "How it works: 🌸 Montessori Conjunctions ▬"
+    },
+    {
+     "text": "We mark conjunctions with a pink bar!",
+     "where": "How it works: 🌸 Montessori Conjunctions ▬"
+    },
+    {
+     "text": "Subjects and verbs must agree!",
+     "where": "How it works: 🤝 Subject-Verb Agreement"
+    },
+    {
+     "text": "When the subject is just one person or animal, the present-tense action verb adds an S, like The puppy eats.",
+     "where": "How it works: 🤝 Subject-Verb Agreement"
+    },
+    {
+     "text": "When the subject is more than one, the verb does not add S, like The kittens dance!",
+     "where": "How it works: 🤝 Subject-Verb Agreement"
+    },
+    {
+     "text": "When we compare two things, we add E-R or use more, like faster than.",
+     "where": "How it works: 📏 Comparatives & Superlatives"
+    },
+    {
+     "text": "When we compare three or more things, we add E-S-T or use most, like the highest mountain!",
+     "where": "How it works: 📏 Comparatives & Superlatives"
+    },
+    {
+     "text": "In Montessori Sentence Analysis, we mark every word in a sentence with its grammar symbol!",
+     "where": "How it works: 📐 Montessori Sentence Builder"
+    },
+    {
+     "text": "Look at the highlighted word and tap its matching symbol below.",
+     "where": "How it works: 📐 Montessori Sentence Builder"
+    },
+    {
+     "text": "Welcome to Grade 3 Grammar Champion!",
+     "where": "How it works: 👑 Grade 3 Grammar Champion"
+    },
+    {
+     "text": "Master all Grade 1, 2, and 3 grammar skills!",
+     "where": "How it works: 👑 Grade 3 Grammar Champion"
+    }
+   ]
+  }
+ ]
+}

@@ -35,6 +35,52 @@ Phase 1 (done, free codes, no payments):
 Phase 2 (when sharing publicly): payments (Stripe or Lemon Squeezy) that create a code automatically
 and email it, plus terms and a refund policy.
 
+## The finish line (decided Nov 18, 2026): Angelio is meant to be finished
+
+Goal: a complete package. "If I'm gone, here's Angelio: it's done, go enjoy it." Not a feed that needs feeding.
+Every app has a last level; when it's done it's frozen (bug fixes only), and new ideas go to "Maybe someday".
+
+**Done checklist (per app; then mark it "1.0, finished"):**
+1. A one-line finish line: "Done means a child can ___, across these grades", and the last level exists.
+2. Every level's questions checked by tests.
+3. Played start to finish by a real child on a phone, an iPad and a computer; bugs fixed.
+4. Every fixed line recorded by Mom or Dad (Lines in angelio.org/admin/sounds) or, later, baked into audio files.
+5. Works offline after the first visit.
+6. Its content in the Studio's master copy, backed up to GitHub.
+7. No dated words (years, prices, current events, "new!", popular characters).
+8. The grown-ups page says what it covers and for which ages.
+9. Marked "1.0, finished" here.
+
+**What Angelio will be when it's done:**
+- Math (PreK–3): Snap & Split, Regroup, Doubles, Fraction Feast. Essentially done.
+- Reading (PreK–3): Letter Lane, Read Aloud, Grammar; still to build: Spelling, maybe Writing 1–3 (fenced to grades 1–3).
+- Faith: the four pillars below as Watch & Sing lessons with quizzes, plus Prayers, Catechism sorting, and a salvation-history
+  timeline (about 20 events, Creation to the Church). Music: open-ended, hers to make as she likes.
+- Out (owner's leaning, Nov 18): general history apps (World, U.S., Catholic history as a whole) and Civics. Through 3rd grade
+  they aren't core, there's no science either, and they don't have a clean drag-and-drop shape. Salvation history stays (Pillar 1).
+
+**Faith lessons: the four pillars** (the shape of both the Catechism of the Catholic Church / its Compendium and Christ – Our
+Pascha; East and West shown side by side where they differ). About 45 lessons, then the lessons are done; saints, popes,
+comics and seasons are a welcome "bonus shelf", not required.
+1. What we believe (the Creed, ~12): God and Creation; the story of salvation from Adam to Jesus; Jesus' life, death,
+   Resurrection and Ascension; the Holy Spirit; the Church; Mary and the saints; heaven.
+2. How we celebrate (~10): the seven Sacraments (Confirmation / Chrismation); the Mass / Divine Liturgy; the church and icons;
+   the Church year.
+3. How we live (~12): the two great commandments; the Ten Commandments; the Beatitudes; works of mercy; virtues; sin,
+   sorrow and forgiveness.
+4. How we pray (~10): the Our Father line by line; the Sign of the Cross (both ways); Hail Mary, Glory Be; the Jesus Prayer;
+   the Rosary; morning and night prayers.
+Next: sort the 63 existing lessons into the pillars and list the gaps.
+
+**Things that need upkeep, and the fix:**
+- The robot voice (a Cloudflare AI model that can be retired): Mom and Dad record the fixed lines (539 sentences listed by
+  tools/voice-lines.mjs, recorded a few at a time), then the rest baked once into audio files so nothing calls the AI.
+- Paid family codes: keep paying optional; free checks must keep working forever.
+- Keys and the Studio: needed only while editing; the apps run without them.
+- Domain and Cloudflare: prepay angelio.org about 10 years with auto-renew; keep the plan cheap.
+- "Keys to the house": a one-page note for someone trusted (domain, Cloudflare, GitHub, yearly costs); an open license;
+  a plain copy of the site that runs anywhere once the voice is baked.
+
 ## NOW: the Angelio Studio (decided Nov 16, 2026; before any other new features)
 
 Why: with the kids videos and songs moving in, the owner must be able to see, add and edit everything

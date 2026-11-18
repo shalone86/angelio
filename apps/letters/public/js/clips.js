@@ -31,7 +31,7 @@ export function addSoundVoiceSetting(app) {
   card.insertBefore(row, card.querySelector(".set:nth-of-type(4)") ?? null);
   const sel = row.querySelector("select");
   sel.value = S.settings().soundVoice === "m" ? "m" : "f";
-  sel.onchange = () => { S.setSetting("soundVoice", sel.value); };
+  sel.onchange = () => { S.setSetting("soundVoice", sel.value); try { localStorage.setItem("angelio:voice", sel.value); } catch { /* ignore */ } };
 }
 
 /** Home-page picker: "Who says the sounds? 👩 Mom · 👨 Dad". Tapping one picks it and plays a sample in that voice. */
@@ -46,6 +46,7 @@ export function voicePickerHtml() {
 export function wireVoicePicker(root, speak) {
   root.querySelectorAll("[data-voice-pick]").forEach((b) => b.onclick = () => {
     S.setSetting("soundVoice", b.dataset.voicePick);
+    try { localStorage.setItem("angelio:voice", b.dataset.voicePick); } catch { /* every Angelio game uses it for recorded lines */ }
     root.querySelectorAll("[data-voice-pick]").forEach((x) => { const on = x === b; x.classList.toggle("on", on); x.setAttribute("aria-pressed", on); });
     speak(`{{sss}}, {{ah}}, {{tuh}}.`, { force: true }); // three sounds in the chosen voice
   });

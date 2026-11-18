@@ -100,6 +100,26 @@ async function speakBrowser(text, rate, id) {
 // several seconds to make). Text in {{double braces}} is a sound that may have a grown-up's recording
 // (see setClips); without one it's read like the rest of the text.
 let clipFor = () => null;
+
+// Whole lines a grown-up recorded (angelio.org/admin/sounds, the "Lines" tabs), found by their exact words:
+// a whole thing to say, or one sentence of it ("Great job!"). Mom's or Dad's voice, whichever is picked, else
+// the other one, else the robot. The list of recordings comes from the hub (/api/clips).
+let lineIndex = null;
+/** The id of a line: "line-" + a short hash of its words (the recorder uses the same one). */
+export function lineId(text) {
+  let h = 0x811c9dc5;
+  for (const ch of String(text).replace(/\s+/g, " ").trim()) { h ^= ch.codePointAt(0); h = Math.imul(h, 0x01000193) >>> 0; }
+  return `line-${h.toString(36)}`;
+}
+const voicePick = () => { try { return (settings().soundVoice ?? localStorage.getItem("angelio:voice")) === "m" ? "m" : "f"; } catch { return "f"; } };
+function lineClip(text) {
+  if (!lineIndex) return null;
+  const id = lineId(text), want = voicePick();
+  for (const set of [want, want === "m" ? "f" : "m"]) { const v = lineIndex[set]?.[id]; if (v != null) return `/api/clip?set=${set}&id=${id}&v=${v}`; }
+  return null;
+}
+if (typeof fetch !== "undefined" && typeof location !== "undefined" && location.protocol === "https:")
+  fetch("/api/clips").then((r) => (r.ok ? r.json() : null)).then((j) => { if (j?.clips) lineIndex = j.clips; }).catch(() => {});
 /** fn(sound) → URL of a recording of that sound, or null. */
 export function setClips(fn) { clipFor = fn; }
 const MARK = /\{\{([^}]+)\}\}/g;
@@ -115,7 +135,17 @@ export function preloadSounds(sounds) {
 }
 export const unmark = (t) => String(t ?? "").replace(MARK, "$1");
 
+/** Sentence by sentence: a sentence someone recorded (marks and all) plays as it is; the rest as before. */
 function pieces(text) {
+  const out = [];
+  for (const sentence of String(text).split(/(?<=[.!?])\s+/)) {
+    if (!sentence.trim()) continue;
+    const rec = lineClip(sentence);
+    if (rec) out.push({ clip: rec, text: unmark(sentence) }); else out.push(...piecesOf(sentence));
+  }
+  return out;
+}
+function piecesOf(text) {
   const out = [];
   let buf = "", last = 0;
   const flush = () => {
@@ -138,6 +168,8 @@ function pieces(text) {
 
 async function playPieces(text, rate, id, server) {
   const list = pieces(text);
+  const whole = player && lineClip(text); // the whole thing, recorded in one go
+  if (whole) { try { await playThrough(whole, rate); return; } catch { /* fall back to the pieces */ } }
   const voice = settings().voice;
   const urls = list.map((p) => (p.clip || !server ? null : serverUrl(p.text, voice)));
   urls.forEach((u) => u?.catch(() => {}));
@@ -166,6 +198,7 @@ async function playPieces(text, rate, id, server) {
 let lastSpeech = Promise.resolve();
 /** Say text aloud (if read-aloud is on, or force). rate: 0.65 for slowly. Resolves when done. Never throws. */
 export function speak(text, opts) {
+  if (typeof window !== "undefined") window.__angelioSaid?.(text); // tools/voice-lines.mjs lists the lines to record
   const p = speakNow(text, opts);
   lastSpeech = p;
   return p;
