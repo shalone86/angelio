@@ -6,6 +6,11 @@
   `npm install` once at the top; `npm test` runs every suite; deploy with `npm run deploy -- <app>` (it refuses
   uncommitted work). `npm run kit-check` shows kit drift between apps.
 - **The Studio comes first** (ROADMAP.md): the owner must be able to edit everything without code or AI.
+- **The Studio holds the master copy of content** (angelio.org/studio, R2 bucket `watch-media`): Watch & Sing's library
+  (`content/watch/library.json`) and the reading lessons (`content/reading/lessons.json`, Letter Lane + Read Aloud). The copies
+  in the repo (`apps/watch/public/data/library.json`, phonics.js PATTERNS) are only fallbacks and nightly backups: changing
+  them doesn't change what people see once she has saved in the Studio. To change content, change it in the Studio (or ask
+  her to), or update R2 and say so. Backup commits ("Studio backup: …") land on main: pull before working.
 
 - This is part of **Angelio** (angelio.org), the owner's brand of free kids' learning apps. The
   hub is shalone86/angelio; shared building blocks come from shalone86/app-template.

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reading lessons · Angelio Studio</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#2f4a7a">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="preload" href="/fonts/nunito-400-800.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="studio.css">
+  <style>
+    .group-title { font: 800 .8rem Nunito, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 12px 4px 4px; }
+    .item .em { width: 40px; text-align: center; font-size: 1.5rem; flex: none; }
+    .wrow { display: grid; grid-template-columns: 1fr 70px auto 36px; gap: 6px; align-items: center; margin: 4px 0; }
+    .wrow.noemoji { grid-template-columns: 1fr auto 36px; }
+    .wrow.sent { grid-template-columns: 1fr 70px 46px 36px; }
+    .wrow input { font-family: ui-monospace, Menlo, monospace; }
+    .wrow.sent input:first-child { font-family: inherit; }
+    .chunks { display: inline-flex; gap: 2px; font: 800 1.05rem Andika, Nunito, sans-serif; white-space: nowrap; }
+    .chunks span { background: #eef1f7; border-radius: 6px; padding: 0 5px; }
+    .chunks span.f { background: #ffe3d6; color: #b4400f; }
+    .chunks span.s { opacity: .4; }
+    .count { font: 800 .8rem Nunito; text-align: center; border-radius: 99px; padding: 2px 0; background: #e6f6ec; color: var(--good); }
+    .count.bad { background: #ffe9e9; color: var(--bad); }
+    .help { background: #f4f7ff; border-radius: 12px; padding: 8px 12px; font-size: .88rem; color: var(--muted); }
+    .help code { background: #fff; padding: 0 4px; border-radius: 4px; color: var(--ink); }
+  </style>
+</head>
+<body>
+<header>
+  <h1><img src="/icon.svg" alt="">Angelio Studio</h1>
+  <nav class="switch"><a href="./">🎬 Watch &amp; Sing</a><a href="reading.html" class="on">🔤 Reading lessons</a></nav>
+  <span class="space"></span>
+  <span id="state"></span>
+  <button id="historyBtn">🕘 History</button>
+  <button class="main" id="saveBtn" disabled>Save</button>
+</header>
+<div class="cols">
+  <section id="listCol">
+    <p class="muted" style="margin:4px 4px 8px">Kindergarten lessons are in <b>Letter Lane</b>; 1st to 3rd grade in <b>Read Aloud</b>.</p>
+    <div class="row"><input id="search" type="search" placeholder="Find…" class="grow"><button class="blue" id="newBtn">+ New</button></div>
+    <div id="list" style="margin-top:4px"></div>
+  </section>
+  <section id="editCol"><div class="empty">Loading the lessons…</div></section>
+  <section id="previewCol">
+    <div class="row"><b>Preview</b><span class="muted">(the real game, with your changes)</span><button class="small" id="wideBtn">↔ Wider</button><button class="small" id="restartBtn">↻ Start again</button></div>
+    <iframe id="frame" title="Lesson preview"></iframe>
+  </section>
+</div>
+<div class="modal" id="keyModal" hidden><div>
+  <h2>Admin key</h2><p class="muted">The same key as the sound recorder. It stays on this device.</p>
+  <div class="row"><input id="keyIn" type="password" class="grow" autocomplete="current-password"><button class="main" id="keyGo">Open the Studio</button></div>
+  <p id="keyErr" class="muted" style="color:var(--bad)"></p>
+</div></div>
+<div class="modal" id="histModal" hidden><div>
+  <div class="row"><h2 class="grow">History</h2><button class="small" data-close>✕ Close</button></div>
+  <p class="muted">Every save keeps the version before it. "Bring back" puts that version in the Studio; press Save to make it live again.</p>
+  <div id="versions"></div>
+</div></div>
+<div id="toast" hidden></div>
+<script type="module" src="reading.js"></script>
+</body>
+</html>

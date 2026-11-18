@@ -137,3 +137,25 @@ test("backup: library, lead sheets, and the sounds in batches; only what changed
     assert.equal(r.commits, 1); assert.equal(puts, before + 1);
   } finally { globalThis.fetch = realFetch; }
 });
+
+test("reading lessons: the apps' copy at first; a broken lesson is refused; a save is what both apps load", async () => {
+  const e = env();
+  const first = await (await call(e, "GET", "/reading")).json();
+  assert.equal(first.version, "app");
+  assert.ok(first.library.patterns.length >= 30);
+  // nothing saved yet: the apps use their own copy
+  assert.equal((await worker.fetch(new Request("https://angelio.org/api/content/reading"), e)).status, 404);
+  const doc = first.library;
+  const bad = structuredClone(doc); bad.patterns[0].sentences[0] = ["the cat sat on the mat all day long today", "🐱"];
+  const r = await call(e, "POST", "/reading", JSON.stringify(bad));
+  assert.equal(r.status, 400);
+  assert.match((await r.json()).errors.join(" "), /Kindergarten sentences have 2 to 4/);
+  doc.patterns[0].title = "Short a (from the Studio)";
+  doc.patterns.push({ ...structuredClone(doc.patterns[0]), id: "k-short-a-2", title: "More short a" });
+  const ok = await (await call(e, "POST", "/reading?base=app&note=New lesson", JSON.stringify(doc))).json();
+  assert.ok(ok.ok, JSON.stringify(ok));
+  const pub = await (await worker.fetch(new Request("https://angelio.org/api/content/reading"), e)).json();
+  assert.equal(pub.patterns[0].title, "Short a (from the Studio)");
+  assert.ok(pub.patterns.some((p) => p.id === "k-short-a-2"));
+  assert.equal((await (await call(e, "GET", "/reading/history")).json()).versions[0].note, "New lesson");
+});

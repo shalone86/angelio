@@ -3,6 +3,7 @@
 // Pure data and question making (no DOM); tested in test/reading.test.js.
 //
 import { PATTERNS, makePhonics, patternById } from "./phonics.js";
+import "./content.js"; // the Studio's lessons, in place before the levels below are built
 
 // Letter order follows the common early-phonics groups: s a t p i n, then m d g o c k, then e u r h b f l,
 // then the rest (j v w x y z q).
@@ -62,10 +63,10 @@ export const CVC = [
   ["nut", "🥜"], ["leg", "🦵"], ["lip", "👄"], ["pot", "🍲"], ["fin", "🦈"],
 ];
 
-const phonics = (grade, level) => PATTERNS.filter((p) => p.grade === grade && p.level === level)
+const phonics = (grade, level) => PATTERNS.filter((p) => p.grade === grade && p.level === level && !p.hidden)
   .map((p) => ({ id: p.id, grade, level, type: "phonics", pattern: p.id, title: p.title, emoji: p.emoji }));
 
-const ALL_STAGES = [
+const allStages = () => [
   // PreK, Level 1: the letters
   { id: "p-letters-1", grade: 1, level: 1, type: "letters", group: 0, title: "Letters s a t p i n", emoji: "🌱" },
   { id: "p-letters-2", grade: 1, level: 1, type: "letters", group: 1, title: "Letters m d g o c k", emoji: "🌿" },
@@ -84,7 +85,9 @@ const ALL_STAGES = [
   // 1st to 3rd grade (Read Aloud): phonics.js, two levels each
   ...[3, 4, 5].flatMap((g) => [...phonics(g, 1), ...phonics(g, 2)]),
 ];
-export const STAGES = ALL_STAGES.filter((s) => APP_GRADES.includes(s.grade));
+export let STAGES = allStages().filter((s) => APP_GRADES.includes(s.grade));
+/** Build the levels again after the lessons change (the Studio's preview, or a fresher copy). */
+export function rebuildStages() { STAGES = allStages().filter((s) => APP_GRADES.includes(s.grade)); }
 export const stageById = (id) => STAGES.find((s) => s.id === id);
 export const PER_STAGE = 8;
 

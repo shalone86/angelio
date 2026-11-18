@@ -8,61 +8,76 @@
 // (apps/watch/public/data/library.json) every night and on "Back up now".
 
 import { validateLibrary, prepareForSave } from "../public/js/watch-content.js";
+import { validateReading } from "../public/js/reading-content.js";
+import * as phonics from "../../apps/letters/public/js/phonics.js";
 
-const LIVE = "content/watch/library.json";
-const HISTORY = "content/watch/history/";
 const TYPES = { "video/mp4": "mp4", "video/quicktime": "mov", "video/webm": "webm", "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp", "image/gif": "gif", "audio/mpeg": "mp3", "audio/mp4": "m4a", "audio/wav": "wav", "application/pdf": "pdf" };
-const REPO = "shalone86/angelio", REPO_PATH = "apps/watch/public/data/library.json";
+const REPO = "shalone86/angelio";
 
 const json = (data, status = 200) => new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json", "cache-control": "no-store" } });
 
-/** The live library and its version (the R2 etag), or the app's own copy if the Studio hasn't saved yet. */
-async function current(env) {
-  const obj = await env.WATCH_MEDIA.get(LIVE);
+// What the Studio edits. Each: where it lives in R2, its history, how it's checked, and the app's own copy before
+// the first save. The library/lessons are sent and saved whole (they're small: 160 KB and 60 KB).
+const DOCS = {
+  watch: { live: "content/watch/library.json", history: "content/watch/history/", backup: "apps/watch/public/data/library.json",
+    check: (d) => validateLibrary(d), prepare: prepareForSave,
+    builtIn: async (env) => { const r = env.WATCH ? await env.WATCH.fetch("https://watch/data/library.json") : null; if (!r?.ok) throw new Error("Couldn't read the library."); return r.json(); } },
+  // Letter Lane and Read Aloud's phonics lessons (phonics.js PATTERNS); both apps load them (/api/content/reading).
+  reading: { live: "content/reading/lessons.json", history: "content/reading/history/", backup: "backup/reading-lessons.json",
+    check: (d) => validateReading(d, phonics), prepare: (d) => ({ patterns: d.patterns, saved: new Date().toISOString().slice(0, 10) }),
+    builtIn: async () => ({ patterns: structuredClone(phonics.PATTERNS) }) },
+};
+export const LIVE = DOCS.watch.live;
+export const READING_LIVE = DOCS.reading.live;
+
+/** A document and its version (the R2 etag), or the app's own copy if the Studio hasn't saved it yet. */
+async function current(env, doc) {
+  const obj = await env.WATCH_MEDIA.get(doc.live);
   if (obj) return { library: await obj.json(), version: obj.etag, stored: true };
-  const r = env.WATCH ? await env.WATCH.fetch("https://watch/data/library.json") : null;
-  if (!r?.ok) throw new Error("Couldn't read the library.");
-  return { library: await r.json(), version: "app", stored: false };
+  return { library: await doc.builtIn(env), version: "app", stored: false };
 }
 
 export async function studioApi(request, url, env) {
   if (!env.WATCH_MEDIA) return json({ error: "The Studio's storage isn't connected (WATCH_MEDIA)." }, 503);
-  const route = `${request.method} ${url.pathname.replace(/^\/api\/admin\/studio/, "")}`;
+  const path = url.pathname.replace(/^\/api\/admin\/studio/, "");
   const q = (k) => url.searchParams.get(k);
-
-  if (route === "GET /watch") return json(await current(env));
-
-  if (route === "POST /watch") {
-    let lib;
-    try { lib = JSON.parse(await request.text()); } catch { return json({ error: "That wasn't a library." }, 400); }
-    const { errors, warnings } = validateLibrary(lib);
-    if (errors.length) return json({ error: "Some things need fixing first.", errors }, 400);
-    const cur = await current(env);
-    if (q("base") && q("base") !== cur.version) return json({ error: "The library was changed somewhere else (another tab?). Reload to get the newest one.", version: cur.version }, 409);
-    const note = String(q("note") ?? "").replace(/[^\w -]/g, "").trim().slice(0, 60).replace(/\s+/g, "-");
-    await env.WATCH_MEDIA.put(`${HISTORY}${new Date().toISOString()}${note ? `--${note}` : ""}.json`, JSON.stringify(cur.library), { httpMetadata: { contentType: "application/json" } });
-    const saved = prepareForSave(lib);
-    const obj = await env.WATCH_MEDIA.put(LIVE, JSON.stringify(saved), { httpMetadata: { contentType: "application/json" } });
-    return json({ ok: true, version: obj.etag, warnings, people: saved.people.length });
+  const m = /^\/(watch|reading)(\/history|\/version)?$/.exec(path);
+  if (m) {
+    const doc = DOCS[m[1]], route = `${request.method} ${m[2] ?? ""}`;
+    if (route === "GET ") return json(await current(env, doc));
+    if (route === "POST ") {
+      let lib;
+      try { lib = JSON.parse(await request.text()); } catch { return json({ error: "That wasn't readable." }, 400); }
+      const { errors, warnings } = doc.check(lib);
+      if (errors.length) return json({ error: "Some things need fixing first.", errors }, 400);
+      const cur = await current(env, doc);
+      if (q("base") && q("base") !== cur.version) return json({ error: "This was changed somewhere else (another tab?). Reload to get the newest one.", version: cur.version }, 409);
+      const note = String(q("note") ?? "").replace(/[^\w -]/g, "").trim().slice(0, 60).replace(/\s+/g, "-");
+      await env.WATCH_MEDIA.put(`${doc.history}${new Date().toISOString()}${note ? `--${note}` : ""}.json`, JSON.stringify(cur.library), { httpMetadata: { contentType: "application/json" } });
+      const saved = doc.prepare(lib);
+      const obj = await env.WATCH_MEDIA.put(doc.live, JSON.stringify(saved), { httpMetadata: { contentType: "application/json" } });
+      return json({ ok: true, version: obj.etag, warnings, people: saved.people?.length });
+    }
+    if (route === "GET /history") {
+      const list = [];
+      let cursor;
+      do {
+        const r = await env.WATCH_MEDIA.list({ prefix: doc.history, cursor, limit: 1000 });
+        list.push(...r.objects.map((o) => ({ key: o.key.slice(doc.history.length), size: o.size })));
+        cursor = r.truncated ? r.cursor : null;
+      } while (cursor && list.length < 5000);
+      list.sort((a, b) => (a.key < b.key ? 1 : -1));
+      return json({ versions: list.slice(0, 300).map(({ key, size }) => { const [at, note] = key.replace(/\.json$/, "").split("--"); return { key, at, note: note?.replace(/-/g, " ") ?? "", size }; }) });
+    }
+    if (route === "GET /version") {
+      const key = q("key") ?? "";
+      if (!/^[\w:.\-]+\.json$/.test(key)) return json({ error: "bad version" }, 400);
+      const obj = await env.WATCH_MEDIA.get(doc.history + key);
+      return obj ? new Response(obj.body, { headers: { "content-type": "application/json" } }) : json({ error: "no such version" }, 404);
+    }
+    return json({ error: "not found" }, 404);
   }
-
-  if (route === "GET /watch/history") {
-    const list = [];
-    let cursor;
-    do {
-      const r = await env.WATCH_MEDIA.list({ prefix: HISTORY, cursor, limit: 1000 });
-      list.push(...r.objects.map((o) => ({ key: o.key.slice(HISTORY.length), size: o.size })));
-      cursor = r.truncated ? r.cursor : null;
-    } while (cursor && list.length < 5000);
-    list.sort((a, b) => (a.key < b.key ? 1 : -1));
-    return json({ versions: list.slice(0, 300).map(({ key, size }) => { const [at, note] = key.replace(/\.json$/, "").split("--"); return { key, at, note: note?.replace(/-/g, " ") ?? "", size }; }) });
-  }
-  if (route === "GET /watch/version") {
-    const key = q("key") ?? "";
-    if (!/^[\w:.\-]+\.json$/.test(key)) return json({ error: "bad version" }, 400);
-    const obj = await env.WATCH_MEDIA.get(HISTORY + key);
-    return obj ? new Response(obj.body, { headers: { "content-type": "application/json" } }) : json({ error: "no such version" }, 404);
-  }
+  const route = `${request.method} ${path}`;
 
   // ── uploads, in parts (each request stays small; R2 joins them) ──
   if (route === "POST /upload/start") {
@@ -126,10 +141,11 @@ export async function backupToGitHub(env) {
   };
   const out = { ok: true, commits: 0, soundsLeft: 0, notes: [] };
   try {
-    // 1. Watch & Sing's library
-    const obj = await env.WATCH_MEDIA?.get(LIVE);
-    if (obj) {
-      const r = await putFile(REPO_PATH, new TextEncoder().encode(JSON.stringify(await obj.json(), null, 1) + "\n"), "Studio backup: Watch & Sing library");
+    // 1. Watch & Sing's library and the reading lessons
+    for (const [name, doc] of Object.entries(DOCS)) {
+      const obj = await env.WATCH_MEDIA?.get(doc.live);
+      if (!obj) continue;
+      const r = await putFile(doc.backup, new TextEncoder().encode(JSON.stringify(await obj.json(), null, 1) + "\n"), `Studio backup: ${name === "watch" ? "Watch & Sing library" : "reading lessons"}`);
       if (!r.same) out.commits++;
     }
     if (!env.CODES) return out;

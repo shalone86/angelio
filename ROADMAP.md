@@ -63,6 +63,11 @@ lessons (video and picture uploads, picture from a video frame, courses, quiz bu
 (order). Hide instead of delete; live preview with the real Watch & Sing (?studio). Rules in hub/public/js/watch-content.js
 (nothing broken can be saved). The Ghost import is retired. Every old song has its MP3; new ones are exported from Logic and uploaded as a download. Next: drafts,
 trash, export, then the Studio for the games' content.
+Nov 18, 2026: **Studio for the reading lessons** (angelio.org/studio/reading.html): Letter Lane and Read Aloud's phonics
+lessons (grade, level, order, what it teaches, How it works card, picture words as chunks with a live chunk preview, more
+words, sentences with word counts per grade), hide = draft (saveable unfinished), preview in the real game. Both apps load
+the saved lessons (/api/content/reading; their own copy when offline or before the first save). Rules shared by the page
+and server (hub/public/js/reading-content.js); backups include them. Next: letters, rhymes and beats lists; Grammar's content.
 Progress: **one repo done** (Nov 16, 2026: hub/, apps/*, template/, with every app's history; shared install,
 `npm test` for everything, safe deploy, kit check). Next: the kit shared for real (no copies), and Watch & Sing's
 content as the master copy (no longer imported from Ghost).

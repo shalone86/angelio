@@ -4,6 +4,7 @@ import { GROUPS, LETTERS, keyword } from "./reading.js";
 import { snd } from "./letter-sounds.js";
 import { PATTERNS, chunks, focusIndexes, wordOf } from "./phonics.js";
 import { APP_GRADES } from "./grades.js";
+import "./content.js"; // the Studio's lessons first
 
 const letterRow = (group) => `<div class="lesson-letters">${group.map((l) => `
   <span class="lesson-letter lesson-focus"><span class="abc">${l}</span><span class="pic" aria-hidden="true">${keyword(l)[1]}</span></span>`).join("")}</div>`;
@@ -47,15 +48,23 @@ export const LESSONS = {
 };
 
 // Phonics levels: how to say the pattern, three example words in chunks, then "let's practice".
-for (const p of PATTERNS.filter((x) => APP_GRADES.includes(x.grade))) {
-  const ex = p.pictures.slice(0, 3);
-  const word = ([spec, emoji]) => {
-    const ch = chunks(spec, p.syllables), f = new Set(focusIndexes(p, ch));
-    return `<span class="lesson-word lesson-focus"><span class="pic" aria-hidden="true">${emoji}</span><span class="chunked">${ch.map((c, i) => `<span class="chunk${f.has(i) ? " focus" : ""}${c.silent ? " silent" : ""}">${c.t}</span>`).join(p.syllables ? '<span class="dot">·</span>' : "")}</span></span>`;
-  };
-  LESSONS[p.id] = {
-    emoji: p.emoji, title: p.title, rule: p.teach,
-    exampleHtml: `<div class="lesson-words">${ex.map(word).join("")}</div>`,
-    voice: `${p.say} Let's practice: ${ex.map(([s]) => wordOf(s)).join(", ")}!`,
-  };
+const patternIds = new Set();
+/** The "How it works" card of every phonics lesson (again after the lessons change). */
+export function buildPatternLessons() {
+  for (const id of patternIds) delete LESSONS[id];
+  patternIds.clear();
+  for (const p of PATTERNS.filter((x) => APP_GRADES.includes(x.grade))) {
+    const ex = p.pictures.slice(0, 3);
+    const word = ([spec, emoji]) => {
+      const ch = chunks(spec, p.syllables), f = new Set(focusIndexes(p, ch));
+      return `<span class="lesson-word lesson-focus"><span class="pic" aria-hidden="true">${emoji}</span><span class="chunked">${ch.map((c, i) => `<span class="chunk${f.has(i) ? " focus" : ""}${c.silent ? " silent" : ""}">${c.t}</span>`).join(p.syllables ? '<span class="dot">·</span>' : "")}</span></span>`;
+    };
+    patternIds.add(p.id);
+    LESSONS[p.id] = {
+      emoji: p.emoji, title: p.title, rule: p.teach,
+      exampleHtml: `<div class="lesson-words">${ex.map(word).join("")}</div>`,
+      voice: `${p.say} Let's practice: ${ex.map(([s]) => wordOf(s)).join(", ")}!`,
+    };
+  }
 }
+buildPatternLessons();

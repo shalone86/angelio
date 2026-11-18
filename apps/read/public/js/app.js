@@ -13,8 +13,9 @@ import { keepDockVisible } from "./kit/dock.js";
 import { showLesson } from "./kit/lesson.js";
 import { leadIn, praise, tryAgain, vary } from "./kit/vary.js";
 import { esc, starsHtml, nextButton, markDot, showFinish, stickerBook, viewGrownups, installClickSounds, wireVoiceToggle } from "./kit/ui.js";
-import { GRADES, STAGES, stageById, PER_STAGE, makeStage, LETTERS, soundSay, starsFor } from "./reading.js";
-import { LESSONS } from "./lessons.js";
+import { GRADES, STAGES, stageById, PER_STAGE, makeStage, LETTERS, soundSay, starsFor, rebuildStages } from "./reading.js";
+import { LESSONS, buildPatternLessons } from "./lessons.js";
+import { applyPatterns, onFresh } from "./content.js";
 import { patternById, chunks, focusIndexes, patternWord } from "./phonics.js";
 import { snd } from "./letter-sounds.js";
 
@@ -445,6 +446,19 @@ const ASK = {
   },
 };
 
+// Lessons from the Angelio Studio: a fresher copy redraws the home page; the Studio's preview sends its own.
+const STUDIO = new URLSearchParams(location.search).has("studio");
+function lessonsChanged() { rebuildStages(); buildPatternLessons(); }
+onFresh(() => { lessonsChanged(); if (/^#?\/?$/.test(location.hash)) route(); });
+if (STUDIO) {
+  addEventListener("message", (e) => {
+    if (e.origin !== location.origin || e.data?.type !== "studio") return;
+    if (e.data.patterns) { applyPatterns(e.data.patterns); lessonsChanged(); }
+    if (e.data.go && location.hash !== e.data.go) location.hash = e.data.go; else route();
+  });
+  parent.postMessage({ type: "studio-ready" }, location.origin);
+}
+
 installClickSounds();
 jingleOnce("readaloud", () => S.settings().sounds); // the app's little logo sound, on the first tap
 route();
@@ -452,7 +466,7 @@ keepDockVisible();
 // Offline support. Updates never reload the page by themselves (a tap during a reload would open a
 // game and then drop the child back on Home). The offline files fetch fresh copies first, so the next
 // visit is up to date anyway.
-if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+if (!STUDIO && "serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
   navigator.serviceWorker.register("sw.js").then((reg) => reg.update()).catch(() => {});
 }
 

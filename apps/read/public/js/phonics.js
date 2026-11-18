@@ -10,7 +10,7 @@ import { LETTERS } from "./letter-sounds.js";
 
 /** How each chunk is said (spelled so the voice says it well). Single letters fall back to LETTERS. */
 export const CHUNK_SOUNDS = {
-  sh: "shh", ch: "chuh", th: "thuh", wh: "wuh", ck: "kuh", ink: "ink", unk: "unk", ll: "lll", ss: "sss", ff: "fff",
+  sh: "shh", ch: "chuh", th: "thuh", wh: "wuh", ck: "kuh", ink: "ink", unk: "unk", ong: "ong", ll: "lll", ss: "sss", ff: "fff",
   ee: "ee", ea: "ee", ai: "ay", ay: "ay", oa: "oh", igh: "eye", ar: "ar", or: "or", er: "er", ir: "er", ur: "er",
   oi: "oy", oy: "oy", ou: "ow", ow: "ow", tch: "chuh", dge: "juh", kn: "nnn", wr: "rrr", mb: "mmm",
   tion: "shun", ture: "cher", le: "ul", qu: "kwuh",

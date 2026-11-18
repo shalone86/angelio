@@ -22,7 +22,7 @@ export const APPS = {
 
 import { normalizeCode, newCode, codeStatus, day, month } from "./codes.js";
 import { stripeApi } from "./stripe.js";
-import { studioApi, backupToGitHub } from "./studio.js";
+import { studioApi, backupToGitHub, READING_LIVE } from "./studio.js";
 
 export default {
   // Every night: copy the Studio's library into GitHub (does nothing without a GITHUB_TOKEN secret).
@@ -109,6 +109,12 @@ async function api(request, url, env) {
     const wav = id && (await env.CODES.get(`clip:${set}:${id}`, "arrayBuffer"));
     if (!wav) return json({ error: "no recording" }, 404);
     return new Response(wav, { headers: { "content-type": "audio/wav", "cache-control": "public, max-age=31536000, immutable" } });
+  }
+  // The reading lessons saved in the Studio (Letter Lane and Read Aloud load them; 404 = use their own copy).
+  if (route === "GET /api/content/reading") {
+    const obj = env.WATCH_MEDIA ? await env.WATCH_MEDIA.get(READING_LIVE) : null;
+    if (!obj) return json({ error: "no saved lessons" }, 404);
+    return new Response(obj.body, { headers: { "content-type": "application/json", "cache-control": "public, max-age=60", etag: obj.httpEtag } });
   }
   // Lead sheets (made at /admin/leadsheet.html): one per song, by the song's Watch & Sing id.
   if (route === "GET /api/leadsheets") {
