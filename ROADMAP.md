@@ -20,6 +20,12 @@ voice; donations welcome; a paid Pro voice (natural Cloudflare voice) with an ac
 **Paid speech checks.** Reading aloud stays free (device voice). "Say it out loud" checking costs
 real money (Whisper on Workers AI), so it needs a family code.
 
+Nov 18, 2026, a different road to consider first: **speech checks on the device**. Whisper's small models run inside
+the browser (WebGPU) on recent phones, tablets and computers: free, private (the voice never leaves the device), and
+nothing to pay or keep running, which fits "Angelio is meant to be finished". The model files (about 40–150 MB, pinned)
+would be hosted on angelio.org and downloaded once. Plan: try it in Articulate and Read Aloud; keep the Cloudflare check
+(free 20 a day) for devices that can't; payments (Gumroad license keys, no webhooks) only if still wanted after that.
+
 Phase 1 (done, free codes, no payments):
 - Codes live in the shared KV store `angelio-codes` (binding `CODES`); logic in `worker/codes.js`
   (same file in app-template and every app). The owner makes codes at angelio.org/admin/
@@ -70,7 +76,43 @@ comics and seasons are a welcome "bonus shelf", not required.
    sorrow and forgiveness.
 4. How we pray (~10): the Our Father line by line; the Sign of the Cross (both ways); Hail Mary, Glory Be; the Jesus Prayer;
    the Rosary; morning and night prayers.
-Next: sort the 63 existing lessons into the pillars and list the gaps.
+**Where the 63 lessons sit (sorted Nov 18):**
+- Pillar 1, believe (11): the Resurrection; angels (What are angels, Cherubim, Seraphim, the order and number, evil
+  angels, Michael, Gabriel, Raphael); the Church (Why are there bad people in the Church?, Infallibility, What is the
+  Byzantine Catholic Church?).
+- Pillar 2, celebrate (27): the Church year (Advent, the Advent wreath, Gaudete, the Jesse tree, nativity scenes, the
+  Christmas tree, Epiphany, Ash Wednesday, Lent, Laetare, Passiontide, veiling statues, Palm Sunday, Holy Week, Holy
+  Saturday, Pascha, the day of Easter, Easter traditions, Eastertide); church and liturgy (statues and paintings, bowing and
+  kneeling, staying home from Mass, the Byzantine rite, what Byzantine means, inside a Byzantine church).
+- Pillar 3, live (3): the Golden Rule, penance, ideas for penance.
+- Pillar 4, pray (13): an introduction to prayer, the need, the difference it makes, conditions, posture, attention, vocal,
+  mental, public and private; the Sign of the Cross (two lessons, East and West); the Stations of the Cross.
+- Saints, popes and history (10): St Aidan, St Valentine, St Frances Cabrini, St Gabriel of Our Lady of Sorrows, St
+  Vladimir, Blessed Stepinac, the Brothers of the Sacred Heart, Pope Francis, Pope Leo XIV, the conclave. Plus a comic
+  (A Legend for Easter). Evergreen note: tell popes as history ("Pope Francis led the Church from 2013…"), never "our pope".
+
+**Gaps (about 32 core lessons left, then the lessons are done):**
+- Pillar 1 (~10): God the Father and Creation; the Trinity; the Bible story (also the timeline); Jesus became man (the
+  Incarnation); Jesus' life and miracles; the Cross; the Ascension; the Holy Spirit and Pentecost; Mary; heaven and the
+  communion of saints.
+- Pillar 2 (~8): the seven Sacraments, one each (Baptism; Confirmation / Chrismation; the Eucharist; Confession; Anointing of
+  the Sick; Marriage; Holy Orders); the parts of the Mass / Divine Liturgy. The Church year is already complete.
+- Pillar 3 (~8): the two great commandments; the Ten Commandments (two or three lessons); the Beatitudes; the works of mercy;
+  the virtues; sin, sorrow and forgiveness.
+- Pillar 4 (~6): the Our Father, line by line; the Hail Mary; the Glory Be; the Jesus Prayer; the Rosary; morning and night
+  prayers. (How to pray is already well covered.)
+
+**Church history, East and West, very short** (owner, Nov 18): one walk from Pentecost to today, joined to the salvation
+history timeline, so parents have it in one place. Fenced: about 25 stops, a couple per few centuries; each stop is one short
+card (and maybe a video) with a saint or pope; a drag-the-stops-in-order game. Draft stops, for her to change:
+Pentecost · Peter and Paul in Rome · the martyrs (St Perpetua) · Constantine, the Church set free (313) · the Council of Nicaea and the
+Creed (325; St Nicholas, St Athanasius) · the desert fathers (St Anthony) · St Augustine · St Patrick · St Benedict and the monks ·
+Hagia Sophia · Pope St Gregory the Great · Sts Cyril and Methodius · St Vladimir and the baptism of Kyiv (988) · East and West
+grow apart (1054), and the Eastern Catholic Churches that later returned to union · St Francis and St Dominic · St Thomas Aquinas ·
+Our Lady of Guadalupe (1531) · the Council of Trent and the missionaries (St Francis Xavier) · the Union of Brest (1596) · St
+Martin de Porres and St Rose of Lima · St Kateri Tekakwitha · St Thérèse · Lourdes and Fátima · martyrs under communism (Blessed
+Stepinac and the Greek Catholic martyrs) · the Second Vatican Council · St John Paul II and St Teresa of Calcutta · today: one
+Church, East and West, in every country. Keep contested history as gently hedged as the sources are.
 
 **Things that need upkeep, and the fix:**
 - The robot voice (a Cloudflare AI model that can be retired): Mom and Dad record the fixed lines (539 sentences listed by
