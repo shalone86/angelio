@@ -212,6 +212,10 @@ lessons (grade, level, order, what it teaches, How it works card, picture words 
 words, sentences with word counts per grade), hide = draft (saveable unfinished), preview in the real game. Both apps load
 the saved lessons (/api/content/reading; their own copy when offline or before the first save). Rules shared by the page
 and server (hub/public/js/reading-content.js); backups include them. Next: letters, rhymes and beats lists; Grammar's content.
+Nov 18, 2026: **Drawings** (angelio.org/studio/draw/): the Lesson Studio's Pixel art editor (a copy, phone layout) with
+a checklist per game (hub/public/js/art-content.js CHECKLISTS; Candle Rack's Roman and Byzantine pieces first). Saved to R2
+(content/art/drawings.json, old versions and trash kept), backed up to GitHub (art/drawings/), readable by anyone at /api/art
+(Claude and the games read them there). Seeded with her nuns, priests, deacons, candle, shrines and churches from sdcourses.
 Progress: **one repo done** (Nov 16, 2026: hub/, apps/*, template/, with every app's history; shared install,
 `npm test` for everything, safe deploy, kit check). Next: the kit shared for real (no copies), and Watch & Sing's
 content as the master copy (no longer imported from Ghost).
