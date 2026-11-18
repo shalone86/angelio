@@ -256,9 +256,14 @@ export class Game {
         label: "Hint",
         onClick: () => {
           sfx.pop();
+          // Each board's own way to work it out (not every board has beads to tap).
+          const hasBeads = !!this.stageEl.querySelector("circle[stroke]");
           const tapWhat = q.kind === "missing-double" ? "Tap a twin to add beads to both, and count them!"
             : q.kind === "ten-five" || q.kind === "big-double" ? "Tap each ten-bar to count by tens!"
-            : "Tap the beads to count them!";
+            : q.kind === "fact-family" ? `Use the triangle: ${q.product} is the total. Count by ${q.a}s: ${q.a}, ${q.a * 2}, ${q.a * 3}… How many ${q.a}s make ${q.product}?`
+            : q.kind === "missing-factor" ? `Tap the plus button to add bars of ${q.known} until the total is ${q.product}. Then count the bars!`
+            : hasBeads ? "Tap the beads to count them!"
+            : "Look carefully at the picture, and count!";
           const gentleClue = q.clue ? `Think about ${q.clue}! ${tapWhat}` : tapWhat;
           this.showHint(gentleClue, false);
           speak(spoken(gentleClue));
