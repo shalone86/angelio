@@ -123,8 +123,40 @@ Not a separate game: a Watch & Sing course ("Church history"), each stop a short
 question for it (and reusable anywhere): **timeline** (drag the events into order along a line, with dates shown after) and
 **map** (tap where it happened on a simple world or Mediterranean map). The Studio's quiz builder gets both.
 
-**Games for Angelio** (still to talk through): the half-dozen real games the owner wants (see the master roadmap's web games)
-go through the same finish-line filter: a last level, then done.
+**Games for Angelio** (talked through Nov 18, 2026). Real games, like Blessed! and Candles! on Pico Parish: replaying
+is the content, so they never need new levels.
+
+*The rule for every game: easy to play, hard to master* (Pac-Man, Crossy Road, Vampire Survivors):
+- **Floor:** one tap action, everything read aloud, and the first 30 seconds anyone can do. No "Game over": a run ends
+  gently (a timer, or three little misses) with "You served 12 meals!" and their own best score.
+- **Ceiling:** it speeds up and adds more at once; **streaks** multiply the score (a miss only resets the streak);
+  **risk for reward** (wait for the bigger prize, or take the safe one); **patterns** a focused player learns; and between
+  rounds, **pick one of three** small upgrades (Vampire Survivors), so every run plays a little differently.
+- **Fresh with no upkeep:** random every run; a **"today's game"** seed worked out on the device (the same day gives
+  everyone the same run); the **Church year** from the date (Advent, Christmas, Lent, Easter, feast days, saint of the
+  day), so it changes through the year and repeats every year; stickers as unlocks.
+- **Done when it has:** the loop, 6 to 10 unlocks, the endless and daily modes, the seasons, all read aloud. Then frozen.
+
+*The seven games:*
+1. **Saints Cooking.** Tap the ingredients in the recipe's order. Ramp: orders queue up with a timer each; recipes get
+   more steps; two or three orders at once (which first?); a perfect streak earns tips. Between days, pick one of three:
+   a faster oven, a helper saint who does one step, a bigger tip jar. Saints Martha and Lawrence (cooks' patrons); feast
+   days bring their own recipes.
+2. **Candles** (a tap version of the Pico Parish game). Candles go out; tap to light them. Ramp: more candles, drafts from
+   the door that sweep a row, chain lighting for combos, the sanctuary lamp that must never go out. Unlock churches.
+3. **Saints Match.** Memory cards with the saint drawings; the voice names each one. Ramp: bigger grids, a clock, a
+   flawless streak multiplier, then matching a saint to their sign (Peter and the keys), cards that shuffle on hard.
+4. **Choir.** Tap on the beat (built from Boba Beats). Ramp: the tempo rises, 1 lane then 2 then 3, held notes, perfect vs
+   good timing, a combo meter; easy mode counts loose taps. Cantor sheet music becomes its harder levels, not a new game.
+5. **Garden Givers.** Tap to plant, water and pick; fill the food bank's basket. Ramp: crops ripen at different speeds,
+   rain helps, crows steal, the food bank asks for certain foods, picked food spoils if left. Pick-one-of-three upgrades
+   (a bigger watering can, a helper). Score: meals given.
+6. **Mass Usher.** Tap a family, then a pew where they fit (a gentle Tetris). Ramp: families of different sizes, the clock
+   until Mass starts, late arrivals, a bonus for keeping families together, and packed Christmas and Easter Masses.
+7. **Coloring.** Tap to fill her drawings (no brushes or layers). The one game with no score; done is a set of pages plus
+   seasonal pages. The picture saves to the device only.
+
+Peters Pence (Balatro-style cards) is too hard for PreK: it moves to Pico Parish.
 
 **Things that need upkeep, and the fix:**
 - The robot voice (a Cloudflare AI model that can be retired): Mom and Dad record the fixed lines (539 sentences listed by
