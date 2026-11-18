@@ -142,8 +142,20 @@ is the content, so they never need new levels.
    more steps; two or three orders at once (which first?); a perfect streak earns tips. Between days, pick one of three:
    a faster oven, a helper saint who does one step, a bigger tip jar. Saints Martha and Lawrence (cooks' patrons); feast
    days bring their own recipes.
-2. **Candles** (a tap version of the Pico Parish game). Candles go out; tap to light them. Ramp: more candles, drafts from
-   the door that sweep a row, chain lighting for combos, the sanctuary lamp that must never go out. Unlock churches.
+2. **Candles**, as up to three tap games from the Pico Parish one (Nov 18, 2026; the PICO-8 Candles is a Vampire Survivors
+   style game: walk, auto-prayer, candles left behind, grace, pick one of three, 12 combos, a 5-minute day). Art: test page
+   https://claude.ai/artifact/FFkp1FnQTM6aEeBn78PFqM (A: PICO-8 as is, B: crisp pixels + smooth light and words, C: voxels
+   made automatically from her drawings).
+   - **Candle Rack** (first; she wants to play it): one church inside, candles go out, tap to light. Ramp: candles burn at
+     different speeds; relight just before one goes out for a "just in time" bonus; swipe along a row to light it in one
+     go (a chain); prayer intentions in colors (light the right color); drafts when the door opens (it creaks first);
+     the sanctuary lamp must never go out; pick one of three between rounds (longer wicks, glass covers, an altar server
+     who keeps one row lit, a bigger rack). Church year: the Advent wreath in order, Candlemas, the Easter Vigil (one
+     flame passed through a dark church), All Souls.
+   - **Light the Town**: the Pico Parish game without walking. Tap where a candle goes; people walk to the light; the
+     upgrades, combos, events and orders stay.
+   - **Lamplighter** (Crossy Road style): tap to hop up the streets at dusk, swipe sideways, light lamps and windows;
+     wind, processions and carts cross. Endless; the voxel look fits it best.
 3. **Saints Match.** Memory cards with the saint drawings; the voice names each one. Ramp: bigger grids, a clock, a
    flawless streak multiplier, then matching a saint to their sign (Peter and the keys), cards that shuffle on hard.
 4. **Choir.** Tap on the beat (built from Boba Beats). Ramp: the tempo rises, 1 lane then 2 then 3, held notes, perfect vs
