@@ -125,7 +125,7 @@ export function finishCard({
         ]
       : []),
   ]);
-  const world = el("p", { class: "finish-links" }, [
+  const world = el("p", { class: "finish-links", style: "display:flex;flex-wrap:wrap;justify-content:center;align-items:stretch;gap:10px" }, [
     el("a", { class: "btn world-link", href: "https://angelio.org/", html: `<img src="https://angelio.org/icon.svg" alt="" width="22" height="22" style="vertical-align:-5px;border-radius:6px"> All Angelio games` }), " ",
     el("a", { class: "btn world-link", href: "https://angelio.org/stickers/", text: "🌍 Sticker World" }),
   ]);

@@ -272,7 +272,12 @@ function viewQuiz(id, courseId) {
       if (!alive) return;
       mistakes += miss;
       say(bubble, miss >= 2 && (q.type === "choice" || q.type === "blank") ? `Here's the answer: ${esc(answerText(q))}.` : praise());
-      if (q.why) { why.innerHTML = `<p>📜 ${esc(q.why)}</p>`; why.hidden = false; setTimeout(() => alive && speak(q.why), 1100); }
+      if (q.why) { // say why before Next starts counting, so it isn't cut off
+        why.innerHTML = `<p>📜 ${esc(q.why)}</p>`; why.hidden = false;
+        await new Promise((r) => setTimeout(r, 1100));
+        if (!alive) return;
+        speak(q.why);
+      }
       markDot(app, k, miss > 0);
       S.solvedOne();
       await nextButton(dock, k < qs.length - 1 ? "Next ▶" : "Finish 🏁");
@@ -381,7 +386,7 @@ function viewSongs(songId, albumId) {
       const counts = {};
       dls.forEach((d) => { counts[d.kind] = (counts[d.kind] ?? 0) + 1; });
       app.querySelector(".dl-list").innerHTML = (made ? `<a class="btn small" href="/leadsheet/?id=${encodeURIComponent(song.id)}">📄 Lead sheet</a>` : "")
-        + (dls.length ? dls.map((d) => `<a class="btn small" href="${esc(d.url)}" download target="_blank" rel="noopener">${d.kind}${counts[d.kind] > 1 ? `: ${esc(d.label)}` : ""}</a>`).join("")
+        + (dls.length ? dls.map((d) => `<a class="btn small" href="${esc(d.url)}"${/\.(pdf|png|jpe?g|webp|gif)$/i.test(d.url) ? "" : " download"} target="_blank" rel="noopener">${d.kind}${counts[d.kind] > 1 ? `: ${esc(d.label)}` : ""}</a>`).join("")
           : made ? "" : `<p class="muted small">No downloads for this song yet.</p>`);
     };
     fill([]);

@@ -289,7 +289,8 @@ function nextButton(dock, label) {
     btn.onclick = go;
     document.addEventListener("keydown", onKey);
     // Little ones may not know to tap Next: once the voice is done, the button fills up and goes on by itself.
-    if (S.settings().autoNext !== false) whenQuiet().then(() => {
+    // Wait for the voice, but never forever (a device voice can forget to say it's finished).
+    if (S.settings().autoNext !== false) Promise.race([whenQuiet(), new Promise((r) => setTimeout(r, 20000))]).then(() => {
       if (done || !btn.isConnected) return;
       btn.style.setProperty("--auto-next", `${AUTO_NEXT_MS}ms`);
       btn.classList.add("counting");
@@ -333,7 +334,7 @@ function showFinish({ id, stars, mistakes, title, done, again, next }) {
         <a class="btn big" href="#/">🏠 Home</a>
         ${next ? `<a class="btn big${st.big ? " primary" : ""}" href="${next.href}">${next.label}</a>` : ""}
       </div>
-      <p class="finish-links"><a class="btn world-link" href="https://angelio.org/"><img src="https://angelio.org/icon.svg" alt="" width="22" height="22" style="vertical-align:-5px;border-radius:6px"> All Angelio games</a> <a class="btn world-link" href="${STICKER_WORLD}">🌍 Sticker World</a></p>
+      <p class="finish-links" style="display:flex;flex-wrap:wrap;justify-content:center;align-items:stretch;gap:10px"><a class="btn world-link" href="https://angelio.org/"><img src="https://angelio.org/icon.svg" alt="" width="22" height="22" style="vertical-align:-5px;border-radius:6px"> All Angelio games</a> <a class="btn world-link" href="${STICKER_WORLD}">🌍 Sticker World</a></p>
     </section>`;
   speak(st.grew ? "Wow! Your sticker grew into a giant sticker!"
     : st.isNew && st.big ? vary("giant", ["You did it with no mistakes! You got a giant sticker!", "Perfect! Here's a giant sticker!"])

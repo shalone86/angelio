@@ -27,7 +27,8 @@ export function nextButton(dock, label) {
     btn.onclick = go;
     document.addEventListener("keydown", onKey);
     // Little ones may not know to tap Next: once the voice is done, the button fills up and goes on by itself.
-    if (S.settings().autoNext !== false) whenQuiet().then(() => {
+    // Wait for the voice, but never forever (a device voice can forget to say it's finished).
+    if (S.settings().autoNext !== false) Promise.race([whenQuiet(), new Promise((r) => setTimeout(r, 20000))]).then(() => {
       if (done || !btn.isConnected) return;
       btn.style.setProperty("--auto-next", `${AUTO_NEXT_MS}ms`);
       btn.classList.add("counting");
