@@ -11,6 +11,7 @@ import { validateLibrary, prepareForSave } from "../public/js/watch-content.js";
 import { validateReading } from "../public/js/reading-content.js";
 import * as phonics from "../../apps/letters/public/js/phonics.js";
 import { checkDrawing, artSlug, emptyArt } from "../public/js/art-content.js";
+import { readVox, MAX_VOX_BYTES } from "../public/js/vox.js";
 
 const TYPES = { "video/mp4": "mp4", "video/quicktime": "mov", "video/webm": "webm", "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp", "image/gif": "gif", "audio/mpeg": "mp3", "audio/mp4": "m4a", "audio/wav": "wav", "application/pdf": "pdf" };
 const REPO = "shalone86/angelio";
@@ -35,6 +36,7 @@ export const READING_LIVE = DOCS.reading.live;
 // ticks. Each save keeps the drawing's old version in content/art/history/<slug>/; a deleted one goes to content/art/trash/.
 // Anyone can read them (GET /api/art): Claude and the games load them from there.
 export const ART_LIVE = "content/art/drawings.json";
+export const voxKey = (slug) => `content/art/vox/${slug}.vox`;
 async function readArt(env) {
   const obj = await env.WATCH_MEDIA.get(ART_LIVE);
   return { art: emptyArt(obj ? await obj.json() : null), version: obj?.etag ?? null };
@@ -118,6 +120,22 @@ export async function studioApi(request, url, env) {
 
   // ── drawings ──
   if (route === "GET /art") { const { art, version } = await readArt(env); return json({ ...art, version }); }
+  // A MagicaVoxel model for one checklist item (the file itself, as sent)
+  if (route === "POST /art/vox") {
+    const slug = artSlug(q("slug"));
+    if (!slug) return json({ error: "Which item is it for?" }, 400);
+    const bytes = new Uint8Array(await request.arrayBuffer());
+    if (bytes.length > MAX_VOX_BYTES) return json({ error: "That file is too big (2 MB at most)." }, 400);
+    let vox;
+    try { vox = readVox(bytes); } catch (e) { return json({ error: e.message }, 400); }
+    const old = await env.WATCH_MEDIA.get(voxKey(slug));
+    if (old) await env.WATCH_MEDIA.put(`content/art/history/${slug}/${stamp()}.vox`, await old.arrayBuffer(), { httpMetadata: { contentType: "application/octet-stream" } });
+    await env.WATCH_MEDIA.put(voxKey(slug), bytes, { httpMetadata: { contentType: "application/octet-stream" } });
+    const { art } = await readArt(env);
+    art.voxels[slug] = { saved: new Date().toISOString(), frames: vox.frames.length, size: vox.frames[0].size, bytes: bytes.length };
+    await writeArt(env, art);
+    return json({ ok: true, slug, art });
+  }
   if (request.method === "POST" && path.startsWith("/art/")) {
     const body = await request.json().catch(() => null);
     if (!body) return json({ error: "That wasn't readable." }, 400);
@@ -137,6 +155,14 @@ export async function studioApi(request, url, env) {
       if (!art.drawings[slug]) return json({ error: "That drawing isn't saved" }, 404);
       await env.WATCH_MEDIA.put(`content/art/trash/${slug}-${stamp()}.json`, JSON.stringify(art.drawings[slug]), { httpMetadata: { contentType: "application/json" } });
       delete art.drawings[slug]; art.favorites = art.favorites.filter((x) => x !== slug);
+      await writeArt(env, art);
+      return json({ ok: true, art });
+    }
+    if (route === "POST /art/vox-delete") {
+      const obj = await env.WATCH_MEDIA.get(voxKey(slug));
+      if (obj) await env.WATCH_MEDIA.put(`content/art/trash/${slug}-${stamp()}.vox`, await obj.arrayBuffer(), { httpMetadata: { contentType: "application/octet-stream" } });
+      await env.WATCH_MEDIA.delete?.(voxKey(slug));
+      delete art.voxels[slug];
       await writeArt(env, art);
       return json({ ok: true, art });
     }
@@ -204,7 +230,17 @@ export async function backupToGitHub(env) {
       const files = [...Object.entries(art.drawings).map(([slug, d]) => [`art/drawings/${slug}.json`, enc(d)]), ["art/ticks.json", enc({ favorites: art.favorites, done: art.done })]];
       const todo = [];
       for (const [p, bytes] of files) { const sha = await gitBlobSha(bytes); if (sent[p] !== sha) todo.push([p, bytes]); }
-      for (const [p, bytes] of todo.slice(0, ART_BATCH)) {
+      // voxel models: sent again when their saved time changes
+      for (const [slug, v] of Object.entries(art.voxels)) if (sent[`art/vox/${slug}.vox`] !== v.saved) todo.push([`art/vox/${slug}.vox`, null, v.saved, slug]);
+      for (const [p, bytes, saved, slug] of todo.slice(0, ART_BATCH)) {
+        if (saved) { // a voxel model
+          const obj = await env.WATCH_MEDIA.get(voxKey(slug));
+          if (!obj) continue;
+          const r = await putFile(p, new Uint8Array(await obj.arrayBuffer()), `Studio backup: voxel model ${slug}`);
+          sent[p] = saved;
+          if (!r.same) out.commits++;
+          continue;
+        }
         const r = await putFile(p, bytes, `Studio backup: drawing ${p.replace(/^art\/(drawings\/)?|\.json$/g, "")}`);
         sent[p] = r.sha;
         if (!r.same) out.commits++;

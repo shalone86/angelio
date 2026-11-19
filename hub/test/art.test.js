@@ -3,13 +3,15 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import worker from "../worker/index.js";
 import { checkDrawing, CHECKLISTS, artSlug } from "../public/js/art-content.js";
+import { readVox, toScene } from "../public/js/vox.js";
 
 function fakeR2() {
   const files = new Map(); let n = 0;
   return {
     files,
-    async get(key) { const f = files.get(key); return f ? { etag: f.etag, httpEtag: `"${f.etag}"`, body: f.body, json: async () => JSON.parse(f.body) } : null; },
-    async put(key, body) { const etag = `e${++n}`; files.set(key, { body: String(body), etag }); return { etag }; },
+    async get(key) { const f = files.get(key); return f ? { etag: f.etag, httpEtag: `"${f.etag}"`, body: f.body, json: async () => JSON.parse(f.body), arrayBuffer: async () => (typeof f.body === "string" ? new TextEncoder().encode(f.body) : f.body).slice().buffer } : null; },
+    async put(key, body) { const etag = `e${++n}`; files.set(key, { body: body instanceof Uint8Array || body instanceof ArrayBuffer ? new Uint8Array(body) : String(body), etag }); return { etag }; },
+    async delete(key) { files.delete(key); },
   };
 }
 const env = () => ({ ADMIN_KEY: "secret", CODES: { get: async () => null, put: async () => {}, list: async () => ({ keys: [], list_complete: true }) }, WATCH_MEDIA: fakeR2(), ASSETS: { fetch: async () => new Response("hub") } });
@@ -62,4 +64,35 @@ test("the Drawings page's editor is the Lesson Studio's, with only the marked ch
   const copy = fs.readFileSync(new URL("../public/studio/draw/pixels.js", import.meta.url), "utf8");
   assert.equal((copy.match(/Angelio:/g) ?? []).length, 4); // the note at the top, plus the three marked lines
   assert.match(copy, /opts\.start/);
+});
+
+const fixture = (n) => new Uint8Array(fs.readFileSync(new URL(`fixtures/${n}.vox`, import.meta.url)));
+
+test(".vox files from MagicaVoxel: frames, sizes and colors", () => {
+  const idle = readVox(fixture("priest-idle")), walk = readVox(fixture("priest-walk-fast"));
+  assert.equal(idle.frames.length, 4);
+  assert.equal(walk.frames.length, 3);
+  assert.deepEqual(idle.frames[0].size, [8, 8, 8]);
+  for (const [x, y, z, c] of toScene(idle, 3)) { assert.ok(y > 0 && y < 8 && Math.abs(x) < 4 && Math.abs(z) < 4); assert.match(c, /^#[0-9a-f]{6}$/); }
+  assert.throws(() => readVox(new TextEncoder().encode("not a vox file at all")), /MagicaVoxel/);
+  assert.throws(() => readVox(fixture("priest-idle").slice(0, 200)), /cut short|damaged/);
+});
+
+test("upload a model, replace it (old one kept), anyone can download it, remove it to the trash", async () => {
+  const e = env();
+  const up = (slug, bytes) => worker.fetch(new Request(`https://angelio.org/api/admin/studio/art/vox?slug=${slug}`, { method: "POST", headers: { "x-admin-key": "secret" }, body: bytes }), e);
+  assert.equal((await up("priest-idle", new TextEncoder().encode("hello"))).status, 400);
+  const r1 = await (await up("priest-idle", fixture("priest-idle"))).json();
+  assert.deepEqual(r1.art.voxels["priest-idle"].size, [8, 8, 8]);
+  assert.equal(r1.art.voxels["priest-idle"].frames, 4);
+  await up("priest-idle", fixture("priest-walk-fast"));
+  assert.ok([...e.WATCH_MEDIA.files.keys()].some((k) => /^content\/art\/history\/priest-idle\/.*\.vox$/.test(k)));
+  const dl = await worker.fetch(new Request("https://angelio.org/api/art/vox?slug=priest-idle"), e);
+  assert.equal(readVox(new Uint8Array(await dl.arrayBuffer())).frames.length, 3);
+  const pub = await (await worker.fetch(new Request("https://angelio.org/api/art"), e)).json();
+  assert.equal(pub.voxels["priest-idle"].frames, 3);
+  const del = await (await call(e, "/art/vox-delete", { slug: "priest-idle" })).json();
+  assert.deepEqual(del.art.voxels, {});
+  assert.equal((await worker.fetch(new Request("https://angelio.org/api/art/vox?slug=priest-idle"), e)).status, 404);
+  assert.ok([...e.WATCH_MEDIA.files.keys()].some((k) => /^content\/art\/trash\/priest-idle-.*\.vox$/.test(k)));
 });

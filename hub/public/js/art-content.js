@@ -4,7 +4,9 @@
 // Each row is a string, one character per pixel: '.' is see-through, otherwise the position in the palette
 // (0–9, then a–z). 1 to 8 frames (a comic: up to 12 panels). Pure: used by the Worker and the tests.
 //
-// CHECKLISTS: what each game needs drawn. Her ticks are kept with the drawings (done: {slug: true}).
+// Voxel models (MagicaVoxel .vox files, made on her Mac) are kept beside them: the file in R2 at content/art/vox/<slug>.vox,
+// and a note here (voxels: {slug: {saved, frames, size}}). A checklist item is "made" when it has either.
+// CHECKLISTS: what each game needs. Her ticks are kept with the drawings (done: {slug: true}).
 
 export const CODES = "0123456789abcdefghijklmnopqrstuvwxyz";
 export const artSlug = (name) => String(name ?? "").toLowerCase().replace(/['’]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60);
@@ -44,15 +46,37 @@ export function checkDrawing(s) {
   return { slug, drawing: out };
 }
 
-/** The stored document: {drawings: {slug: drawing}, favorites: [slug], done: {slug: true}}. Fills in what's missing. */
+/** The stored document: {drawings: {slug: drawing}, voxels: {slug: {saved, frames, size}}, favorites: [slug], done: {slug: true}}. */
 export function emptyArt(doc) {
-  return { drawings: { ...(doc?.drawings ?? {}) }, favorites: [...new Set(doc?.favorites ?? [])], done: { ...(doc?.done ?? {}) } };
+  return { drawings: { ...(doc?.drawings ?? {}) }, voxels: { ...(doc?.voxels ?? {}) }, favorites: [...new Set(doc?.favorites ?? [])], done: { ...(doc?.done ?? {}) } };
 }
 
-const SEASON = "Paint the parts that change with the season in PICO-8 pink (#FF77A8, darker pink for shade); the game swaps in the day's color.";
+const SEASON = "Color the parts that change with the season pink (#FF77A8, a darker pink for shade); the game swaps in the day's color.";
 
-// What each game needs. size: [width, height]; frames: a hint for animated pieces.
+// What each game needs. size: [width, height] for a pixel drawing (voxel models can be any size).
+const p = (slug, label, note) => ({ slug, label, size: [8, 8], ...(note ? { note } : {}) });
 export const CHECKLISTS = [
+  {
+    id: "candle-rack-people", title: "Candle Rack: people", game: "Candle Rack",
+    note: "Each round is the time before Mass or the Divine Liturgy: the priest and the server get the church ready while people come early to pray. Characters 8 × 8 × 8, facing front, one .vox per pose.",
+    items: [
+      p("priest-idle", "Priest, standing"), p("priest-walk-fast", "Priest, hurrying", "Getting things ready before Mass."),
+      p("priest-walk-slow", "Priest, walking slowly", "Processing in when Mass begins (the end of the round)."),
+      p("priest-bless", "Priest, blessing"),
+      p("priest-mass-idle", "Priest in the chasuble, standing", "The chasuble pink, so it follows the season."),
+      p("priest-mass-walk", "Priest in the chasuble, walking", "The entrance procession."),
+      p("server-idle", "Altar server, standing"), p("server-walk", "Altar server, walking"),
+      p("server-light", "Altar server, lighting", "Holding the long candle lighter: the upgrade that keeps a row lit."),
+      p("man-walk", "Man, walking"), p("man-kneel", "Man, kneeling to pray"),
+      p("woman-walk", "Woman, walking"), p("woman-kneel", "Woman, kneeling to pray"),
+      p("child-walk", "Child, walking"), p("child-kneel", "Child, kneeling to pray"),
+      p("grandparent-walk", "Grandparent, walking"), p("grandparent-kneel", "Grandparent, kneeling to pray"),
+      p("east-priest-idle", "Eastern priest, standing", "The phelonion pink, so it follows the season."),
+      p("east-priest-walk", "Eastern priest, walking"), p("east-priest-cense", "Eastern priest, censing"),
+      p("east-server-idle", "Byzantine server, standing"), p("east-server-walk", "Byzantine server, walking"),
+      p("east-server-light", "Byzantine server, lighting"),
+    ],
+  },
   {
     id: "candle-rack-roman", title: "Candle Rack: Roman church", game: "Candle Rack",
     note: "Start with the first six: that's enough to play.",

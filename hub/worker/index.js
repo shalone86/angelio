@@ -22,7 +22,8 @@ export const APPS = {
 
 import { normalizeCode, newCode, codeStatus, day, month } from "./codes.js";
 import { stripeApi } from "./stripe.js";
-import { studioApi, backupToGitHub, READING_LIVE, ART_LIVE } from "./studio.js";
+import { studioApi, backupToGitHub, READING_LIVE, ART_LIVE, voxKey } from "./studio.js";
+import { artSlug } from "../public/js/art-content.js";
 
 export default {
   // Every night: copy the Studio's library into GitHub (does nothing without a GITHUB_TOKEN secret).
@@ -122,6 +123,12 @@ async function api(request, url, env) {
     const obj = env.WATCH_MEDIA ? await env.WATCH_MEDIA.get(ART_LIVE) : null;
     if (!obj) return json({ drawings: {}, favorites: [], done: {} });
     return new Response(obj.body, { headers: { "content-type": "application/json", "cache-control": "public, max-age=20", "access-control-allow-origin": "*", etag: obj.httpEtag } });
+  }
+  if (route === "GET /api/art/vox") {
+    const slug = artSlug(url.searchParams.get("slug"));
+    const obj = slug && env.WATCH_MEDIA ? await env.WATCH_MEDIA.get(voxKey(slug)) : null;
+    if (!obj) return json({ error: "no such model" }, 404);
+    return new Response(obj.body, { headers: { "content-type": "application/octet-stream", "cache-control": "public, max-age=20", "access-control-allow-origin": "*", etag: obj.httpEtag } });
   }
   // Lead sheets (made at /admin/leadsheet.html): one per song, by the song's Watch & Sing id.
   if (route === "GET /api/leadsheets") {
