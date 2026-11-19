@@ -1,0 +1,1521 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lesson Studio</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%237A1F2B'/%3E%3Crect x='12' y='6' width='8' height='14' rx='4' fill='%23FBF8F2'/%3E%3Cpath d='M9 15a7 7 0 0 0 14 0M16 22v4' stroke='%23FBF8F2' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+/* Served by studio/server.mjs (npm start). Same identity as the lesson videos (video/theme.ts). */
+@font-face{font-family:'EB Garamond';src:url(/fonts/EBGaramond.woff2) format('woff2');font-weight:400 600}
+@font-face{font-family:'EB Garamond';src:url(/fonts/EBGaramond-Italic.woff2) format('woff2');font-style:italic;font-weight:400}
+@font-face{font-family:Inter;src:url(/fonts/Inter.woff2) format('woff2');font-weight:400 600}
+:root{
+  --bg:#F5F0E6; --paper:#FBF8F2; --ink:#1E2740; --muted:#625F5B; --rule:#D9CFBC;
+  --accent:#7A1F2B; --gold:#8E6E22; --ok:#2F6B3A; --rec:#B3261E;
+  --serif:'EB Garamond',Georgia,'Times New Roman',serif;
+  --sans:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141925; --paper:#1C2233; --ink:#ECE6D8; --muted:#A9A397; --rule:#353C55;
+  --accent:#E0959E; --gold:#D2B262; --ok:#8BC79A; --rec:#FF8A80; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141925; --paper:#1C2233; --ink:#ECE6D8; --muted:#A9A397; --rule:#353C55;
+  --accent:#E0959E; --gold:#D2B262; --ok:#8BC79A; --rec:#FF8A80; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+html{scrollbar-gutter:stable}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 var(--sans);padding:0 16px}
+.wrap{max-width:880px;margin:0 auto;padding-block:20px 40px}
+header{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.eyebrow{font:600 12px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+h1{font:500 clamp(30px,6vw,42px)/1.08 var(--serif);margin:0;text-wrap:balance}
+.meta{color:var(--muted);font-size:14px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.pill{font:600 12px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;padding:6px 9px;border-radius:99px;border:1px solid var(--rule);color:var(--muted)}
+.pill.approved{border-color:var(--ok);color:var(--ok)}
+select{font:inherit;color:inherit;background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:6px 10px;max-width:100%}
+.tabs{display:flex;gap:4px;background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:4px;margin:8px 0 18px}
+.tabs button{flex:1;font:600 15px/1 var(--sans);color:var(--muted);background:none;border:0;border-radius:7px;padding:12px 8px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--bg);color:var(--ink);box-shadow:0 0 0 1px var(--rule)}
+button:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.btn{font:600 15px/1 var(--sans);border-radius:8px;padding:11px 16px;border:1px solid var(--rule);background:var(--paper);color:var(--ink);cursor:pointer;white-space:nowrap}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+.ask-pop{position:fixed;z-index:1000;max-width:min(380px,calc(100vw - 16px));background:var(--paper);color:var(--ink);border:1px solid var(--rule);border-radius:12px;padding:14px;box-shadow:0 12px 36px rgba(0,0,0,.22);display:flex;flex-direction:column;gap:12px}
+.ask-text{white-space:pre-line;font-size:15px}
+.ask-row{display:flex;gap:8px;justify-content:flex-end}
+.btn.rec{background:var(--rec);border-color:var(--rec);color:#fff}
+.btn.stop{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.btn.big{padding:15px 22px;font-size:17px;border-radius:10px}
+.btn[disabled]{opacity:.45;cursor:default}
+.btn .dot{display:inline-block;width:.7em;height:.7em;border-radius:50%;background:currentColor;margin-right:.5em;vertical-align:-.05em}
+.btn .sq{display:inline-block;width:.7em;height:.7em;background:currentColor;margin-right:.5em;vertical-align:-.05em}
+.card{background:var(--paper);border:1px solid var(--rule);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.card h2{font:500 24px/1.2 var(--serif);margin:0}
+.stack{display:flex;flex-direction:column;gap:16px}
+.muted{color:var(--muted)}
+.small{font-size:14px}
+.ok{color:var(--ok)}
+.bad{color:var(--accent)}
+.notice{border-radius:10px;padding:12px 14px;border:1px solid var(--rule);background:var(--paper);font-size:15px}
+.notice.error{border-color:var(--accent)}
+.notice ul{margin:6px 0 0;padding-left:1.2em}
+pre{white-space:pre-wrap;font:13px/1.45 ui-monospace,Menlo,monospace;background:var(--bg);border:1px solid var(--rule);border-radius:8px;padding:10px;margin:0;max-height:16em;overflow:auto}
+
+/* Section strip */
+.strip{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.strip button{font:600 14px/1 var(--sans);color:var(--muted);background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:9px 11px;cursor:pointer;display:flex;align-items:center;gap:7px;min-width:44px;justify-content:center}
+.strip button[aria-current="true"]{color:var(--ink);border-color:var(--ink)}
+.strip .mic{width:8px;height:8px;border-radius:50%;border:1.5px solid var(--rule)}
+.strip .mic.has{background:var(--ok);border-color:var(--ok)}
+.strip .unsaved{color:var(--gold)}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
+.seg{display:inline-flex;background:var(--paper);border:1px solid var(--rule);border-radius:9px;padding:3px}
+.seg button{font:600 14px/1 var(--sans);color:var(--muted);background:none;border:0;border-radius:6px;padding:9px 12px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--bg);color:var(--ink);box-shadow:0 0 0 1px var(--rule)}
+.seg button[disabled]{cursor:default;opacity:.6}
+details.mic{background:var(--paper);border:1px solid var(--rule);border-radius:9px;padding:8px 12px;font-size:14px;max-width:100%}
+details.mic summary{cursor:pointer;font-weight:600;color:var(--muted)}
+details.mic[open]{flex-basis:100%}
+.campreview{position:fixed;right:16px;bottom:96px;width:220px;aspect-ratio:16/9;object-fit:cover;border-radius:12px;background:#000;box-shadow:0 6px 20px rgba(0,0,0,.25);z-index:20;transform:scaleX(-1)}
+.campreview.rec{outline:3px solid #c0392b}
+.micbody{display:flex;flex-direction:column;gap:10px;padding:10px 0 4px}
+.meter{height:10px;border-radius:5px;background:var(--bg);border:1px solid var(--rule);overflow:hidden;min-width:120px;flex:1}
+.meter i{display:block;height:100%;width:0;background:var(--ok);transition:width .06s linear}
+.meter.hot i{background:var(--rec)}
+
+/* The slide: teleprompter-sized text, editable in place */
+.slide{background:var(--paper);border:1px solid var(--rule);border-radius:14px;padding:22px 22px 18px;display:flex;flex-direction:column;gap:14px}
+.slide.yours{border-color:var(--gold)}
+.slide .where{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font:600 13px/1.3 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.slide .where span:last-child{color:var(--muted);letter-spacing:.04em;text-transform:none;font-weight:500}
+.slide h2{font:500 26px/1.2 var(--serif);margin:0;color:var(--muted)}
+.slide label{font:600 12px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:-8px}
+textarea.read{display:block;width:100%;font:clamp(23px,3.6vw,30px)/1.5 var(--serif);color:var(--ink);background:transparent;border:1px dashed transparent;border-radius:8px;padding:6px 8px;margin:0 -9px;width:calc(100% + 18px);resize:none;overflow:hidden}
+textarea.read:hover{border-color:var(--rule)}
+textarea.read:focus{background:var(--bg);border:1px solid var(--rule);outline:none}
+textarea.read[readonly]{border-color:transparent;background:transparent}
+textarea.read.lead{font-style:italic}
+.quote{font:600 clamp(23px,3.6vw,30px)/1.5 var(--serif);border-left:4px solid var(--gold);padding-left:16px;margin:0}
+.cite{font:500 13px/1.4 var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:-6px}
+.cite b{color:var(--gold);font-weight:600}
+details.notes{font-size:15px;color:var(--muted)}
+details.notes summary{cursor:pointer;font-weight:600}
+details.notes ul{margin:6px 0 0;padding-left:1.2em}
+.savebar{display:flex;gap:10px;align-items:center;justify-content:flex-end;flex-wrap:wrap;border-top:1px solid var(--rule);padding-top:12px}
+.savebar .msg{margin-right:auto;font-size:14px;color:var(--gold);font-weight:600}
+.check{font-size:15px;border-top:1px solid var(--rule);padding-top:12px}
+.heard{border-top:1px solid var(--rule);padding-top:12px;display:flex;flex-direction:column;gap:10px}
+.heard h3{font:600 12px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0}
+.said{font:19px/1.6 var(--serif)}
+.said .add{color:var(--ok);background:color-mix(in srgb,var(--ok) 12%,transparent);border-radius:3px;padding:0 2px}
+.said .del{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--accent)}
+.heard .warn{color:var(--accent);font-weight:600;font-size:15px}
+.check ul{margin:6px 0 0;padding-left:1.2em}
+
+
+
+/* Recording dock */
+.dock{position:sticky;bottom:0;z-index:3;background:var(--bg);padding:12px 0 calc(12px + env(safe-area-inset-bottom,0px));margin-top:14px;display:flex;gap:10px;align-items:center;border-top:1px solid var(--rule)}
+.dock .center{flex:1;display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;min-width:0}
+.dock .time{font:600 16px/1 var(--sans);font-variant-numeric:tabular-nums;min-width:3.4em;text-align:center}
+.dock .live{color:var(--rec);display:flex;align-items:center;gap:8px;font:600 14px/1 var(--sans);text-transform:uppercase;letter-spacing:.1em}
+.dock .live::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--rec)}
+@media (prefers-reduced-motion: no-preference){.dock .live::before{animation:blink 1.2s infinite}@keyframes blink{50%{opacity:.25}}}
+.dock .meter{max-width:140px}
+.dock .hint{font-size:13px;color:var(--muted);text-align:center;flex-basis:100%}
+.nav{min-width:92px}
+.ask textarea{width:100%;font:16px/1.5 var(--sans);color:var(--ink);background:var(--bg);border:1px solid var(--rule);border-radius:8px;padding:10px 12px;resize:vertical;min-height:4.5em}
+.ask ul{margin:0;padding-left:1.2em;font-size:14px;color:var(--muted)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+
+/* Video tab */
+.list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.list li{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:9px 0;border-top:1px solid var(--rule)}
+.list li:first-child{border-top:0}
+.list .name{font-weight:600}
+.list .state{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+video{width:100%;border-radius:10px;background:#000;aspect-ratio:16/9}
+.bar{height:8px;border-radius:4px;background:var(--bg);border:1px solid var(--rule);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--gold);transition:width .4s}
+.bar.indef i{width:30%!important}
+@media (prefers-reduced-motion: no-preference){.bar.indef i{animation:slide 1.4s ease-in-out infinite alternate}@keyframes slide{from{margin-left:0}to{margin-left:70%}}}
+a{color:var(--accent)}
+@media (max-width:560px){
+  .slide{padding:16px 14px 14px}
+  .nav{min-width:0}
+  .dock{gap:6px}
+  .btn.big{padding:13px 14px;font-size:16px}
+}
+/* Timing tab */
+.tl-top{position:sticky;top:0;z-index:4;background:var(--bg);padding-bottom:10px}
+body.wide .wrap{max-width:1600px}
+/* The menu and the lesson's title stay where they are on every tab; only the page under them widens. */
+body.wide .wrap>.tabs,body.wide .wrap>header{max-width:880px;margin-left:auto;margin-right:auto}
+body.mode-home .tabs,body.mode-home .meta,body.mode-tool header{display:none}
+.tabs{flex-wrap:wrap}
+.tabs button{white-space:nowrap;padding:12px 8px}
+.tabs #go-home{flex:0 0 auto;color:var(--ink)}
+.tabs-gap{flex:0 0 1px;background:var(--rule);margin:6px 4px}
+.title-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px 20px}
+.title-row h1{flex:1 1 320px}
+.tabs.lesson-tabs{margin:0;flex:0 1 auto;flex-wrap:nowrap}
+.tabs.lesson-tabs button{flex:0 0 auto;padding:11px 14px}
+body.lesson-off .lesson-tabs{display:none}
+.home-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.home-tool{font:inherit;color:inherit;text-align:left;cursor:pointer;gap:6px}
+.home-tool:hover{border-color:var(--accent)}
+.home-tool b{font:500 22px/1.1 var(--serif)}
+.home-last{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding:12px;border:1px solid var(--rule);border-radius:10px;background:var(--bg)}
+@media (min-width:1000px){
+  .tl-grid{display:grid;grid-template-columns:minmax(380px,42%) minmax(0,1fr);gap:24px;align-items:start}
+  .tl-grid .tl-top{top:12px;padding-bottom:0}
+  .tl-grid .tl-player{max-width:none}
+}
+.tl-player{max-width:600px;margin:0 auto}
+.tl-drag{position:absolute;inset:0;display:none;border-radius:10px;cursor:move;touch-action:none}
+.tl-drag.on{display:block;outline:3px dashed var(--accent);outline-offset:-3px}
+.tl-grip{position:absolute;width:18px;height:18px;background:var(--accent);border:3px solid #fff;border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.4);touch-action:none}
+.tl-grip.nw{left:-6px;top:-6px;cursor:nwse-resize}.tl-grip.se{right:-6px;bottom:-6px;cursor:nwse-resize}
+.tl-grip.ne{right:-6px;top:-6px;cursor:nesw-resize}.tl-grip.sw{left:-6px;bottom:-6px;cursor:nesw-resize}
+.tl-scene.fixed{background:var(--bg);border-style:dashed;cursor:default;color:var(--muted)}
+.tl-scroll{overflow-x:auto;border:1px solid var(--rule);border-radius:10px;background:var(--paper)}
+.tl{position:relative;height:250px;user-select:none;-webkit-user-select:none}
+.tl-ruler{position:absolute;left:0;right:0;top:0;height:26px;border-bottom:1px solid var(--rule);cursor:pointer}
+.tl-tick{position:absolute;top:14px;height:12px;border-left:1px solid var(--rule);font:500 11px/1 var(--sans);color:var(--muted);padding-left:3px}
+.tl-beat{position:absolute;bottom:2px;width:5px;height:5px;margin-left:-2px;border-radius:50%;background:#FF4F6D;opacity:.7}
+.tl-tick.major{top:4px;height:22px;border-left-color:var(--muted)}
+.tl-words{position:absolute;left:0;right:0;top:34px;height:40px}
+.tl-word{position:absolute;font:13px/1 var(--serif);color:var(--ink);white-space:nowrap;cursor:pointer;padding:2px 3px;border-left:1px solid var(--gold)}
+.tl-word:hover{background:var(--bg)}
+.tl-scenes{position:absolute;left:0;right:0;top:90px;height:50px}
+.tl-scene{position:absolute;top:0;height:46px;border-radius:8px;background:color-mix(in srgb,var(--gold) 22%,var(--paper));border:1px solid var(--gold);cursor:grab;overflow:hidden;font:600 13px/1.2 var(--sans);padding:6px 8px;color:var(--ink);touch-action:none}
+.tl-scene:not(.fixed):nth-child(even){background:color-mix(in srgb,var(--accent) 14%,var(--paper));border-color:var(--accent)}
+.tl-scene.moved{box-shadow:0 0 0 2px var(--ok) inset}
+.px-wrap{display:grid;grid-template-columns:minmax(0,520px) minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:900px){.px-wrap{grid-template-columns:1fr}}
+.px-quick,.px-sheets{display:none}
+/* Phones and narrow upright screens: the tools, colors and frames sit right under the drawing;
+   the rest (new, open, size, name, copy and paste…) comes after. */
+@media (max-width:700px){
+  .tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .tabs::-webkit-scrollbar{display:none}
+  .tabs button{flex:0 0 auto;padding:12px 12px}
+  .title-row h1{flex-basis:100%}
+  .tabs.lesson-tabs{flex:1 1 100%}
+  .tabs.lesson-tabs button{flex:1 1 0;padding:10px 4px;font-size:14px;white-space:normal;line-height:1.15}
+  .px-wrap{display:flex;flex-direction:column;align-items:stretch;gap:10px}
+  .px-left>*,.px-side>*{min-width:0;max-width:100%}
+  .px-wrap>.px-left,.px-wrap>.px-side{display:contents}
+  .px-left>*,.px-side>*{order:10}
+  .px-wrap .px-canvas{order:1;max-width:none}
+  .px-wrap .px-quick{order:2;display:flex;justify-content:space-between}
+  .px-side>.px-tools{order:3;display:flex;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  .px-side>.px-tools::-webkit-scrollbar{display:none}
+  .px-side>.px-tools button{flex:0 0 auto;padding:12px 13px}
+  .px-side>.px-toolopt,.px-side>[data-words]{order:4}
+  .px-side>.px-palette{order:5;gap:8px}
+  .px-side>.px-palette .px-swatch{width:38px;height:38px}
+  .px-side>.px-frames-label{order:6}
+  .px-side>.px-frames{order:7}
+  .px-side>.px-frames-del{order:7}
+  .px-side>.px-sheets{order:8;display:flex}
+  .px-side>.px-sheets button{flex:1 1 0;padding:13px 4px;white-space:nowrap}
+  .px-wrap [data-g],.px-left>.ref-box,.px-left>details{order:9}
+  .px-wrap:not([data-sheet=edit]) [data-g=edit],.px-wrap:not([data-sheet=file]) [data-g=file],
+  .px-wrap:not([data-sheet=more]) [data-g=more],.px-wrap:not([data-sheet=more])>.px-left>.ref-box{display:none!important}
+  .px-wrap .px-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .px-wrap .px-actions .btn{white-space:normal;padding-left:8px;padding-right:8px}
+  .px-wrap .px-actions label,.px-wrap .px-actions .primary{grid-column:1/-1}
+  .px-keys{display:none}
+  .card,.small{overflow-wrap:anywhere}
+  .seg{max-width:100%;overflow-x:auto;scrollbar-width:none}
+  .seg::-webkit-scrollbar{display:none}
+  .seg button{flex:0 0 auto;white-space:nowrap}
+  .wrap input[type=text],.wrap select,.wrap textarea{max-width:100%}
+  .px-actions .btn{flex:1 1 auto}
+}
+.px-left{display:flex;flex-direction:column;gap:8px}
+/* Voxel character picker (Timing tab, studio/timing.js) */
+.vx-big{width:220px;height:220px;flex:none;background:var(--paper);border:1px solid var(--rule);border-radius:12px}
+.vx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px;max-height:320px;overflow:auto;padding:2px}
+.vx-tile{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 4px;border:2px solid var(--rule);border-radius:10px;background:var(--paper);color:var(--ink);cursor:pointer;font:600 13px/1.2 var(--sans);text-align:center}
+.vx-tile canvas{width:72px;height:72px}
+.vx-tile small{color:var(--muted);font-weight:500}
+.vx-tile[aria-selected="true"]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+@media (max-width:700px){.vx-big{width:140px;height:140px}}
+/* Phones held upright: the pixel editor fills the screen like a drawing app (built in studio/pixels.js, class pxm). */
+.pxm-play,.pxm-top,.pxm-tools,.pxm-sheet,.pxm-words,.pxm-layers{display:none}
+.px-frame.off,.pxm-frame.off{opacity:.4}
+.px-anchor{display:grid;grid-template-columns:repeat(3,16px);gap:3px;padding:4px;border:1px solid var(--rule);border-radius:8px;background:var(--paper)}
+.px-anchor button{width:16px;height:16px;padding:0;border:1px solid var(--rule);border-radius:3px;background:var(--bg);cursor:pointer}
+.px-anchor button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent)}
+body:has(.px-wrap.pxm){overflow:hidden}
+.px-wrap.pxm{position:fixed;inset:0;z-index:60;display:grid!important;grid-template-rows:auto minmax(0,1fr) auto auto auto;grid-template-columns:100%;gap:0;background:#2b2b2e;color:#fff;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+.px-wrap.pxm>.px-side{display:contents}
+.px-wrap.pxm .pxm-top{display:block;grid-row:1;background:#111;padding:6px 6px 0}
+.px-wrap.pxm>.px-left{display:flex;grid-row:2;align-items:center;justify-content:center;overflow:hidden;position:relative;container-type:size;touch-action:none;min-height:0}
+.px-wrap.pxm .px-canvas{width:min(100cqw,100cqh);height:auto;max-width:none;border:0;border-radius:0;transform-origin:0 0}
+.px-wrap.pxm>.px-left>:not(.px-canvas):not(.pxm-play){display:none!important}
+.px-wrap.pxm[data-play] .pxm-play{display:block;position:absolute;top:8px;right:8px;width:96px;height:96px;image-rendering:pixelated;border:2px solid #fff;border-radius:8px;background:#fff;pointer-events:none}
+.pxm-pal{display:grid;grid-template-rows:repeat(2,40px);grid-auto-flow:column;grid-auto-columns:40px;gap:5px;overflow-x:auto;scrollbar-width:none}
+.pxm-pal::-webkit-scrollbar,.pxm-frames::-webkit-scrollbar,.px-wrap.pxm .pxm-tools::-webkit-scrollbar{display:none}
+.pxm-pal .px-swatch{width:40px;height:40px;border-radius:6px;border:0}
+.pxm-pal .px-swatch.on{outline:3px solid #C8F31D;outline-offset:-3px}
+.pxm-any{position:relative;display:flex;align-items:center;justify-content:center;background:#fff;color:#222;overflow:hidden}
+.pxm-any input{position:absolute;inset:0;opacity:0;width:100%;height:100%}
+.pxm-bar{display:flex;gap:6px;align-items:center;margin-top:6px}
+.pxm-frames{display:flex;gap:6px;flex:1;overflow-x:auto;scrollbar-width:none;min-width:0}
+.pxm-frame{flex:none;width:52px;height:52px;padding:2px;border:3px solid #555;border-radius:6px;background:#fff;cursor:pointer}
+.pxm-frame.on{border-color:#C8F31D}
+.pxm-frame canvas{width:100%;height:100%;image-rendering:pixelated;display:block}
+.pxm-label{text-align:center;font:500 13px/1 var(--sans);color:#ddd;padding:7px 0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pxm-b{flex:none;width:52px;height:52px;border:0;border-radius:8px;background:#fff;color:#222;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer}
+.pxm-b.on{background:#C8F31D}
+.pxm-b[data-save].dirty{background:#FF4F6D;color:#fff}
+.pxm-i,.pxm-i svg{display:block}
+.px-wrap.pxm .pxm-layers{display:flex;grid-row:4;gap:6px;align-items:center;padding:6px 6px 0;background:#111}
+.pxm-layers .pxm-b{width:46px;height:46px}
+.pxm-layers .pxm-frame{width:46px;height:46px}
+.pxm-b[disabled]{opacity:.35}
+.px-wrap.pxm .pxm-tools{display:grid;grid-row:5;grid-template-rows:repeat(2,52px);grid-auto-flow:column;grid-auto-columns:52px;gap:6px;overflow-x:auto;padding:6px;background:#111;scrollbar-width:none}
+.px-wrap.pxm .pxm-words{display:block;grid-row:3;max-height:35vh;overflow:auto;background:var(--paper);color:var(--ink);padding:8px}
+.px-wrap.pxm .pxm-sheet{display:flex;flex-direction:column;gap:12px;position:fixed;left:0;right:0;bottom:0;top:12vh;z-index:61;overflow:auto;background:var(--bg);color:var(--ink);border-radius:16px 16px 0 0;padding:14px 16px calc(24px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px rgba(0,0,0,.5)}
+.pxm-sheet-head{display:flex;gap:8px;justify-content:space-between;position:sticky;top:-14px;background:var(--bg);padding:4px 0 8px;z-index:1;order:-1}
+.pxm-sheet>.px-layers,.pxm-sheet>.px-layers-label,.pxm-sheet>.px-quick,.pxm-sheet>.px-tools,.pxm-sheet>.px-palette,.pxm-sheet>.px-keys,.pxm-sheet>.px-toolopt{display:none!important}
+.pxm-sheet>.px-sheets{display:flex;order:8}
+.pxm-sheet>.px-sheets button{flex:1 1 0;padding:13px 4px;white-space:nowrap}
+.px-canvas{width:100%;max-width:512px;aspect-ratio:1;image-rendering:pixelated;border:1px solid var(--rule);border-radius:10px;cursor:crosshair;touch-action:none;background:#fff}
+.px-side{display:flex;flex-direction:column;gap:12px;min-width:0}
+.px-side input[type=text]{font:500 16px/1.3 var(--sans);padding:9px 12px;border:1px solid var(--rule);border-radius:9px;background:var(--paper);color:var(--ink)}
+.px-tools{flex-wrap:wrap}
+.px-palette{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.px-swatch{width:30px;height:30px;border-radius:8px;border:2px solid rgba(0,0,0,.12);cursor:pointer;padding:0}
+.px-swatch.on{outline:3px solid var(--ink);outline-offset:2px}
+.px-any{display:inline-flex;align-items:center;gap:6px;font:600 13px/1 var(--sans);color:var(--muted)}
+.px-any input{width:34px;height:30px;border:0;padding:0;background:none;cursor:pointer}
+.px-frames{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.px-frame{position:relative;padding:3px;border:2px solid var(--rule);border-radius:9px;background:var(--paper);cursor:pointer}
+.px-frame.on{border-color:var(--accent)}
+.px-frame.drop{border-style:dashed;border-color:var(--accent)}
+.px-same{width:16px;height:16px;padding:0;border-radius:4px;border:1px solid var(--rule);cursor:pointer;flex:none}
+.px-same:hover{outline:2px solid var(--accent);outline-offset:1px}
+.th-stage{position:relative;outline:none;touch-action:none;user-select:none}
+.th-over{position:absolute;inset:0}
+.th-crop{position:absolute;top:0;bottom:0;border-left:2px dashed rgba(0,0,0,.35)}
+.th-box{position:absolute;border:2px dashed rgba(43,35,80,.55);border-radius:6px;cursor:move}
+.th-box.on{border:2px solid var(--accent);box-shadow:0 0 0 2px #fff8}
+.th-num{position:absolute;top:-11px;left:-11px;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font:700 12px/22px var(--sans);text-align:center}
+.th-grip{position:absolute;right:-9px;bottom:-9px;width:18px;height:18px;border-radius:4px;background:#fff;border:2px solid var(--accent);cursor:nwse-resize}
+.th-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:6px 8px;border-radius:8px;border:1px solid var(--rule)}
+.th-row.on{border-color:var(--accent)}
+.th-row select{width:auto;max-width:100%}
+.px-frame canvas{display:block;width:64px;height:64px;image-rendering:pixelated}
+.px-frame span{position:absolute;top:2px;left:5px;font:700 11px/1 var(--sans);color:var(--muted)}
+.sg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:6px}
+.sg-tile{position:relative;border:2px solid var(--rule);border-radius:9px;background:var(--paper)}
+.sg-tile.on{border-color:var(--accent)}
+.sg-open{display:flex;flex-direction:column;align-items:center;gap:3px;width:100%;padding:6px 4px 5px;border:0;background:none;cursor:pointer;color:inherit;font:inherit}
+.sg-thumb{width:64px;height:64px;image-rendering:pixelated;object-fit:contain;background:repeating-conic-gradient(#EEE9DF 0 25%,#F8F5EE 0 50%) 0 0/16px 16px;border-radius:4px}
+.sg-name{font:600 11px/1.2 var(--sans);text-align:center;max-width:100%;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow-wrap:anywhere}
+.sg-foot{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:2px;padding:0 4px 3px}
+.sg-star,.sg-copy{border:0;background:none;cursor:pointer;font:700 11px/1 var(--sans);color:var(--muted);padding:3px;white-space:nowrap}
+.sg-star{font-size:14px}.sg-star[aria-pressed=true]{color:#FFB300}
+.px-base span{position:static;display:block;max-width:76px;margin-top:3px;text-align:center;font-weight:600;overflow-wrap:anywhere}
+.px-preview{width:192px;height:192px;image-rendering:pixelated;border:1px solid var(--rule);border-radius:10px}
+.tl-with{position:absolute;top:2px;right:38px;width:22px;height:22px;border:0;border-radius:6px;background:transparent;color:var(--ink);font:600 15px/1 var(--sans);cursor:pointer}
+.tl-with:hover{background:var(--bg)}
+.tl-scene.joined{top:22px;height:26px;padding-top:3px;z-index:1;box-shadow:0 -2px 0 var(--ink) inset}
+.read-line{width:100%;font:500 18px/1.4 var(--serif);padding:9px 12px;border:1px solid var(--rule);border-radius:9px;background:var(--paper);color:var(--ink)}
+.read-line.heading{font-size:24px;font-weight:600}
+textarea.quote-edit{font-style:italic;border-left:4px solid var(--gold)}
+.quiz-edit{margin-top:14px;padding:10px 14px;border:1px solid var(--rule);border-radius:10px;background:var(--paper)}
+.quiz-edit summary{cursor:pointer;font-weight:600;color:var(--muted)}
+.quiz-q{display:flex;flex-direction:column;gap:6px;padding:12px 0;border-bottom:1px dashed var(--rule)}
+.slide-tools{gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:12px;border-top:1px dashed var(--rule)}
+#new-lesson{margin-left:8px;padding:6px 12px;font-size:14px}
+.px-canvas.sk-canvas{image-rendering:auto;cursor:crosshair;background-color:#F8F5EE;background-image:linear-gradient(45deg,#EEE9DF 25%,transparent 25%,transparent 75%,#EEE9DF 75%),linear-gradient(45deg,#EEE9DF 25%,transparent 25%,transparent 75%,#EEE9DF 75%);background-size:24px 24px;background-position:0 0,12px 12px;aspect-ratio:auto;max-width:640px;height:auto}
+.sk-dot{display:inline-block;border-radius:50%;background:var(--ink);vertical-align:middle}
+.ref-box{padding:8px 12px;border:1px solid var(--rule);border-radius:10px;background:var(--paper)}
+.ref-results{display:flex;flex-wrap:wrap;gap:6px;max-height:220px;overflow:auto}
+.ref-pick{padding:2px;border:1px solid var(--rule);border-radius:6px;background:var(--bg);cursor:pointer}
+.ref-pick img{display:block;height:84px;max-width:140px;object-fit:contain}
+.ref-box summary{cursor:pointer;font-weight:600;color:var(--muted);font-size:14px}
+.tl-head-row{font:700 13px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-top:8px;padding-top:8px;border-top:1px dashed var(--rule)}
+.ic-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:6px;max-height:240px;overflow:auto;margin:8px 0}
+.ic-pick{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;border:1px solid var(--rule);border-radius:8px;background:var(--bg);color:var(--ink);cursor:pointer}
+.ic-pick:hover{border-color:var(--accent)}
+.ic-pick span{font:500 10px/1.1 var(--sans);color:var(--muted);text-align:center;word-break:break-all}
+.tl-trim{position:absolute;top:0;right:0;bottom:0;width:14px;cursor:ew-resize;background:color-mix(in srgb,var(--ink) 18%,transparent);border-left:2px solid var(--ink);opacity:.35;touch-action:none}
+.tl-trim:hover,.tl-trim.moved{opacity:.9}
+.tl-trim.moved{border-left-color:var(--ok)}
+.tl-end{position:absolute;top:28px;bottom:0;width:4px;margin-left:-2px;background:var(--ink);cursor:ew-resize;touch-action:none;border-radius:2px}
+.tl-end::before{content:"";position:absolute;top:0;bottom:0;left:-8px;width:20px}
+.tl-end span{position:absolute;top:-2px;left:6px;font:700 11px/1 var(--sans);color:var(--ink);background:var(--paper);padding:2px 4px;border-radius:4px}
+.tl-end.moved{background:var(--ok)}
+.tl-cues{position:absolute;left:0;right:0;top:152px;height:90px}
+.tl-cue{position:absolute;top:0;transform:translateX(-7px);cursor:grab;touch-action:none;display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+.tl-cue i{width:14px;height:14px;background:var(--accent);transform:rotate(45deg);border-radius:2px}
+.tl-cue.moved i{background:var(--ok)}
+.tl-cue span{font:600 12px/1.1 var(--sans);color:var(--ink);white-space:nowrap;background:var(--paper);padding:1px 3px;border-radius:4px;max-width:160px;overflow:hidden;text-overflow:ellipsis}
+.tl-cue:nth-child(even){top:44px}
+.tl-dup{position:absolute;top:2px;right:62px;width:22px;height:22px;border:0;border-radius:6px;background:transparent;color:var(--muted);font:600 14px/1 var(--sans);cursor:pointer}
+.tl-dup:hover{background:var(--bg);color:var(--accent)}
+.tl-x{position:absolute;top:2px;right:14px;width:22px;height:22px;border:0;border-radius:6px;background:transparent;color:var(--muted);font:600 16px/1 var(--sans);cursor:pointer}
+.tl-x:hover{background:var(--bg);color:var(--accent)}
+.tl-field{display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--muted)}
+.tl-field input[type=text],.tl-field textarea,.tl-field input[type=number]{font:16px/1.4 var(--sans);color:var(--ink);background:var(--bg);border:1px solid var(--rule);border-radius:8px;padding:8px 10px}
+.img-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;max-height:360px;overflow:auto}
+.img-pick{display:flex;flex-direction:column;gap:4px;text-align:left;padding:6px;border:2px solid var(--rule);border-radius:10px;background:var(--bg);cursor:pointer;color:var(--ink)}
+.img-pick.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+.img-pick img{width:100%;height:150px;object-fit:contain;border-radius:6px;background:var(--paper)}
+.img-preview{display:flex;gap:14px;align-items:flex-start;padding:10px;border:1px solid var(--rule);border-radius:10px;background:var(--paper)}
+.img-preview img{max-width:55%;max-height:340px;object-fit:contain;border-radius:8px;background:#fff}
+.pic-opts{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;padding:10px 12px;border:1px solid var(--rule);border-radius:10px;background:var(--paper)}
+.img-pick span{font:600 12px/1.25 var(--sans);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.img-pick small{font:11px/1.2 var(--sans);color:var(--muted);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.tl-head{position:absolute;top:0;bottom:0;width:2px;background:var(--rec);left:20px;cursor:ew-resize;touch-action:none}
+.tl-head::before{content:"";position:absolute;top:0;bottom:0;left:-8px;width:18px}
+.tl-head i{position:absolute;top:0;left:-7px;width:16px;height:16px;border-radius:50%;background:var(--rec)}
+.tl-bar{width:100%;margin-top:8px;accent-color:var(--rec)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="tabs" role="tablist">
+    <button id="go-home" type="button">← Home</button>
+    <span class="tabs-gap" aria-hidden="true"></span>
+    <button role="tab" id="tab-pixels" aria-selected="false">Pixel art</button>
+    <button role="tab" id="tab-songs" aria-selected="false">Music videos</button>
+  </div>
+  <header>
+    <div class="eyebrow" id="eyebrow">Lesson Studio</div>
+    <div class="title-row">
+      <h1 id="title">Loading…</h1>
+      <!-- The lesson's own three tabs, beside its title (the tools are in the bar above). -->
+      <div class="tabs lesson-tabs" role="tablist" aria-label="This lesson">
+        <button role="tab" id="tab-script" aria-selected="true">Script &amp; recording</button>
+        <button role="tab" id="tab-timing" aria-selected="false">Timing</button>
+        <button role="tab" id="tab-video" aria-selected="false">Video &amp; approval</button>
+      </div>
+    </div>
+    <div class="meta"><span id="status"></span><select id="pick" hidden aria-label="Choose a lesson"></select><button class="btn" id="new-lesson" type="button">+ New lesson</button></div>
+  </header>
+  <main id="view"></main>
+</div>
+
+<script src="/player.js"></script>
+<script src="/ask.js"></script>
+<script type="module">import * as V from "/voxel-draw.js"; window.VoxelDraw = V;</script>
+<script src="/timing.js"></script>
+<script src="/thumb.js"></script>
+<script src="/colors.js"></script>
+<script src="/reference.js"></script>
+<script src="/px-icons.js"></script>
+<script src="/studio-draw.js"></script>
+<script src="/songs.js"></script>
+<script>
+'use strict';
+const S = {
+  lessons: [], id: null, L: null, tab: 'script', slide: 0,
+  drafts: {},            // section key -> {lead?, text?} not yet saved
+  saving: null, checks: {}, // section key -> result of the last save
+  mode: 'each',          // 'each' slide on its own, or one 'take'
+  stream: null, deviceId: '', devices: [], level: 0, peak: 0, micError: null,
+  camera: false, camId: '', cams: [], // "Record my video too": the camera records with the voice
+  rec: null, busy: null, failed: null, notice: null,
+  job: null, pollT: null, wake: null, player: new Audio(), playing: null,
+};
+const view = document.getElementById('view');
+const enc = encodeURIComponent;
+const store = {
+  get(k) { try { return JSON.parse(localStorage.getItem('studio.' + k)); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem('studio.' + k, JSON.stringify(v)); } catch {} },
+};
+
+function el(tag, attrs, kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v === null || v === undefined || v === false) continue;
+    if (k === 'text') e.textContent = v;
+    else if (k === 'class') e.className = v;
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v === true ? '' : v);
+  }
+  for (const c of [].concat(kids || [])) if (c !== null && c !== undefined && c !== false) e.append(c);
+  return e;
+}
+
+function api(path, opts = {}) {
+  return fetch(path, {method: opts.method || 'GET', headers: {'X-Studio': '1', ...(opts.headers || {})}, body: opts.body})
+    .then((r) => r.json().catch(() => ({})).then((j) => { if (!r.ok) throw new Error(j.error || 'HTTP ' + r.status); return j; }));
+}
+const post = (path, data) => api(path, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data || {})});
+
+const fmt = (s) => { s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+const wordCount = (t) => (t || '').trim().split(/\s+/).filter(Boolean).length;
+const sectionName = (s) => s.kind === 'intro' ? 'Intro' : s.kind === 'outro' ? 'Outro' : 'Point ' + s.index;
+const sections = () => (S.L ? S.L.sections : []);
+const sec = () => sections()[S.slide];
+const value = (s, field) => (S.drafts[s.key] && typeof S.drafts[s.key][field] === 'string') ? S.drafts[s.key][field] : (s[field] || '');
+const spokenWords = (s) => s.kind === 'point' ? wordCount(value(s, 'lead')) + wordCount(value(s, 'quote')) + wordCount(value(s, 'text')) : wordCount(value(s, 'text'));
+const hasDrafts = () => Object.keys(S.drafts).length > 0;
+
+// ---------- loading ----------
+
+async function boot() {
+  try {
+    S.lessons = await api('/api/lessons');
+  } catch (e) {
+    view.replaceChildren(el('div', {class: 'notice error', text: 'The studio server isn’t answering. Start it again with npm start (or ask Claude).'}));
+    return;
+  }
+  if (!S.lessons.length) { document.getElementById('title').textContent = 'No lessons yet'; view.replaceChildren(el('div', {class: 'notice', text: 'Ask Claude to start a lesson; it shows up here.'})); return; }
+  const last = store.get('last');
+  // Open on the tab she was last on (a refresh keeps her place).
+  // A fresh start opens on Home; a refresh keeps her place (sessionStorage lasts as long as the browser tab).
+  const tab = store.get('tab');
+  let again = false;
+  try { again = sessionStorage.getItem('studio.open') === '1'; sessionStorage.setItem('studio.open', '1'); } catch {}
+  S.tab = again && ['home', 'script', 'timing', 'pixels', 'songs', 'video'].includes(tab) ? tab : 'home';
+  const id = last && S.lessons.some((l) => l.id === last.id) ? last.id : S.lessons[S.lessons.length - 1].id;
+  await openLesson(id, last && last.id === id ? last.slide : 0);
+  poll();
+}
+
+async function openLesson(id, slide) {
+  try {
+    const L = await api('/api/lesson?id=' + enc(id));
+    S.id = id; S.L = L; S.slide = Math.min(slide || 0, L.sections.length - 1); S.drafts = {}; S.checks = {}; S.quiz = {}; S.notice = null;
+  } catch (e) {
+    S.id = id; S.L = null; S.notice = {error: true, text: 'This lesson can’t be opened: ' + e.message};
+  }
+  remember();
+  render();
+}
+
+async function refresh() {
+  if (!S.id) return;
+  try { S.L = await api('/api/lesson?id=' + enc(S.id)); } catch {}
+}
+
+function remember() { store.set('last', {id: S.id, slide: S.slide}); }
+
+// ---------- header and tabs ----------
+
+const TOOLS = {pixels: 'Pixel art', songs: 'Music videos'};
+function renderHeader() {
+  // Three looks: Home (just the cards), a tool, a lesson (its title too). Off Home, every tab is across the top, after ← Home.
+  const mode = S.tab === 'home' ? 'home' : TOOLS[S.tab] ? 'tool' : 'lesson';
+  for (const m of ['home', 'tool', 'lesson']) document.body.classList.toggle('mode-' + m, m === mode);
+  document.body.classList.toggle('lesson-off', !S.L || S.tab === 'new' || S.tab === 'archive');
+  document.getElementById('go-home').disabled = !!(S.rec || S.busy);
+  const L = mode === 'lesson' ? S.L : null;
+  document.getElementById('eyebrow').textContent = L ? L.course + ' · Lesson ' + L.number : '';
+  document.getElementById('title').textContent = L ? L.title : 'Lesson Studio';
+  document.title = (L ? L.title + ' · ' : TOOLS[S.tab] ? TOOLS[S.tab] + ' · ' : '') + 'Lesson Studio';
+  const st = document.getElementById('status');
+  st.replaceChildren(L ? el('span', {class: 'pill' + (L.status === 'reviewed' ? ' approved' : ''), text: L.status === 'reviewed' ? 'Approved' : L.status === 'published' ? 'Published' : 'Draft'}) : '');
+  const pick = document.getElementById('pick');
+  // Finished lessons (approved or published) live in the archive; the open one stays in the list.
+  const isDone = (l) => l.status === 'reviewed' || l.status === 'published';
+  const active = S.lessons.filter((l) => !isDone(l) || l.id === S.id);
+  const archived = S.lessons.filter(isDone);
+  pick.hidden = S.lessons.length < 2;
+  pick.replaceChildren(...active.map((l) => el('option', {value: l.id, selected: S.tab !== 'archive' && l.id === S.id, text: l.course + ' ' + l.number + ': ' + l.title + (isDone(l) ? ' (done)' : '')})),
+    archived.length ? el('option', {value: '__archive', selected: S.tab === 'archive', text: 'Archive (' + archived.length + ' finished)…'}) : null);
+  pick.disabled = !!(S.rec || S.busy);
+  for (const t of ['script', 'timing', 'pixels', 'songs', 'video']) {
+    const b = document.getElementById('tab-' + t);
+    b.setAttribute('aria-selected', S.tab === t);
+    b.disabled = !!(S.rec || S.busy);
+    // On a phone the tabs are one row that slides sideways: keep the open one in sight.
+    if (S.tab === t && S.tabShown !== t) { S.tabShown = t; const row = b.parentElement; if (row.scrollWidth > row.clientWidth) row.scrollLeft = b.offsetLeft - (row.clientWidth - b.offsetWidth) / 2; }
+  }
+}
+
+function render() {
+  renderHeader();
+  document.body.classList.toggle('wide', S.tab === 'timing' || S.tab === 'pixels' || S.tab === 'songs');
+  const kids = [];
+  if (S.notice) kids.push(noticeEl(S.notice));
+  if (S.tab === 'home') kids.push(homeView());
+  else if (S.tab === 'new') kids.push(newLessonView());
+  else if (S.tab === 'archive') kids.push(archiveView());
+  else if (S.tab === 'songs') kids.push(songsView());
+  else if (S.L) kids.push(S.tab === 'script' ? scriptView() : S.tab === 'timing' ? timingView() : S.tab === 'pixels' ? pixelsView() : videoView());
+  view.replaceChildren(...kids);
+  for (const t of view.querySelectorAll('textarea.read')) grow(t);
+  watchListening();
+}
+
+function noticeEl(n) {
+  return el('div', {class: 'notice' + (n.error ? ' error' : ''), role: n.error ? 'alert' : 'status'}, [
+    n.text, n.list ? el('ul', {}, n.list.map((x) => el('li', {text: x}))) : null, n.extra || null,
+  ]);
+}
+
+document.getElementById('go-home').addEventListener('click', () => switchTab('home'));
+document.getElementById('tab-script').addEventListener('click', () => switchTab('script'));
+document.getElementById('tab-video').addEventListener('click', () => switchTab('video'));
+document.getElementById('tab-timing').addEventListener('click', () => switchTab('timing'));
+document.getElementById('tab-pixels').addEventListener('click', () => switchTab('pixels'));
+document.getElementById('tab-songs').addEventListener('click', () => switchTab('songs'));
+document.getElementById('new-lesson').addEventListener('click', async () => { await saveAll(); if (S.timing) S.timing.pause(); S.tab = 'new'; S.notice = null; stopPlayback(); releaseMic(); render(); });
+document.getElementById('pick').addEventListener('change', async (e) => {
+  await saveAll();
+  if (e.target.value === '__archive') { if (S.timing) S.timing.pause(); S.tab = 'archive'; S.notice = null; stopPlayback(); releaseMic(); render(); return; }
+  if (S.tab === 'new' || S.tab === 'archive' || S.tab === 'home' || S.tab === 'songs') S.tab = 'script';
+  openLesson(e.target.value, 0);
+});
+
+// Home: where the studio opens. The lesson she last worked on, and the tools that aren't part of a lesson.
+function homeView() {
+  const L = S.L;
+  const isDone = (l) => l.status === 'reviewed' || l.status === 'published';
+  const others = S.lessons.filter((l) => !isDone(l) && l.id !== S.id);
+  const archived = S.lessons.filter(isDone).length;
+  const go = (tab) => el('button', {class: 'btn', type: 'button', text: {script: 'Script & recording', timing: 'Timing', video: 'Video & approval'}[tab], onclick: () => switchTab(tab)});
+  const another = el('select', {'aria-label': 'Open another lesson', onchange: (e) => {
+    const v = e.target.value;
+    if (v === '__archive') { S.tab = 'archive'; store.set('tab', 'script'); render(); }
+    else if (v) { S.tab = 'script'; store.set('tab', 'script'); openLesson(v, 0); }
+  }}, [el('option', {value: '', text: 'Open another lesson…'}), ...others.map((l) => el('option', {value: l.id, text: l.course + ' ' + l.number + ': ' + l.title})),
+    archived ? el('option', {value: '__archive', text: 'Archive (' + archived + ' finished)…'}) : null]);
+  const lessons = el('section', {class: 'card'}, [
+    el('h2', {text: 'Lessons'}),
+    L ? el('div', {class: 'home-last'}, [
+      el('div', {}, [el('div', {class: 'small muted', text: 'The last one you worked on · ' + L.course + ' ' + L.number}),
+        el('div', {style: 'font:500 20px/1.2 var(--serif);margin-top:4px'}, [L.title, ' ', el('span', {class: 'pill' + (L.status === 'reviewed' ? ' approved' : ''), text: L.status === 'reviewed' ? 'Approved' : L.status === 'published' ? 'Published' : 'Draft'})])]),
+      el('div', {class: 'row', style: 'gap:8px'}, [go('script'), go('timing'), go('video')])]) : null,
+    el('div', {class: 'row', style: 'justify-content:flex-start;gap:10px'}, [others.length || archived ? another : null,
+      el('button', {class: 'btn', type: 'button', text: '+ New lesson', onclick: () => document.getElementById('new-lesson').click()})]),
+  ]);
+  const tool = (tab, about) => el('button', {class: 'card home-tool', type: 'button', onclick: () => switchTab(tab)}, [el('b', {text: TOOLS[tab]}), el('span', {class: 'small muted', text: about})]);
+  return el('div', {class: 'stack'}, [lessons, el('div', {class: 'home-grid'}, [
+    tool('pixels', 'Drawings, characters and comics'),
+    tool('songs', 'Words and dancing characters for your songs'),
+  ])]);
+}
+
+// Finished lessons, searchable, so the lesson list stays short as the courses grow.
+function archiveView() {
+  const done = S.lessons.filter((l) => l.status === 'reviewed' || l.status === 'published');
+  const list = el('div', {class: 'stack'});
+  const q = el('input', {type: 'search', class: 'read-line', placeholder: 'Search finished lessons by course or title', 'aria-label': 'Search the archive'});
+  const draw = () => {
+    const words = q.value.toLowerCase().split(/\s+/).filter(Boolean);
+    const hits = done.filter((l) => words.every((w) => (l.course + ' ' + l.title).toLowerCase().includes(w)));
+    list.replaceChildren(...(hits.length ? hits.map((l) => el('div', {class: 'row'}, [
+      el('span', {text: l.course + ' · Lesson ' + l.number + ': ' + l.title}),
+      el('button', {class: 'btn', text: 'Open', onclick: () => { S.tab = 'script'; openLesson(l.id, 0); }}),
+    ])) : [el('div', {class: 'muted', text: 'Nothing matches.'})]));
+  };
+  q.addEventListener('input', draw);
+  draw();
+  return el('div', {class: 'card stack'}, [el('h2', {text: 'Archive'}), el('div', {class: 'muted', text: 'Lessons that are approved and sent to Angelio. Open one to look at it or change it.'}), q, list]);
+}
+
+async function switchTab(tab) {
+  if (S.tab === tab) return;
+  await saveAll();
+  if (S.timing && S.timing.dirty() && !(await ask('You have timing changes that aren’t saved. Leave them?'))) return;
+  if (S.tab === 'pixels' && S.pixels && S.pixels.dirty() && !(await ask('Your drawing isn’t saved. Leave it?'))) return;
+  if (S.timing) S.timing.pause();
+  if (S.songs) S.songs.pause();
+  S.tab = tab; S.notice = null; store.set('tab', tab);
+  stopPlayback();
+  if (tab === 'timing') { releaseMic(); S.timingRoot = null; }
+  if (tab === 'pixels') { releaseMic(); S.pixelsRoot = null; }
+  if (tab === 'home') releaseMic();
+  if (tab === 'pico' || tab === 'songs') releaseMic();
+  if (tab === 'video') { releaseMic(); await refresh(); }
+  render();
+}
+
+// ---------- timing ----------
+
+// The Timing tab lives in studio/timing.js; its root is kept so the video player isn't rebuilt on every redraw.
+function timingView() {
+  if (!S.timingRoot || S.timingFor !== S.id) {
+    S.timingRoot = el('div', {class: 'stack'});
+    S.timingFor = S.id;
+    S.timing = window.TimingTab.open(S.timingRoot, S.id, api, post);
+  }
+  return S.timingRoot;
+}
+
+// ---------- a new lesson ----------
+
+/** Pick the course (one here, one on the site, or a new one), name the lesson, and start with one blank slide. */
+function newLessonView() {
+  const box = el('div', {class: 'card stack'}, [el('h2', {text: 'Start a new lesson'}), el('div', {class: 'muted', text: 'Getting the courses…'})]);
+  api('/api/courses').then((c) => {
+    const course = el('select', {'aria-label': 'Course'}, [
+      el('optgroup', {label: 'Your courses here'}, c.local.map((x) => el('option', {value: 'local:' + x.slug, text: x.title + (x.style === 'kids' ? ' (kids)' : '')}))),
+      c.site.length ? el('optgroup', {label: 'Courses on the site (continue one)'}, c.site.map((x) => el('option', {value: 'site:' + x.slug, text: x.title + ' · ' + x.posts + (x.posts === 1 ? ' lesson' : ' lessons')}))) : null,
+      el('optgroup', {label: 'Something new'}, [el('option', {value: 'new', text: 'A new course…'})]),
+    ]);
+    const ctitle = el('input', {type: 'text', class: 'read-line', placeholder: 'Course title, e.g. What Is Advent?'});
+    const style = el('select', {'aria-label': 'Kind of course'}, [el('option', {value: 'classic', text: 'Explainer (grown-ups)'}), el('option', {value: 'kids', text: 'Kids (bright, bouncy)'})]);
+    const fresh = el('div', {class: 'stack', hidden: true}, [el('label', {text: 'New course title'}), ctitle, el('label', {text: 'Look'}), style]);
+    course.addEventListener('change', () => { fresh.hidden = course.value !== 'new'; });
+    const title = el('input', {type: 'text', class: 'read-line heading', placeholder: 'Lesson title, e.g. What Is the Jesse Tree?'});
+    const go = el('button', {class: 'btn primary', text: 'Start the lesson', onclick: async () => {
+      const [kind, slug] = course.value.split(':');
+      const site = c.site.find((x) => x.slug === slug);
+      const pick = kind === 'local' ? {slug} : kind === 'site' ? {slug, title: site.title, ghost: true, posts: site.posts} : {title: ctitle.value, style: style.value};
+      go.disabled = true;
+      try {
+        const r = await post('/api/new-lesson', {course: pick, title: title.value});
+        S.lessons = r.lessons; S.tab = 'script';
+        await openLesson(r.id, 0);
+      } catch (e) { go.disabled = false; alert('Couldn’t start it: ' + e.message); }
+    }});
+    box.replaceChildren(
+      el('h2', {text: 'Start a new lesson'}),
+      c.error ? el('div', {class: 'small bad', text: c.error + ' (your courses here still work)'}) : null,
+      el('label', {text: 'Course'}), course, fresh,
+      el('label', {text: 'Lesson title'}), title,
+      el('div', {class: 'small muted', text: 'It starts with one slide (your intro). Write and record it, then add slides with “+ Add a slide after this”. Each new slide has boxes for its title, the direct quote and where it’s from.'}),
+      el('div', {class: 'row'}, [el('button', {class: 'btn', text: 'Cancel', onclick: () => { S.tab = 'script'; render(); }}), go]),
+    );
+  }, (e) => box.replaceChildren(el('div', {class: 'notice error', text: 'Couldn’t get the courses: ' + e.message})));
+  return box;
+}
+
+// ---------- music videos ----------
+
+// The Music videos tab (studio/songs.js): words and dancing characters for a song she made in Logic. Kept alive between tab visits.
+function songsView() {
+  if (!S.songsRoot) {
+    S.songsRoot = el('div', {class: 'stack'});
+    S.songs = window.SongsTab.open(S.songsRoot, api, post);
+  } else S.songs.refresh();
+  return S.songsRoot;
+}
+
+// ---------- pixel art ----------
+
+// The Pixel art tab (studio/pixels.js).
+// Drawings are shared by every lesson.
+async function openIpadModal() {
+  const info = await api('/api/draw-info').catch(() => null);
+  if (!info || !info.enabled) {
+    await ask('The iPad drawing page is disabled. Set STUDIO_DRAW_PIN in .env to turn it on.', {yes: 'OK'});
+    return;
+  }
+  const box = el('div', {class: 'stack', style: 'max-width:440px;gap:12px;margin:8px 0 14px;text-align:left'}, [
+    el('div', {class: 'small muted', text: info.domain ? 'Open this link in Safari on your iPad or phone from anywhere:' : 'Open this link in Safari on your iPad (while connected to your home Wi-Fi):'}),
+    el('div', {class: 'row', style: 'gap:8px;align-items:center'}, [
+      el('input', {class: 'read-line', readonly: true, value: info.url, style: 'font-weight:600;font-family:monospace;flex:1'}),
+      el('button', {class: 'btn primary', text: 'Copy link', onclick: (e) => {
+        navigator.clipboard.writeText(info.url);
+        e.target.textContent = 'Copied!';
+        setTimeout(() => { e.target.textContent = 'Copy link'; }, 2000);
+      }})
+    ]),
+    el('div', {class: 'row', style: 'gap:8px;align-items:center'}, [
+      el('span', {class: 'small muted', text: 'PIN: '}),
+      el('code', {style: 'font-size:16px;font-weight:bold;background:rgba(0,0,0,0.06);padding:2px 8px;border-radius:4px', text: info.pin}),
+      el('button', {class: 'btn', text: 'Copy PIN', onclick: (e) => {
+        navigator.clipboard.writeText(info.pin);
+        e.target.textContent = 'Copied!';
+        setTimeout(() => { e.target.textContent = 'Copy PIN'; }, 2000);
+      }})
+    ]),
+    el('div', {class: 'small muted', style: 'border-top:1px solid rgba(0,0,0,0.08);padding-top:10px;line-height:1.4'}, [
+      el('strong', {text: '💡 One-tap app icon: '}),
+      el('span', {text: 'In Safari on your iPad or phone, tap Share ➔ "Add to Home Screen". It adds a Pixel Studio app icon right on your home screen!'})
+    ]),
+    info.studioUrl ? el('div', {class: 'small muted', style: 'border-top:1px solid rgba(0,0,0,0.08);padding-top:10px;line-height:1.4'}, [
+      el('strong', {text: 'The whole studio on another computer: '}),
+      el('span', {text: info.studioReady ? 'open ' : 'once STUDIO_PASSWORD is set in .env (10 or more letters and numbers), open '}),
+      el('span', {style: 'font-family:monospace', text: info.studioUrl}),
+      el('span', {text: info.studioReady ? ' and type your studio password.' : '.'})
+    ]) : null,
+    info.domain && info.localUrl ? el('details', {class: 'small muted'}, [
+      el('summary', {text: 'Local Wi-Fi link'}),
+      el('div', {style: 'margin-top:6px;font-family:monospace', text: info.localUrl})
+    ]) : null,
+    info.ips && info.ips.length ? el('details', {class: 'small muted'}, [
+      el('summary', {text: 'Alternative IP address link'}),
+      el('div', {style: 'margin-top:6px;font-family:monospace', text: info.ips[0]})
+    ]) : null
+  ]);
+  await ask('📱 Drawing & Upload Link', {yes: 'Done', no: '', extra: box});
+}
+
+function pixelsView() {
+  if (!S.pixelsRoot) {
+    const inner = el('div', {class: 'stack'});
+    S.pixels = window.PixelTab.open(inner, api, post, window.DrawReference);
+    const bar = el('div', {class: 'row', style: 'justify-content:flex-end;align-items:center;flex-wrap:wrap;gap:8px'}, [
+      el('button', {class: 'btn', text: '📱 Draw on iPad…', onclick: openIpadModal})
+    ]);
+    S.pixelsRoot = el('div', {class: 'stack'}, [bar, inner]);
+  }
+  return S.pixelsRoot;
+}
+
+// ---------- script & recording ----------
+
+function scriptView() {
+  const s = sec();
+  return el('div', {}, [
+    strip(),
+    el('div', {class: 'toolbar'}, [modeSwitch(), micPanel()]),
+    camPreview(),
+    slideEl(s),
+    dock(s),
+    el('div', {style: 'height:16px'}),
+    askCard(),
+  ]);
+}
+
+function strip() {
+  return el('nav', {class: 'strip', 'aria-label': 'Sections'}, sections().map((s, i) => el('button', {
+    'aria-current': i === S.slide ? 'true' : 'false', disabled: !!(S.rec || S.busy),
+    title: sectionName(s) + (s.audio ? ' · recorded ' + fmt(s.audio.seconds) : ' · not recorded'),
+    onclick: () => goTo(i),
+  }, [s.kind === 'point' ? String(s.index) : sectionName(s), el('span', {class: 'mic' + (s.audio ? ' has' : ''), 'aria-label': s.audio ? 'recorded' : 'not recorded'}), S.drafts[s.key] ? el('span', {class: 'unsaved', text: '•', 'aria-label': 'unsaved changes'}) : null])));
+}
+
+function modeSwitch() {
+  const b = (mode, label) => el('button', {'aria-pressed': S.mode === mode ? 'true' : 'false', disabled: !!(S.rec || S.busy), text: label, onclick: () => { S.mode = mode; store.set('mode', mode); render(); }});
+  return el('div', {class: 'seg', role: 'group', 'aria-label': 'How to record'}, [b('each', 'One slide at a time'), b('take', 'One take')]);
+}
+
+function micPanel() {
+  const select = el('select', {'aria-label': 'Microphone', disabled: !!S.rec, onchange: (e) => switchMic(e.target.value)},
+    S.devices.length ? S.devices.map((d, i) => el('option', {value: d.deviceId, selected: d.deviceId === S.deviceId, text: d.label || 'Microphone ' + (i + 1)})) : [el('option', {text: 'Allow the microphone to see the list'})]);
+  const d = el('details', {class: 'mic', open: store.get('micOpen') ? true : null, ontoggle: (e) => store.set('micOpen', e.target.open)}, [
+    el('summary', {text: (S.stream ? 'Microphone: on' : 'Microphone') + (S.camera ? ' · camera' : '')}),
+    el('div', {class: 'micbody'}, [
+      el('div', {class: 'row'}, [select, S.stream ? el('button', {class: 'btn', text: 'Turn off', disabled: !!S.rec, onclick: () => { releaseMic(); render(); }}) : el('button', {class: 'btn', text: 'Check microphone', onclick: () => ensureMic().then(render, micFailed)})]),
+      S.stream ? el('div', {class: 'row'}, [el('div', {class: 'meter', 'data-meter': ''}, el('i')), el('span', {class: 'small muted', 'data-meterhint': '', text: 'Say a few words. The bar should move.'})]) : null,
+      S.micError ? el('div', {class: 'small bad', text: S.micError}) : null,
+      camControls(),
+      el('div', {class: 'small muted', text: 'Tip: sit close to the microphone, in a quiet room with soft things around (curtains, a sofa). Read naturally; small slips are fine to keep.'}),
+    ]),
+  ]);
+  return d;
+}
+
+function camControls() {
+  const box = el('input', {type: 'checkbox', id: 'cam-on', checked: S.camera || null, disabled: !!S.rec, onchange: (e) => setCamera(e.target.checked)});
+  const row = [box, el('label', {for: 'cam-on', text: 'Record my video too (camera)'})];
+  if (S.camera && S.cams.length > 1) row.push(el('select', {'aria-label': 'Camera', disabled: !!S.rec, onchange: (e) => { S.camId = e.target.value; store.set('cam', S.camId); releaseMic(); ensureMic().then(render, micFailed); }},
+    S.cams.map((d, i) => el('option', {value: d.deviceId, selected: d.deviceId === S.camId, text: d.label || 'Camera ' + (i + 1)}))));
+  return el('div', {}, [el('div', {class: 'row'}, row),
+    S.camera ? el('div', {class: 'small muted', text: 'Your video goes with each slide you record. On the Timing tab you choose how it shows: a bubble in the corner, or full screen with the pictures floating beside you (sit a little to the left for that one). It stays on this Mac.'}) : null]);
+}
+
+async function setCamera(on) {
+  S.camera = on; store.set('camera', on);
+  releaseMic();
+  if (on) { try { await ensureMic(); } catch (e) { return micFailed(e); } }
+  render();
+}
+
+/** Small live picture of the camera while it's on, so she can check her framing as she reads. */
+function camPreview() {
+  if (!S.stream || !S.stream.getVideoTracks().length) return null;
+  const v = el('video', {class: 'campreview' + (S.rec ? ' rec' : ''), autoplay: true, playsinline: true, muted: true, 'aria-label': 'Camera preview'});
+  v.muted = true; v.srcObject = S.stream;
+  return v;
+}
+
+function slideEl(s) {
+  const locked = !!(S.rec || S.busy);
+  const yours = s.kind !== 'point';
+  const est = spokenWords(s) / 2.4;
+  const kids = [el('div', {class: 'where'}, [
+    el('span', {text: sectionName(s) + (yours ? ' · your words' : '')}),
+    el('span', {text: spokenWords(s) + ' words · about ' + fmt(est) + (s.audio ? ' · recorded ' + fmt(s.audio.seconds) : '')}),
+  ])];
+  const area = (field, cls, label) => {
+    const id = 'f-' + s.key + '-' + field;
+    const t = el('textarea', {id, class: 'read' + (cls ? ' ' + cls : ''), rows: 1, readonly: locked, spellcheck: 'true'});
+    t.value = value(s, field);
+    t.addEventListener('input', () => { setDraft(s, field, t.value); grow(t); });
+    kids.push(el('label', {for: id, text: label}), t);
+  };
+  // One line of text (a slide's title or source).
+  const line = (field, label, placeholder, type = 'text') => {
+    const id = 'f-' + s.key + '-' + field;
+    const t = el('input', {id, type, class: 'read-line' + (field === 'heading' ? ' heading' : ''), readonly: locked, placeholder, spellcheck: type === 'text' ? 'true' : 'false'});
+    t.value = value(s, field);
+    t.addEventListener('input', () => setDraft(s, field, t.value));
+    kids.push(el('label', {for: id, text: label}), t);
+  };
+  if (s.kind === 'point' && s.own) {
+    // A slide she wrote here: each part in its own box, so the video and the post know what it is.
+    line('heading', 'Section title (shown big when the slide starts)', 'e.g. It started in Antioch');
+    area('lead', 'lead', 'What you say first');
+    area('quote', 'quote-edit', 'Direct quote (read it exactly; leave empty if this slide has none)');
+    line('highlight', 'Words to highlight in the quote (copy them exactly from it)', 'e.g. first called Christians');
+    line('cite', 'Where the quote is from (shown under it)', 'e.g. Acts 11:26');
+    line('link', 'Link to where the words can be checked', 'e.g. https://bible.usccb.org/bible/acts/11', 'url');
+    area('text', '', 'What you say after');
+  } else if (s.kind === 'point') {
+    kids.push(el('h2', {text: s.heading}));
+    area('lead', 'lead', 'Lead-in');
+    kids.push(el('blockquote', {class: 'quote', text: s.quote}), el('div', {class: 'cite'}, [s.cite + ' · ', el('b', {text: 'read exactly'})]));
+    area('text', '', 'Explanation');
+  } else {
+    area('text', '', s.kind === 'intro' ? 'Your intro' : 'Your outro');
+    if (!value(s, 'text')) kids.push(el('div', {class: 'small muted', text: 'Not written yet. Type it here, or tell Claude in chat.'}));
+    if (s.notes && s.notes.length) kids.push(el('details', {class: 'notes'}, [el('summary', {text: 'Facts you can draw on'}), el('ul', {}, s.notes.map((n) => el('li', {text: n})))]));
+  }
+  kids.push(saveBar(s));
+  const c = S.checks[s.key];
+  if (c) kids.push(checkEl(c));
+  if (s.audio && s.heard && !S.rec && !S.busy) kids.push(heardEl(s));
+  if (s.kind === 'point' && s.own) kids.push(quizEditor(s));
+  kids.push(slideTools(s));
+  return el('article', {class: 'slide' + (yours ? ' yours' : '')}, kids);
+}
+
+/**
+ * Quiz questions for one of her slides: multiple choice, true or false, fill in the blank.
+ * Edits stay in S.quiz until she presses Save quiz (the server checks each question).
+ */
+function quizEditor(s) {
+  S.quiz = S.quiz || {};
+  const saved = JSON.stringify(s.quiz || []);
+  const qs = S.quiz[s.key] || (S.quiz[s.key] = JSON.parse(saved));
+  const locked = !!(S.rec || S.busy);
+  const dirty = () => JSON.stringify(qs) !== saved;
+  const box = el('details', {class: 'quiz-edit', open: qs.length || store.get('quizOpen') ? true : null, ontoggle: (e) => store.set('quizOpen', e.target.open)});
+  const draw = () => {
+    const saveBtn = el('button', {class: 'btn primary', disabled: locked || !dirty(), text: dirty() ? 'Save quiz' : 'Quiz saved', onclick: async () => {
+      saveBtn.disabled = true;
+      try {
+        const r = await post('/api/quiz?id=' + enc(S.id), {section: s.key, quiz: qs});
+        S.L = r.lesson; delete S.quiz[s.key]; S.checks[s.key] = r; render();
+      } catch (e) { msg.textContent = e.message; msg.className = 'small bad'; saveBtn.disabled = false; }
+    }});
+    const msg = el('div', {class: 'small muted', text: 'Each question needs a “why”: it shows after they answer.'});
+    const mark = () => { saveBtn.disabled = locked || !dirty(); saveBtn.textContent = dirty() ? 'Save quiz' : 'Quiz saved'; };
+    const field = (q, k, label, rows, hint) => {
+      const t = el(rows ? 'textarea' : 'input', {class: rows ? 'read' : 'read-line', rows: rows || null, type: rows ? null : 'text', placeholder: hint || '', readonly: locked});
+      t.value = Array.isArray(q[k]) ? q[k].join(rows ? '\n' : ', ') : (q[k] ?? '');
+      t.addEventListener('input', () => {
+        q[k] = k === 'options' ? t.value.split('\n').map((x) => x.trim()).filter(Boolean) : k === 'accept' ? t.value.split(',').map((x) => x.trim()).filter(Boolean) : t.value;
+        if (k === 'options') { q.answer = Math.min(q.answer ?? 0, Math.max(0, q.options.length - 1)); draw(); return; }
+        mark();
+      });
+      return [el('label', {text: label}), t];
+    };
+    const card = (q, i) => {
+      const type = q.type || 'choice';
+      const typeSel = el('select', {'aria-label': 'Kind of question', disabled: locked, onchange: (e) => {
+        const t = e.target.value;
+        qs[i] = t === 'choice' ? {type: t, question: q.question || '', options: ['', ''], answer: 0, why: q.why || ''}
+          : t === 'truefalse' ? {type: t, question: q.question || '', answer: true, why: q.why || ''}
+          : {type: t, question: q.question || '', accept: [], why: q.why || ''};
+        draw();
+      }}, [['choice', 'Multiple choice'], ['truefalse', 'True or false'], ['blank', 'Fill in the blank']].map(([v, l]) => el('option', {value: v, text: l, selected: v === type})));
+      const parts = [el('div', {class: 'row'}, [el('b', {text: 'Question ' + (i + 1)}), typeSel,
+        el('button', {class: 'btn', disabled: locked, text: 'Remove', onclick: () => { qs.splice(i, 1); draw(); }})])];
+      parts.push(...field(q, 'question', type === 'blank' ? 'Question (put ____ where the missing word goes)' : 'Question', 2));
+      if (type === 'choice') {
+        parts.push(...field(q, 'options', 'Answers to choose from, one per line', 3));
+        parts.push(el('label', {text: 'The right answer'}), el('select', {disabled: locked, onchange: (e) => { q.answer = +e.target.value; mark(); }},
+          (q.options || []).map((o, k) => el('option', {value: k, text: o || '(answer ' + (k + 1) + ')', selected: k === q.answer}))));
+      } else if (type === 'truefalse') {
+        parts.push(el('label', {text: 'The right answer'}), el('select', {disabled: locked, onchange: (e) => { q.answer = e.target.value === 'true'; mark(); }},
+          [['true', 'True'], ['false', 'False']].map(([v, l]) => el('option', {value: v, text: l, selected: String(q.answer) === v}))));
+      } else {
+        parts.push(...field(q, 'accept', 'Answers that count as right, separated by commas', 0, 'e.g. Antioch'));
+      }
+      parts.push(...field(q, 'why', 'Why (shown after they answer)', 2));
+      return el('div', {class: 'quiz-q'}, parts);
+    };
+    box.replaceChildren(el('summary', {text: 'Quiz questions for this slide (' + qs.length + ')'}), ...qs.map(card),
+      el('div', {class: 'row'}, [el('button', {class: 'btn', disabled: locked, text: '+ Add a question', onclick: () => {
+        qs.push({type: 'choice', question: '', options: ['', ''], answer: 0, why: ''}); box.open = true; draw();
+      }}), saveBtn]), msg);
+  };
+  draw();
+  return box;
+}
+
+/** Add a slide after this one, add the closing slide, or remove this slide. */
+function slideTools(s) {
+  const locked = !!(S.rec || S.busy);
+  const last = S.slide === sections().length - 1;
+  const hasClosing = sections().some((x) => x.kind === 'outro');
+  const change = async (op, section, ask) => {
+    if (ask && !(await window.ask(ask))) return;
+    await saveAll();
+    try {
+      const r = await post('/api/slide?id=' + enc(S.id), {op, section});
+      S.L = r.lesson; S.drafts = {}; S.checks = {}; S.quiz = {};
+      const i = r.slide ? sections().findIndex((x) => x.key === r.slide) : Math.min(S.slide, sections().length - 1);
+      S.slide = Math.max(0, i); remember();
+      render(); scrollTo({top: 0});
+    } catch (e) { alert('Couldn’t change the slides: ' + e.message); }
+  };
+  return el('div', {class: 'row slide-tools'}, [
+    s.kind !== 'outro' ? el('button', {class: 'btn', disabled: locked, text: '+ Add a slide after this', onclick: () => change('add', s.key)}) : null,
+    last && !hasClosing ? el('button', {class: 'btn', disabled: locked, text: '+ Add a closing slide', onclick: () => change('add-closing')}) : null,
+    s.kind !== 'intro' ? el('button', {class: 'btn', disabled: locked, text: 'Remove this slide',
+      onclick: () => change('remove', s.key, 'Remove ' + sectionName(s) + '?' + (s.audio ? ' Its recording is kept (in the lesson\'s audio/removed folder).' : ''))}) : null,
+  ]);
+}
+
+function saveBar(s) {
+  const bar = el('div', {class: 'savebar', id: 'savebar', hidden: !S.drafts[s.key] && S.saving !== s.key}, [
+    el('span', {class: 'msg', text: S.saving === s.key ? 'Saving and checking quotations…' : 'Unsaved changes'}),
+    el('button', {class: 'btn', text: 'Undo', disabled: S.saving === s.key, onclick: () => { delete S.drafts[s.key]; delete S.checks[s.key]; render(); }}),
+    el('button', {class: 'btn primary', text: 'Save', disabled: S.saving === s.key, onclick: () => saveSection(s.key)}),
+  ]);
+  return bar;
+}
+
+function checkEl(c) {
+  if (c.error) return el('div', {class: 'check bad', role: 'alert', text: 'Couldn’t save: ' + c.error});
+  const kids = [];
+  if (!c.changes.length) kids.push(el('span', {class: 'muted', text: 'No changes to save.'}));
+  else if (c.check && c.check.ok) kids.push(el('span', {class: 'ok', text: 'Saved. All quotations still match their sources.'}));
+  else if (c.check && c.check.problems.length) kids.push(el('span', {class: 'bad', text: 'Saved, but a quotation doesn’t match its source. Ask Claude to fix it, or put your words back.'}), el('ul', {}, c.check.problems.map((p) => el('li', {text: p}))));
+  else if (c.check) kids.push(el('span', {class: 'ok', text: 'Saved. '}), el('span', {class: 'muted', text: 'Some quotations couldn’t be re-checked because a source website didn’t answer. Claude will check them before the lesson goes to Ghost.'}));
+  if (c.unapproved) kids.push(el('div', {class: 'small muted', text: 'The lesson was approved before; since the script changed, approve it again after making the new video.'}));
+  return el('div', {class: 'check', role: 'status'}, kids);
+}
+
+// What she said vs. the script (Whisper, run by the studio after each recording).
+function heardEl(s) {
+  const h = s.heard;
+  if (h.pending) return el('div', {class: 'heard', role: 'status'}, [el('h3', {text: 'What you said'}), el('div', {class: 'small muted', text: 'Listening back to your recording…'})]);
+  const kids = [el('h3', {text: 'What you said'})];
+  if (h.quote && !h.quote.ok) {
+    const bits = [h.quote.missing.length ? 'missed “' + h.quote.missing.join(' ') + '”' : '', h.quote.added.length ? 'added “' + h.quote.added.join(' ') + '”' : ''].filter(Boolean).join(', ');
+    kids.push(el('div', {class: 'warn', role: 'alert', text: 'The quotation was read differently (' + bits + '). Quotations must be read exactly: re-record this slide.'}));
+  }
+  if (!h.changed) { kids.push(el('div', {class: 'small ok', text: 'Matches the script.'})); return el('div', {class: 'heard'}, kids); }
+  if (S.keepScript && S.keepScript[s.key] === s.audio.at) { kids.push(el('div', {class: 'small muted', text: 'Kept the script as written.'})); return el('div', {class: 'heard'}, kids); }
+  kids.push(el('div', {class: 'said'}, h.diff.flatMap((d) => [d.kind === 'same' ? d.t : el('span', {class: d.kind === 'added' ? 'add' : 'del', text: d.t}), ' '])));
+  kids.push(el('div', {class: 'small muted', text: 'Green: words you said that aren’t in the script. Struck through: script words you didn’t say. Using your words keeps the post matching the video; quotations stay exactly as written.'}));
+  kids.push(el('div', {class: 'row'}, [
+    el('span', {}),
+    el('span', {}, [
+      el('button', {class: 'btn', text: 'Keep the script', onclick: () => { (S.keepScript ||= {})[s.key] = s.audio.at; store.set('keep', S.keepScript); render(); }}),
+      ' ',
+      el('button', {class: 'btn primary', text: 'Use what I said', onclick: () => useSpoken(s)}),
+    ]),
+  ]));
+  return el('div', {class: 'heard'}, kids);
+}
+
+async function useSpoken(s) {
+  S.saving = s.key; render();
+  try {
+    const r = await post('/api/use-spoken?id=' + enc(S.id), {section: s.key});
+    S.L = r.lesson; S.checks[s.key] = r;
+  } catch (e) { S.checks[s.key] = {error: e.message}; }
+  S.saving = null;
+  render();
+}
+
+// While recordings are being listened to, check back every few seconds.
+function watchListening() {
+  clearTimeout(S.listenT);
+  if (!S.L || !S.L.sections.some((x) => x.heard && x.heard.pending)) return;
+  S.listenT = setTimeout(async () => {
+    const typing = document.activeElement && document.activeElement.tagName === 'TEXTAREA';
+    if (!S.rec && !S.busy && !typing && !hasDrafts()) { await refresh(); render(); } else watchListening();
+  }, 3000);
+}
+
+function setDraft(s, field, v) {
+  const d = S.drafts[s.key] || (S.drafts[s.key] = {});
+  d[field] = v;
+  // Back to the saved text: nothing to save.
+  if (Object.keys(d).every((f) => d[f] === (s[f] || ''))) delete S.drafts[s.key];
+  delete S.checks[s.key];
+  const bar = document.getElementById('savebar');
+  if (bar) bar.hidden = !S.drafts[s.key];
+  const strip = view.querySelector('.strip');
+  if (strip) strip.replaceWith(window.strip());
+}
+
+function grow(t) { t.style.height = 'auto'; t.style.height = t.scrollHeight + 2 + 'px'; }
+
+async function saveSection(key) {
+  const d = S.drafts[key];
+  if (!d) return;
+  S.saving = key; render();
+  try {
+    const r = await post('/api/save?id=' + enc(S.id), {section: key, ...d});
+    delete S.drafts[key];
+    S.L = r.lesson; S.checks[key] = r;
+  } catch (e) {
+    S.checks[key] = {error: e.message};
+  }
+  S.saving = null;
+  render();
+}
+
+async function saveAll() { for (const key of Object.keys(S.drafts)) await saveSection(key); }
+
+async function goTo(i) {
+  if (i === S.slide || i < 0 || i >= sections().length) return;
+  await saveAll();
+  stopPlayback();
+  S.slide = i; S.notice = null; remember();
+  render();
+  scrollTo({top: 0});
+}
+
+// ---------- the recording dock ----------
+
+function dock(s) {
+  const last = S.slide === sections().length - 1;
+  const r = S.rec;
+  const inTake = r && r.kind === 'take';
+  const back = el('button', {class: 'btn big nav', text: '‹ Back', disabled: S.slide === 0 || !!r || !!S.busy, onclick: () => goTo(S.slide - 1)});
+  let next;
+  if (inTake) next = el('button', {class: 'btn big primary nav', text: last ? 'Finish ✓' : 'Next ›', onclick: takeNext});
+  else next = el('button', {class: 'btn big nav', text: 'Next ›', disabled: last || !!r || !!S.busy, onclick: () => goTo(S.slide + 1)});
+
+  const center = el('div', {class: 'center'});
+  if (S.busy) center.append(el('span', {class: 'muted', role: 'status', text: S.busy}));
+  else if (r && r.stopping) center.append(el('span', {class: 'muted', role: 'status', text: 'Finishing…'}));
+  else if (S.failed) {
+    center.append(
+      el('span', {class: 'bad small', text: 'The recording didn’t save.'}),
+      el('button', {class: 'btn primary', text: 'Try again', onclick: retryUpload}),
+      el('a', {class: 'small', href: S.failed.url, download: S.failed.name, text: 'Keep a copy'}),
+    );
+  } else if (r) {
+    center.append(
+      el('span', {class: 'live', text: r.kind === 'take' ? 'One take' : 'Recording'}),
+      el('span', {class: 'time', 'data-time': '', text: fmt((performance.now() - r.t0) / 1000)}),
+      el('div', {class: 'meter', 'data-meter': ''}, el('i')),
+      el('button', {class: 'btn big stop', onclick: () => stopRecording(true)}, [el('span', {class: 'sq'}), (r.kind === 'take' ? 'Stop take' : 'Stop') + ' (R or F19)']),
+    );
+    if (inTake) center.append(el('div', {class: 'hint', text: last ? 'Last section. Tap Finish when you’re done (or press the space bar).' : 'Finish the section, pause a breath, then tap Next (or press the space bar).'}));
+  } else if (S.mode === 'each') {
+    if (s.audio) {
+      const playing = S.playing === s.key;
+      center.append(
+        el('button', {class: 'btn big', onclick: () => togglePlay(s)}, playing ? '❚❚ Pause' : '▶ Play ' + fmt(s.audio.seconds)),
+        el('button', {class: 'btn big rec', onclick: () => startRecording('each')}, [el('span', {class: 'dot'}), 'Re-record (R)']),
+      );
+    } else {
+      center.append(el('button', {class: 'btn big rec', onclick: () => startRecording('each')}, [el('span', {class: 'dot'}), 'Record ' + sectionName(s) + ' (R or F19)']));
+    }
+  } else {
+    center.append(
+      el('button', {class: 'btn big rec', onclick: () => startRecording('take')}, [el('span', {class: 'dot'}), (S.slide === 0 ? 'Start one take' : 'One take from ' + sectionName(s)) + ' (R or F19)']),
+      el('div', {class: 'hint', text: 'Records from this slide to the end in one go. You tap Next between sections; that’s where it’s cut.'}),
+    );
+    if (s.audio) center.prepend(el('button', {class: 'btn big', onclick: () => togglePlay(s)}, S.playing === s.key ? '❚❚ Pause' : '▶ Play ' + fmt(s.audio.seconds)));
+  }
+  return el('div', {class: 'dock'}, [back, center, next]);
+}
+
+// ---------- microphone ----------
+
+async function ensureMic() {
+  if (S.stream && S.stream.getAudioTracks().some((t) => t.readyState === 'live') && (S.stream.getVideoTracks().length > 0) === S.camera) return S.stream;
+  if (S.stream) releaseMic();
+  if (!navigator.mediaDevices || !window.MediaRecorder) throw new Error('This browser can’t record. Open the studio in Chrome or Safari.');
+  const audio = {echoCancellation: false, noiseSuppression: true, autoGainControl: false, channelCount: 1};
+  if (S.deviceId) audio.deviceId = {exact: S.deviceId};
+  const video = S.camera ? {width: {ideal: 1280}, height: {ideal: 720}, frameRate: {ideal: 30}, ...(S.camId ? {deviceId: {exact: S.camId}} : {facingMode: 'user'})} : false;
+  try { S.stream = await navigator.mediaDevices.getUserMedia({audio, video}); }
+  catch (e) {
+    // The microphone or camera she picked before is gone (unplugged, or its id changed): use the usual one.
+    if (e.name !== 'OverconstrainedError' || (!S.deviceId && !S.camId)) throw e;
+    S.deviceId = ''; S.camId = ''; store.set('mic', ''); store.set('cam', '');
+    delete audio.deviceId;
+    S.stream = await navigator.mediaDevices.getUserMedia({audio, video: S.camera ? {...video, deviceId: undefined, facingMode: 'user'} : false});
+  }
+  if (S.camera) {
+    S.camId = S.stream.getVideoTracks()[0]?.getSettings().deviceId || S.camId;
+    store.set('cam', S.camId);
+    S.cams = (await navigator.mediaDevices.enumerateDevices()).filter((d) => d.kind === 'videoinput');
+  }
+  S.micError = null;
+  S.deviceId = S.stream.getAudioTracks()[0].getSettings().deviceId || S.deviceId;
+  store.set('mic', S.deviceId);
+  S.devices = (await navigator.mediaDevices.enumerateDevices()).filter((d) => d.kind === 'audioinput' && d.deviceId !== 'default');
+  startMeter();
+  return S.stream;
+}
+
+function micFailed(e) {
+  S.micError = e && e.name === 'NotAllowedError'
+    ? 'The browser isn’t allowed to use the microphone' + (S.camera ? ' or camera' : '') + '. Click the icon at the left of the address bar, allow ' + (S.camera ? 'them' : 'the microphone') + ', then try again.'
+    : 'Couldn’t start the microphone: ' + (e && e.message || e);
+  render();
+}
+
+function releaseMic() {
+  if (S.stream) for (const t of S.stream.getTracks()) t.stop();
+  S.stream = null;
+  if (S.meterCtx) { S.meterCtx.close().catch(() => {}); S.meterCtx = null; }
+}
+
+async function switchMic(id) {
+  S.deviceId = id; store.set('mic', id);
+  releaseMic();
+  try { await ensureMic(); } catch (e) { return micFailed(e); }
+  render();
+}
+
+function startMeter() {
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const src = ctx.createMediaStreamSource(S.stream);
+  const an = ctx.createAnalyser();
+  an.fftSize = 1024;
+  src.connect(an);
+  S.meterCtx = ctx;
+  const buf = new Float32Array(an.fftSize);
+  let hotUntil = 0;
+  const tick = () => {
+    if (S.meterCtx !== ctx) return;
+    an.getFloatTimeDomainData(buf);
+    let sum = 0, peak = 0;
+    for (const v of buf) { sum += v * v; peak = Math.max(peak, Math.abs(v)); }
+    const db = 20 * Math.log10(Math.sqrt(sum / buf.length) || 1e-6);
+    const pct = Math.max(0, Math.min(100, (db + 60) / 60 * 100));
+    if (peak > 0.97) hotUntil = performance.now() + 1500;
+    const hot = performance.now() < hotUntil;
+    for (const m of document.querySelectorAll('[data-meter]')) { m.firstChild.style.width = pct + '%'; m.classList.toggle('hot', hot); }
+    const hint = document.querySelector('[data-meterhint]');
+    if (hint && hot) hint.textContent = 'Too loud: move back a little from the microphone.';
+    requestAnimationFrame(tick);
+  };
+  tick();
+}
+
+// ---------- recording ----------
+
+const recType = () => (S.camera
+  ? ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm', 'video/mp4']
+  : ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4']).find((t) => MediaRecorder.isTypeSupported(t)) || '';
+
+async function startRecording(kind) {
+  const s = sec();
+  if (kind === 'each' && s.audio && !(await ask('Replace your recording of ' + sectionName(s) + '?'))) return;
+  if (kind === 'take') {
+    const replaced = sections().slice(S.slide).filter((x) => x.audio).map(sectionName);
+    if (replaced.length && !(await ask('This one take replaces your recordings of ' + replaced.join(', ') + ' as you go. Start?'))) return;
+  }
+  await saveAll();
+  stopPlayback();
+  let stream;
+  try { stream = await ensureMic(); } catch (e) { return micFailed(e); }
+  const type = recType();
+  const video = stream.getVideoTracks().length > 0;
+  const recorder = new MediaRecorder(stream, type ? {mimeType: type, audioBitsPerSecond: 128000, ...(video ? {videoBitsPerSecond: 4e6} : {})} : undefined);
+  const r = {recorder, kind, section: s.key, start: S.slide, marks: [], chunks: [], t0: performance.now(), type: recorder.mimeType || type || (video ? 'video/webm' : 'audio/webm'), save: true};
+  recorder.ondataavailable = (e) => { if (e.data && e.data.size) r.chunks.push(e.data); };
+  recorder.onstart = () => { r.t0 = performance.now(); };
+  recorder.onstop = () => finishRecording(r);
+  S.rec = r; S.notice = null;
+  recorder.start(1000);
+  r.clock = setInterval(() => { for (const t of document.querySelectorAll('[data-time]')) t.textContent = fmt((performance.now() - r.t0) / 1000); }, 250);
+  holdScreen();
+  render();
+}
+
+function takeNext() {
+  const r = S.rec;
+  if (!r || r.kind !== 'take' || r.stopping) return;
+  if (S.slide >= sections().length - 1) return stopRecording(false);
+  // Cut a little after the tap: the next section only starts once its slide is up.
+  r.marks.push((performance.now() - r.t0) / 1000 + 0.35);
+  S.slide++; remember();
+  render();
+  scrollTo({top: 0});
+}
+
+async function stopRecording(asked) {
+  const r = S.rec;
+  if (!r) return;
+  if (r.stopping) return;
+  if (asked && r.kind === 'take' && S.slide < sections().length - 1) {
+    if (!(await ask('Stop the take here? ' + sections().slice(r.start, S.slide + 1).map(sectionName).join(', ') + ' will be saved; you can record the rest later.'))) return;
+  }
+  // Keep listening a moment: people often tap Stop on their last syllable.
+  r.stopping = true;
+  render();
+  setTimeout(() => r.recorder.stop(), 700);
+}
+
+function finishRecording(r) {
+  clearInterval(r.clock);
+  releaseScreen();
+  S.rec = null;
+  const blob = new Blob(r.chunks, {type: r.type});
+  const ext = /^video\/mp4/.test(r.type) ? 'mp4' : /mp4/.test(r.type) ? 'm4a' : 'webm';
+  const url = r.kind === 'take'
+    ? '/api/take?id=' + enc(S.id) + '&start=' + r.start + '&marks=' + enc(JSON.stringify(r.marks))
+    : '/api/audio?id=' + enc(S.id) + '&section=' + enc(r.section);
+  upload({blob, url, type: r.type, kind: r.kind, name: (r.kind === 'take' ? 'take' : r.section) + '.' + ext});
+}
+
+async function upload(u) {
+  S.failed = null;
+  S.busy = u.kind === 'take' ? 'Cutting your take into sections…' : 'Saving your recording…';
+  render();
+  try {
+    const res = await api(u.url, {method: 'POST', headers: {'Content-Type': u.type}, body: u.blob});
+    S.L = res.lesson;
+    if (u.kind === 'take') S.notice = {text: 'Saved ' + res.sections.length + (res.sections.length === 1 ? ' section' : ' sections') + ' from your take: ' + res.sections.map((x) => sectionName(sections().find((s) => s.key === x.section)) + ' ' + fmt(x.seconds)).join(' · ') + '. Play each one to check the cuts.'};
+    if (S.failed) URL.revokeObjectURL(S.failed.url);
+  } catch (e) {
+    S.failed = {...u, url: URL.createObjectURL(u.blob), error: e.message};
+    S.notice = {error: true, text: 'The recording didn’t save: ' + e.message + '. Try again, or keep a copy and send it to Claude in chat.'};
+  }
+  S.busy = null;
+  render();
+}
+
+function retryUpload() { const u = S.failed; if (u) upload(u); }
+
+function togglePlay(s) {
+  if (S.playing === s.key) { stopPlayback(); render(); return; }
+  stopPlayback();
+  S.player.src = '/audio?id=' + enc(S.id) + '&section=' + enc(s.key) + '&v=' + s.audio.at;
+  S.player.onended = () => { S.playing = null; render(); };
+  S.player.play().catch(() => { S.playing = null; render(); });
+  S.playing = s.key;
+  render();
+}
+function stopPlayback() { S.player.pause(); S.playing = null; }
+
+// Keep the screen awake while recording (best effort).
+function holdScreen() { try { if (navigator.wakeLock) navigator.wakeLock.request('screen').then((w) => { S.wake = w; }, () => {}); } catch {} }
+function releaseScreen() { try { if (S.wake) S.wake.release(); } catch {} S.wake = null; }
+
+// Space bar: play / pause (the video on the Timing tab, the recording of this slide on the Script tab).
+// Not while typing, and not during a one take (there it is the Next tap).
+document.addEventListener('keydown', (e) => {
+  if (e.code !== 'Space' || e.repeat || e.metaKey || e.ctrlKey || e.altKey || S.busy || S.rec) return;
+  const t = e.target;
+  if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+  if (t && t.tagName === 'BUTTON') t.blur();
+  if (S.tab === 'timing' && S.timing) { e.preventDefault(); S.timing.toggle(); }
+  else if (S.tab === 'script' && S.L) {
+    const s = sec();
+    if (s && s.audio) { e.preventDefault(); togglePlay(s); }
+  }
+});
+
+// F17 / F18: previous / next slide (during a one take, F18 is the Next tap; Back is off while recording).
+document.addEventListener('keydown', (e) => {
+  const prev = e.code === 'F17' || e.key === 'F17', next = e.code === 'F18' || e.key === 'F18';
+  if (!(prev || next) || e.repeat || S.tab !== 'script' || !S.L || S.busy || S.failed) return;
+  e.preventDefault();
+  if (S.rec) { if (next) takeNext(); return; }
+  goTo(S.slide + (next ? 1 : -1));
+});
+
+// F16: further down the slide (about half a screen); at the bottom it goes back to the top.
+document.addEventListener('keydown', (e) => {
+  if (!(e.code === 'F16' || e.key === 'F16') || S.tab !== 'script') return;
+  e.preventDefault();
+  const end = window.scrollY + innerHeight >= document.documentElement.scrollHeight - 4;
+  window.scrollTo({top: end ? 0 : window.scrollY + innerHeight * 0.5, behavior: 'smooth'});
+});
+
+// R (or Option+R while typing in a box) starts and stops recording. F19 does too, anywhere
+// (and presses Yes when an "Are you sure?" question is open: studio/ask.js).
+document.addEventListener('keydown', (e) => {
+  const f19 = e.code === 'F19' || e.key === 'F19';
+  if (!f19 && e.code !== 'KeyR') return;
+  if (e.repeat || e.metaKey || e.ctrlKey || S.tab !== 'script' || !S.L || S.busy || S.failed) return;
+  const t = e.target, typing = t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName));
+  if (typing && !e.altKey && !f19) return;
+  if (!S.rec && document.querySelector('dialog[open]')) return;
+  e.preventDefault();
+  if (S.rec) { if (!S.rec.stopping) stopRecording(true); } else startRecording(S.mode === 'take' ? 'take' : 'each');
+});
+
+document.addEventListener('keydown', (e) => {
+  if (S.rec && S.rec.kind === 'take' && (e.code === 'Space' || e.code === 'ArrowRight') && !e.repeat) { e.preventDefault(); takeNext(); }
+});
+
+
+// ---------- ask Claude ----------
+
+function askCard() {
+  const t = el('textarea', {id: 'ask', rows: 3, placeholder: 'e.g. Find a quote from the Church Fathers about Peter for point 2'});
+  const note = el('span', {class: 'small ok', role: 'status'});
+  const send = el('button', {class: 'btn', text: 'Send to Claude', onclick: async () => {
+    if (!t.value.trim()) { t.focus(); return; }
+    send.disabled = true;
+    try {
+      const r = await post('/api/ask?id=' + enc(S.id), {text: t.value});
+      S.L = r.lesson;
+      render();
+      const n = view.querySelector('.ask [role=status]');
+      if (n) n.textContent = 'Sent. Claude reads these when you next chat (you can also just say it in chat).';
+    } catch (e) { note.textContent = 'Couldn’t send: ' + e.message; send.disabled = false; }
+  }});
+  const open = S.L.requests || [];
+  return el('section', {class: 'card ask'}, [
+    el('h2', {text: 'Ask Claude for a change'}),
+    el('label', {for: 'ask', class: 'small muted', text: 'Quotes, points, wording, anything. Claude checks every quotation against its source.'}),
+    t,
+    el('div', {class: 'row'}, [note, send]),
+    open.length ? el('div', {}, [el('div', {class: 'small muted', text: 'Waiting for Claude:'}), el('ul', {}, open.map((x) => el('li', {text: x})))]) : null,
+  ]);
+}
+
+// ---------- video & approval ----------
+
+function videoView() {
+  const L = S.L;
+  const secs = L.sections;
+  const recorded = secs.filter((s) => s.audio);
+  const voice = recorded.reduce((n, s) => n + s.audio.seconds, 0);
+  const j = S.job && S.job.id === S.id ? S.job : null;
+
+  const b = L.backup;
+  const backupLine = el('div', {class: 'small ' + (b && !b.ok ? 'bad' : 'muted'), text: !b
+    ? 'Your work is backed up to GitHub a few minutes after you stop making changes, and right after you send a lesson to Angelio.'
+    : b.ok ? 'Last backed up to GitHub at ' + new Date(b.at).toLocaleTimeString([], {hour: 'numeric', minute: '2-digit'}) + '.'
+    : 'The last backup to GitHub didn’t work (' + b.error + '). Your work is safe on this Mac; ask Claude to look at it.'});
+  const recCard = el('section', {class: 'card'}, [
+    backupLine,
+    el('h2', {text: 'Recordings'}),
+    el('div', {class: 'muted', text: recorded.length === secs.length ? 'All ' + secs.length + ' sections recorded · ' + fmt(voice) + ' of your voice.' : recorded.length + ' of ' + secs.length + ' sections recorded. The video is silent where there’s no recording.'}),
+    el('ul', {class: 'list'}, secs.map((s) => el('li', {}, [
+      el('span', {class: 'name', text: sectionName(s) + (s.heading ? ': ' + s.heading : '')}),
+      s.audio ? el('span', {class: 'row'}, [el('span', {class: 'state', text: fmt(s.audio.seconds)}), el('button', {class: 'btn', onclick: () => togglePlay(s)}, S.playing === s.key ? '❚❚' : '▶')])
+        : el('button', {class: 'btn', text: 'Record', onclick: () => { S.slide = secs.indexOf(s); switchTab('script'); }}),
+    ]))),
+  ]);
+
+  const rendering = j && j.kind === 'render' && j.running;
+  const vidKids = [el('h2', {text: 'Video'})];
+  if (L.video && !rendering) {
+    vidKids.push(
+      el('video', {controls: true, preload: 'metadata', playsinline: true, src: '/video?id=' + enc(S.id) + '&v=' + L.video.at, poster: L.video.poster ? '/video?id=' + enc(S.id) + '&file=poster&v=' + L.video.at : null}),
+      el('div', {class: 'muted small', text: 'lesson.mp4 · ' + (L.video.size / 1e6).toFixed(1) + ' MB · made ' + new Date(L.video.at).toLocaleString([], {dateStyle: 'medium', timeStyle: 'short'})}),
+    );
+    if (L.video.stale) vidKids.push(el('div', {class: 'bad', text: 'The script or a recording changed after this video was made. Make it again to include the changes.'}));
+  } else if (!rendering) {
+    vidKids.push(el('div', {class: 'muted', text: 'No video yet.'}));
+  }
+  vidKids.push(el('div', {id: 'jobpanel'}, jobPanel('render')));
+  if (!rendering) vidKids.push(el('div', {class: 'row'}, [
+    el('span', {class: 'small muted', text: 'Takes about 3–5 minutes.'}),
+    el('button', {class: 'btn big' + (!L.video || L.video.stale ? ' primary' : ''), text: L.video ? 'Make the video again' : 'Make the video', disabled: !!(S.job && S.job.running), onclick: makeVideo}),
+  ]));
+
+  const publishing = j && j.kind === 'publish' && j.running;
+  const ghostCard = el('section', {class: 'card'}, [
+    el('h2', {text: 'Approve and send to Angelio'}),
+    el('div', {text: 'When you’re happy with the script, the quiz and the video, approve the lesson. That marks it as reviewed and puts it in Watch & Sing: the video, its thumbnail, the quiz and the words with their sources. If it replaces an older video, the new one takes that one’s place.'}),
+    L.status === 'reviewed' ? el('div', {class: 'ok', text: 'You’ve approved this lesson.'}) : null,
+    el('div', {id: 'ghostpanel'}, jobPanel('publish')),
+    publishing ? null : el('div', {class: 'row'}, [
+      el('span', {}),
+      el('button', {class: 'btn big primary', text: L.status === 'reviewed' ? 'Send to Angelio again' : 'Approve and send to Angelio', disabled: !L.video || !!(S.job && S.job.running), onclick: approve}),
+    ]),
+    !L.video ? el('div', {class: 'small muted', text: 'Make the video first.'}) : null,
+  ]);
+  return el('div', {class: 'stack'}, [recCard, el('section', {class: 'card'}, vidKids), L.kids ? thumbCard() : null, ghostCard].filter(Boolean));
+}
+
+// The kids thumbnail maker (studio/thumb.js), kept between redraws like the Timing tab.
+function thumbCard() {
+  if (!S.thumbRoot || S.thumbFor !== S.id) {
+    S.thumbRoot = el('section', {class: 'card'});
+    S.thumbFor = S.id;
+    window.ThumbMaker.open(S.thumbRoot, S.id, api, post);
+  }
+  return S.thumbRoot;
+}
+
+function jobPanel(kind) {
+  const j = S.job;
+  if (!j || j.id !== S.id || j.kind !== kind) return [];
+  const mins = fmt(((j.endedAt || Date.now()) - j.startedAt) / 1000);
+  if (j.running) {
+    const label = (j.steps ? 'Step ' + j.stepIndex + ' of ' + j.steps + ': ' : '') + j.step + (j.progress != null ? ' ' + Math.round(j.progress * 100) + '%' : '');
+    return [el('div', {class: 'stack', style: 'gap:8px'}, [
+      el('div', {role: 'status', text: label}),
+      el('div', {class: 'bar' + (j.progress == null ? ' indef' : '')}, el('i', {style: 'width:' + Math.round((j.progress || 0) * 100) + '%'})),
+      el('div', {class: 'small muted', text: mins + ' so far'}),
+    ])];
+  }
+  if (j.ok && kind === 'publish') {
+    return [el('div', {class: 'notice', role: 'status'}, [
+      'It’s in Watch & Sing now. ',
+      j.link ? el('a', {href: j.link, target: '_blank', rel: 'noopener', text: 'Watch it there'}) : null,
+    ])];
+  }
+  if (j.ok) return [el('div', {class: 'small ok', text: 'Video made in ' + mins + '.'})];
+  return [el('div', {class: 'notice error', role: 'alert'}, [friendlyError(j), el('details', {}, [el('summary', {class: 'small', text: 'Details for Claude'}), el('pre', {text: j.error || j.log})])])];
+}
+
+function friendlyError(j) {
+  const e = j.error || '';
+  if (/ANGELIO_ADMIN_KEY/.test(e)) return 'Your approval is saved, but this Mac doesn’t have the Angelio Studio key yet. Type it into the .env file in the workshop folder (ANGELIO_ADMIN_KEY=…), never into chat, then press the button again.';
+  if (/Quotation check failed/.test(e)) return 'A quotation doesn’t match its source, so nothing was sent. Ask Claude to fix it.';
+  if (/Not publishing yet/.test(e)) return 'Not sent yet: ' + e.replace(/^Not publishing yet:\s*/, '').replace(/\n\s*- /g, '; ').replace(/^- /, '');
+  if (j.kind === 'render') return 'The video couldn’t be made. Tell Claude; the details below help.';
+  return 'Couldn’t send it to Angelio. Tell Claude; the details below help.';
+}
+
+async function makeVideo() {
+  try { S.job = await post('/api/render?id=' + enc(S.id)); }
+  catch (e) { S.notice = {error: true, text: e.message}; }
+  render(); poll();
+}
+
+async function approve() {
+  const L = S.L;
+  const warn = [];
+  if (L.sections.some((s) => !s.audio)) warn.push('Some sections have no recording, so the video is silent there.');
+  if (L.video && L.video.stale) warn.push('The video is older than your latest changes.');
+  // Kids lessons: a reminder to pick the drawing for the kids-site thumbnail.
+  if (L.kids && !L.kids.thumb) {
+    const list = await api('/api/sprites').catch(() => []);
+    const sel = el('select', {'aria-label': 'Drawing for the thumbnail'}, [...list].sort((x, y) => (y.favorite ? 1 : 0) - (x.favorite ? 1 : 0) || (y.at || 0) - (x.at || 0))
+      .map((x) => el('option', {value: x.slug, text: (x.favorite ? '★ ' : '') + x.name, selected: x.slug === L.kids.fallback})));
+    if (!list.length) { S.notice = {error: true, text: 'Draw a pixel art for the thumbnail first (Pixel art tab).'}; render(); return; }
+    if (!(await ask('Pick the pixel art for this lesson’s thumbnail.', {yes: 'Use this one', extra: sel}))) return;
+    try { S.L = await post('/api/thumb?id=' + enc(S.id), {sprite: sel.value}); } catch (e) { S.notice = {error: true, text: 'Couldn’t set the thumbnail: ' + e.message}; render(); return; }
+  }
+  if (!(await ask((warn.length ? warn.join(' ') + '\n\n' : '') + 'Approve “' + L.title + '” and put it in Watch & Sing?', {yes: 'Approve and send'}))) return;
+  try { S.job = await post('/api/publish?id=' + enc(S.id)); await refresh(); }
+  catch (e) { S.notice = {error: true, text: e.message}; }
+  render(); poll();
+}
+
+async function poll() {
+  clearTimeout(S.pollT);
+  let j;
+  try { j = await api('/api/job'); } catch { return; }
+  const wasRunning = S.job && S.job.running;
+  S.job = j;
+  if (j && j.running) S.pollT = setTimeout(poll, 1000);
+  if (S.tab !== 'video') return;
+  if (wasRunning && j && !j.running) { await refresh(); render(); return; }
+  // While a job runs, update only its panel so the video player isn't interrupted.
+  const panel = document.getElementById(j && j.kind === 'publish' ? 'ghostpanel' : 'jobpanel');
+  if (panel && j) panel.replaceChildren(...jobPanel(j.kind));
+}
+
+window.addEventListener('beforeunload', (e) => { if (hasDrafts() || S.rec || S.busy || (S.timing && S.timing.dirty()) || (S.pixels && S.pixels.dirty()) || (S.songs && S.songs.dirty())) { e.preventDefault(); e.returnValue = ''; } });
+
+S.mode = store.get('mode') === 'take' ? 'take' : 'each';
+S.keepScript = store.get('keep') || {};
+S.deviceId = store.get('mic') || '';
+S.camera = !!store.get('camera');
+S.camId = store.get('cam') || '';
+boot();
+</script>
+</body>
+</html>

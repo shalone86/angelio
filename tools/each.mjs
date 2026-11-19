@@ -1,7 +1,7 @@
-// Run every app's tests (hub, apps/*, template). Exits with an error if any fail.
+// Run every part's tests (hub, apps/*, template, workshop). Exits with an error if any fail.
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
-const dirs = ["hub", ...fs.readdirSync("apps").map((d) => `apps/${d}`), "template"].filter((d) => fs.existsSync(`${d}/test`));
+const dirs = ["hub", ...fs.readdirSync("apps").map((d) => `apps/${d}`), "template", "workshop"].filter((d) => fs.existsSync(`${d}/test`));
 let failed = [];
 for (const d of dirs) {
   const files = fs.readdirSync(`${d}/test`).filter((f) => f.endsWith(".test.js")).map((f) => `test/${f}`);

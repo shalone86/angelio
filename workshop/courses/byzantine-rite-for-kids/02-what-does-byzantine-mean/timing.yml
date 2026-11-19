@@ -1,0 +1,43 @@
+# Hand-tuned timing from the studio's Timing tab, in seconds into each
+# section's recording. Scenes not listed keep their automatic timing.
+point-2:
+  scenes:
+    "0":
+      start: 6.33
+    "1":
+      start: 1.67
+    "2":
+      start: 0.47
+    "3":
+      start: 13.7
+      cues:
+        Rome: 15.6
+    "4":
+      start: 22.07
+      end: 31.37
+point-4:
+  camera: off
+point-5:
+  scenes:
+    "1":
+      start: 13.43
+      end: 19.63
+    "2":
+      start: 13.7
+      end: 19.57
+    "3":
+      start: 19.6
+    "4":
+      start: 27.07
+intro:
+  camera: off
+point-1:
+  scenes:
+    "2":
+      start: 13.4
+      cues:
+        Byzantium: 16.03
+point-3:
+  scenes:
+    "2":
+      start: 16.83

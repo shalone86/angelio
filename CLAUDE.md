@@ -8,6 +8,10 @@
 - **The shared kit has one master copy: `kit/`** (voice, stickers, store, finish screen, Next button…). Never edit an app's
   `public/js/kit/` copy: change `kit/`, run `npm run kit-sync`, bump each app's sw.js VERSION, test, commit. `npm test` fails
   if any copy drifts. Articulate isn't on the kit (older, separate design).
+- **The workshop** (`workshop/`, Nov 2026): the Lesson Studio, moved from shalone86/sdcourses (now the archive). It makes
+  her kids videos (script, recording, timing, video, approval) and sends each to Watch & Sing. It runs on her Mac only:
+  not deployed, not in the npm workspaces (`cd workshop && npm install` there). Its own notes: `workshop/CLAUDE.md`;
+  the video checklist: `workshop/plan/videos.yml`; the `/lesson` skill: `.claude/skills/lesson/`.
 - **The Studio comes first** (ROADMAP.md): the owner must be able to edit everything without code or AI.
 - **The Studio holds the master copy of content** (angelio.org/studio, R2 bucket `watch-media`): Watch & Sing's library
   (`content/watch/library.json`) and the reading lessons (`content/reading/lessons.json`, Letter Lane + Read Aloud). The copies

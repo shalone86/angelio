@@ -1,0 +1,20 @@
+# The workshop (the Lesson Studio, on her Mac). Not part of the website.
+node_modules/
+dist/
+video/public/*/
+!video/public/fonts/
+courses/*/*/sources/
+.env
+courses/*/*/audio/.take-full.wav
+courses/*/*/camera/
+sources-local/
+studio/player/player.js
+sprites/.deleted/
+songs/*/parts.json
+songs/*/song.beats.json
+songs/*/song.mp3
+songs/*/song.wav
+songs/*/song.m4a
+songs/*/song.aif
+songs/*/song.aiff
+songs/*/song.mid

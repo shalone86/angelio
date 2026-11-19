@@ -1,0 +1,45 @@
+{
+  "name": "angelio-workshop",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node studio/server.mjs",
+    "prepare-lesson": "node scripts/prepare.mjs",
+    "studio": "remotion studio video/index.ts",
+    "render": "node scripts/render.mjs",
+    "typecheck": "tsc --noEmit",
+    "stills": "node scripts/stills.mjs",
+    "check": "node scripts/check-quotes.mjs",
+    "new": "node scripts/new.mjs",
+    "voxels": "node scripts/voxels.mjs",
+    "split": "node scripts/split-audio.mjs",
+    "studio-autostart": "sh studio/launchd/install.sh",
+    "studio-restart": "launchctl kickstart -k gui/$(id -u)/org.angelio.workshop",
+    "song": "node scripts/song.mjs",
+    "send": "node scripts/send-to-angelio.mjs"
+  },
+  "dependencies": {
+    "@remotion/bundler": "4.0.530",
+    "@remotion/cli": "4.0.530",
+    "@remotion/fonts": "^4.0.530",
+    "@remotion/player": "^4.0.530",
+    "@remotion/renderer": "4.0.530",
+    "d3-geo": "^3.1.1",
+    "lucide-react": "^0.460.0",
+    "marked": "^17.0.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.530",
+    "topojson-client": "^3.1.0",
+    "world-atlas": "^2.0.2",
+    "yaml": "2.6.1"
+  },
+  "devDependencies": {
+    "@fontsource-variable/fredoka": "^5.1.0",
+    "@types/d3-geo": "^3.1.0",
+    "@types/react": "18.3.12",
+    "@types/topojson-client": "^3.1.5",
+    "esbuild": "^0.24.0",
+    "typescript": "5.6.3"
+  }
+}
