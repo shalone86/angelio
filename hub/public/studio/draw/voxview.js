@@ -50,7 +50,7 @@ export function voxViewer(el, vox, { fps = 4 } = {}) {
   const floor = new (T().Mesh)(new (T().CircleGeometry)(r * 0.7, 40), new (T().MeshLambertMaterial)({ color: "#9c927d" }));
   floor.rotation.x = -Math.PI / 2; floor.position.y = -0.01; scene.add(floor);
   const meshes = vox.frames.map((_, f) => { const m = frameMesh(vox, f); m.visible = f === 0; scene.add(m); return m; });
-  let ang = 0.5, drag = null, spin = !matchMedia("(prefers-reduced-motion: reduce)").matches, raf = 0, last = 0, alive = true;
+  let clock = 0, ang = 0.5, drag = null, spin = !matchMedia("(prefers-reduced-motion: reduce)").matches, raf = 0, last = 0, alive = true;
   canvas.addEventListener("pointerdown", (e) => { drag = e.clientX; spin = false; canvas.setPointerCapture(e.pointerId); });
   canvas.addEventListener("pointermove", (e) => { if (drag != null) { ang += (e.clientX - drag) * 0.012; drag = e.clientX; } });
   canvas.addEventListener("pointerup", () => { drag = null; });
@@ -60,12 +60,14 @@ export function voxViewer(el, vox, { fps = 4 } = {}) {
     if (!alive) return;
     const dt = Math.min(0.05, (ts - last) / 1000 || 0); last = ts;
     if (spin) ang += dt * 0.5;
-    const f = Math.floor((ts / 1000) * fps) % meshes.length;
+    // (frames advance by time at the chosen speed)
+    clock += dt * fps;
+    const f = Math.floor(clock) % meshes.length;
     meshes.forEach((m, i) => { m.visible = i === f; });
     place(cam, ang, r, height);
     R.render(scene, cam);
     raf = requestAnimationFrame(loop);
   };
   raf = requestAnimationFrame(loop);
-  return { stop() { alive = false; cancelAnimationFrame(raf); removeEventListener("resize", size); R.dispose(); } };
+  return { setFps(v) { fps = v; }, stop() { alive = false; cancelAnimationFrame(raf); removeEventListener("resize", size); R.dispose(); } };
 }

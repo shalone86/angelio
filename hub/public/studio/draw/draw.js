@@ -183,13 +183,25 @@ function renderDetail() {
         if (!(await window.ask("Remove this model? It's kept in the trash, so Claude can bring it back."))) return;
         try { await studio("/art/vox-delete", { slug: it.slug }); voxCache.delete(it.slug); renderDetail(); } catch (e) { alert("Couldn't remove it: " + e.message); } } }) : null,
     ]),
+    v && v.frames > 1 ? speedControl(it.slug, v) : null,
     h("code", { class: "small muted", text: `${it.slug}.vox` }),
   );
-  if (v) model(it.slug).then((m) => { if (detail === it && m) viewer = voxViewer(stageEl, m.vox); }).catch((e) => { stageEl.textContent = "Couldn't show it: " + e.message; });
+  if (v) model(it.slug).then((m) => { if (detail === it && m) viewer = voxViewer(stageEl, m.vox, { fps: v.fps ?? 4 }); }).catch((e) => { stageEl.textContent = "Couldn't show it: " + e.message; });
   else if (art.drawings[it.slug]) { const c = thumb(art.drawings[it.slug]); c.className = "dt-pixels"; stageEl.replaceChildren(c); }
   else stageEl.replaceChildren(h("span", { class: "muted", text: "Nothing here yet. Upload the model from MagicaVoxel, or draw it in pixels." }));
 }
 addEventListener("popstate", () => { if (detail && !tab) render(); });
+
+/** How fast an animation plays in the games: a slider that changes the preview at once and saves when let go. */
+function speedControl(slug, v) {
+  const label = h("span", { text: "" });
+  const say = (n) => { label.textContent = `Speed: ${n} frame${n === 1 ? "" : "s"} a second` + (n === 4 ? " (the usual)" : ""); };
+  say(v.fps ?? 4);
+  const range = h("input", { type: "range", min: 1, max: 12, step: 1, value: v.fps ?? 4, "aria-label": "Animation speed",
+    oninput: (e) => { const n = Number(e.target.value); say(n); viewer?.setFps(n); },
+    onchange: async (e) => { try { await studio("/art/vox-speed", { slug, fps: Number(e.target.value) }); } catch (err) { if (err.message !== "Wrong key") alert("Couldn't save the speed: " + err.message); } } });
+  return h("label", { class: "dt-speed" }, [label, range]);
+}
 
 async function load() {
   if (!key) { render(); return askKey(); }

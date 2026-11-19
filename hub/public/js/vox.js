@@ -1,6 +1,9 @@
 // MagicaVoxel files (.vox), read for the Studio's Drawings page, the Worker's checks and the games.
-// A file holds one or more models (each with its size and its voxels: x, y, z and a color number 1–255) and
-// a palette of 256 colors. Her animations keep each frame as a model, in order, so frames = models.
+// A file holds models (each with its size and its voxels: x, y, z and a color number 1–255), a palette of 256
+// colors, and a scene that says which model shows in which frame. MagicaVoxel's animations are keyframes: a frame
+// shows the model of the latest keyframe at or before it, a copied frame points at the same model again, and old
+// models it no longer uses can stay in the file. So frames are read from the scene (nTRN/nGRP/nSHP and META
+// _anim_range), not from the list of models; a file with no scene (older MagicaVoxel) is one frame per model.
 // MagicaVoxel's z is up; games turn that into their own y (see toScene).
 // Pure: no DOM, used in the browser, the Worker and the tests.
 
@@ -35,32 +38,105 @@ export function readVox(input) {
   if (u8.length > MAX_VOX_BYTES) throw new Error("That file is too big (2 MB at most).");
   const dv = new DataView(u8.buffer, u8.byteOffset, u8.byteLength);
   const id = (o) => String.fromCharCode(u8[o], u8[o + 1], u8[o + 2], u8[o + 3]);
+  const damaged = () => new Error("That .vox file looks damaged.");
   if (id(0) !== "VOX ") throw new Error("That isn't a MagicaVoxel (.vox) file.");
-  if (id(8) !== "MAIN") throw new Error("That .vox file looks damaged.");
-  const frames = [];
-  let size = null, rgba = null;
-  let o = 20 + dv.getUint32(12, true); // the MAIN chunk's children start after its own (empty) content
-  const end = Math.min(u8.length, 20 + dv.getUint32(12, true) + dv.getUint32(16, true));
+  if (id(8) !== "MAIN") throw damaged();
+  // strings and dictionaries inside scene chunks
+  const str = (o) => { const n = dv.getUint32(o, true); if (o + 4 + n > u8.length) throw damaged(); let t = ""; for (let i = 0; i < n; i++) t += String.fromCharCode(u8[o + 4 + i]); return [t, o + 4 + n]; };
+  const dict = (o) => { const n = dv.getUint32(o, true); o += 4; const d = {}; for (let i = 0; i < n; i++) { let k, v; [k, o] = str(o); [v, o] = str(o); d[k] = v; } return [d, o]; };
+  const models = [], nodes = new Map();
+  let size = null, rgba = null, range = null;
+  let o = 20 + dv.getUint32(12, true);
+  const end = Math.min(u8.length, o + dv.getUint32(16, true));
   while (o + 12 <= end) {
     const cid = id(o), n = dv.getUint32(o + 4, true), kids = dv.getUint32(o + 8, true), at = o + 12;
     if (at + n > u8.length) throw new Error("That .vox file is cut short.");
     if (cid === "SIZE") size = [dv.getUint32(at, true), dv.getUint32(at + 4, true), dv.getUint32(at + 8, true)];
     else if (cid === "XYZI") {
-      if (!size) throw new Error("That .vox file looks damaged.");
+      if (!size) throw damaged();
       const count = dv.getUint32(at, true);
-      if (4 + count * 4 > n) throw new Error("That .vox file looks damaged.");
+      if (4 + count * 4 > n) throw damaged();
       const voxels = [];
       for (let i = 0; i < count; i++) { const p = at + 4 + i * 4; voxels.push([u8[p], u8[p + 1], u8[p + 2], u8[p + 3]]); }
-      frames.push({ size, voxels });
+      models.push({ size, voxels });
     } else if (cid === "RGBA") {
       rgba = [];
       for (let i = 0; i < 255; i++) rgba.push(hex(u8[at + i * 4], u8[at + i * 4 + 1], u8[at + i * 4 + 2]));
+    } else if (cid === "META") {
+      const r = /^(-?\d+)\s+(-?\d+)$/.exec(dict(at)[0]._anim_range ?? "");
+      if (r) range = [Number(r[1]), Number(r[2])];
+    } else if (cid === "nTRN") {
+      const [, q] = dict(at + 4);
+      const child = dv.getInt32(q, true), count = dv.getUint32(q + 12, true), keys = [];
+      let r = q + 16;
+      for (let i = 0; i < count; i++) { let d; [d, r] = dict(r); keys.push({ f: Number(d._f ?? 0), t: (d._t ?? "0 0 0").split(/\s+/).map(Number) }); }
+      nodes.set(dv.getUint32(at, true), { kind: "trn", child, keys });
+    } else if (cid === "nGRP") {
+      const [, q] = dict(at + 4);
+      const count = dv.getUint32(q, true), children = [];
+      for (let i = 0; i < count; i++) children.push(dv.getUint32(q + 4 + i * 4, true));
+      nodes.set(dv.getUint32(at, true), { kind: "grp", children });
+    } else if (cid === "nSHP") {
+      const [, q] = dict(at + 4);
+      const count = dv.getUint32(q, true), keys = [];
+      let r = q + 4;
+      for (let i = 0; i < count; i++) { const model = dv.getUint32(r, true); let d; [d, r] = dict(r + 4); keys.push({ f: Number(d._f ?? 0), model }); }
+      nodes.set(dv.getUint32(at, true), { kind: "shp", keys });
     }
-    o = at + n + kids; // (only MAIN has children; their size is counted in `kids`)
+    o = at + n + kids;
   }
-  if (!frames.length) throw new Error("That .vox file has nothing in it.");
-  // Color number c is rgba[c - 1]; palette[0] is unused (empty).
+  if (!models.length) throw new Error("That .vox file has nothing in it.");
   const palette = [null, ...(rgba ?? DEFAULT.slice(1).map((v) => hex(v & 255, (v >>> 8) & 255, (v >>> 16) & 255)))];
+  if (!nodes.size) return { frames: models, palette }; // no scene: one frame per model
+
+  // The keyframe at or before frame f (keys sorted by f); the first one before the first keyframe.
+  const at = (keys, f) => { let k = keys[0]; for (const x of keys) if (x.f <= f) k = x; return k; };
+  for (const nd of nodes.values()) if (nd.keys) nd.keys.sort((a, b) => a.f - b.f);
+  const shapes = [...nodes.values()].filter((nd) => nd.kind === "shp");
+  const last = Math.max(0, ...shapes.flatMap((sh) => sh.keys.map((k) => k.f)));
+  const [first, final] = range && range[1] >= range[0] ? range : [0, last];
+  if (final - first > 255) throw new Error("That animation is too long (256 frames at most).");
+  // Every frame: walk the scene from the root (node 0), adding up each transform's move, and place each shape's
+  // model there (MagicaVoxel puts a model's middle at its transform).
+  const raw = [];
+  for (let f = first; f <= final; f++) {
+    const out = [], seen = new Set();
+    const walk = (nid, ox, oy, oz) => {
+      const nd = nodes.get(nid);
+      if (!nd || seen.has(nid)) return;
+      seen.add(nid);
+      if (nd.kind === "trn") { const t = nd.keys.length ? at(nd.keys, f).t : [0, 0, 0]; walk(nd.child, ox + (t[0] || 0), oy + (t[1] || 0), oz + (t[2] || 0)); }
+      else if (nd.kind === "grp") nd.children.forEach((c) => walk(c, ox, oy, oz));
+      else if (nd.keys.length) {
+        const m = models[at(nd.keys, f).model];
+        if (!m) throw damaged();
+        const [hx, hy, hz] = m.size.map((v) => Math.floor(v / 2));
+        for (const [x, y, z, c] of m.voxels) out.push([x - hx + ox, y - hy + oy, z - hz + oz, c]);
+      }
+    };
+    walk(0, 0, 0, 0);
+    raw.push(out);
+  }
+  // One box that fits every frame, so the model doesn't jump between frames. With a single object (her characters),
+  // that's the model's own box (8 × 8 × 8 stays 8 × 8 × 8); with several objects, the box around all of them.
+  let frames;
+  if (shapes.length === 1) {
+    const used = shapes[0].keys.map((k) => models[k.model]).filter(Boolean);
+    const box = [0, 1, 2].map((i) => Math.max(...used.map((m) => m.size[i])));
+    frames = [];
+    for (let f = first; f <= final; f++) {
+      const m = models[at(shapes[0].keys, f).model];
+      // (a smaller model sits in the middle of the box, as MagicaVoxel centers it)
+      const pad = [0, 1, 2].map((i) => Math.floor(box[i] / 2) - Math.floor(m.size[i] / 2));
+      frames.push({ size: box, voxels: m.voxels.map(([x, y, z, c]) => [x + pad[0], y + pad[1], z + pad[2], c]) });
+    }
+  } else {
+    const all = raw.flat();
+    if (!all.length) throw new Error("That .vox file has nothing in it.");
+    const lo = [0, 1, 2].map((i) => Math.min(...all.map((v) => v[i]))), hi = [0, 1, 2].map((i) => Math.max(...all.map((v) => v[i])));
+    const box = [0, 1, 2].map((i) => hi[i] - lo[i] + 1);
+    frames = raw.map((vs) => ({ size: box, voxels: vs.map(([x, y, z, c]) => [x - lo[0], y - lo[1], z - lo[2], c]) }));
+  }
   return { frames, palette };
 }
 

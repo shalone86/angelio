@@ -132,7 +132,7 @@ export async function studioApi(request, url, env) {
     if (old) await env.WATCH_MEDIA.put(`content/art/history/${slug}/${stamp()}.vox`, await old.arrayBuffer(), { httpMetadata: { contentType: "application/octet-stream" } });
     await env.WATCH_MEDIA.put(voxKey(slug), bytes, { httpMetadata: { contentType: "application/octet-stream" } });
     const { art } = await readArt(env);
-    art.voxels[slug] = { saved: new Date().toISOString(), frames: vox.frames.length, size: vox.frames[0].size, bytes: bytes.length };
+    art.voxels[slug] = { saved: new Date().toISOString(), frames: vox.frames.length, size: vox.frames[0].size, bytes: bytes.length, fps: art.voxels[slug]?.fps ?? 4 };
     await writeArt(env, art);
     return json({ ok: true, slug, art });
   }
@@ -155,6 +155,13 @@ export async function studioApi(request, url, env) {
       if (!art.drawings[slug]) return json({ error: "That drawing isn't saved" }, 404);
       await env.WATCH_MEDIA.put(`content/art/trash/${slug}-${stamp()}.json`, JSON.stringify(art.drawings[slug]), { httpMetadata: { contentType: "application/json" } });
       delete art.drawings[slug]; art.favorites = art.favorites.filter((x) => x !== slug);
+      await writeArt(env, art);
+      return json({ ok: true, art });
+    }
+    // how fast its frames play in the games (frames a second; kept when the file is replaced)
+    if (route === "POST /art/vox-speed") {
+      if (!art.voxels[slug]) return json({ error: "That model isn't uploaded" }, 404);
+      art.voxels[slug].fps = Math.max(1, Math.min(12, Math.round(Number(body.fps) || 4)));
       await writeArt(env, art);
       return json({ ok: true, art });
     }

@@ -71,7 +71,10 @@ const fixture = (n) => new Uint8Array(fs.readFileSync(new URL(`fixtures/${n}.vox
 test(".vox files from MagicaVoxel: frames, sizes and colors", () => {
   const idle = readVox(fixture("priest-idle")), walk = readVox(fixture("priest-walk-fast"));
   assert.equal(idle.frames.length, 4);
-  assert.equal(walk.frames.length, 3);
+  assert.equal(walk.frames.length, 2); // her file keeps an old model it no longer shows
+  // a copied frame: MagicaVoxel points frame 4 at frame 2's model again
+  assert.deepEqual(idle.frames[3].voxels, idle.frames[1].voxels);
+  assert.notDeepEqual(idle.frames[0].voxels, idle.frames[1].voxels);
   assert.deepEqual(idle.frames[0].size, [8, 8, 8]);
   for (const [x, y, z, c] of toScene(idle, 3)) { assert.ok(y > 0 && y < 8 && Math.abs(x) < 4 && Math.abs(z) < 4); assert.match(c, /^#[0-9a-f]{6}$/); }
   assert.throws(() => readVox(new TextEncoder().encode("not a vox file at all")), /MagicaVoxel/);
@@ -88,9 +91,13 @@ test("upload a model, replace it (old one kept), anyone can download it, remove 
   await up("priest-idle", fixture("priest-walk-fast"));
   assert.ok([...e.WATCH_MEDIA.files.keys()].some((k) => /^content\/art\/history\/priest-idle\/.*\.vox$/.test(k)));
   const dl = await worker.fetch(new Request("https://angelio.org/api/art/vox?slug=priest-idle"), e);
-  assert.equal(readVox(new Uint8Array(await dl.arrayBuffer())).frames.length, 3);
+  assert.equal(readVox(new Uint8Array(await dl.arrayBuffer())).frames.length, 2);
+  const sp = await (await call(e, "/art/vox-speed", { slug: "priest-idle", fps: 2 })).json();
+  assert.equal(sp.art.voxels["priest-idle"].fps, 2);
+  await up("priest-idle", fixture("priest-walk-fast")); // replacing the file keeps its speed
   const pub = await (await worker.fetch(new Request("https://angelio.org/api/art"), e)).json();
-  assert.equal(pub.voxels["priest-idle"].frames, 3);
+  assert.equal(pub.voxels["priest-idle"].frames, 2);
+  assert.equal(pub.voxels["priest-idle"].fps, 2);
   const del = await (await call(e, "/art/vox-delete", { slug: "priest-idle" })).json();
   assert.deepEqual(del.art.voxels, {});
   assert.equal((await worker.fetch(new Request("https://angelio.org/api/art/vox?slug=priest-idle"), e)).status, 404);

@@ -5,7 +5,7 @@
 // (0–9, then a–z). 1 to 8 frames (a comic: up to 12 panels). Pure: used by the Worker and the tests.
 //
 // Voxel models (MagicaVoxel .vox files, made on her Mac) are kept beside them: the file in R2 at content/art/vox/<slug>.vox,
-// and a note here (voxels: {slug: {saved, frames, size}}). A checklist item is "made" when it has either.
+// and a note here (voxels: {slug: {saved, frames, size, fps}}; fps: how fast the frames play, frames a second). A checklist item is "made" when it has either.
 // CHECKLISTS: what each game needs. Her ticks are kept with the drawings (done: {slug: true}).
 
 export const CODES = "0123456789abcdefghijklmnopqrstuvwxyz";
