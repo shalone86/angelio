@@ -162,6 +162,16 @@ body.mode-home .tabs,body.mode-home .meta,body.mode-tool header{display:none}
 .tabs.lesson-tabs{margin:0;flex:0 1 auto;flex-wrap:nowrap}
 .tabs.lesson-tabs button{flex:0 0 auto;padding:11px 14px}
 body.lesson-off .lesson-tabs{display:none}
+.plan-group{border-top:1px solid var(--rule);padding:8px 0}
+.plan-group summary{cursor:pointer;padding:4px 0}
+.plan-list{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px}
+.plan-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center}
+.plan-title{min-width:0}
+.plan-chip{font:600 12px/1 var(--sans);padding:6px 9px;border-radius:99px;border:1px solid var(--rule);color:var(--muted);white-space:nowrap}
+.plan-chip.script{border-color:var(--gold);color:var(--gold)}
+.plan-chip.approved,.plan-chip.recorded{border-color:var(--accent);color:var(--accent)}
+.plan-chip.done{border-color:var(--ok);color:var(--ok)}
+@media (max-width:700px){.plan-row{grid-template-columns:minmax(0,1fr) auto}.plan-chip{grid-column:1/-1;justify-self:start}}
 .home-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
 .home-tool{font:inherit;color:inherit;text-align:left;cursor:pointer;gap:6px}
 .home-tool:hover{border-color:var(--accent)}
@@ -592,10 +602,39 @@ function homeView() {
       el('button', {class: 'btn', type: 'button', text: '+ New lesson', onclick: () => document.getElementById('new-lesson').click()})]),
   ]);
   const tool = (tab, about) => el('button', {class: 'card home-tool', type: 'button', onclick: () => switchTab(tab)}, [el('b', {text: TOOLS[tab]}), el('span', {class: 'small muted', text: about})]);
-  return el('div', {class: 'stack'}, [lessons, el('div', {class: 'home-grid'}, [
+  return el('div', {class: 'stack'}, [lessons, planView(), el('div', {class: 'home-grid'}, [
     tool('pixels', 'Drawings, characters and comics'),
     tool('songs', 'Words and dancing characters for your songs'),
   ])]);
+}
+
+// The video checklist (plan/videos.yml, /api/plan): every video that finishes the set, by course, with where each
+// one is (to do, script ready, script approved, recorded, done). Loaded once per visit to Home.
+const PLAN_STEPS = {todo: 'To do', script: 'Script ready for you', approved: 'Script approved', recorded: 'Recorded', done: 'Done'};
+function planView() {
+  if (!S.plan) { S.plan = 'loading'; api('/api/plan').then((p) => { S.plan = p; render(); }, (e) => { S.plan = {error: e.message}; render(); }); }
+  if (S.plan === 'loading') return el('section', {class: 'card'}, [el('h2', {text: 'Videos to make'}), el('div', {class: 'muted', text: 'Loading…'})]);
+  if (S.plan.error) return el('section', {class: 'card'}, [el('h2', {text: 'Videos to make'}), el('div', {class: 'bad', text: S.plan.error})]);
+  const vids = S.plan.videos, done = vids.filter((v) => v.status === 'done').length;
+  const ready = vids.filter((v) => v.status === 'script');
+  const groups = Object.entries(S.plan.courses).map(([id, c]) => {
+    const list = vids.filter((v) => v.course === id), n = list.filter((v) => v.status === 'done').length;
+    return el('details', {class: 'plan-group', open: list.some((v) => v.status === 'script') || null}, [
+      el('summary', {}, [el('b', {text: c.title}), el('span', {class: 'small muted', text: ' ' + n + ' of ' + list.length + ' done'})]),
+      el('ul', {class: 'plan-list'}, list.map((v) => el('li', {class: 'plan-row'}, [
+        el('span', {class: 'plan-chip ' + v.status, text: PLAN_STEPS[v.status] || v.status}),
+        el('span', {class: 'plan-title'}, [v.title, v.note ? el('span', {class: 'small muted', text: ' · ' + v.note}) : null,
+          v.replaces && v.replaces.length ? el('span', {class: 'small muted', text: ' · replaces ' + v.replaces.length + ' old video' + (v.replaces.length > 1 ? 's' : '')}) : null]),
+        v.lesson ? el('button', {class: 'btn', type: 'button', text: 'Open', onclick: () => { S.tab = 'script'; store.set('tab', 'script'); openLesson(v.lesson, 0); }}) : el('span'),
+      ]))),
+    ]);
+  });
+  return el('section', {class: 'card stack'}, [
+    el('div', {class: 'row', style: 'justify-content:space-between;align-items:baseline'}, [el('h2', {text: 'Videos to make'}), el('span', {class: 'muted', text: done + ' of ' + vids.length + ' done'})]),
+    el('div', {class: 'bar'}, el('i', {style: 'width:' + Math.round(100 * done / Math.max(1, vids.length)) + '%'})),
+    ready.length ? el('div', {class: 'notice', text: ready.length + ' script' + (ready.length > 1 ? 's are' : ' is') + ' ready for you to read, with ' + (ready.length > 1 ? 'their quizzes' : 'its quiz') + ': ' + ready.map((v) => v.title).join(', ') + '.'}) : null,
+    ...groups,
+  ]);
 }
 
 // Finished lessons, searchable, so the lesson list stays short as the courses grow.
@@ -618,6 +657,7 @@ function archiveView() {
 
 async function switchTab(tab) {
   if (S.tab === tab) return;
+  if (tab === 'home') S.plan = null; // the checklist, fresh each visit
   await saveAll();
   if (S.timing && S.timing.dirty() && !(await ask('You have timing changes that aren’t saved. Leave them?'))) return;
   if (S.tab === 'pixels' && S.pixels && S.pixels.dirty() && !(await ask('Your drawing isn’t saved. Leave it?'))) return;

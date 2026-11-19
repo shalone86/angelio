@@ -1,5 +1,5 @@
 # The workshop (the Lesson Studio, on her Mac). Not part of the website.
-node_modules/
+node_modules
 dist/
 video/public/*/
 !video/public/fonts/

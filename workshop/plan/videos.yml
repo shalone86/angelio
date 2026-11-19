@@ -1,0 +1,148 @@
+# The video checklist: every video that finishes the set (the stopping point in the Angelio ROADMAP.md, "Videos: the
+# stopping point"): about 45 lessons on the four pillars, plus about 25 church history stops. A DRAFT for Shalone to
+# change: add, cut, merge, reorder. The workshop's Home shows it (studio/index.html, /api/plan).
+#
+# Each video:
+#   id        its lesson id in Watch & Sing (a redo keeps the old video's id, so links and stars keep working)
+#   title     what it's called
+#   course    the workshop course it's made in (courses/<course>/)
+#   replaces  the old Watch & Sing video(s) it takes the place of; the first is the one whose place it takes, the rest are
+#             folded into it and hidden when it's sent
+#   old       the old script(s) to start from (plan/old-scripts/<id>.txt), when it isn't the same as `replaces`
+#   lesson    the lesson folder once it exists (<course>/<folder>)
+#   status    todo → script (drafted by Claude, quotes checked) → approved (she approved the script and quiz) →
+#             recorded → done (sent to Watch & Sing)
+#   note      anything to remember
+#
+# Quotations: the Catechism (CCC) or Christ – Our Pascha (CoP) for the great majority, linked; the Catholic Encyclopedia
+# for history; East and West side by side where they differ.
+
+courses:
+  believe: {title: "What We Believe", pillar: 1}
+  celebrate: {title: "How We Celebrate", pillar: 2}
+  live: {title: "How We Live", pillar: 3}
+  pray: {title: "How We Pray", pillar: 4}
+  history: {title: "The Church Through the Ages", pillar: history}
+
+videos:
+  # ── Pillar 1: what we believe (the Creed) ──
+  - {id: who-is-god, title: "Who Is God?", course: believe, status: script, lesson: believe/01-who-is-god, note: "God the Father, Creator of all"}
+  - {id: what-is-the-trinity, title: "What Is the Trinity?", course: believe, status: todo}
+  - {id: what-are-angels, title: "What Are Angels?", course: believe, status: todo,
+     replaces: [what-are-angels, what-are-cherubim, what-are-seraphim, what-is-the-order-and-number-of-angels, what-are-evil-angels],
+     note: "fold the choirs of angels and the fallen angels into one kids lesson"}
+  - {id: who-is-saint-michael-the-archangel, title: "Michael, Gabriel and Raphael", course: believe, status: todo,
+     replaces: [who-is-saint-michael-the-archangel, who-is-saint-gabriel-the-archangel, who-is-saint-raphael-the-archangel]}
+  - {id: the-story-of-salvation, title: "The Story of Salvation, from Adam to Jesus", course: believe, status: todo,
+     note: "goes with the salvation history timeline"}
+  - {id: why-did-god-become-man, title: "Why Did God Become Man?", course: believe, status: todo, note: "the Incarnation"}
+  - {id: the-life-of-jesus, title: "Jesus' Life and Miracles", course: believe, status: todo}
+  - {id: why-did-jesus-die-on-the-cross, title: "Why Did Jesus Die on the Cross?", course: believe, status: todo}
+  - {id: what-is-the-resurrection-of-christ, title: "Jesus Is Risen!", course: believe, status: todo, replaces: [what-is-the-resurrection-of-christ]}
+  - {id: what-is-the-ascension, title: "What Is the Ascension?", course: believe, status: todo}
+  - {id: who-is-the-holy-spirit, title: "Who Is the Holy Spirit?", course: believe, status: todo, note: "and Pentecost"}
+  - {id: what-is-the-church, title: "What Is the Church?", course: believe, status: todo,
+     replaces: [what-is-the-byzantine-catholic-church-byzantine-ca], note: "one Church, East and West, with the Pope"}
+  - {id: why-are-there-bad-people-in-the-church, title: "Why Are There Sinners in the Church?", course: believe, status: todo, replaces: [why-are-there-bad-people-in-the-church]}
+  - {id: who-is-mary, title: "Who Is Mary?", course: believe, status: todo, note: "Mother of God, Theotokos"}
+  - {id: what-is-heaven, title: "What Is Heaven?", course: believe, status: todo, note: "and the communion of saints"}
+  - {id: what-is-infallibility, title: "What Is Infallibility?", course: believe, status: done, note: "made in 2026 in the new style; keep"}
+
+  # ── Pillar 2: how we celebrate (sacraments, the Liturgy, the church, the year) ──
+  - {id: what-is-baptism, title: "What Is Baptism?", course: celebrate, status: todo}
+  - {id: what-is-confirmation, title: "Confirmation and Chrismation", course: celebrate, status: todo, note: "East: given with Baptism"}
+  - {id: what-is-the-eucharist, title: "What Is the Eucharist?", course: celebrate, status: todo}
+  - {id: what-is-confession, title: "What Is Confession?", course: celebrate, status: todo}
+  - {id: what-is-anointing-of-the-sick, title: "Anointing of the Sick", course: celebrate, status: todo}
+  - {id: what-is-marriage, title: "What Is Marriage?", course: celebrate, status: todo}
+  - {id: what-is-holy-orders, title: "Bishops, Priests and Deacons", course: celebrate, status: todo, old: [married-priests],
+     note: "Holy Orders; the kids lesson 'Married Priests' (draft) can fold in"}
+  - {id: what-happens-at-mass, title: "What Happens at Mass and the Divine Liturgy?", course: celebrate, status: todo}
+  - {id: why-are-there-statues-and-paintings-in-churches, title: "Inside a Church", course: celebrate, status: todo,
+     replaces: [why-are-there-statues-and-paintings-in-churches, why-do-we-bow-and-kneel], note: "statues, icons, and why we bow and kneel"}
+  - {id: what-is-the-byzantine-rite, title: "What Is the Byzantine Rite?", course: celebrate, status: done, lesson: byzantine-rite-for-kids/01-what-is-the-byzantine-rite}
+  - {id: what-does-byzantine-mean, title: "What Does Byzantine Mean?", course: celebrate, status: done, lesson: byzantine-rite-for-kids/02-what-does-byzantine-mean}
+  - {id: inside-a-byzantine-church, title: "Inside a Byzantine Church", course: celebrate, status: done, lesson: byzantine-rite-for-kids/03-inside-a-byzantine-church}
+  - {id: what-is-advent, title: "What Is Advent?", course: celebrate, status: script, lesson: celebrate/01-what-is-advent,
+     replaces: [what-is-advent, what-is-an-advent-wreath, what-is-gaudete-sunday, what-is-a-jesse-tree], note: "and the Nativity Fast"}
+  - {id: what-are-nativity-scenes, title: "What Is Christmas?", course: celebrate, status: script, lesson: celebrate/02-what-is-christmas,
+     replaces: [what-are-nativity-scenes, what-is-a-the-history-of-the-christmas-tree, what-is-epiphany], note: "Christmas through Epiphany / Theophany"}
+  - {id: what-is-lent, title: "What Is Lent?", course: celebrate, status: todo,
+     replaces: [what-is-lent, what-is-ash-wednesday, what-is-laetare-sunday, what-is-passiontide, why-veil-statues], note: "and the Great Fast"}
+  - {id: what-is-holy-week, title: "What Is Holy Week?", course: celebrate, status: todo,
+     replaces: [what-is-holy-week, what-is-palm-sunday, what-is-holy-saturday]}
+  - {id: what-does-pascha-mean, title: "What Is Easter (Pascha)?", course: celebrate, status: todo,
+     replaces: [what-does-pascha-mean, what-day-is-easter, what-are-easter-traditions, what-is-eastertide]}
+
+  # ── Pillar 3: how we live ──
+  - {id: what-is-the-golden-rule-moral-lesson, title: "The Two Great Commandments", course: live, status: todo,
+     replaces: [what-is-the-golden-rule-moral-lesson], note: "love God, love your neighbor; the Golden Rule"}
+  - {id: the-ten-commandments-loving-god, title: "The Ten Commandments: Loving God", course: live, status: todo, note: "1–3"}
+  - {id: the-ten-commandments-loving-others, title: "The Ten Commandments: Loving Others", course: live, status: todo, note: "4–10"}
+  - {id: when-and-why-should-we-stay-home-from-mass, title: "Why We Go to Mass on Sunday", course: live, status: todo,
+     replaces: [when-and-why-should-we-stay-home-from-mass], note: "the Lord's Day, and when staying home is right (sick)"}
+  - {id: what-are-the-beatitudes, title: "What Are the Beatitudes?", course: live, status: todo}
+  - {id: what-are-the-works-of-mercy, title: "What Are the Works of Mercy?", course: live, status: todo}
+  - {id: what-are-virtues, title: "What Are Virtues?", course: live, status: todo}
+  - {id: what-is-penance, title: "Sin, Sorrow and Forgiveness", course: live, status: todo,
+     replaces: [what-is-penance, what-are-some-ideas-for-penance]}
+
+  # ── Pillar 4: how we pray ──
+  - {id: an-introduction-to-prayer, title: "What Is Prayer?", course: pray, status: todo,
+     replaces: [an-introduction-to-prayer, the-need-for-prayer, what-difference-does-prayer-make, conditions-of-prayer]}
+  - {id: what-is-vocal-prayer, title: "Ways to Pray", course: pray, status: todo,
+     replaces: [what-is-vocal-prayer, what-is-mental-prayer, what-is-public-and-private-prayer, posture-during-prayer, why-pay-attention-during-prayer]}
+  - {id: why-should-we-make-the-sign-of-the-cross, title: "The Sign of the Cross", course: pray, status: todo,
+     replaces: [why-should-we-make-the-sign-of-the-cross], note: "West; the Byzantine one is made (next line)"}
+  - {id: the-sign-of-the-cross, title: "The Sign of the Cross, Right to Left", course: pray, status: done, lesson: byzantine-rite-for-kids/04-the-sign-of-the-cross}
+  - {id: the-our-father, title: "The Our Father", course: pray, status: todo, note: "line by line"}
+  - {id: the-hail-mary, title: "The Hail Mary", course: pray, status: todo}
+  - {id: the-glory-be, title: "The Glory Be", course: pray, status: todo}
+  - {id: the-jesus-prayer, title: "The Jesus Prayer", course: pray, status: todo}
+  - {id: the-rosary, title: "The Rosary", course: pray, status: todo}
+  - {id: morning-and-night-prayers, title: "Morning and Night Prayers", course: pray, status: todo}
+  - {id: what-are-the-stations-of-the-cross, title: "The Stations of the Cross", course: pray, status: todo, replaces: [what-are-the-stations-of-the-cross]}
+
+  # ── Church history, East and West (each stop short, with its saint or pope) ──
+  - {id: history-pentecost, title: "Pentecost: the Church Is Born", course: history, status: todo}
+  - {id: history-peter-and-paul, title: "Saints Peter and Paul in Rome", course: history, status: todo}
+  - {id: history-the-martyrs, title: "The Martyrs: Saint Perpetua", course: history, status: todo}
+  - {id: history-constantine, title: "Constantine: the Church Set Free", course: history, status: todo, note: "313"}
+  - {id: history-nicaea, title: "The Council of Nicaea and the Creed", course: history, status: todo, note: "325; St Nicholas, St Athanasius"}
+  - {id: history-desert-fathers, title: "The Desert Fathers: Saint Anthony", course: history, status: todo}
+  - {id: history-augustine, title: "Saint Augustine", course: history, status: todo}
+  - {id: history-patrick, title: "Saint Patrick", course: history, status: todo, old: [who-is-saint-aidan-of-lindisfarne], note: "Aidan's old video can lend Irish monks"}
+  - {id: history-benedict, title: "Saint Benedict and the Monks", course: history, status: todo}
+  - {id: history-hagia-sophia, title: "Hagia Sophia", course: history, status: todo}
+  - {id: history-gregory-the-great, title: "Pope Saint Gregory the Great", course: history, status: todo}
+  - {id: history-cyril-and-methodius, title: "Saints Cyril and Methodius", course: history, status: todo}
+  - {id: who-is-vladimir-the-great-a-video-for-catholic-kid, title: "Saint Vladimir and the Baptism of Kyiv", course: history, status: todo,
+     replaces: [who-is-vladimir-the-great-a-video-for-catholic-kid], note: "988"}
+  - {id: history-east-and-west, title: "East and West Grow Apart", course: history, status: todo, note: "1054, and the Eastern Catholic Churches that returned to union; hedge as the sources do"}
+  - {id: history-francis-and-dominic, title: "Saint Francis and Saint Dominic", course: history, status: todo}
+  - {id: history-thomas-aquinas, title: "Saint Thomas Aquinas", course: history, status: todo}
+  - {id: history-guadalupe, title: "Our Lady of Guadalupe", course: history, status: todo, note: "1531"}
+  - {id: history-trent-and-missions, title: "The Council of Trent and the Missionaries", course: history, status: todo, note: "St Francis Xavier"}
+  - {id: history-union-of-brest, title: "The Union of Brest", course: history, status: todo, note: "1596"}
+  - {id: history-martin-and-rose, title: "Saint Martin de Porres and Saint Rose of Lima", course: history, status: todo}
+  - {id: history-kateri, title: "Saint Kateri Tekakwitha", course: history, status: todo}
+  - {id: history-therese, title: "Saint Thérèse", course: history, status: todo}
+  - {id: history-lourdes-and-fatima, title: "Lourdes and Fátima", course: history, status: todo}
+  - {id: the-story-of-blessed-stepinac, title: "Martyrs Under Communism", course: history, status: todo,
+     replaces: [the-story-of-blessed-stepinac], note: "Blessed Stepinac and the Greek Catholic martyrs"}
+  - {id: history-vatican-ii, title: "The Second Vatican Council", course: history, status: todo}
+  - {id: history-john-paul-and-teresa, title: "Saint John Paul II and Saint Teresa of Calcutta", course: history, status: todo}
+  - {id: history-today, title: "Today: One Church in Every Country", course: history, status: todo}
+
+# The bonus shelf: old videos that stay up as they are (saints, popes, comics). Not part of the stopping point; redo any
+# of them only if she wants to.
+bonus:
+  - saint-frances-xavier-cabrini
+  - saint-gabriel-of-our-lady-of-sorrows
+  - who-was-saint-valentine-free-catholic-comic-for-ki
+  - the-brothers-of-the-sacred-heart
+  - a-legend-for-easter
+  - who-was-pope-francis
+  - who-is-pope-leo-xiv
+  - what-is-a-conclave-how-do-catholics-elect-a-pope
+  - who-is-saint-aidan-of-lindisfarne

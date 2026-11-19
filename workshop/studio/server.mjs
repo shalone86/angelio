@@ -583,6 +583,14 @@ async function handle(req, res) {
     // Pico Parish tab: the site's catalog, and its built page to preview.
     if (p === '/api/puppet-bases') return json(res, 200, {...puppetBases(), cast: puppetCast().characters});
     // Her voxel characters (scripts/voxels.mjs): new and changed ones are brought over from angelio.org first.
+    // The video checklist (plan/videos.yml), each video with its lesson here if it has one.
+    if (p === '/api/plan') {
+      let plan;
+      try { plan = YAML.parse(fs.readFileSync(path.join(ROOT, 'plan', 'videos.yml'), 'utf8')) ?? {}; } catch (e) { throw httpError(500, 'The checklist (plan/videos.yml) can’t be read: ' + e.message); }
+      const have = new Set(lessonIds());
+      const videos = (plan.videos ?? []).map((v) => ({...v, lesson: v.lesson && have.has(v.lesson) ? v.lesson : null}));
+      return json(res, 200, {courses: plan.courses ?? {}, videos, bonus: plan.bonus ?? []});
+    }
     if (p === '/api/voxels') {
       const r = await syncVoxels();
       if (r.added?.length || r.changed?.length) backupSoon('voxels', ['voxels'], 'voxel models');

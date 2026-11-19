@@ -1,0 +1,140 @@
+# Redo of the old Christmas videos (plan/old-scripts: what-are-nativity-scenes, what-is-a-the-history-of-the-christmas-tree,
+# what-is-epiphany), folded into one kids lesson from Christmas to Epiphany / Theophany, East and West side by side.
+status: draft
+course: celebrate
+number: 2
+slug: what-is-christmas
+title: What Is Christmas?
+replaces: what-are-nativity-scenes
+excerpt: >-
+  Jesus is born! The stable, the gifts, Holy Eve, and the feast of Epiphany and Theophany, for kids.
+
+sources:
+  - id: ccc-mysteries
+    label: Catechism of the Catholic Church, 525, 528
+    url: https://www.vatican.va/archive/ENG0015/__P1L.HTM
+  - id: ugcc
+    label: "Christ – Our Pascha: Catechism of the Ukrainian Catholic Church, 195, 196"
+    file: sources-local/ugcc-catechism.txt
+    url: https://ukrcatholic.org/fileadmin/user_upload/PDFs/Our_Faith/Christ-our-Pascha-Catechism-of-the-Ukrainian-Catholic-Church-by-Comission-for-the-Catehism-z-lib.org_.pdf
+
+intro:
+  # Shalone writes the start of the intro before this; it always ends with these words (hers).
+  text: >-
+    I'm your host Shalone Cason, and let's begin in the name of the Father and of the Son and of the Holy Spirit.
+  notes:
+    - Aim for about 40–50 words in front of the fixed lines.
+    - "A question to open with: why do we give presents at Christmas? Because God gave us the best present of all: Jesus."
+    - Christmas is a season, not just one day. In the West it runs from Christmas Day to the Baptism of the Lord; in the East from the Nativity (December 25, or January 7 on the old calendar) to Theophany.
+    - "The first nativity scene is told of Saint Francis of Assisi, at Greccio in Italy, in 1223 (from the old video)."
+  scenes:
+    - type: title
+    - type: host         # your photo and name, when you say "I'm your host"
+      at: I'm your host
+    - type: trinity      # triangle (Father), cross (Son), dove (Holy Spirit)
+      at: in the name of the Father
+      cues: {son: the Son, spirit: the Holy Spirit}
+
+points:
+  - heading: Born in a stable
+    quote:
+      lead: The Catechism tells us where the King of the world was born.
+      text: >-
+        Jesus was born in a humble stable, into a poor family. Simple shepherds were the first witnesses to this event.
+      source: ccc-mysteries
+      cite: Catechism 525
+      highlight: a humble stable
+    text: >-
+      God's Son could have been born in a palace. Instead he was born where animals lived, and the first visitors were
+      shepherds from the fields. That shows us God loves the little and the poor, and he came for everyone.
+    visuals: []
+    quiz:
+      type: choice
+      question: Who were the first to see baby Jesus?
+      options:
+        - Shepherds
+        - Kings and queens
+        - Soldiers
+      answer: 0
+      why: >-
+        "Simple shepherds were the first witnesses to this event" (Catechism 525).
+
+  - heading: Everyone brings a gift
+    quote:
+      lead: A Byzantine catechism tells us how all of creation welcomed baby Jesus.
+      text: >-
+        angels—their song; the heavens—a star; the magi—gold, frankincense, and myrrh; the shepherds—their wonder
+      source: ugcc
+      cite: Christ – Our Pascha 195
+      highlight: the shepherds—their wonder
+    text: >-
+      Everyone gave baby Jesus what they had. The angels sang, the sky gave a star, the wise men brought treasure, and
+      the shepherds gave their wonder. That's what a nativity scene shows. What can you give Jesus this Christmas?
+    visuals:
+      - type: compare
+        left: { kicker: The angels, title: A song, note: Glory to God in the highest, icon: music }
+        right: { kicker: The shepherds, title: Their wonder, note: They came to see, icon: heart }
+    quiz:
+      type: blank
+      question: The angels brought baby Jesus their ____.
+      accept: [song]
+      wrong: [gold, star]
+      why: >-
+        "angels—their song; the heavens—a star" (Christ – Our Pascha 195).
+
+  - heading: Holy Eve
+    quote:
+      lead: In Byzantine families, Christmas Eve is a very special night. Their catechism explains.
+      text: >-
+        Every home becomes a Bethlehem of the family
+      source: ugcc
+      cite: Christ – Our Pascha 196
+      highlight: a Bethlehem of the family
+    text: >-
+      On Holy Eve, the table becomes Bethlehem: straw goes under the tablecloth like the manger, a candle shines like
+      the star, and the family shares a meatless supper. Then everyone goes to church to celebrate Jesus' birth!
+    visuals: []
+    quiz:
+      type: truefalse
+      question: On Holy Eve, Byzantine families put straw under the tablecloth, like the manger.
+      answer: true
+      why: >-
+        True! "Every home becomes a Bethlehem of the family" (Christ – Our Pascha 196).
+
+  - heading: Epiphany and Theophany
+    quote:
+      lead: Christmas ends with one more great feast. The Catechism tells us what it celebrates.
+      text: >-
+        the great feast of Epiphany celebrates the adoration of Jesus by the wise men (magi) from the East
+      source: ccc-mysteries
+      cite: Catechism 528
+      highlight: the wise men
+    text: >-
+      In the West, Epiphany remembers the wise men who followed the star. In the East, the same feast is Theophany,
+      when Jesus was baptized and the Father spoke from heaven. Both mean the same thing: God shows himself to the
+      world!
+    visuals:
+      - type: compare
+        left: { kicker: West, title: Epiphany, note: The wise men follow the star, icon: star }
+        right: { kicker: East, title: Theophany, note: Jesus is baptized in the Jordan, icon: droplets }
+    quiz:
+      type: choice
+      question: Who comes to adore Jesus in the feast of Epiphany?
+      options:
+        - The wise men from the East
+        - The shepherds' sheep
+        - The Roman emperor
+      answer: 0
+      why: >-
+        Epiphany "celebrates the adoration of Jesus by the wise men (magi) from the East" (Catechism 528).
+
+outro:
+  # Shalone writes the start of the outro before this; it always ends with these words (hers).
+  text: >-
+    Thanks for learning with us. I've been your host Shalone, and until next time, stay holy, my friends.
+  notes:
+    - "Recap: born in a stable · everyone brings a gift · Holy Eve · Epiphany and Theophany."
+    - "From the old Christmas tree video: an evergreen stays green all winter, like God's love that never ends."
+    - Aim for about 40–50 words, ending with your usual sign-off.
+  scenes:
+    - type: recap

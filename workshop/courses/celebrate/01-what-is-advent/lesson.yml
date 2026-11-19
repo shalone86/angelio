@@ -1,0 +1,152 @@
+# Redo of the old Advent videos (plan/old-scripts: what-is-advent, what-is-an-advent-wreath, what-is-gaudete-sunday,
+# what-is-a-jesse-tree), folded into one kids lesson, East and West side by side. Kept from the old ones: the colors
+# (purple, rose on Gaudete Sunday) and getting our hearts ready; new: every point on an exact quotation.
+status: draft
+course: celebrate
+number: 1
+slug: what-is-advent
+title: What Is Advent?
+replaces: what-is-advent
+excerpt: >-
+  The weeks before Christmas, when the whole Church gets ready for Jesus: Advent in the West and the Nativity Fast in
+  the East, for kids.
+
+sources:
+  - id: ccc-524
+    label: Catechism of the Catholic Church, 524
+    url: https://www.vatican.va/archive/ENG0015/__P1L.HTM
+  - id: ugcc
+    label: "Christ – Our Pascha: Catechism of the Ukrainian Catholic Church, 175"
+    file: sources-local/ugcc-catechism.txt
+    url: https://ukrcatholic.org/fileadmin/user_upload/PDFs/Our_Faith/Christ-our-Pascha-Catechism-of-the-Ukrainian-Catholic-Church-by-Comission-for-the-Catehism-z-lib.org_.pdf
+  - id: ce-advent
+    label: "Catholic Encyclopedia (1907): Advent"
+    url: https://www.newadvent.org/cathen/01165a.htm
+
+intro:
+  # Shalone writes the start of the intro before this; it always ends with these words (hers).
+  text: >-
+    I'm your host Shalone Cason, and let's begin in the name of the Father and of the Son and of the Holy Spirit.
+  notes:
+    - Aim for about 40–50 words in front of the fixed lines.
+    - "A question to open with: what do you do to get ready when someone special is coming to visit? The Church does that for Jesus every year."
+    - Advent comes from the Latin "adventus", coming. It's the four Sundays before Christmas, and the first day of the Church's new year.
+    - In the East the same weeks are the Nativity Fast (Saint Philip's Fast), forty days from November 15 (old calendar 28).
+  scenes:
+    - type: title
+    - type: host         # your photo and name, when you say "I'm your host"
+      at: I'm your host
+    - type: trinity      # triangle (Father), cross (Son), dove (Holy Spirit)
+      at: in the name of the Father
+      cues: {son: the Son, spirit: the Holy Spirit}
+
+points:
+  - heading: Getting ready for Jesus
+    quote:
+      lead: The Catechism tells us what the Church is doing in Advent.
+      text: >-
+        by sharing in the long preparation for the Saviour's first coming, the faithful renew their ardent desire for
+        his second coming.
+      source: ccc-524
+      cite: Catechism 524
+      highlight: the Saviour's first coming
+    text: >-
+      Jesus came the first time as a baby in Bethlehem. He promised to come again at the end of time. In Advent we
+      remember how long God's people waited for him, and we get our hearts ready for both comings!
+    visuals:
+      - type: compare
+        left: { kicker: First coming, title: Jesus is born, note: A baby in Bethlehem, icon: star }
+        right: { kicker: Second coming, title: Jesus comes again, note: At the end of time, icon: sunrise }
+    quiz:
+      type: choice
+      question: In Advent, we get ready for Jesus' coming at Christmas, and…
+      options:
+        - His second coming at the end of time
+        - His birthday party only
+        - The first day of summer
+      answer: 0
+      why: >-
+        Advent remembers his first coming and gets us ready for "his second coming" too (Catechism 524).
+
+  - heading: The Nativity Fast in the East
+    quote:
+      lead: Byzantine Catholics have their own way to get ready. Their catechism says it plainly.
+      text: >-
+        During the course of this Fast, the Church prepares us for the luminous feast of the Nativity of Christ
+      source: ugcc
+      cite: Christ – Our Pascha 175
+      highlight: prepares us
+    text: >-
+      In the East, the weeks before Christmas are the Nativity Fast, also called Saint Philip's Fast. It starts after
+      Saint Philip's feast and lasts forty days. Families eat simpler food and pray more, so Christmas shines even
+      brighter!
+    visuals:
+      - type: term
+        term: Nativity
+        origin: Latin nativitas
+        meaning: being born
+    quiz:
+      type: blank
+      question: In the East, the weeks before Christmas are called the Nativity ____.
+      accept: [Fast]
+      wrong: [Party, Season]
+      why: >-
+        It's the Nativity Fast, also called Saint Philip's Fast (Christ – Our Pascha 175).
+
+  - heading: John the Baptist points the way
+    quote:
+      lead: In Advent we listen to John the Baptist, who got people ready for Jesus. The Catechism remembers his words.
+      text: >-
+        He must increase, but I must decrease.
+      source: ccc-524
+      cite: Catechism 524 (John 3:30)
+      highlight: He must increase
+    text: >-
+      John the Baptist told everyone to get ready, because Jesus was coming! He didn't want people looking at him. He
+      wanted them looking at Jesus. In Advent we try to do the same: a little less me, a little more Jesus.
+    visuals: []
+    quiz:
+      type: truefalse
+      question: John the Baptist wanted people to look at him instead of Jesus.
+      answer: false
+      why: >-
+        False! He said, "He must increase, but I must decrease" (Catechism 524). He pointed everyone to Jesus.
+
+  - heading: Purple, and a little rose
+    quote:
+      lead: You might notice the priest's colors change in Advent. An old Catholic encyclopedia explains.
+      text: >-
+        An exception is made for the third Sunday (Gaudete Sunday), on which the vestments may be rose-coloured
+      source: ce-advent
+      cite: Catholic Encyclopedia, "Advent"
+      highlight: rose-coloured
+    text: >-
+      Most of Advent, priests wear purple, the color of getting ready. On the third Sunday, Gaudete Sunday, they can
+      wear rose, because Gaudete means "rejoice!" Christmas is almost here. That's why the Advent wreath has three
+      purple candles and one pink!
+    visuals:
+      - type: voxel
+        voxel: priest-mass-idle
+        view: front-right
+        size: small
+    quiz:
+      type: choice
+      question: What color can the priest wear on Gaudete Sunday?
+      options:
+        - Rose
+        - Green
+        - Black
+      answer: 0
+      why: >-
+        On the third Sunday, Gaudete Sunday, "the vestments may be rose-coloured" (Catholic Encyclopedia, "Advent").
+
+outro:
+  # Shalone writes the start of the outro before this; it always ends with these words (hers).
+  text: >-
+    Thanks for learning with us. I've been your host Shalone, and until next time, stay holy, my friends.
+  notes:
+    - "Recap: getting ready for Jesus · the Nativity Fast in the East · John the Baptist points the way · purple, and a little rose."
+    - "An idea for families: light the Advent wreath at dinner and pray together; or keep a Jesse tree (one Bible story a day, Adam to Jesus)."
+    - Aim for about 40–50 words, ending with your usual sign-off.
+  scenes:
+    - type: recap

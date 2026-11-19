@@ -1,0 +1,131 @@
+# New lesson (no old video): Pillar 1 opens with God the Father, Creator of heaven and earth. East and West together.
+status: draft
+course: believe
+number: 1
+slug: who-is-god
+title: Who Is God?
+excerpt: >-
+  God made everything, like an artist making a masterpiece, out of love, and he is always with us. For kids.
+
+sources:
+  - id: ccc-creator
+    label: Catechism of the Catholic Church, 279, 293
+    url: https://www.vatican.va/archive/ENG0015/__P19.HTM
+  - id: ugcc
+    label: "Christ – Our Pascha: Catechism of the Ukrainian Catholic Church, 106, 107"
+    file: sources-local/ugcc-catechism.txt
+    url: https://ukrcatholic.org/fileadmin/user_upload/PDFs/Our_Faith/Christ-our-Pascha-Catechism-of-the-Ukrainian-Catholic-Church-by-Comission-for-the-Catehism-z-lib.org_.pdf
+
+intro:
+  # Shalone writes the start of the intro before this; it always ends with these words (hers).
+  text: >-
+    I'm your host Shalone Cason, and let's begin in the name of the Father and of the Son and of the Holy Spirit.
+  notes:
+    - Aim for about 40–50 words in front of the fixed lines.
+    - "A question to open with: who made the sun, the stars, the puppies, and you? God did!"
+    - The Creed (both East and West) begins "I believe in one God, the Father almighty, Creator of heaven and earth".
+    - This is the first lesson of "What We Believe"; the Trinity comes next.
+  scenes:
+    - type: title
+    - type: host         # your photo and name, when you say "I'm your host"
+      at: I'm your host
+    - type: trinity      # triangle (Father), cross (Son), dove (Holy Spirit)
+      at: in the name of the Father
+      cues: {son: the Son, spirit: the Holy Spirit}
+
+points:
+  - heading: God made everything
+    quote:
+      lead: The Bible begins with God. The Catechism starts the story there too.
+      text: >-
+        In the beginning God created the heavens and the earth.
+      source: ccc-creator
+      cite: Catechism 279 (Genesis 1:1)
+      highlight: God created
+    text: >-
+      Before anything else existed, there was God. He made the sky, the sea, the animals, the plants, and people too.
+      Nothing made itself. Everything we can see, and even things we can't see, like angels, comes from God.
+    visuals: []
+    quiz:
+      type: truefalse
+      question: God made the heavens and the earth.
+      answer: true
+      why: >-
+        True! "In the beginning God created the heavens and the earth" (Catechism 279).
+
+  - heading: Like an artist
+    quote:
+      lead: A Byzantine catechism compares God to an artist.
+      text: >-
+        Like an artist, God creates a masterpiece; he examines his creation with attention, and he delights in it.
+      source: ugcc
+      cite: Christ – Our Pascha 107
+      highlight: Like an artist
+    text: >-
+      When you draw something you love, you look at it and smile. God does that with the world! In the Bible, after
+      each day of creation, God saw that it was good. He's happy with what he made, and that includes you.
+    visuals:
+      - type: compare
+        left: { kicker: You, title: Your drawing, note: You look at it and smile, icon: pencil }
+        right: { kicker: God, title: The whole world, note: He delights in it, icon: globe }
+    quiz:
+      type: blank
+      question: Like an artist, God creates a ____.
+      accept: [masterpiece]
+      wrong: [mess, mistake]
+      why: >-
+        "Like an artist, God creates a masterpiece" (Christ – Our Pascha 107).
+
+  - heading: Made out of love
+    quote:
+      lead: Why did God make the world? The Catechism gives a beautiful answer.
+      text: >-
+        Creatures came into existence when the key of love opened his hand.
+      source: ccc-creator
+      cite: Catechism 293
+      highlight: the key of love
+    text: >-
+      God didn't need anything. He made the world because he loves! Love is like a key that opened God's hand, and out
+      came the stars, the animals, and you. You are here because God loves you.
+    visuals: []
+    quiz:
+      type: choice
+      question: Why did God make the world?
+      options:
+        - Because he loves
+        - Because he was bored
+        - Because he needed help
+      answer: 0
+      why: >-
+        "Creatures came into existence when the key of love opened his hand" (Catechism 293).
+
+  - heading: God is always with us
+    quote:
+      lead: God didn't make the world and then leave. The same Byzantine catechism tells us.
+      text: >-
+        God is the Creator. This means that God not only created the world, but that he is always present in his
+        creation
+      source: ugcc
+      cite: Christ – Our Pascha 106
+      highlight: always present
+    text: >-
+      God is like a parent who never leaves the room. He's with you when you wake up, at school, and when you sleep. You
+      can talk to him anytime. That's called prayer!
+    visuals: []
+    quiz:
+      type: truefalse
+      question: God made the world and then went away.
+      answer: false
+      why: >-
+        False! God "is always present in his creation" (Christ – Our Pascha 106).
+
+outro:
+  # Shalone writes the start of the outro before this; it always ends with these words (hers).
+  text: >-
+    Thanks for learning with us. I've been your host Shalone, and until next time, stay holy, my friends.
+  notes:
+    - "Recap: God made everything · like an artist · made out of love · God is always with us."
+    - "Next: the Trinity (one God, three Persons)."
+    - Aim for about 40–50 words, ending with your usual sign-off.
+  scenes:
+    - type: recap
