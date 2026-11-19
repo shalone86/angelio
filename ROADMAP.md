@@ -146,7 +146,12 @@ is the content, so they never need new levels.
    style game: walk, auto-prayer, candles left behind, grace, pick one of three, 12 combos, a 5-minute day). Art: test page
    https://claude.ai/artifact/FFkp1FnQTM6aEeBn78PFqM (A: PICO-8 as is, B: crisp pixels + smooth light and words, C: voxels
    made automatically from her drawings).
-   - **Candle Rack** (first; she wants to play it): one church inside, candles go out, tap to light. Ramp: candles burn at
+   - **Candle Rack** (first; she wants to play it). Decided Nov 19, 2026: **voxels only**, her own MagicaVoxel models
+     (.vox, uploaded on the Studio's Drawings page, where the checklist of people and church pieces lives); pixel versions
+     can be redone later. **Each round is the time before Mass or the Divine Liturgy**: getting the sanctuary ready ("Mass
+     starts in 3 minutes"), the priest (hurrying) or server comes by, people come early to pray and light candles for their
+     intentions; when time runs out the bells ring and the priest processes in (slow walk). The game says so plainly:
+     nobody tends candles all through Mass. One church inside, candles go out, tap to light. Ramp: candles burn at
      different speeds; relight just before one goes out for a "just in time" bonus; swipe along a row to light it in one
      go (a chain); prayer intentions in colors (light the right color); drafts when the door opens (it creaks first);
      the sanctuary lamp must never go out; pick one of three between rounds (longer wicks, glass covers, an altar server
