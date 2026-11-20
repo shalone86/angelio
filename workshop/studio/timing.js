@@ -24,12 +24,12 @@
   const clone = (o) => JSON.parse(JSON.stringify(o));
   const fmt = (s) => { s = Math.max(0, s); return Math.floor(s / 60) + ':' + (s % 60).toFixed(1).padStart(4, '0'); };
 
-  // Pictures she can add from the editor: a type and a few plain fields.
+  // Pictures he can add from the editor: a type and a few plain fields.
   // Lists are one item per line; "a | b" splits an item into two parts.
   const lines = (v) => String(v || '').split('\n').map((x) => x.trim()).filter(Boolean);
   const pair = (l) => l.split('|').map((x) => x.trim());
   const nl = (a) => (a || []).join('\n');
-  let recapDefault = []; // the points' headings, what the summary says until she changes it
+  let recapDefault = []; // the points' headings, what the summary says until he changes it
   const MOVES = [['stay', 'stays'], ['hop', 'hops'], ['across', 'walks across, left to right'], ['across-left', 'walks across, right to left']];
   // Which way a voxel character faces (video/voxel-draw.js VIEWS). Walking across with "Facing you", it turns
   // three-quarters the way it goes by itself, so the face still shows.
@@ -107,7 +107,7 @@
       make: (v) => { if (!v.character) throw new Error('Draw a character first: <name>-idle and <name>-walk on the Pixel art tab');
         return {type: 'puppet', character: v.character, ...(colorsOf(v) ? {colors: v.colors} : {}), ...(v.item ? {item: v.item} : {}), ...(v.size && v.size !== 'medium' ? {size: v.size} : {}), ...(v.start && v.start !== 'center' ? {start: v.start} : {})}; },
       read: (sc) => ({character: sc.character || '', colors: sc.colors || {}, item: sc.item || '', size: sc.size || 'medium', start: sc.start || 'center'})},
-    // The outro's summary: its lines are the points' headings until she writes her own (`items`).
+    // The outro's summary: its lines are the points' headings until he writes his own (`items`).
     recap: {label: 'Lesson summary', hidden: true, fields: [['items', 'What the summary says, one line per check mark, in order (empty: the points’ headings)', 'lines']],
       make: (v) => { const l = lines(v.items); return {type: 'recap', ...(l.length && nl(l) !== nl(recapDefault) ? {items: l} : {})}; },
       read: (sc) => ({items: nl(sc.items || recapDefault)})},
@@ -136,9 +136,9 @@
     return k;
   }
 
-  // Her video's layouts on a slide (see video/Camera.tsx).
+  // His video's layouts on a slide (see video/Camera.tsx).
   const LAYOUTS = [['bubble', 'Bubble'], ['card', 'Two cards'], ['side', 'Side by side'], ['lower', 'Lower third'], ['only', 'Just me'], ['off', 'Off']];
-  const SIDED = ['bubble', 'card', 'side']; // layouts where she picks which side her video is on
+  const SIDED = ['bubble', 'card', 'side']; // layouts where he picks which side his video is on
 
   /** The props with hand timing applied to the automatic timing (same rules as scripts/prepare.mjs applyTiming). */
   function effective(base, data, timing) {
@@ -168,7 +168,7 @@
         if (Array.isArray(o.puppet)) sc.puppet = o.puppet.map(([t, k, d]) => [Math.round(seg.audioOffsetInFrames + t * FPS) - from, k, d]); else delete sc.puppet;
         if (Object.keys(cues).length) sc.cues = cues; else delete sc.cues;
       });
-      // The lesson summary: every point gets a diamond, even one not heard in the recording, so she
+      // The lesson summary: every point gets a diamond, even one not heard in the recording, so he
       // can set when each appears (same spacing as video/scenes/Recap.tsx for the ones not heard).
       seg.scenes.forEach((sc) => {
         if (sc.type !== 'recap' || seg.kind !== 'outro') return;
@@ -256,7 +256,7 @@
         return b != null && Math.abs(b - f) <= 5 ? b : f;
       };
 
-      // What she said, on time
+      // What he said, on time
       const wr = h('div', {class: 'tl-words'});
       words.forEach((w, i) => wr.append(h('span', {class: 'tl-word', style: {left: x(s.audioOffsetInFrames + w.t * FPS) + 'px', top: (i % 2) * 18 + 'px'}, text: w.w,
         onpointerdown: () => T.player.seek(segStart(T.seg) + s.audioOffsetInFrames + w.t * FPS)})));
@@ -395,7 +395,7 @@
           h('button', {class: 'btn primary', 'data-save': '', disabled: !T.dirty, text: T.dirty ? 'Save timing' : 'Saved', onclick: save}),
         ]),
       ]);
-      // Her camera clip for this slide (recorded with "Record my video too"): how it shows.
+      // His camera clip for this slide (recorded with "Record my video too"): how it shows.
       const camRow = s.camera ? h('div', {class: 'row', style: {gap: '8px'}}, [
         h('span', {class: 'small muted', text: 'Your video on this slide:'}),
         h('span', {class: 'seg', role: 'group', 'aria-label': 'Your video on this slide'}, LAYOUTS.map(([v, label]) =>
@@ -455,7 +455,7 @@
 
     /**
      * Play the puppet while the video runs: key presses are kept against the playhead (seconds
-     * into this section's recording), from where she starts; anything after that is replaced.
+     * into this section's recording), from where he starts; anything after that is replaced.
      */
     function puppetRow(i) {
       const s = seg(), sc = s.scenes[i];
@@ -521,7 +521,7 @@
       updatePlayer(); draw(); setDirty();
     }
 
-    /** The small credit shown on the video. Her gallery needs only its name. */
+    /** The small credit shown on the video. His gallery needs only its name. */
     function creditLine(c) {
       if (c.own) return '';
       if (/sdcason\.com/.test(c.source || '')) return 'The Free Catholic Gallery (sdcason.com)';
@@ -555,7 +555,7 @@
         btn('→', 'Right (Shift: further)', (v, d) => ({...v, x: v.x + d})),
         btn('Smaller', 'Smaller', (v) => ({...v, size: Math.max(30, v.size - 5)})),
         btn('Bigger', 'Bigger', (v) => ({...v, size: Math.min(200, v.size + 5)})),
-        // Pictures and her drawings can be mirrored left to right.
+        // Pictures and his drawings can be mirrored left to right.
         ['image', 'sprite', 'voxel'].includes(sc.type) ? h('button', {class: 'btn', title: 'Mirror it left to right', 'aria-pressed': n.flip ? 'true' : 'false',
           text: n.flip ? '⇋ Flipped' : '⇋ Flip', onclick: () => set((v) => { const {flip, ...rest} = v; return flip ? rest : {...rest, flip: true}; })}) : null,
         h('span', {class: 'small muted', text: (n.x || n.y || n.size !== 100 ? `moved ${n.x}, ${n.y} · ${n.size}%` : 'where it was made') + (n.flip ? ' · flipped' : '') + ' · or drag it on the video (a corner, or the mouse wheel: size)'}),
@@ -628,7 +628,7 @@
     function pictureOptions(i) {
       const s = seg(), sc = s.scenes[i];
       if (T.swapPic) {
-        // Change the whole picture: the search (or her own), keeping its place, timing, framing and caption.
+        // Change the whole picture: the search (or his own), keeping its place, timing, framing and caption.
         const apply = async () => {
           if (!T.picked) { alert('Pick a picture first.'); return; }
           try {
@@ -675,7 +675,7 @@
       ]);
     }
 
-    /** Save the picked picture into the lesson (downloaded from its source, or her upload); returns its credit. */
+    /** Save the picked picture into the lesson (downloaded from its source, or his upload); returns its credit. */
     async function importPicked() {
       if (T.picked.upload) {
         const r = await fetch('/api/images/upload?id=' + encodeURIComponent(T.id) + '&name=' + encodeURIComponent(T.picked.file.name), {method: 'POST', headers: {'X-Studio': '1'}, body: T.picked.file});
@@ -735,7 +735,7 @@
             })]);
           }
           else if (type === 'character' || type === 'item') {
-            // Her puppet characters (drawings named <name>-<action>) and items (item-<name>).
+            // His puppet characters (drawings named <name>-<action>) and items (item-<name>).
             input = h('select', {}, [h('option', {value: '', text: 'Loading…'})]);
             const note = h('div', {class: 'small muted'});
             api('/api/puppet-cast').then((cast) => {
@@ -777,7 +777,7 @@
               : [h('option', {value: '', text: 'None yet: make one on the Battles tab'})])));
           }
           else if (type === 'voxel') {
-            // Her MagicaVoxel models (scripts/voxels.mjs; new ones come over from angelio.org when this opens):
+            // His MagicaVoxel models (scripts/voxels.mjs; new ones come over from angelio.org when this opens):
             // a search box and pictures of each, a bigger moving one of the pick, turned the way the next box says.
             input = h('input', {type: 'hidden', value: value || ''});
             const search = h('input', {type: 'search', placeholder: 'Search (priest, walk…)', 'aria-label': 'Search your voxel models', style: {width: '100%'}});
@@ -820,14 +820,14 @@
               show();
               if (!input.value && voxels[0]) pick(voxels[0].slug); else play();
             }).catch((e) => { grid.replaceChildren(h('span', {class: 'small bad', text: 'Couldn’t load the models: ' + e.message})); });
-            // (the next boxes, which way and how it moves, turn the big picture as she changes them)
+            // (the next boxes, which way and how it moves, turn the big picture as he changes them)
             queueMicrotask(() => { vals.view?.addEventListener('change', play); vals.move?.addEventListener('change', play); });
             vals[name] = input;
             return h('div', {class: 'tl-field', style: {gap: '8px'}}, [h('span', {text: label}), input,
               h('div', {class: 'row', style: {alignItems: 'flex-start', gap: '12px'}}, [big, h('div', {class: 'stack', style: {gap: '8px', flex: '1', minWidth: '0'}}, [search, grid, note])])]);
           }
           else if (type === 'sprite') {
-            // Her saved pixel animations and sketches.
+            // His saved pixel animations and sketches.
             // A search box and moving thumbnails (there are too many for a list); the pick is held in a hidden box.
             input = h('input', {type: 'hidden', value: value || ''});
             const box = h('div', {class: 'small muted', text: 'Loading your drawings…'});
@@ -942,7 +942,7 @@
         status.textContent = 'Searching…'; grid.replaceChildren(); more.hidden = true;
         try { await fetchPage(0); } catch (e) { status.textContent = 'Search failed: ' + e.message; }
       };
-      // Her own picture from the Mac: shown as the pick; sent when she presses Add.
+      // His own picture from the Mac: shown as the pick; sent when he presses Add.
       const mine = h('input', {type: 'file', accept: 'image/*', hidden: true, onchange: (e) => {
         const f = e.target.files[0]; e.target.value = '';
         if (!f) return;

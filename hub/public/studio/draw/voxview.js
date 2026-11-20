@@ -1,4 +1,4 @@
-// 3D pictures of her MagicaVoxel models for the Drawings page: a still picture for the checklist, and a big
+// 3D pictures of his MagicaVoxel models for the Drawings page: a still picture for the checklist, and a big
 // turning preview (drag to turn, the frames play). Uses three.js r128 (/vendor/three-r128.min.js, global THREE).
 import { toScene } from "/js/vox.js";
 
@@ -26,7 +26,7 @@ function stage(vox) {
 const place = (cam, ang, r, height) => { const d = r * 4.2; cam.position.set(Math.sin(ang) * d, height * 0.8 + r * 0.6, Math.cos(ang) * d); cam.lookAt(0, height * 0.45, 0); };
 
 let still = null;
-/** A small still picture (data URL), seen from a little to the right, like her 3/4 drawings. */
+/** A small still picture (data URL), seen from a little to the right, like him 3/4 drawings. */
 export function voxThumb(vox, px = 128) {
   if (!T()) return null;
   still ??= new (T().WebGLRenderer)({ antialias: true, alpha: true, preserveDrawingBuffer: true });

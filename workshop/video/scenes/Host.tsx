@@ -7,13 +7,13 @@ import type {SceneProps} from '.';
 
 type HostScene = {role?: string};
 
-/** Shalone's photo in a gold ring, with her name (site.yml author, host_photo). */
+/** Shalone's photo in a gold ring, with his name (site.yml author, host_photo). */
 export const Host: React.FC<SceneProps<HostScene>> = ({scene, lesson}) => {
   const f = useCurrentFrame();
   const name = lesson.author || 'Your host';
   const initials = name.split(/\s+/).map((w) => w[0]).join('').slice(0, 2);
   const size = 420;
-  // On a slide with her video, she's already on screen: just her name.
+  // On a slide with his video, he's already on screen: just his name.
   const onCamera = useLayout() !== 'off';
   if (onCamera) {
     return (

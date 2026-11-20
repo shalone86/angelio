@@ -1,5 +1,5 @@
 // The kids thumbnail maker (Video & Ghost tab, kids lessons): the thumbnail live (video/KidsThumb.tsx
-// in Remotion's Player) with a box over each drawing she can drag, and a corner to resize it. Up to
+// in Remotion's Player) with a box over each drawing he can drag, and a corner to resize it. Up to
 // 3 drawings, each with its own frame and flip. Saved to lesson.yml as `thumb.pics` (scripts/kids-thumb.mjs
 // reads it when the lesson goes to Ghost); "Back to automatic" removes them. The title and corner
 // shapes stay automatic.
@@ -32,7 +32,7 @@
       h('div', {class: 'small muted', text: 'Drag a drawing to move it and its corner to resize it. The dashed lines show what the kids site’s home page keeps (it cuts the sides off). The title and corner shapes stay as they are.'}),
       stage, side);
 
-    // What the player draws: the last props from the server, with her moves on top.
+    // What the player draws: the last props from the server, with his moves on top.
     const props = () => ({...T.data.props, pics: T.data.props.pics.map((p, i) => ({...p, ...pick3(T.pics[i])}))});
     const pick3 = (p) => (p ? {x: p.x, y: p.y, size: p.size} : {});
     const redraw = () => { if (T.player) T.player.setProps(props()); boxes(); };

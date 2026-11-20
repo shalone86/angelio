@@ -1,5 +1,5 @@
-// Music videos tab: she makes the song in Logic; here she makes its video. One slide per line of
-// the words, timed by tapping along with the song; her drawings dropped in as characters that
+// Music videos tab: he makes the song in Logic; here he makes its video. One slide per line of
+// the words, timed by tapping along with the song; his drawings dropped in as characters that
 // dance to the beat or to one of the song's parts (from its MIDI when there is one, else guessed
 // from the sound). Saved to songs/<name>/song.yml; "Make the video" runs scripts/song.mjs.
 'use strict';
@@ -557,7 +557,7 @@ window.SongsTab = (() => {
     return {
       dirty: () => G.dirty,
       pause() { stopTap(); if (G.player) G.player.pause(); },
-      /** Her drawings may have changed on the Pixel art tab. */
+      /** His drawings may have changed on the Pixel art tab. */
       async refresh() { try { G.sprites = (await api('/api/sprites')).filter((s) => s.kind !== 'comic'); } catch {} },
     };
   }

@@ -4,9 +4,9 @@
 // Each row is a string, one character per pixel: '.' is see-through, otherwise the position in the palette
 // (0–9, then a–z). 1 to 8 frames (a comic: up to 12 panels). Pure: used by the Worker and the tests.
 //
-// Voxel models (MagicaVoxel .vox files, made on her Mac) are kept beside them: the file in R2 at content/art/vox/<slug>.vox,
+// Voxel models (MagicaVoxel .vox files, made on his Mac) are kept beside them: the file in R2 at content/art/vox/<slug>.vox,
 // and a note here (voxels: {slug: {saved, frames, size, fps}}; fps: how fast the frames play, frames a second). A checklist item is "made" when it has either.
-// CHECKLISTS: what each game needs. Her ticks are kept with the drawings (done: {slug: true}).
+// CHECKLISTS: what each game needs. His ticks are kept with the drawings (done: {slug: true}).
 
 export const CODES = "0123456789abcdefghijklmnopqrstuvwxyz";
 export const artSlug = (name) => String(name ?? "").toLowerCase().replace(/['’]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60);

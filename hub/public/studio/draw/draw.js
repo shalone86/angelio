@@ -1,4 +1,4 @@
-// The Studio's Drawings page: a checklist of what each game needs, with her MagicaVoxel models (.vox, uploaded
+// The Studio's Drawings page: a checklist of what each game needs, with his MagicaVoxel models (.vox, uploaded
 // here) and the Lesson Studio's Pixel art editor (pixels.js, a copy) for pixel drawings. Everything is saved online
 // (R2, through the Worker's /api/admin/studio/art routes); anyone can read it at /api/art and /api/art/vox?slug=…,
 // so Claude sees each one as soon as it's saved.
@@ -45,7 +45,7 @@ async function post(path, data) {
 }
 
 // ── voxel models ──
-/** Her model for a slug, read once per save. */
+/** His model for a slug, read once per save. */
 async function model(slug) {
   const v = art.voxels[slug];
   if (!v) return null;

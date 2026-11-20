@@ -2,19 +2,19 @@ import {AbsoluteFill, Img, staticFile} from 'remotion';
 import {bounds, Frame, type Art} from './scenes/Sprite';
 import './theme'; // loads the fonts
 
-// Thumbnail for kids.methodiusmedia.com in the look of her kids thumbnails there: turquoise, soft
+// Thumbnail for kids.methodiusmedia.com in the look of his kids thumbnails there: turquoise, soft
 // blobs, chunky pale-yellow capitals with a shadow ("WHAT IS" small, the rest big), and one of
-// her pixel drawings. 1280×720.
+// his pixel drawings. 1280×720.
 // Everything stays inside the SAFE zone (x 175–1105): the kids site's home page crops
 // thumbnails to about 4:3 from the middle (160px off each side), which cut the text off.
-// pics: drawings she placed herself in the studio's thumbnail maker (up to 3), instead of the
+// pics: drawings he placed himself in the studio's thumbnail maker (up to 3), instead of the
 // automatic one: x, y the middle of the drawing and size its height, in pixels of 1280×720.
 export type ThumbPic = {art: Art; x: number; y: number; size: number; frame?: number; flip?: boolean};
 export type KidsThumbProps = {lead?: string; title: string; art?: Art | null; pics?: ThumbPic[]; shapes?: ShapeFile[]; fit?: 'frame' | 'bleed'; strip?: boolean} // fit is kept for old props; every full-canvas drawing is framed now;
 
 const SAFE_W = 930; // text width inside the 4:3 crop (x 175–1105)
 const INK = '#FFE58A', SHADOW = '#B8862B';
-// Decorations: her own shapes (thumb-shapes/*.png|svg), one in each corner so they never touch the
+// Decorations: his own shapes (thumb-shapes/*.png|svg), one in each corner so they never touch the
 // title or the drawing. Which shape goes where is random but fixed by the title. Files named
 // corner-<tl|tr|bl|br>-… are pieces that sit flush in a corner (flipped to fit any corner); the rest
 // are free blobs placed partly off the corner, turned and flipped at random.
@@ -106,7 +106,7 @@ export const KidsThumb: React.FC<KidsThumbProps> = ({lead, title, art: auto, pic
   let big = 125, lines = wrap(big);
   while (big > 60 && (lines.length > 2 || Math.max(...lines.map((l) => l.length)) * 0.62 * big > SAFE_W)) { big -= 4; lines = wrap(big); }
   // A narrow drawing (a person) goes to the left so the small "WHAT DOES" line beside the title stays readable.
-  // (with her own placement: the lead goes right when the first drawing is on the left)
+  // (with his own placement: the lead goes right when the first drawing is on the left)
   const narrow = pics?.length ? pics[0].x < 640 : !framed && !!b && b.w * px < 520;
   const text = (size: number): React.CSSProperties => ({fontFamily: 'Fredoka, sans-serif', fontWeight: 700, fontSize: size, lineHeight: 0.98, color: INK,
     letterSpacing: 2, textTransform: 'uppercase', textShadow: `0 ${size * 0.06}px 0 ${SHADOW}, 0 ${size * 0.09}px ${size * 0.08}px rgba(0,0,0,0.18)`});

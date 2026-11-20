@@ -1,4 +1,4 @@
-// Her voxel characters: MagicaVoxel models (.vox) she uploads on Angelio's Drawings page (angelio.org/studio/draw/),
+// His voxel characters: MagicaVoxel models (.vox) he uploads on Angelio's Drawings page (angelio.org/studio/draw/),
 // one file per pose (priest-idle, priest-walk-slow…), each with its speed. That's their one home; this studio keeps a
 // copy so videos render the same every time and work offline:
 //   voxels/<slug>.vox      the model, as uploaded

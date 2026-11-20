@@ -1,7 +1,7 @@
 // Image search for the studio: free, credit-tracked sources. Each adapter
 // returns the same shape, so the page can show one grid:
 //   {source, id, title, creator, license, licenseUrl, page, thumb, full, width, height, download?}
-// Only sources that need no API key: her gallery (sdcason.com), Wikimedia
+// Only sources that need no API key: his gallery (sdcason.com), Wikimedia
 // Commons, the Art Institute of Chicago and the Cleveland Museum of Art.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -30,7 +30,7 @@ export const SOURCES = {
   }},
   // The Met: its search API answers 410 Gone (checked 2026-10-17); add it back if it returns.
   sdcason: {label: 'The Free Catholic Gallery (sdcason.com)', key: null, async search(q, _key, page = 0) {
-    // Her own Ghost site: the read-only Content API key it already publishes for its search box.
+    // His own Ghost site: the read-only Content API key it already publishes for its search box.
     sdcasonKey ??= (async () => {
       const html = await (await fetch('https://sdcason.com/', {headers: {'User-Agent': UA}})).text();
       const k = /data-key="([0-9a-f]{20,})"/.exec(html)?.[1];
@@ -107,7 +107,7 @@ export async function importImage(dir, img) {
   return credit;
 }
 
-/** A picture from her own Mac: shrink to video size, save in the lesson's images/ and record it as her own. */
+/** A picture from his own Mac: shrink to video size, save in the lesson's images/ and record it as his own. */
 export function importUpload(dir, buf, filename) {
   if (!buf.length) throw new Error('That file is empty');
   const imagesDir = path.join(dir, 'images');
@@ -121,7 +121,7 @@ export function importUpload(dir, buf, filename) {
     execFileSync('ffmpeg', ['-y', '-v', 'error', '-i', raw, '-vf', "scale='min(1920,iw)':-2", '-q:v', '3', '-frames:v', '1', out]);
   } catch { throw new Error('That doesn\'t look like a picture the studio can read (try JPG, PNG or WebP)'); } finally { fs.rmSync(raw, {force: true}); }
   const [w, h] = String(execFileSync('ffprobe', ['-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=width,height', '-of', 'csv=p=0', out])).trim().split(',').map(Number);
-  const credit = {file: `images/${base}.jpg`, aspect: Math.round((w / h) * 1000) / 1000, title: String(filename || 'Picture').slice(0, 80), creator: 'Shalone Cason', source: 'Her own picture', license: '', license_url: '', page: '', own: true};
+  const credit = {file: `images/${base}.jpg`, aspect: Math.round((w / h) * 1000) / 1000, title: String(filename || 'Picture').slice(0, 80), creator: 'Shalone Cason', source: 'His own picture', license: '', license_url: '', page: '', own: true};
   const creditsFile = path.join(imagesDir, 'credits.json');
   const all = fs.existsSync(creditsFile) ? JSON.parse(fs.readFileSync(creditsFile, 'utf8')) : {};
   all[credit.file] = credit;

@@ -32,7 +32,7 @@ const DOCS = {
 export const LIVE = DOCS.watch.live;
 export const READING_LIVE = DOCS.reading.live;
 
-// Her drawings (the Studio's Drawings page): one small document with every drawing, her favorites and her checklist
+// His drawings (the Studio's Drawings page): one small document with every drawing, his favorites and his checklist
 // ticks. Each save keeps the drawing's old version in content/art/history/<slug>/; a deleted one goes to content/art/trash/.
 // Anyone can read them (GET /api/art): Claude and the games load them from there.
 export const ART_LIVE = "content/art/drawings.json";
@@ -199,8 +199,8 @@ const ART_BATCH = 15; // drawings per run
  * Copy into the repo (each file only if it changed), with the GITHUB_TOKEN secret:
  *   apps/watch/public/data/library.json  ← Watch & Sing's library (R2)
  *   backup/leadsheets.json               ← every lead sheet (KV leadsheet:*)
- *   art/drawings/<slug>.json             ← her drawings (R2 content/art/drawings.json), ART_BATCH changed ones a run;
- *                                          art/ticks.json her favorites and checklist ticks; KV backup:art remembers what's in GitHub
+ *   art/drawings/<slug>.json             ← his drawings (R2 content/art/drawings.json), ART_BATCH changed ones a run;
+ *                                          art/ticks.json his favorites and checklist ticks; KV backup:art remembers what's in GitHub
  *   backup/sounds/<m|f>/<sound>.wav      ← Dad's and Mom's recorded sounds (KV clip:*), SOUND_BATCH new ones a run;
  *                                          KV backup:sounds remembers which version of each is in GitHub
  * Returns { ok, commits, soundsLeft, notes } — "Back up now" calls again while soundsLeft > 0.

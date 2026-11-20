@@ -8,14 +8,14 @@ import type {SceneProps} from '.';
 // src: the lesson's images/<file>.jpg (copied into video/public by prepare.mjs)
 // aspect: width / height (saved at import), so the frame fits the picture.
 // fit: contain (the whole picture, as big as it fits), cover (fills the picture area, cropping),
-//      screen (fills the whole slide behind the heading; beside her video, the whole panel)
+//      screen (fills the whole slide behind the heading; beside his video, the whole panel)
 // bare: no card behind it (for drawings with see-through backgrounds)
 // focus: which part stays when it's cropped: top | center (default) | bottom
 type ImageScene = {src: string; aspect?: number; caption?: string; credit?: string; fit?: 'contain' | 'cover' | 'screen'; bare?: boolean; focus?: 'top' | 'center' | 'bottom'};
 const FOCUS = {top: 'center 15%', center: 'center 40%', bottom: 'center 85%'};
 
-// As big as the room allows (the slide, or the panel beside her video): a tall picture beside
-// her gets tall, and "fill" crops to that whole space.
+// As big as the room allows (the slide, or the panel beside his video): a tall picture beside
+// his gets tall, and "fill" crops to that whole space.
 const frameSize = (scene: ImageScene, stage: Stage) => {
   const maxW = Math.max(400, stage.w - 320);
   const maxH = Math.max(300, stage.h - (scene.caption ? 130 : 50));

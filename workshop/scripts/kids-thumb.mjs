@@ -1,4 +1,4 @@
-// Thumbnail for a kids lesson on kids.methodiusmedia.com, in the look of her kids thumbnails there
+// Thumbnail for a kids lesson on kids.methodiusmedia.com, in the look of his kids thumbnails there
 // (video/KidsThumb.tsx). The drawing: lesson.yml `thumb: {pics: [...]}` (placed by hand in the
 // studio), else lesson.yml or course.yml `thumb: {sprite: <name>, fit: frame | bleed, strip: true}` (strip: every frame of the drawing side by side, in order),
 // else the lesson's first pixel animation. Run: node scripts/kids-thumb.mjs <course>/<lesson>
@@ -11,7 +11,7 @@ import {loadSprite, publishSketch} from './sprites.mjs';
 // "What is …", "Who was …": the opening words go small above the rest.
 const LEAD = /^(what|who|why|how|when|where)\s+(is|was|are|were|does|do|did|is a|is the)\b/i;
 
-// Her decorative shapes: thumb-shapes/*.png|svg, copied next to the lesson's other render files.
+// His decorative shapes: thumb-shapes/*.png|svg, copied next to the lesson's other render files.
 // corner-<tl|tr|bl|br>-… names mark pieces that sit flush in a corner.
 function shapeFiles(id) {
   const src = path.join(ROOT, 'thumb-shapes');

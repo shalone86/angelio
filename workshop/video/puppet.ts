@@ -1,4 +1,4 @@
-// The keyboard puppet (PUPPET.md): her key presses, recorded against the video in the
+// The keyboard puppet (PUPPET.md): his key presses, recorded against the video in the
 // studio's Timing tab, replayed into what the character is doing at any frame. Used by the
 // Puppet scene, so the studio preview and the render agree exactly.
 //
@@ -27,7 +27,7 @@ const FALLBACK: Partial<Record<Action, Action[]>> = {
 
 export type PuppetState = {action: Action; frame: number; x: number; facing: -1 | 1; flip: boolean; item: number; showItem: boolean; since: number};
 
-/** Which drawing stands in for an action (its own, else the nearest one she has drawn). */
+/** Which drawing stands in for an action (its own, else the nearest one he has drawn). */
 export function pick(actions: Partial<Record<Action, Art>>, a: Action): Action | null {
   for (const x of [a, ...(FALLBACK[a] ?? []), 'idle' as Action]) if (actions[x]) return x;
   const any = Object.keys(actions)[0];

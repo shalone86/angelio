@@ -43,7 +43,7 @@ const registry: Record<string, React.FC<SceneProps<any>>> = {
   iconostasis: Iconostasis,
   trinity: Trinity,
   sprite: Sprite,
-  voxel: Voxel, // her MagicaVoxel characters: prepare.mjs puts the model in `art`
+  voxel: Voxel, // his MagicaVoxel characters: prepare.mjs puts the model in `art`
   puppet: Puppet,
   icons: IconsView,
 };

@@ -131,7 +131,7 @@ export function buildKidsSitePost(arg, {videoUrl = VIDEO_PLACEHOLDER, posterUrl 
   // Order matters: the first tag is the post's primary tag, and the kids site's page uses it to
   // pick which other videos to show automatically, so the course/series tag goes FIRST. Then
   // Catholic Kids Video Lessons (Byzantine ones are Byzantine Catholic Lessons too), then #project,
-  // which puts it in her collections (Latest work, All videos).
+  // which puts it in his collections (Latest work, All videos).
   const tags = course.kids_tags ?? [course.series ?? course.title, 'Catholic Kids Video Lessons', ...(course.tradition === 'byzantine' ? ['Byzantine Catholic Lessons'] : []), '#project'];
   const meta = {title: lesson.title, slug: lesson.slug, custom_excerpt: lesson.excerpt.trim(), tags};
   fs.writeFileSync(path.join(outDir(id), 'kids-site-post.html'), html);
@@ -147,7 +147,7 @@ function imageCredits(dir, lesson) {
   for (const sec of [lesson.intro, ...(lesson.points ?? []).map((p) => ({scenes: p.visuals})), lesson.outro]) for (const sc of sec?.scenes ?? []) if (sc.type === 'image') used.add(sc.src);
   const items = [...used].map((src) => credits[src]).filter((c) => c && !c.own);
   if (!items.length) return '';
-  // Her own gallery: just the picture and the gallery's name.
+  // His own gallery: just the picture and the gallery's name.
   const li = (c) => /sdcason\.com/.test(c.source ?? '') ? `<li>${c.page ? `<a href="${esc(c.page)}">${esc(c.title || 'Image')}</a>` : esc(c.title || 'Image')} (The Free Catholic Gallery, sdcason.com)</li>` : `<li>${c.page ? `<a href="${esc(c.page)}">${esc(c.title || 'Image')}</a>` : esc(c.title || 'Image')}${c.creator ? `, ${esc(c.creator)}` : ''} (${esc(c.source)}${c.license ? `, ${c.license_url ? `<a href="${esc(c.license_url)}">${esc(c.license)}</a>` : esc(c.license)}` : ''})</li>`;
   return `<h3>Image credits</h3>\n<ul>${items.map(li).join('')}</ul>`;
 }

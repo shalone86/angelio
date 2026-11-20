@@ -639,7 +639,7 @@ window.PixelTab = (() => {
       try { await window.ArtExport.save(a.name, gif ? a.frames.map((_, i) => cv(flat(i))) : [cv(flat(P.frame))], a.fps, gif); }
       catch (e) { alert('Couldn’t export it: ' + e.message); }
     }
-    /** One comic panel as a picture: paper, drawing and words, with a 1-pixel border round it if she wants one. */
+    /** One comic panel as a picture: paper, drawing and words, with a 1-pixel border round it if he wants one. */
     function comicPanel(i, k) {
       const a = P.art, b = a.comic.border ? 1 : 0, paper = paperOf(a);
       const cv = document.createElement('canvas'); cv.width = (a.width + 2 * b) * k; cv.height = (a.height + 2 * b) * k;
@@ -712,7 +712,7 @@ window.PixelTab = (() => {
       if (!c) { note('Nothing copied yet: select something (or nothing, for the whole picture) and press Copy.'); return; }
       place(c, everywhere);
     }
-    /** Put pixels `c = {x, y, w, h, frames}` in as a lifted piece she drags and resizes (Paste and Insert a drawing). */
+    /** Put pixels `c = {x, y, w, h, frames}` in as a lifted piece he drags and resizes (Paste and Insert a drawing). */
     function place(c, everywhere, what = 'Pasted') {
       const frames = c.frames || [c.px];
       commit();
@@ -1165,7 +1165,7 @@ window.PixelTab = (() => {
           P.list = d.sprites.filter((s) => s.kind !== 'sketch'); a.slug = d.slug; P.saved = snap(); draw();
         } catch (e) { alert('Couldn’t save it: ' + e.message); }
       };
-      // A color version: her recolored idle, then the other four poses made from the base with the same swaps.
+      // A color version: his recolored idle, then the other four poses made from the base with the same swaps.
       const saveVersion = async () => {
         letGo();
         const req = {base: P.version.base, name: P.version.name, idle: toSaved(a)};
@@ -1470,7 +1470,7 @@ window.PixelTab = (() => {
           ...items.filter((x) => x !== wordsBox),
         ]);
         const scrolled = body.querySelector('.pxm-sheet')?.scrollTop ?? 0;
-        // (the sliding rows stay where she left them)
+        // (the sliding rows stay where he left them)
         const slid = ['.pxm-tools', '.pxm-pal', '.pxm-top .pxm-frames', '.pxm-layers .pxm-frames'].map((c) => body.querySelector(c)?.scrollLeft ?? 0);
         body.replaceChildren(...[top, wordsBox ? h('div', {class: 'pxm-words'}, [wordsBox]) : null, layerStrip, bottom, P.menu ? sheet : null].filter(Boolean));
         if (P.menu) sheet.scrollTop = scrolled;

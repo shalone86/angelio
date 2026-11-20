@@ -10,7 +10,7 @@
 #             folded into it and hidden when it's sent
 #   old       the old script(s) to start from (plan/old-scripts/<id>.txt), when it isn't the same as `replaces`
 #   lesson    the lesson folder once it exists (<course>/<folder>)
-#   status    todo → script (drafted by Claude, quotes checked) → approved (she approved the script and quiz) →
+#   status    todo → script (drafted by Claude, quotes checked) → approved (he approved the script and quiz) →
 #             recorded → done (sent to Watch & Sing)
 #   note      anything to remember
 #
@@ -135,7 +135,7 @@ videos:
   - {id: history-today, title: "Today: One Church in Every Country", course: history, status: todo}
 
 # The bonus shelf: old videos that stay up as they are (saints, popes, comics). Not part of the stopping point; redo any
-# of them only if she wants to.
+# of them only if he wants to.
 bonus:
   - saint-frances-xavier-cabrini
   - saint-gabriel-of-our-lady-of-sorrows

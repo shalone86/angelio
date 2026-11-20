@@ -5,8 +5,8 @@ import {puppetAt, type Action, type PuppetEvent} from '../puppet';
 import {Frame, type Art} from './Sprite';
 import type {SceneProps} from '.';
 
-// The keyboard puppet (PUPPET.md): one of her characters (drawings `<character>-<action>`,
-// put in `actions` by prepare.mjs) doing what she played on the Timing tab (`puppet`, frames
+// The keyboard puppet (PUPPET.md): one of his characters (drawings `<character>-<action>`,
+// put in `actions` by prepare.mjs) doing what he played on the Timing tab (`puppet`, frames
 // from the scene's start). Items (`item-<name>`) appear beside it while it points.
 //   character: guy | bishop | …   item: the first item it points to (`i` switches)
 //   size: small | medium (default) | big     start: left | center (default) | right

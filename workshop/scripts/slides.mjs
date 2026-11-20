@@ -10,7 +10,7 @@ import {ROOT} from './lib.mjs';
 
 export const slugify = (t) => String(t).toLowerCase().replace(/['’]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 70);
 
-// A slide she writes in the studio: every box there, empty.
+// A slide he writes in the studio: every box there, empty.
 const BLANK_POINT = {heading: '', quote: {lead: '', text: '', cite: '', link: ''}, text: '', visuals: [], quiz: []};
 const lineStart = (src, i) => src.lastIndexOf('\n', i - 1) + 1;
 const lineAfter = (src, i) => { const n = src.indexOf('\n', Math.max(0, i - 1)); return n < 0 ? src.length : n + 1; };
@@ -78,7 +78,7 @@ export function addSlide(dir, after) {
   return `point-${at + 1}`;
 }
 
-// Her sign-off, always the end of the outro.
+// His sign-off, always the end of the outro.
 const OUTRO_END = "Thanks for learning with us. I've been your host Shalone, and until next time, stay holy, my friends.";
 
 /** Add the closing slide (the outro, with the lesson summary). */
@@ -86,7 +86,7 @@ export function addClosing(dir) {
   const file = path.join(dir, 'lesson.yml');
   const src = fs.readFileSync(file, 'utf8');
   if (YAML.parse(src).outro) throw new Error('There is already a closing slide');
-  // Her outro always ends with her sign-off; she writes the start of it before.
+  // His outro always ends with his sign-off; he writes the start of it before.
   fs.writeFileSync(file, src.replace(/\n*$/, '\n\n') + 'outro:\n  text: >-\n    ' + OUTRO_END + '\n  scenes:\n    - type: recap\n');
   return 'outro';
 }

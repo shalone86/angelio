@@ -1,4 +1,4 @@
-// Her pixel animations (the studio's Pixel art tab), shared by every lesson:
+// His pixel animations (the studio's Pixel art tab), shared by every lesson:
 //   sprites/<name>.json  {name, width, height, fps, palette: ['#rrggbb', …], frames: [[row, …], …]}
 // Each row is a string, one character per pixel: '.' is see-through, otherwise
 // the position in the palette (0–9, then a–z). 1 to 8 frames.
@@ -171,18 +171,18 @@ export function puppetArt(sc) {
   return {actions, items: order.map((name) => ({name, art: loadSprite(`item-${name}`)}))};
 }
 
-// ---------- color versions of her base characters (PUPPET.md) ----------
-// A base is a character with all five poses that she drew herself. She recolors only its idle and
+// ---------- color versions of his base characters (PUPPET.md) ----------
+// A base is a character with all five poses that he drew himself. He recolors only its idle and
 // names the new character; every other pose is made from the base's with the same color swaps.
 // sprites/.versions.json remembers each version's base and swaps: {st-joseph: {base, swaps: {'#old': '#new'}}}.
 export const BASE_POSES = ['idle', 'point', 'look-up', 'walk', 'run'];
 const VERSIONS = path.join(SPRITES, '.versions.json');
 export const readVersions = () => { try { return JSON.parse(fs.readFileSync(VERSIONS, 'utf8')); } catch { return {}; } };
 
-/** The bases she can start from (with their idle drawing), and the versions made so far. */
+/** The bases he can start from (with their idle drawing), and the versions made so far. */
 export function puppetBases() {
   const versions = readVersions();
-  // (a version she marked as a base, `isBase: true`, is one too, with whatever poses it has)
+  // (a version he marked as a base, `isBase: true`, is one too, with whatever poses it has)
   const bases = puppetCast().characters.filter((c) => (versions[c.name]?.isBase ? c.actions.includes('idle') : !versions[c.name] && BASE_POSES.every((p) => c.actions.includes(p))))
     .map((c) => ({name: c.name, idle: loadSprite(`${c.name}-idle`)}));
   return {bases, versions};
@@ -192,10 +192,10 @@ export function puppetBases() {
 const pixelsOf = (art) => art.frames.map((rows) => rows.join('').split('').map((c) => (c === '.' ? null : art.palette[CODES.indexOf(c)].toUpperCase())));
 
 /**
- * Make (or, with dry, only check) a color version: `idle` is her recolored idle (saved form) of
+ * Make (or, with dry, only check) a color version: `idle` is his recolored idle (saved form) of
  * `base`, `name` the new character. Returns {slug, swaps, split: [{from, to: [...]}], shape, made: [...], exists: [...]}.
  * split: a base color that became more than one color (the most used one is copied to the other poses);
- * shape: how many squares she added or erased (only colors are copied, not shape changes).
+ * shape: how many squares he added or erased (only colors are copied, not shape changes).
  */
 export function colorVersion({base, name, idle, dry}) {
   const slug = spriteSlug(name);
@@ -255,7 +255,7 @@ export function recolorArt(art, colors) {
 }
 
 /**
- * A keeper: the colors she picked for one use, saved as a real drawing. `from` is the drawing the
+ * A keeper: the colors he picked for one use, saved as a real drawing. `from` is the drawing the
  * scene shows (e.g. thick-guy-walk) or a character (thick-guy); a character's every pose is saved as
  * `<name>-<pose>` and .versions.json remembers it (with its base's colors, so it can be a base's
  * version). A single drawing (a house) is saved as `<name>`. Never replaces a drawing.
@@ -290,11 +290,11 @@ export function saveColors({from, name, colors}) {
 }
 
 // ---------- copying a pose to other characters ----------
-// She draws a new pose (e.g. eastern-monk-blessing) once; each other character gets a draft of it
+// He draws a new pose (e.g. eastern-monk-blessing) once; each other character gets a draft of it
 // made from its own idle: the source idle is lined up with each pose frame (the best shift, for
 // poses like kneeling that move the body), and only the squares the pose changed are painted on
 // the target's idle, in the target's colors for those parts (matched square by square between
-// the two idles). Drafts never replace a drawing that exists; she touches them up by hand.
+// the two idles). Drafts never replace a drawing that exists; he touches them up by hand.
 const shiftPx = (px, w, h, dx, dy) => px.map((_, i) => { const x = (i % w) - dx, y = Math.floor(i / w) - dy; return x >= 0 && x < w && y >= 0 && y < h ? px[y * w + x] : null; });
 const artOfPixels = (name, w, h, fps, frames) => {
   const palette = [...new Set(frames.flat().filter(Boolean))].slice(0, CODES.length);

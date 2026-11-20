@@ -14,7 +14,7 @@ export const Quote: React.FC<SceneProps<QuoteScene>> = ({scene, duration}) => {
   // Spoken pace when known (cues from the recording), else a steady reveal.
   const c = (scene as any).cues as {start?: number; end?: number} | undefined;
   const begin = c?.start ?? 6;
-  // The words finish appearing well before she finishes reading (about two thirds of the way,
+  // The words finish appearing well before he finishes reading (about two thirds of the way,
   // and at least 1.5 s early), so the highlight and the source are on screen before the next picture.
   const span = c?.start != null && c?.end != null ? c.end - c.start : null;
   const reveal = span != null ? Math.max(span * 0.5, Math.min(span * 0.7, span - 45)) : null;

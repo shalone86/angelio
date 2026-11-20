@@ -21,7 +21,7 @@ const SegmentView: React.FC<{seg: Segment; lesson: LessonProps}> = ({seg, lesson
   const starts = seg.scenes.map((s, i) => s.from ?? start + i * per);
   // Pictures joined to the one before (`with: side | over`) share its space as one group:
   // side by side in columns, or layered on top. Each keeps its own start and end.
-  // Shown in the order they start (she can drag one past another in the Timing tab).
+  // Shown in the order they start (he can drag one past another in the Timing tab).
   const order = seg.scenes.map((_, i) => i).sort((a, b) => starts[a] - starts[b] || a - b);
   const groups: {members: number[]; mode: 'side' | 'over' | null}[] = [];
   order.forEach((i) => {
@@ -87,7 +87,7 @@ const SceneShell: React.FC<{children: React.ReactNode; last: boolean; duration: 
   }
   const p = geo.panel;
   if (p) {
-    // With her video on screen, the pictures are drawn at p.vw×p.vh and shrunk into their box.
+    // With his video on screen, the pictures are drawn at p.vw×p.vh and shrunk into their box.
     const k = Math.min(p.w / p.vw, p.h / p.vh);
     return (
       <div style={{position: 'absolute', left: p.x, top: p.y, width: p.w, height: p.h, opacity, transform,
@@ -98,7 +98,7 @@ const SceneShell: React.FC<{children: React.ReactNode; last: boolean; duration: 
       </div>
     );
   }
-  // Bubble: the scenes keep clear of her circle at the bottom right.
+  // Bubble: the scenes keep clear of his circle at the bottom right.
   return (
     <AbsoluteFill style={{opacity, top, bottom: 110, left: geo.inset.left, right: geo.inset.right, width: 'auto', height: 'auto', transform}}>
       <StageContext.Provider value={{w: 1920 - geo.inset.left - geo.inset.right, h: 1080 - top - 110, bleed: {left: geo.inset.left, top, right: geo.inset.right, bottom: 110}}}>{children}</StageContext.Provider>
@@ -108,7 +108,7 @@ const SceneShell: React.FC<{children: React.ReactNode; last: boolean; duration: 
 
 /**
  * Pictures sharing one space. Side by side: equal columns, each drawn a bit larger and shrunk
- * to fit (like the panel beside her video). Over: layered, later ones on top. Each fades in
+ * to fit (like the panel beside his video). Over: layered, later ones on top. Each fades in
  * at its own start.
  */
 const Stack: React.FC<{mode: 'side' | 'over'; members: {scene: Segment['scenes'][number]; from: number; length: number}[]; lesson: LessonProps}> = ({mode, members, lesson}) => {
@@ -150,7 +150,7 @@ const PointHeading: React.FC<{seg: Segment; total: number; settleAt: number; are
   const bounce = beat.dance ? beat.pulse : 0;
   const bob = (1 - settle) * (Math.sin((frame / fps) * ((2 * Math.PI) / 6) + seg.index) * 8 - bounce * 8);
   const scale = area.bigScale + (area.settleScale - area.bigScale) * settle;
-  // Over her video the heading sits on a card so it stays readable.
+  // Over his video the heading sits on a card so it stays readable.
   // (on one line: the area only sets where it's centered)
   const pill: React.CSSProperties = area.pill ? {background: theme.bg, borderRadius: 32, padding: '12px 44px 18px', boxShadow: '0 12px 36px rgba(0,0,0,0.25)', whiteSpace: 'nowrap'} : {};
   const box: React.CSSProperties = {position: 'absolute', left: area.x, width: area.w, transformOrigin: 'center top', display: 'flex', flexDirection: 'column', alignItems: 'center'};

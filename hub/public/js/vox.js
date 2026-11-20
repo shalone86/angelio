@@ -117,7 +117,7 @@ export function readVox(input) {
     walk(0, 0, 0, 0);
     raw.push(out);
   }
-  // One box that fits every frame, so the model doesn't jump between frames. With a single object (her characters),
+  // One box that fits every frame, so the model doesn't jump between frames. With a single object (his characters),
   // that's the model's own box (8 × 8 × 8 stays 8 × 8 × 8); with several objects, the box around all of them.
   let frames;
   if (shapes.length === 1) {

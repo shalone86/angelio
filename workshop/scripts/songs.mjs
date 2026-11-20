@@ -1,6 +1,6 @@
 // Music videos (the studio's Music videos tool): songs/<name>/song.yml plus the song itself
-// (song.mp3 or .wav, made in Logic) and, when she has it, its MIDI (song.mid).
-//   slides: lyric lines with a start time on the song, a background and her characters,
+// (song.mp3 or .wav, made in Logic) and, when he has it, its MIDI (song.mid).
+//   slides: lyric lines with a start time on the song, a background and his characters,
 //   each dancing to the beat or to one part of the song (drums, bass, melody…).
 //   parts: when each part plays. Exact from the MIDI's tracks; without a MIDI, guessed from
 //   the sound (low sounds, sharp hits, the middle).
@@ -49,7 +49,7 @@ const cleanCast = (list) => (Array.isArray(list) ? list.slice(0, 12).map((c) => 
   ...(c?.flip ? {flip: true} : {}), to: String(c?.to ?? 'beat').slice(0, 60), ...(MOVES.includes(c?.move) && c.move !== 'hop' ? {move: c.move} : {}),
 })).filter((c) => c.sprite) : undefined);
 
-/** Only what a song file can hold, with sane limits (the page sends whatever she edited). */
+/** Only what a song file can hold, with sane limits (the page sends whatever he edited). */
 export function cleanSong(s) {
   if (!s || typeof s !== 'object') throw new Error('Not a song');
   const slides = (Array.isArray(s.slides) ? s.slides : []).slice(0, 400).map((sl) => {

@@ -1,4 +1,4 @@
-// Draw one of her MagicaVoxel models (a `voxel` scene; art made by scripts/voxels.mjs) on a 2D canvas, at any angle.
+// Draw one of his MagicaVoxel models (a `voxel` scene; art made by scripts/voxels.mjs) on a 2D canvas, at any angle.
 // No 3D library: each block's faces that can be seen are painted as flat shapes, the far ones first, with a light
 // from the upper left. The video (video/scenes/Voxel.tsx), the Timing tab's preview and the studio's picker all
 // use this one file, so they look the same.

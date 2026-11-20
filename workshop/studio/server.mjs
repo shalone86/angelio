@@ -68,7 +68,7 @@ async function courseChoices() {
 }
 
 /**
- * A picture from the web for the drawing tabs' reference (a link she copied from Google,
+ * A picture from the web for the drawing tabs' reference (a link he copied from Google,
  * DuckDuckGo or any site), fetched here so the page can draw it. Public addresses only.
  */
 async function fetchImage(res, address) {
@@ -147,7 +147,7 @@ function listen(id, section, src, hint) {
     .finally(() => listening.delete(k));
 }
 
-/** What she said vs. the script, for one section (or why it isn't known yet). */
+/** What he said vs. the script, for one section (or why it isn't known yet). */
 function heard(id, s, src) {
   if (!src || !WHISPER) return null;
   const words = cachedWords(src);
@@ -167,7 +167,7 @@ async function buildPlayer() {
   });
 }
 
-/** Everything the Timing tab needs: the video's props (with her timing), the automatic timing, and her words. */
+/** Everything the Timing tab needs: the video's props (with his timing), the automatic timing, and his words. */
 function timingData(id) {
   const dir = lessonPath(id);
   const {props, auto} = prepare(id);
@@ -291,7 +291,7 @@ function saveTiming(id, timing) {
       // Moved/resized/flipped in the Timing tab (pixels of 1920×1080, size in %).
       const n = o.nudge ?? {};
       const nx = Math.round(Number(n.x) || 0), ny = Math.round(Number(n.y) || 0), size = Math.min(200, Math.max(30, Math.round(Number(n.size) || 100)));
-      // (flip: mirrored left to right, for pictures and her drawings)
+      // (flip: mirrored left to right, for pictures and his drawings)
       if (nx || ny || size !== 100 || n.flip) out.nudge = {x: nx, y: ny, size, ...(n.flip ? {flip: true} : {})};
       // The keyboard puppet's recording: [seconds into the recording, key, down 1/0].
       const KEYS = ['left', 'right', 'shift', 'up', 'down', 'p', 't', 'a', 'x', 'h', 'i'];
@@ -360,7 +360,7 @@ const toWav = (input, output, extra = []) =>
   run('ffmpeg', ['-y', '-v', 'error', '-i', input, ...extra, '-ac', '1', '-ar', '48000', output]);
 
 /**
- * Camera clips (when she records with "Record my video too"): <lesson>/camera/<section>.mp4,
+ * Camera clips (when he records with "Record my video too"): <lesson>/camera/<section>.mp4,
  * H.264 without sound (the voice comes from the WAV). `extra` cuts a take.
  */
 const toCamera = (input, output, extra = []) => {
@@ -389,7 +389,7 @@ async function saveSection(id, section, body, type) {
   return {section, seconds: ffprobeDuration(wav), camera: isVideo(type)};
 }
 
-/** One continuous take from section `start` on, cut at the moments she tapped Next. */
+/** One continuous take from section `start` on, cut at the moments he tapped Next. */
 async function saveTake(id, start, marks, body, type) {
   const dir = lessonPath(id);
   const {segments} = loadLesson(dir);
@@ -451,9 +451,9 @@ function startJob(kind, id, script) {
 }
 
 // ---------- backup to GitHub ----------
-// Her work is saved on this Mac as she goes. A few minutes after she stops changing a lesson
-// (and right after she sends one to Ghost), the studio commits that lesson's folder (script,
-// recordings, pictures, timing; not her camera clips, which stay on this Mac) and pushes it.
+// His work is saved on this Mac as he goes. A few minutes after he stops changing a lesson
+// (and right after he sends one to Ghost), the studio commits that lesson's folder (script,
+// recordings, pictures, timing; not his camera clips, which stay on this Mac) and pushes it.
 const BACKUP_WAIT = 3 * 60 * 1000;
 const backup = {timers: new Map(), chain: Promise.resolve(), last: null};
 const lessonPaths = (id) => { const [course, lesson] = id.split('/'); return [`courses/${course}/${lesson}`, `courses/${course}/course.yml`]; };
@@ -582,7 +582,7 @@ async function handle(req, res) {
     if (p.startsWith('/song-video/')) { const n = songSlug(path.basename(p, '.mp4')); const f = path.join(ROOT, 'dist', 'songs', n, `${n}.mp4`); if (!fs.existsSync(f)) throw httpError(404, 'Not found'); return sendFile(req, res, f); }
     // Pico Parish tab: the site's catalog, and its built page to preview.
     if (p === '/api/puppet-bases') return json(res, 200, {...puppetBases(), cast: puppetCast().characters});
-    // Her voxel characters (scripts/voxels.mjs): new and changed ones are brought over from angelio.org first.
+    // His voxel characters (scripts/voxels.mjs): new and changed ones are brought over from angelio.org first.
     // The video checklist (plan/videos.yml), each video with its lesson here if it has one.
     if (p === '/api/plan') {
       let plan;
@@ -672,7 +672,7 @@ async function handle(req, res) {
     // Anything that changes a lesson or a drawing: back it up a few minutes after the last change.
     if (id && /^\/api\/(save|use-spoken|quiz|slide|timing|scene|audio|take|ask|images\/import)$/.test(p)) backupSoon(id, lessonPaths(id), id);
     if (/^\/api\/sprite(\/delete|\/favorite)?$/.test(p)) backupSoon('sprites', ['sprites'], 'drawings');
-    // Music videos: the song file, its slides, the sound and MIDI she picks, and making the video.
+    // Music videos: the song file, its slides, the sound and MIDI he picks, and making the video.
     if (/^\/api\/song(\/new|\/file)?$/.test(p)) backupSoon('songs', ['songs'], 'songs');
     if (p === '/api/song') {
       const body = await readJson(req);
@@ -706,17 +706,17 @@ async function handle(req, res) {
       const edit = {section: body.section};
       if (typeof body.text === 'string') edit.text = body.text;
       if (typeof body.lead === 'string') edit.lead = body.lead;
-      // Her own slides: the title, quotation and source too (a lesson's checked quotations stay locked).
+      // His own slides: the title, quotation and source too (a lesson's checked quotations stay locked).
       const own = loadLesson(dir).segments.find((x) => x.name === body.section)?.own;
       if (own) for (const k of ['heading', 'quote', 'cite', 'link', 'highlight']) if (typeof body[k] === 'string') edit[k] = body[k];
       const changes = applyEdits(dir, [edit]);
-      // Approval covers the script she approved; a changed script needs approving again.
+      // Approval covers the script he approved; a changed script needs approving again.
       const unapproved = changes.length > 0 && setStatus(dir, 'draft');
       const check = changes.length ? await checkQuotes(id) : null;
       return json(res, 200, {changes, unapproved, check, lesson: detail(id)});
     }
     if (p === '/api/use-spoken') {
-      // Her words replace the script's lead-in/explanation (quotations stay as written).
+      // His words replace the script's lead-in/explanation (quotations stay as written).
       const dir = lessonPath(id);
       const {section} = await readJson(req);
       const s = loadLesson(dir).segments.find((x) => x.name === section);
@@ -764,7 +764,7 @@ async function handle(req, res) {
       return json(res, 200, detail(id));
     }
     if (p === '/api/quiz') {
-      // A slide's quiz questions (her own slides), checked the same way the post checks them.
+      // A slide's quiz questions (his own slides), checked the same way the post checks them.
       const dir = lessonPath(id);
       const {section, quiz} = await readJson(req);
       const point = loadLesson(dir).segments.find((x) => x.name === section);
@@ -812,13 +812,13 @@ async function handle(req, res) {
       return json(res, 200, {slug, sprites: listSprites()});
     }
     if (p === '/api/sprite/version') {
-      // A color version of a base character: her recolored idle, and the other poses made from it.
+      // A color version of a base character: his recolored idle, and the other poses made from it.
       let out;
       try { out = colorVersion(await readJson(req)); } catch (e) { throw httpError(409, e.message); }
       return json(res, 200, {...out, sprites: listSprites(), ...puppetBases()});
     }
     if (p === '/api/sprite/copy-pose') {
-      // A pose she drew on one character, as drafts for others ({from, pose, to: [...], save}).
+      // A pose he drew on one character, as drafts for others ({from, pose, to: [...], save}).
       let out;
       try { out = copyPose(await readJson(req)); } catch (e) { throw httpError(409, e.message); }
       return json(res, 200, {drafts: out, sprites: listSprites()});
@@ -850,7 +850,7 @@ async function handle(req, res) {
       return json(res, 200, timingData(id));
     }
     if (p === '/api/images/upload') {
-      // A picture from her Mac, sent as the raw file.
+      // A picture from his Mac, sent as the raw file.
       const buf = await readBody(req, 60e6);
       return json(res, 200, importUpload(lessonPath(id), Buffer.from(buf), url.searchParams.get('name') ?? 'picture'));
     }
@@ -942,7 +942,7 @@ async function handle(req, res) {
       return json(res, 200, startJob('render', id, 'scripts/render.mjs'));
     }
     if (p === '/api/publish') {
-      // This request comes only from her "Approve" click: that click is her approval.
+      // This request comes only from him "Approve" click: that click is his approval.
       const dir = lessonPath(id);
       if (!fs.existsSync(path.join(distDir(id), 'lesson.mp4'))) throw httpError(400, 'Make the video first.');
       if (job?.running) throw httpError(409, 'Still busy; try again in a moment.');
@@ -967,7 +967,7 @@ const server = http.createServer((req, res) => {
 });
 
 // ---------- the iPad drawing page ----------
-// Only the Pixel art tab, on the home Wi-Fi, behind her PIN (STUDIO_DRAW_PIN in .env):
+// Only the Pixel art tab, on the home Wi-Fi, behind his PIN (STUDIO_DRAW_PIN in .env):
 // http://<this Mac>.local:5179/draw. Everything else (recording, lessons, Ghost) stays on this
 // Mac only. A right PIN gets a cookie for this run of the studio; 5 wrong ones wait a minute.
 const DRAW_PORT = Number(process.env.STUDIO_DRAW_PORT) || 5179;
@@ -1010,8 +1010,8 @@ ${message ? `<div class="small bad">${message}</div>` : ''}<button class="btn pr
 }
 
 // ---------- the whole studio from other computers ----------
-// Same door as the drawing page (port 5179, and her https address through the tunnel), at /studio,
-// behind STUDIO_PASSWORD in .env (she types it there; at least 10 characters, or it stays shut).
+// Same door as the drawing page (port 5179, and his https address through the tunnel), at /studio,
+// behind STUDIO_PASSWORD in .env (he types it there; at least 10 characters, or it stays shut).
 // Signed in, a computer can do everything this Mac's page can.
 const remote = {misses: 0, waitUntil: 0};
 const studioPassword = () => { const v = (process.env.STUDIO_PASSWORD ?? '').trim(); return v.length >= 10 ? v : null; };
@@ -1048,7 +1048,7 @@ async function handleDraw(req, res) {
   if (p === '/manifest.json') {
     return sendFile(req, res, path.join(ROOT, 'studio', 'manifest.json'));
   }
-  // The whole studio, behind her longer password (STUDIO_PASSWORD in .env): /studio.
+  // The whole studio, behind his longer password (STUDIO_PASSWORD in .env): /studio.
   const full = studioSignedIn(req);
   if (p === '/studio/login' && req.method === 'POST') {
     if (!studioPassword()) return studioLogin(res);
@@ -1070,7 +1070,7 @@ async function handleDraw(req, res) {
     res.writeHead(303, {Location: /^studio\./i.test(req.headers.host ?? '') ? '/' : '/studio', 'Set-Cookie': 'sd_studio=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0'});
     return res.end();
   }
-  // studio.<her domain> is the whole studio's own address: its front page is the hub.
+  // studio.<his domain> is the whole studio's own address: its front page is the hub.
   const hub = /^studio\./i.test(req.headers.host ?? '');
   if (p === '/studio' || p === '/studio/' || (hub && (p === '/' || p === '/draw' || p === '/draw/'))) {
     if (!full) return studioLogin(res);

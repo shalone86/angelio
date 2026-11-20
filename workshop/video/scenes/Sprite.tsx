@@ -6,7 +6,7 @@ import {theme} from '../theme';
 import {Center} from './Center';
 import type {SceneProps} from '.';
 
-// One of her pixel animations (studio Pixel art tab → sprites/<name>.json, put in `art` by prepare.mjs).
+// One of his pixel animations (studio Pixel art tab → sprites/<name>.json, put in `art` by prepare.mjs).
 //   move: stay (default) | hop (little jumps) | across (walks across the screen, left to right) | across-left (right to left)
 //   size: small | medium (default) | big | full (fills the slide, for a wide scene)
 // A sketch (kind: 'sketch') has a picture per frame instead of pixel rows.
@@ -23,7 +23,7 @@ export function recolor<A extends {palette?: string[]}>(art: A, colors?: Colors 
   const up = Object.fromEntries(Object.entries(colors).map(([k, v]) => [k.toUpperCase(), v]));
   return {...art, palette: art.palette.map((c) => up[c.toUpperCase()] ?? c)};
 }
-// Share of the room it takes (the slide, or the panel beside her video).
+// Share of the room it takes (the slide, or the panel beside his video).
 const SHARE = {small: 0.4, medium: 0.65, big: 0.85, full: 1};
 
 /** The part of the drawing that has something in it (in any frame), so empty margins don't make it small. */
@@ -59,7 +59,7 @@ export const Sprite: React.FC<SceneProps<SpriteScene>> = ({scene, duration}) => 
   const beat = useBeat();
   const art = scene.art;
   const n = art.frames.length;
-  // Dance: one drawing per beat. Otherwise at the speed she set.
+  // Dance: one drawing per beat. Otherwise at the speed he set.
   const i = beat.dance ? Math.floor(beat.t) % n : Math.floor((f / fps) * art.fps) % n;
   const stage = useStage();
   const b = bounds(art);
@@ -73,7 +73,7 @@ export const Sprite: React.FC<SceneProps<SpriteScene>> = ({scene, duration}) => 
   const across = scene.move === 'across' || scene.move === 'across-left';
   const width = art.kind === 'sketch' ? art.width * scale : b.w * px;
   if (across) dx = (ramp(f, 0, Math.max(1, duration)) - 0.5) * Math.max(0, stage.w - 320 - width) * (scene.move === 'across-left' ? -1 : 1);
-  // Her drawings face right, so going left they're mirrored.
+  // His drawings face right, so going left they're mirrored.
   // Flipped on the Timing tab (`nudge.flip`): mirrored as well (or back, for one walking left).
   const mirror = (scene.move === 'across-left') !== !!scene.nudge?.flip ? ' scaleX(-1)' : '';
   return (

@@ -61,7 +61,7 @@ Every app has a last level; when it's done it's frozen (bug fixes only), and new
 - Math (PreK–3): Snap & Split, Regroup, Doubles, Fraction Feast. Essentially done.
 - Reading (PreK–3): Letter Lane, Read Aloud, Grammar; still to build: Spelling, maybe Writing 1–3 (fenced to grades 1–3).
 - Faith: the four pillars below as Watch & Sing lessons with quizzes, plus Prayers, Catechism sorting, and a salvation-history
-  timeline (about 20 events, Creation to the Church). Music: open-ended, hers to make as she likes.
+  timeline (about 20 events, Creation to the Church). Music: open-ended, his to make as he likes.
 - Out (owner's leaning, Nov 18): general history apps (World, U.S., Catholic history as a whole) and Civics. Through 3rd grade
   they aren't core, there's no science either, and they don't have a clean drag-and-drop shape. Salvation history stays (Pillar 1).
 
@@ -103,14 +103,14 @@ comics and seasons are a welcome "bonus shelf", not required.
   prayers. (How to pray is already well covered.)
 
 **Videos: the stopping point** (owner, Nov 18). Most of the 63 videos will be redone (years old, some talking head, clip or
-generated art, some robot voice): Pico Parish pixel style throughout, her face in each one (the kids love it), East and West
+generated art, some robot voice): Pico Parish pixel style throughout, his face in each one (the kids love it), East and West
 together, up to date. The old scripts are a head start. The video set is finished when every pillar lesson (~45) and every
 church history stop (~25) has its new video and quiz: about 70 in all. Old videos stay up until their new one replaces them;
 saints, popes and seasonal extras beyond that are a bonus shelf. Music stays open-ended.
 
 **Church history, East and West, very short** (owner, Nov 18): one walk from Pentecost to today, joined to the salvation
 history timeline, so parents have it in one place. Fenced: about 25 stops, a couple per few centuries; each stop is one short
-card (and maybe a video) with a saint or pope; a drag-the-stops-in-order game. Draft stops, for her to change:
+card (and maybe a video) with a saint or pope; a drag-the-stops-in-order game. Draft stops, for him to change:
 Pentecost · Peter and Paul in Rome · the martyrs (St Perpetua) · Constantine, the Church set free (313) · the Council of Nicaea and the
 Creed (325; St Nicholas, St Athanasius) · the desert fathers (St Anthony) · St Augustine · St Patrick · St Benedict and the monks ·
 Hagia Sophia · Pope St Gregory the Great · Sts Cyril and Methodius · St Vladimir and the baptism of Kyiv (988) · East and West
@@ -145,8 +145,8 @@ is the content, so they never need new levels.
 2. **Candles**, as up to three tap games from the Pico Parish one (Nov 18, 2026; the PICO-8 Candles is a Vampire Survivors
    style game: walk, auto-prayer, candles left behind, grace, pick one of three, 12 combos, a 5-minute day). Art: test page
    https://claude.ai/artifact/FFkp1FnQTM6aEeBn78PFqM (A: PICO-8 as is, B: crisp pixels + smooth light and words, C: voxels
-   made automatically from her drawings).
-   - **Candle Rack** (first; she wants to play it). Decided Nov 19, 2026: **voxels only**, her own MagicaVoxel models
+   made automatically from his drawings).
+   - **Candle Rack** (first; he wants to play it). Decided Nov 19, 2026: **voxels only**, his own MagicaVoxel models
      (.vox, uploaded on the Studio's Drawings page, where the checklist of people and church pieces lives); pixel versions
      can be redone later. **Each round is the time before Mass or the Divine Liturgy**: getting the sanctuary ready ("Mass
      starts in 3 minutes"), the priest (hurrying) or server comes by, people come early to pray and light candles for their
@@ -170,7 +170,7 @@ is the content, so they never need new levels.
    (a bigger watering can, a helper). Score: meals given.
 6. **Mass Usher.** Tap a family, then a pew where they fit (a gentle Tetris). Ramp: families of different sizes, the clock
    until Mass starts, late arrivals, a bonus for keeping families together, and packed Christmas and Easter Masses.
-7. **Coloring.** Tap to fill her drawings (no brushes or layers). The one game with no score; done is a set of pages plus
+7. **Coloring.** Tap to fill his drawings (no brushes or layers). The one game with no score; done is a set of pages plus
    seasonal pages. The picture saves to the device only.
 
 Peters Pence (Balatro-style cards) is too hard for PreK: it moves to Pico Parish.
@@ -198,15 +198,15 @@ without AI or code (like Ghost was). Decisions so far:
   (maybe two tabs: Learn and Watch).
 - **Three layers:** the kit (voice, stickers, stars, offline), modules (game templates: video lessons +
   quiz, songs & albums, phonics, number blocks, sentences, Sticker World…, each declaring its content's
-  shape) and content (everything she writes). An app = modules + content + name + icon + address.
+  shape) and content (everything he writes). An app = modules + content + name + icon + address.
 - **Studio v1:** library of everything; editors with a live preview using the real game code; uploads
   (thumbnail from a frame, MP3 made from a song's video); quiz builder (choice, word tiles, order, match);
   drafts and publish; history and undo; trash; export everything.
 
-Progress, Nov 17, 2026: **Studio v1 for Watch & Sing is live** at angelio.org/studio (admin key). Her choices: saves go live
+Progress, Nov 17, 2026: **Studio v1 for Watch & Sing is live** at angelio.org/studio (admin key). His choices: saves go live
 at once (R2 `watch-media`: content/watch/library.json; the watch Worker serves it as data/library.json), every save keeps
 the old version (content/watch/history/, History → Look / Bring back), nightly + "Back up now" copy to GitHub once a
-GITHUB_TOKEN secret is on the angelio Worker; sign-in is her admin key (helpers with Cloudflare Access later). Editors:
+GITHUB_TOKEN secret is on the angelio Worker; sign-in is his admin key (helpers with Cloudflare Access later). Editors:
 lessons (video and picture uploads, picture from a video frame, courses, quiz builder: pick/true-false/blank/order/match,
 "checked, ready for kids", words), songs (credits, downloads with uploads, albums, lead sheet link), courses and albums
 (order). Hide instead of delete; live preview with the real Watch & Sing (?studio). Rules in hub/public/js/watch-content.js
@@ -220,7 +220,7 @@ and server (hub/public/js/reading-content.js); backups include them. Next: lette
 Nov 18, 2026: **Drawings** (angelio.org/studio/draw/): the Lesson Studio's Pixel art editor (a copy, phone layout) with
 a checklist per game (hub/public/js/art-content.js CHECKLISTS; Candle Rack's Roman and Byzantine pieces first). Saved to R2
 (content/art/drawings.json, old versions and trash kept), backed up to GitHub (art/drawings/), readable by anyone at /api/art
-(Claude and the games read them there). Seeded with her nuns, priests, deacons, candle, shrines and churches from sdcourses.
+(Claude and the games read them there). Seeded with his nuns, priests, deacons, candle, shrines and churches from sdcourses.
 Progress: **one repo done** (Nov 16, 2026: hub/, apps/*, template/, with every app's history; shared install,
 `npm test` for everything, safe deploy, kit check). Next: the kit shared for real (no copies), and Watch & Sing's
 content as the master copy (no longer imported from Ghost).
@@ -254,7 +254,7 @@ wherever a sound is marked `{{tuh}}` in spoken text (kit `tts.js` → `setClips`
   3rd big words, oo/aw, prefixes, -tion/-ture/-le, -ful/-less/-ness. 8 questions a level incl. spell-it and
   pick-the-sentence. Both apps share `reading.js`/`phonics.js` (`grades.js` picks the grades). Next: **say it out loud**
   checks on the sentences (Articulate's recorder; family codes), sight words, short stories with comprehension questions.
-- ~~**Lead sheet maker**~~: live Nov 17, 2026 at angelio.org/admin/leadsheet.html (admin key). Her pick: the vamp card's
+- ~~**Lead sheet maker**~~: live Nov 17, 2026 at angelio.org/admin/leadsheet.html (admin key). His pick: the vamp card's
   content in the color-chords look (each section's chord loop as colored tiles, colored chord tags over the words,
   chorus boxed, guitar chord boxes, melody staff per section). Melody from a Logic MIDI file or played in on a MIDI
   keyboard (Chrome/Edge); key −/+ and Print on angelio.org/leadsheet/?id=<song>; Watch & Sing song pages link it (and

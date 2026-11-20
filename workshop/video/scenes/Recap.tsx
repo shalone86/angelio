@@ -6,7 +6,7 @@ import {Center} from './Center';
 import {Check} from './Check';
 import type {SceneProps} from '.';
 
-/** The lesson's point headings (or her own lines, `items`), checked off in order. */
+/** The lesson's point headings (or his own lines, `items`), checked off in order. */
 export const Recap: React.FC<SceneProps> = ({scene, lesson, duration}) => {
   const f = useCurrentFrame();
   const {fps} = useVideoConfig();

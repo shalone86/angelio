@@ -79,7 +79,7 @@ export function applyEdits(dir, edits) {
       const i = Number(m[1]) - 1;
       if ('text' in e) apply(['points', i, 'text'], e.text, `point ${i + 1} explanation`);
       if ('lead' in e) apply(['points', i, 'quote', 'lead'], e.lead, `point ${i + 1} lead-in`);
-      // Her own slides (made in the studio) also edit the title, quotation and source.
+      // His own slides (made in the studio) also edit the title, quotation and source.
       if ('heading' in e) apply(['points', i, 'heading'], e.heading, `point ${i + 1} title`);
       if ('quote' in e) apply(['points', i, 'quote', 'text'], e.quote, `point ${i + 1} quotation`);
       if ('cite' in e) apply(['points', i, 'quote', 'cite'], e.cite, `point ${i + 1} source`);

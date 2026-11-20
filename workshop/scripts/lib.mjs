@@ -22,9 +22,9 @@ export function loadLesson(dir) {
   const lesson = YAML.parse(fs.readFileSync(path.join(dir, 'lesson.yml'), 'utf8'));
   const course = YAML.parse(fs.readFileSync(path.join(dir, '..', 'course.yml'), 'utf8'));
   const clean = (t) => (t ?? '').trim().replace(/\s+/g, ' ');
-  // A slide she's still writing (made in the studio) may not have its quotation yet; the
+  // A slide he's still writing (made in the studio) may not have its quotation yet; the
   // quotation scene appears once it has one.
-  // Slides she writes in the studio name their source in the slide itself (`quote.cite`, and
+  // Slides he writes in the studio name their source in the slide itself (`quote.cite`, and
   // `quote.link` to where the words can be checked); those become entries in `sources`.
   lesson.sources ??= [];
   const points = (lesson.points ?? []).map((p, i) => {
@@ -47,7 +47,7 @@ export function loadLesson(dir) {
       text: [quote.lead, quote.text, explanation].filter(Boolean).join(' '),
       scenes: [anchor, ...(p.visuals ?? [])].filter(Boolean),
       hasQuote: !!anchor,
-      own: 'link' in q, // written in the studio: she can edit the heading, quotation and source
+      own: 'link' in q, // written in the studio: he can edit the heading, quotation and source
       quiz: [].concat(p.quiz ?? []),
     };
   });
@@ -58,7 +58,7 @@ export function loadLesson(dir) {
     ...(lesson.outro ? [{kind: 'outro', index: 0, name: 'outro', ...lesson.outro, text: clean(lesson.outro?.text)}] : []),
   ];
   for (const s of segments) s.scenes ??= [];
-  // Kids lessons (style: kids) post differently; pixel art (sprite scenes) is credited to her.
+  // Kids lessons (style: kids) post differently; pixel art (sprite scenes) is credited to him.
   const kids = (lesson.style ?? course.style) === 'kids';
   const pixelArt = segments.some((s) => (s.scenes ?? []).some((sc) => sc?.type === 'sprite' || sc?.type === 'puppet' || sc?.type === 'battle'));
   return {lesson, course, segments, points, kids, pixelArt, id: `${course.slug}/${path.basename(dir)}`};

@@ -67,7 +67,7 @@ export function prepare(arg) {
   for (const seg of out) for (const sc of seg.scenes) if (sc.type === 'image' && sc.src && !sc.src.startsWith(id + '/')) sc.src = path.posix.join(id, sc.src);
   // Pixel animations: the drawing itself goes into the props (sprites/<name>.json).
   for (const seg of out) for (const sc of seg.scenes) if (sc.type === 'sprite') sc.art = recolorArt(publishSketch(loadSprite(sc.sprite), publicDir, id), sc.colors);
-  // Her voxel characters (MagicaVoxel, from angelio.org; voxels/<name>.vox): the model goes into the props.
+  // His voxel characters (MagicaVoxel, from angelio.org; voxels/<name>.vox): the model goes into the props.
   for (const seg of out) for (const sc of seg.scenes) if (sc.type === 'voxel') sc.art = voxelArt(sc.voxel);
   // The keyboard puppet: every drawing named <character>-<action>, and the items it points to.
   // (`colors:` recolors it for this scene only, every pose alike.)
@@ -125,7 +125,7 @@ export function prepare(arg) {
     number: lesson.number,
     title: lesson.title,
     headings: lessonHeadings,
-    // Pixel art in the video is hers, drawn by hand: say so in the end credits.
+    // Pixel art in the video is his, drawn by hand: say so in the end credits.
     credit: [site.videoCredit, pixelArtCredit(segments, site)].filter(Boolean).join(' · '),
     author: site.author,
     hostPhoto,
@@ -269,10 +269,10 @@ function timeScenes(s, offset, seconds, durationInFrames, spoken) {
 }
 
 /**
- * Her camera clip for a section (recorded in the studio with "Record my video
- * too"), lined up with the trimmed voice so her lips match. The slide shows a
- * moment before she speaks (`offset`), so the clip keeps that much of what the
- * trim cut (she's moving, not a frozen frame); `from` is where it starts in the
+ * His camera clip for a section (recorded in the studio with "Record my video
+ * too"), lined up with the trimmed voice so his lips match. The slide shows a
+ * moment before he speaks (`offset`), so the clip keeps that much of what the
+ * trim cut (he's moving, not a frozen frame); `from` is where it starts in the
  * slide. Shown as a bubble unless the Timing tab says otherwise (timing.yml `camera:`).
  */
 function cameraClip(dir, publicDir, id, name, voice, offset) {
@@ -299,7 +299,7 @@ function cameraClip(dir, publicDir, id, name, voice, offset) {
 /**
  * Kids style: move scene starts and item cues onto the nearest beat (at most
  * a quarter second away), so pictures pop in time with the music. Hand-tuned
- * timing from the studio is applied afterwards and is left where she put it.
+ * timing from the studio is applied afterwards and is left where he put it.
  */
 function snapToBeats(segments, beats) {
   const near = (f) => {
@@ -326,7 +326,7 @@ function snapToBeats(segments, beats) {
 const pixelArtCredit = (segments, site) =>
   segments.some((s) => (s.scenes ?? []).some((sc) => sc?.type === 'sprite' || sc?.type === 'puppet' || sc?.type === 'battle')) ? `Pixel art drawn by hand by ${site.author || 'the host'}` : '';
 
-// Her video's layouts on a slide; "full" was the first name for the floating card.
+// His video's layouts on a slide; "full" was the first name for the floating card.
 export const LAYOUTS = {off: 'off', bubble: 'bubble', card: 'card', full: 'card', side: 'side', lower: 'lower', only: 'only'};
 
 /** timing.yml next to lesson.yml: {<section>: {scenes: {<i>: {start, cues: {<key>: seconds}}}}}, in seconds into the recording. */

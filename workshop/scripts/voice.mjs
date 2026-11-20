@@ -1,9 +1,9 @@
-// What Shalone actually said, from her recordings:
+// What Shalone actually said, from his recordings:
 //   trimVoice   the silence trim used in the video (prepare.mjs) and the studio
 //   transcribe  Whisper (whisper-cli, on this Mac) with word timings, cached as
 //               audio/<section>.words.json next to the recording
-//   compare     script vs. what she said: word differences, the script
-//               rewritten to her words, and whether a quotation was misread
+//   compare     script vs. what he said: word differences, the script
+//               rewritten to his words, and whether a quotation was misread
 //   phraseTime  when a phrase is spoken (for timing scenes)
 // Times are seconds into the trimmed voice, which is what the video plays.
 import fs from 'node:fs';
@@ -60,7 +60,7 @@ export function cachedWords(src) {
 function vocabulary(text) {
   const author = loadSite().author;
   const words = String(text).match(/\b[A-Z][a-zA-Z’'-]{2,}\b/g) ?? [];
-  const common = new Set(['The', 'This', 'That', 'There', 'These', 'They', 'Then', 'When', 'What', 'Why', 'How', 'And', 'But', 'From', 'With', 'For', 'Its', 'His', 'Her', 'Our', 'Your', 'Let', 'Well', 'Even', 'Thanks', 'Until', 'Before', 'After', 'Each', 'Every', 'Like', 'Just', 'Both', 'Among', 'Over', 'Most', 'Other']);
+  const common = new Set(['The', 'This', 'That', 'There', 'These', 'They', 'Then', 'When', 'What', 'Why', 'How', 'And', 'But', 'From', 'With', 'For', 'Its', 'His', 'His', 'Our', 'Your', 'Let', 'Well', 'Even', 'Thanks', 'Until', 'Before', 'After', 'Each', 'Every', 'Like', 'Just', 'Both', 'Among', 'Over', 'Most', 'Other']);
   const names = [...new Set(words.filter((w) => !common.has(w)))].slice(0, 30);
   return [author, ...names].filter(Boolean).join(', ') + '.';
 }
@@ -114,7 +114,7 @@ const tokens = (text, part) => String(text ?? '').split(/\s+/).filter(Boolean).m
 /**
  * Compare a section's script with what was said.
  * parts: {lead?, quote?, text} (a point has all three; intro/outro only text).
- * Returns the word diff, the script rewritten to her words (quotations kept
+ * Returns the word diff, the script rewritten to his words (quotations kept
  * exactly), and any quotation words that were missed or added.
  */
 export function compare(parts, words) {
@@ -130,7 +130,7 @@ export function compare(parts, words) {
   const put = (p, t) => { if (p !== 'quote') out[p].push(t); };
   for (const [pi, pj] of [...pairs, [script.length, said.length]]) {
     for (; i < pi; i++) { diff.push({t: script[i].t, kind: 'removed'}); part = script[i].part; if (part === 'quote') quoteMissing.push(script[i].t); }
-    // Words she added go with the part they follow (before the first word: the part that starts).
+    // Words he added go with the part they follow (before the first word: the part that starts).
     const nextPart = script[pi]?.part ?? part;
     for (; j < pj; j++) {
       diff.push({t: said[j].t, kind: 'added'});

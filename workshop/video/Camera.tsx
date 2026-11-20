@@ -5,15 +5,15 @@ import {theme} from './theme';
 import type {Segment} from './types';
 
 /**
- * Where things go on a slide for each layout of her video (1920×1080). `side` is
- * which side her video is on (bubble, side by side, card); the rest mirrors.
+ * Where things go on a slide for each layout of his video (1920×1080). `side` is
+ * which side his video is on (bubble, side by side, card); the rest mirrors.
  *   off     no video (the classic slide)
- *   bubble  her video in a circle at the bottom corner; the pictures keep clear of it
- *   card    two cards: her video on one side, the pictures on the other
- *   side    her video filling one half; the pictures on the other half
- *   lower   her video in a card across the top; the heading and pictures below it
- *   only    just her video, full screen
- * `video`: her video's box (card: rounded with a shadow).
+ *   bubble  his video in a circle at the bottom corner; the pictures keep clear of it
+ *   card    two cards: his video on one side, the pictures on the other
+ *   side    his video filling one half; the pictures on the other half
+ *   lower   his video in a card across the top; the heading and pictures below it
+ *   only    just his video, full screen
+ * `video`: his video's box (card: rounded with a shadow).
  * `panel`: the pictures are drawn at vw×vh and shrunk into that box.
  * `heading`: the point heading's column; it starts large (big, bigScale) and settles small (settle).
  */
@@ -32,7 +32,7 @@ const W = 1920;
 export const geometry = (layout: Layout, side?: 'left' | 'right'): Geometry => {
   const full = {x: 0, w: W, big: 464, settle: 64, bigScale: 1, settleScale: 0.55, pill: false};
   const none = {left: 0, right: 0};
-  // Boxes are written for her video on the left; `flip` mirrors them for the right.
+  // Boxes are written for his video on the left; `flip` mirrors them for the right.
   const g = ((): Geometry => {
     switch (layout) {
       case 'bubble': return {heading: full, inset: {left: BUBBLE + 60, right: 0}, bubble: {left: true}};
@@ -49,7 +49,7 @@ export const geometry = (layout: Layout, side?: 'left' | 'right'): Geometry => {
       default: return {heading: full, inset: none};
     }
   })();
-  // Default sides: the bubble on the right, everything else with her video on the left.
+  // Default sides: the bubble on the right, everything else with his video on the left.
   const right = side ? side === 'right' : layout === 'bubble';
   if (!right || layout === 'lower' || layout === 'only' || layout === 'off') return g;
   const flip = <T extends Box>(b?: T) => b && {...b, x: W - b.x - b.w};
@@ -58,7 +58,7 @@ export const geometry = (layout: Layout, side?: 'left' | 'right'): Geometry => {
     inset: {left: g.inset.right, right: g.inset.left}, bubble: g.bubble && {left: false}};
 };
 
-/** Her clip, in step with her voice; held on its first frame only if the recording started late, and on its last after it ends. */
+/** His clip, in step with his voice; held on its first frame only if the recording started late, and on its last after it ends. */
 const Clip: React.FC<{seg: Segment; style: React.CSSProperties}> = ({seg, style}) => {
   const cam = seg.camera!;
   const from = cam.from ?? seg.audioOffsetInFrames;
@@ -74,7 +74,7 @@ const Clip: React.FC<{seg: Segment; style: React.CSSProperties}> = ({seg, style}
 
 const cover: React.CSSProperties = {width: '100%', height: '100%', objectFit: 'cover'};
 
-/** Her video for every layout but the bubble: full screen, a half, or a card. */
+/** His video for every layout but the bubble: full screen, a half, or a card. */
 export const CameraBack: React.FC<{seg: Segment; box: NonNullable<Geometry['video']>}> = ({seg, box}) => {
   const full = box.w === W && box.h === 1080;
   return (
@@ -89,7 +89,7 @@ export const CameraBack: React.FC<{seg: Segment; box: NonNullable<Geometry['vide
   );
 };
 
-/** Bubble: her video in a circle at the bottom right, over the pictures. */
+/** Bubble: his video in a circle at the bottom right, over the pictures. */
 export const CameraBubble: React.FC<{seg: Segment; left?: boolean}> = ({seg, left}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();

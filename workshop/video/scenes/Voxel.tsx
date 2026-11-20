@@ -8,10 +8,10 @@ import {drawVoxels, voxelBounds} from '../voxel-draw.js';
 import {Center} from './Center';
 import type {SceneProps} from '.';
 
-// One of her voxel characters (MagicaVoxel, uploaded on angelio.org/studio/draw/; scripts/voxels.mjs puts the model
-// in `art`). Like a pixel animation, but she can turn it to face any way.
+// One of his voxel characters (MagicaVoxel, uploaded on angelio.org/studio/draw/; scripts/voxels.mjs puts the model
+// in `art`). Like a pixel animation, but he can turn it to face any way.
 //   voxel: the model (one pose: priest-walk-slow)   view: front (default) | front-right | right | back-right | back | back-left | left | front-left
-//   move: stay | hop | across | across-left (walking across, it turns to face the way it goes unless she picked a view)
+//   move: stay | hop | across | across-left (walking across, it turns to face the way it goes unless he picked a view)
 //   size: small | medium (default) | big | full
 export type VoxelArt = {kind: 'voxel'; fps: number; size: number[]; palette: (string | null)[]; frames: number[][][]};
 type VoxelScene = {voxel: string; art: VoxelArt; view?: string; move?: 'stay' | 'hop' | 'across' | 'across-left'; size?: 'small' | 'medium' | 'big' | 'full'; caption?: string; nudge?: {flip?: boolean}};

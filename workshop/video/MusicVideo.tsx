@@ -5,7 +5,7 @@ import {type Art, bounds, Frame} from './scenes/Sprite';
 import {KIDS, theme, useStyle} from './theme';
 
 // A music video (the studio's Music videos tool, songs/<name>/song.yml): the song plays, each slide
-// shows a line of the words from its start time, and her characters dance, each to the beat or to
+// shows a line of the words from its start time, and his characters dance, each to the beat or to
 // one part of the song (`parts`: when each part plays, in seconds; from the MIDI or guessed).
 export type Cast = {sprite: string; x: number; y: number; size: number; flip?: boolean; to?: string; move?: 'hop' | 'sway' | 'grow' | 'still'};
 export type Back = {color?: string; sprite?: string};
@@ -58,7 +58,7 @@ const Dancer: React.FC<{c: Cast; art: Art; hits?: number[]; t: number}> = ({c, a
 };
 
 const Backing: React.FC<{art: Art}> = ({art}) => {
-  // Her drawing as the whole background: as big as fits, in the middle.
+  // His drawing as the whole background: as big as fits, in the middle.
   const k = Math.min(1920 / art.width, 1080 / art.height);
   const style: React.CSSProperties = {position: 'absolute', left: (1920 - art.width * k) / 2, top: (1080 - art.height * k) / 2, width: art.width * k, height: art.height * k};
   return art.kind === 'sketch'

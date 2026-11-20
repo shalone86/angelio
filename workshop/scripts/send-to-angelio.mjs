@@ -4,7 +4,7 @@
 //   3. adds the lesson to the Watch & Sing library (or updates it): title, video, thumbnail, quiz, the words with
 //      their sources, and its course; `replaces: <old lesson id>` in lesson.yml takes that old video's place
 //      (same id, so its links and stars keep working). The library keeps every older version (Studio → History).
-// Needs ANGELIO_ADMIN_KEY in .env (the Studio's admin key; she types it there, never in chat).
+// Needs ANGELIO_ADMIN_KEY in .env (the Studio's admin key; he types it there, never in chat).
 // Run: node scripts/send-to-angelio.mjs <course>/<lesson>
 import fs from 'node:fs';
 import path from 'node:path';

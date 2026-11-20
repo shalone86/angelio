@@ -1,7 +1,7 @@
 // Colors for one use of a drawing ({'#OLD': '#new'}), without saving a new drawing: a sprite or
 // puppet scene's `colors:` (Timing tab) and a battle army's or unit's (Battles tab). One box per color
 // of the drawing (the "parts", as in New character from a base), with "same as" squares, and a
-// small preview. "Save as a character…" makes it a real drawing for one she'll reuse.
+// small preview. "Save as a character…" makes it a real drawing for one he'll reuse.
 'use strict';
 window.ColorSwaps = (() => {
   const CODES = '0123456789abcdefghijklmnopqrstuvwxyz';

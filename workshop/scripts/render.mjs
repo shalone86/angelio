@@ -25,7 +25,7 @@ const run = (cmd, args) => execFileSync(cmd, args, {stdio: 'inherit', cwd: ROOT}
 
 // 1. High-quality master (kept locally, never uploaded).
 run(remotion, ['render', 'video/index.ts', 'Lesson', master, `--props=${propsFile}`, '--crf=16', '--x264-preset=fast', log]);
-// 2. Poster frame from the title card: just the lesson's name, without her camera clip
+// 2. Poster frame from the title card: just the lesson's name, without his camera clip
 // (a still of a video catches odd faces mid-word).
 step(2, 'Making the cover picture');
 const posterProps = path.join(dist, 'poster-props.json');

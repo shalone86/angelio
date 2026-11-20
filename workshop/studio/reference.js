@@ -1,8 +1,8 @@
-// A reference picture to draw over (Pixel art and Sketch): a picture from her Mac, one copied
+// A reference picture to draw over (Pixel art and Sketch): a picture from his Mac, one copied
 // from any web page or search (Google, DuckDuckGo: Copy Image / Copy Image Address, then paste),
 // or one from the studio's free picture search, shown faintly
 // under the drawing, with how faint, how big and where. It's only a guide: never saved into the
-// drawing, and it stays while she switches drawings (until the page reloads).
+// drawing, and it stays while he switches drawings (until the page reloads).
 'use strict';
 window.DrawReference = (() => {
   const R = {img: null, name: '', opacity: 0.35, size: 1, x: 0, y: 0, show: true};
@@ -57,7 +57,7 @@ window.DrawReference = (() => {
         const text = e.clipboardData?.getData('text') || '';
         if (/^https?:\/\//.test(text.trim())) { e.preventDefault(); fromLink(text.trim()); }
       }, onkeydown: (e) => { if (e.key === 'Enter' && /^https?:\/\//.test(e.target.value.trim())) fromLink(e.target.value.trim()); }});
-      // The studio's free picture search (her gallery, Wikimedia Commons, museums).
+      // The studio's free picture search (his gallery, Wikimedia Commons, museums).
       const q = h('input', {type: 'search', class: 'read-line', placeholder: 'Or search free pictures, e.g. Hagia Sophia', style: 'flex:1'});
       const results = h('div', {class: 'ref-results'});
       const more = h('button', {class: 'btn', type: 'button', text: 'Load more', hidden: true});
@@ -105,7 +105,7 @@ window.DrawReference = (() => {
   return {draw, controls};
 })();
 
-// Her saved drawings, for the Pixel art and Sketch tabs: a grid of small moving thumbnails,
+// His saved drawings, for the Pixel art and Sketch tabs: a grid of small moving thumbnails,
 // starred favorites first, then everything newest first, and a search by name.
 window.SpriteGallery = (() => {
   const CODES = '0123456789abcdefghijklmnopqrstuvwxyz';
