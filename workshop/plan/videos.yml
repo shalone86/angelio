@@ -13,6 +13,7 @@
 #   status    todo → script (drafted by Claude, quotes checked) → approved (he approved the script and quiz) →
 #             recorded → done (sent to Watch & Sing)
 #   note      anything to remember
+#   voxels    characters and props to make in MagicaVoxel (shown on Home; copied to lesson.yml when drafted)
 #
 # Quotations: the Catechism (CCC) or Christ – Our Pascha (CoP) for the great majority, linked; the Catholic Encyclopedia
 # for history; East and West side by side where they differ.
@@ -28,25 +29,109 @@ videos:
   # ── Pillar 1: what we believe (the Creed) ──
   - {id: who-is-god, title: "Who Is God?", course: believe, status: script, lesson: believe/01-who-is-god, note: "God the Father, Creator of all"}
   - {id: what-is-the-trinity, title: "What Is the Trinity?", course: believe, status: todo}
-  - {id: what-are-angels, title: "What Are Angels?", course: believe, status: todo,
-     replaces: [what-are-angels, what-are-cherubim, what-are-seraphim, what-is-the-order-and-number-of-angels, what-are-evil-angels],
-     note: "fold the choirs of angels and the fallen angels into one kids lesson"}
-  - {id: who-is-saint-michael-the-archangel, title: "Michael, Gabriel and Raphael", course: believe, status: todo,
-     replaces: [who-is-saint-michael-the-archangel, who-is-saint-gabriel-the-archangel, who-is-saint-raphael-the-archangel]}
+  - id: what-are-angels
+    title: "What Are Angels?"
+    course: believe
+    status: todo
+    replaces: [what-are-angels, what-are-cherubim, what-are-seraphim, what-is-the-order-and-number-of-angels, what-are-evil-angels]
+    note: "fold the choirs of angels and the fallen angels into one kids lesson"
+    voxels:
+      characters:
+        - {slug: angel-idle, label: Guardian angel, note: "God's helper and messenger watching over kids (shared with Who Is God?)"}
+        - {slug: seraph-idle, label: Seraph, note: "Six-winged fiery angel singing Holy, Holy, Holy (Isaiah 6)"}
+        - {slug: cherub-idle, label: Cherub, note: "Winged guardian angel at Eden and God's throne"}
+        - {slug: st-michael-idle, label: Saint Michael, note: "Armor, wings, and sword fighting the dragon (shared with Michael, Gabriel and Raphael)"}
+        - {slug: child-idle, label: Child, note: "With their guardian angel beside them (shared across kids lessons)"}
+      props:
+        - {slug: dragon-serpent, label: Dragon / old serpent, note: "Satan and the fallen angels (shared with Michael, Gabriel and Raphael)"}
+        - {slug: ark-of-covenant, label: Ark of the Covenant, note: "Golden ark with two cherubim on the mercy seat"}
+        - {slug: burning-coal, label: Burning coal & tongs, note: "Seraph touching Isaiah's lips (shared with Inside a Byzantine Church)"}
+  - id: who-is-saint-michael-the-archangel
+    title: "Michael, Gabriel and Raphael"
+    course: believe
+    status: todo
+    replaces: [who-is-saint-michael-the-archangel, who-is-saint-gabriel-the-archangel, who-is-saint-raphael-the-archangel]
+    voxels:
+      characters:
+        - {slug: st-michael-idle, label: Saint Michael, note: "Armor, wings, shield and sword, defender against Satan (shared with What Are Angels?)"}
+        - {slug: st-gabriel-idle, label: Saint Gabriel, note: "White/gold robe, wings, holding a lily or scroll as God's messenger"}
+        - {slug: st-raphael-idle, label: Saint Raphael, note: "Traveler's cloak, wings, walking staff, healer and guide to Tobias"}
+        - {slug: mary-idle, label: Mary, note: "At the Annunciation when Gabriel visits (shared with What Is Christmas?)"}
+        - {slug: tobias-walk, label: Young Tobias, note: "Boy traveler walking alongside Saint Raphael"}
+      props:
+        - {slug: dragon-serpent, label: Dragon, note: "Defeated by Saint Michael (shared with What Are Angels?)"}
+        - {slug: white-lily, label: White lily, note: "Messenger symbol for Saint Gabriel at the Annunciation"}
+        - {slug: fish, label: Fish, note: "Sign of Saint Raphael and Tobias's journey and healing"}
   - {id: the-story-of-salvation, title: "The Story of Salvation, from Adam to Jesus", course: believe, status: todo,
      note: "goes with the salvation history timeline"}
   - {id: why-did-god-become-man, title: "Why Did God Become Man?", course: believe, status: todo, note: "the Incarnation"}
   - {id: the-life-of-jesus, title: "Jesus' Life and Miracles", course: believe, status: todo}
   - {id: why-did-jesus-die-on-the-cross, title: "Why Did Jesus Die on the Cross?", course: believe, status: todo}
-  - {id: what-is-the-resurrection-of-christ, title: "Jesus Is Risen!", course: believe, status: todo, replaces: [what-is-the-resurrection-of-christ]}
+  - id: what-is-the-resurrection-of-christ
+    title: "Jesus Is Risen!"
+    course: believe
+    status: todo
+    replaces: [what-is-the-resurrection-of-christ]
+    voxels:
+      characters:
+        - {slug: jesus-risen, label: Risen Jesus, note: "Bright white robe with gold glow, victorious after rising (shared with Easter/Pascha)"}
+        - {slug: mary-magdalene-idle, label: Mary Magdalene, note: "Cloak and veil, first witness at the empty tomb"}
+        - {slug: st-peter-idle, label: Saint Peter, note: "Apostles eating with the risen Jesus (shared across lessons)"}
+        - {slug: st-paul-idle, label: Saint Paul, note: "Saw the risen Jesus on the road to Damascus (shared with What Is the Byzantine Rite?)"}
+        - {slug: roman-soldier-idle, label: Roman soldier, note: "Helmet, red tunic, and spear (shared with Stations of the Cross)"}
+      props:
+        - {slug: empty-tomb, label: Empty stone tomb, note: "Rock tomb with the round stone rolled aside (shared with Easter/Pascha)"}
+        - {slug: gospel-book, label: Four Gospels, note: "Golden Gospel book for Matthew, Mark, Luke, and John (shared across lessons)"}
   - {id: what-is-the-ascension, title: "What Is the Ascension?", course: believe, status: todo}
   - {id: who-is-the-holy-spirit, title: "Who Is the Holy Spirit?", course: believe, status: todo, note: "and Pentecost"}
-  - {id: what-is-the-church, title: "What Is the Church?", course: believe, status: todo,
-     replaces: [what-is-the-byzantine-catholic-church-byzantine-ca], note: "one Church, East and West, with the Pope"}
-  - {id: why-are-there-bad-people-in-the-church, title: "Why Are There Sinners in the Church?", course: believe, status: todo, replaces: [why-are-there-bad-people-in-the-church]}
+  - id: what-is-the-church
+    title: "What Is the Church?"
+    course: believe
+    status: todo
+    replaces: [what-is-the-byzantine-catholic-church-byzantine-ca]
+    note: "one Church, East and West, with the Pope"
+    voxels:
+      characters:
+        - {slug: pope-idle, label: The Pope, note: "Leader in Rome uniting East and West (shared across lessons)"}
+        - {slug: priest-idle, label: Roman priest, note: "Latin/Western tradition"}
+        - {slug: east-priest-idle, label: Eastern priest, note: "Greek/Byzantine tradition (also on Candle Rack checklist)"}
+        - {slug: st-peter-idle, label: Saint Peter, note: "Head of the 12 apostles (shared across lessons)"}
+        - {slug: st-paul-idle, label: Saint Paul, note: "Missionary journeys from Antioch across Greece and Asia Minor (shared across lessons)"}
+      props:
+        - {slug: peters-keys, label: Keys of Saint Peter, note: "Unity with the Pope in Rome (shared with Married Priests)"}
+        - {slug: church-dome, label: Byzantine church dome, note: "Eastern church roof (shared with What Is the Byzantine Rite?)"}
+        - {slug: church-steeple, label: Western church steeple, note: "Roman Catholic parish church with bell tower"}
+  - id: why-are-there-bad-people-in-the-church
+    title: "Why Are There Sinners in the Church?"
+    course: believe
+    status: todo
+    replaces: [why-are-there-bad-people-in-the-church]
+    voxels:
+      characters:
+        - {slug: jesus-idle, label: Jesus, note: "Gives power to the sacraments and calls sinners to become saints (shared across lessons)"}
+        - {slug: st-peter-idle, label: Saint Peter, note: "Denied Jesus three times, repented, and became the first Pope (shared across lessons)"}
+        - {slug: judas-idle, label: Judas, note: "Dark cloak holding a small pouch of silver coins"}
+        - {slug: priest-bless, label: Priest blessing, note: "Christ works through the sacraments"}
+        - {slug: child-kneel, label: Child praying, note: "Praying for sinners instead of judging them (also on Candle Rack checklist)"}
+      props:
+        - {slug: silver-coins, label: Bag of silver coins, note: "Judas betraying Jesus"}
+        - {slug: halo-crown, label: Golden halo, note: "Becoming a saint takes time and God's grace"}
   - {id: who-is-mary, title: "Who Is Mary?", course: believe, status: todo, note: "Mother of God, Theotokos"}
   - {id: what-is-heaven, title: "What Is Heaven?", course: believe, status: todo, note: "and the communion of saints"}
-  - {id: what-is-infallibility, title: "What Is Infallibility?", course: believe, status: done, note: "made in 2026 in the new style; keep"}
+  - id: what-is-infallibility
+    title: "What Is Infallibility?"
+    course: believe
+    status: done
+    note: "made in 2026 in the new style; keep"
+    voxels:
+      characters:
+        - {slug: pope-idle, label: The Pope, note: "Teaching faith and morals, and also going to Confession (shared across lessons)"}
+        - {slug: st-peter-idle, label: Saint Peter, note: "Jesus tells Peter to strengthen your brothers (shared across lessons)"}
+        - {slug: jesus-idle, label: Jesus, note: "Jesus is the truth, sharing his gift with the Church (shared across lessons)"}
+        - {slug: priest-idle, label: Priest, note: "Hearing the Pope's confession"}
+      props:
+        - {slug: peters-keys, label: Keys of Saint Peter, note: "Teaching authority given to Peter and the Pope (shared across lessons)"}
+        - {slug: catechism-book, label: Catechism book, note: "Solemn teaching on faith and morals"}
 
   # ── Pillar 2: how we celebrate (sacraments, the Liturgy, the church, the year) ──
   - {id: what-is-baptism, title: "What Is Baptism?", course: celebrate, status: todo}
@@ -55,11 +140,43 @@ videos:
   - {id: what-is-confession, title: "What Is Confession?", course: celebrate, status: todo}
   - {id: what-is-anointing-of-the-sick, title: "Anointing of the Sick", course: celebrate, status: todo}
   - {id: what-is-marriage, title: "What Is Marriage?", course: celebrate, status: todo}
-  - {id: what-is-holy-orders, title: "Bishops, Priests and Deacons", course: celebrate, status: todo, old: [married-priests],
-     note: "Holy Orders; the kids lesson 'Married Priests' (draft) can fold in"}
+  - id: what-is-holy-orders
+    title: "Bishops, Priests and Deacons"
+    course: celebrate
+    status: todo
+    old: [married-priests]
+    note: "Holy Orders; the kids lesson 'Married Priests' (draft) can fold in"
+    voxels:
+      characters:
+        - {slug: priest-idle, label: Roman priest, note: "Unmarried Roman priest"}
+        - {slug: priest-bless, label: Roman priest blessing, note: "Serving God's people"}
+        - {slug: east-priest-idle, label: Eastern priest, note: "Married or unmarried Byzantine priest (also on Candle Rack checklist)"}
+        - {slug: bishop-idle, label: Roman bishop, note: "Purple/white vestments, mitre, and crozier"}
+        - {slug: east-bishop-idle, label: Eastern bishop, note: "Byzantine mitre, omophorion, and crozier (shared with Married Priests)"}
+        - {slug: deacon-idle, label: Deacon, note: "Dalmatic and diagonal stole (or east-deacon-walk for Eastern deacon)"}
+        - {slug: st-peter-idle, label: Saint Peter, note: "Apostle with a family (shared with Married Priests)"}
+      props:
+        - {slug: mitre-crozier, label: Mitre & crozier, note: "Signs of a bishop's shepherd office"}
+        - {slug: wedding-crowns, label: Byzantine wedding crowns, note: "Marriage comes first before ordination (shared with Married Priests)"}
   - {id: what-happens-at-mass, title: "What Happens at Mass and the Divine Liturgy?", course: celebrate, status: todo}
-  - {id: why-are-there-statues-and-paintings-in-churches, title: "Inside a Church", course: celebrate, status: todo,
-     replaces: [why-are-there-statues-and-paintings-in-churches, why-do-we-bow-and-kneel], note: "statues, icons, and why we bow and kneel"}
+  - id: why-are-there-statues-and-paintings-in-churches
+    title: "Inside a Church"
+    course: celebrate
+    status: todo
+    replaces: [why-are-there-statues-and-paintings-in-churches, why-do-we-bow-and-kneel]
+    note: "statues, icons, and why we bow and kneel"
+    voxels:
+      characters:
+        - {slug: child-kneel, label: Child genuflecting, note: "Bending the right knee before the tabernacle (also on Candle Rack checklist)"}
+        - {slug: man-kneel, label: Parishioner kneeling / bowing, note: "Bowing head at the name of Jesus (also on Candle Rack checklist)"}
+        - {slug: woman-walk, label: Parishioner in church, note: "Looking at sacred art (also on Candle Rack checklist)"}
+        - {slug: priest-mass-idle, label: Priest at Mass, note: "Bowing at the name of Jesus and the Trinity"}
+      props:
+        - {slug: church-roman-tabernacle, label: Tabernacle, note: "Where Jesus is present in the Eucharist; we genuflect here (also on Candle Rack checklist)"}
+        - {slug: church-roman-mary, label: Mary statue, note: "Example of sacred statues in churches (also on Candle Rack checklist)"}
+        - {slug: church-roman-crucifix, label: Crucifix, note: "Reminder of Christ's sacrifice (also on Candle Rack checklist)"}
+        - {slug: icon-frame, label: Icon / sacred painting, note: "Lifts our minds to heaven (shared with Inside a Byzantine Church)"}
+        - {slug: church-sanctuary-lamp, label: Sanctuary lamp, note: "Red lamp showing Jesus is in the tabernacle (also on Candle Rack checklist)"}
   - {id: what-is-the-byzantine-rite, title: "What Is the Byzantine Rite?", course: celebrate, status: done, lesson: byzantine-rite-for-kids/01-what-is-the-byzantine-rite}
   - {id: what-does-byzantine-mean, title: "What Does Byzantine Mean?", course: celebrate, status: done, lesson: byzantine-rite-for-kids/02-what-does-byzantine-mean}
   - {id: inside-a-byzantine-church, title: "Inside a Byzantine Church", course: celebrate, status: done, lesson: byzantine-rite-for-kids/03-inside-a-byzantine-church}
@@ -67,33 +184,162 @@ videos:
      replaces: [what-is-advent, what-is-an-advent-wreath, what-is-gaudete-sunday, what-is-a-jesse-tree], note: "and the Nativity Fast"}
   - {id: what-are-nativity-scenes, title: "What Is Christmas?", course: celebrate, status: script, lesson: celebrate/02-what-is-christmas,
      replaces: [what-are-nativity-scenes, what-is-a-the-history-of-the-christmas-tree, what-is-epiphany], note: "Christmas through Epiphany / Theophany"}
-  - {id: what-is-lent, title: "What Is Lent?", course: celebrate, status: todo,
-     replaces: [what-is-lent, what-is-ash-wednesday, what-is-laetare-sunday, what-is-passiontide, why-veil-statues], note: "and the Great Fast"}
-  - {id: what-is-holy-week, title: "What Is Holy Week?", course: celebrate, status: todo,
-     replaces: [what-is-holy-week, what-is-palm-sunday, what-is-holy-saturday]}
-  - {id: what-does-pascha-mean, title: "What Is Easter (Pascha)?", course: celebrate, status: todo,
-     replaces: [what-does-pascha-mean, what-day-is-easter, what-are-easter-traditions, what-is-eastertide]}
+  - id: what-is-lent
+    title: "What Is Lent?"
+    course: celebrate
+    status: todo
+    replaces: [what-is-lent, what-is-ash-wednesday, what-is-laetare-sunday, what-is-passiontide, why-veil-statues]
+    note: "and the Great Fast"
+    voxels:
+      characters:
+        - {slug: priest-mass-idle, label: Priest in chasuble, note: "Pink works for Laetare Sunday; optional priest-mass-purple for purple weeks"}
+        - {slug: east-priest-idle, label: Eastern priest, note: "For the Great Fast in the East (also on Candle Rack checklist)"}
+        - {slug: child-kneel, label: Child praying & fasting, note: "Ash Wednesday and praying more during Lent (also on Candle Rack checklist)"}
+        - {slug: jesus-idle, label: Jesus in the desert, note: "Fasting 40 days after his baptism (shared across lessons)"}
+      props:
+        - {slug: ash-bowl, label: Bowl of ashes, note: "Burned palm branches for Ash Wednesday"}
+        - {slug: veiled-statue, label: Purple-veiled statue / cross, note: "Violet cloth during Passiontide (frame 1 veiled, frame 2 unveiled)"}
+        - {slug: fish, label: Friday fish meal, note: "Abstaining from meat on Fridays of Lent (shared with Michael, Gabriel and Raphael)"}
+        - {slug: charity-basket, label: Charity / food basket, note: "Helping the poor during Lent"}
+  - id: what-is-holy-week
+    title: "What Is Holy Week?"
+    course: celebrate
+    status: todo
+    replaces: [what-is-holy-week, what-is-palm-sunday, what-is-holy-saturday]
+    voxels:
+      characters:
+        - {slug: jesus-idle, label: Jesus, note: "Entering Jerusalem, washing feet, and carrying the cross (shared across lessons)"}
+        - {slug: priest-mass-walk, label: Priest processing, note: "Palm Sunday and Holy Thursday processions"}
+        - {slug: bishop-idle, label: Bishop, note: "Blessing the Holy Oils and washing feet on Holy Thursday (shared with Holy Orders)"}
+        - {slug: child-walk, label: Child waving a palm, note: "Palm Sunday procession (also on Candle Rack checklist)"}
+      props:
+        - {slug: palm-branch, label: Palm branch, note: "Blessed and waved on Palm Sunday"}
+        - {slug: donkey, label: Little donkey, note: "Jesus riding into Jerusalem on Palm Sunday"}
+        - {slug: wash-basin, label: Basin & towel, note: "Holy Thursday washing of the feet (Mandatum)"}
+        - {slug: church-roman-crucifix, label: Crucifix, note: "Unveiled for veneration on Good Friday (also on Candle Rack checklist)"}
+        - {slug: paschal-candle, label: Paschal candle, note: "Tall white Easter Vigil candle with cross and 5 grains of incense (shared with Easter)"}
+        - {slug: easter-fire, label: New Fire brazier, note: "Blessed fire on Holy Saturday night, flickering flames (shared with Easter)"}
+  - id: what-does-pascha-mean
+    title: "What Is Easter (Pascha)?"
+    course: celebrate
+    status: todo
+    replaces: [what-does-pascha-mean, what-day-is-easter, what-are-easter-traditions, what-is-eastertide]
+    voxels:
+      characters:
+        - {slug: jesus-risen, label: Risen Jesus, note: "Christ is risen! Indeed He is risen! (shared with Jesus Is Risen!)"}
+        - {slug: priest-mass-idle, label: Priest in Easter vestments, note: "Lighting the Paschal candle and Eastertide joy"}
+        - {slug: east-priest-idle, label: Eastern priest, note: "Byzantine Pascha greeting and celebration (also on Candle Rack checklist)"}
+        - {slug: child-idle, label: Child celebrating Easter, note: "Easter Vigil candle and Easter egg traditions (shared across lessons)"}
+      props:
+        - {slug: empty-tomb, label: Empty stone tomb, note: "Jesus rose from the dead (shared with Jesus Is Risen!)"}
+        - {slug: paschal-candle, label: Paschal candle, note: "Tall candle lit from the Easter fire (shared with What Is Holy Week?)"}
+        - {slug: easter-fire, label: Easter fire, note: "Holy Saturday new fire and Exodus pillar of fire (shared with What Is Holy Week?)"}
+        - {slug: red-easter-egg, label: Red Easter egg, note: "Dyed red to symbolize Easter joy"}
+        - {slug: full-moon, label: Full moon, note: "First Sunday after the first spring full moon"}
 
   # ── Pillar 3: how we live ──
-  - {id: what-is-the-golden-rule-moral-lesson, title: "The Two Great Commandments", course: live, status: todo,
-     replaces: [what-is-the-golden-rule-moral-lesson], note: "love God, love your neighbor; the Golden Rule"}
+  - id: what-is-the-golden-rule-moral-lesson
+    title: "The Two Great Commandments"
+    course: live
+    status: todo
+    replaces: [what-is-the-golden-rule-moral-lesson]
+    note: "love God, love your neighbor; the Golden Rule"
+    voxels:
+      characters:
+        - {slug: jesus-idle, label: Jesus, note: "Teaching the Two Great Commandments and the Golden Rule (shared across lessons)"}
+        - {slug: child-idle, label: Child smiling, note: "Treating others the way you want to be treated (shared across lessons)"}
+        - {slug: child-walk, label: Friend / neighbor, note: "Greeting with a smile and sharing toys (also on Candle Rack checklist)"}
+      props:
+        - {slug: golden-heart, label: Golden heart, note: "Loving God and loving your neighbor"}
+        - {slug: toy-blocks, label: Shared toys, note: "Example from the script: sharing your toys"}
+        - {slug: gold-bar, label: Shiny gold bar, note: "More valuable than real gold"}
   - {id: the-ten-commandments-loving-god, title: "The Ten Commandments: Loving God", course: live, status: todo, note: "1–3"}
   - {id: the-ten-commandments-loving-others, title: "The Ten Commandments: Loving Others", course: live, status: todo, note: "4–10"}
-  - {id: when-and-why-should-we-stay-home-from-mass, title: "Why We Go to Mass on Sunday", course: live, status: todo,
-     replaces: [when-and-why-should-we-stay-home-from-mass], note: "the Lord's Day, and when staying home is right (sick)"}
+  - id: when-and-why-should-we-stay-home-from-mass
+    title: "Why We Go to Mass on Sunday"
+    course: live
+    status: todo
+    replaces: [when-and-why-should-we-stay-home-from-mass]
+    note: "the Lord's Day, and when staying home is right (sick)"
+    voxels:
+      characters:
+        - {slug: priest-mass-idle, label: Priest celebrating Mass, note: "Sunday Eucharist at church"}
+        - {slug: man-walk, label: Dad / parent, note: "Bringing the family to Sunday Mass or caring for a sick child (also on Candle Rack checklist)"}
+        - {slug: woman-walk, label: Mom / parent, note: "Going to Mass or caring for a sick infant (also on Candle Rack checklist)"}
+        - {slug: child-walk, label: Child going to church, note: "Seeing Jesus in person on Sunday (also on Candle Rack checklist)"}
+        - {slug: child-sick, label: Sick child, note: "Staying home when contagious or seriously sick"}
+      props:
+        - {slug: church-steeple, label: Parish church, note: "Going to Mass in person every Sunday (shared with What Is the Church?)"}
+        - {slug: eucharist-host, label: Chalice & Host, note: "The Bread of Life we receive in person"}
+        - {slug: home-bed, label: Cozy bed, note: "Resting at home when sick"}
   - {id: what-are-the-beatitudes, title: "What Are the Beatitudes?", course: live, status: todo}
   - {id: what-are-the-works-of-mercy, title: "What Are the Works of Mercy?", course: live, status: todo}
   - {id: what-are-virtues, title: "What Are Virtues?", course: live, status: todo}
-  - {id: what-is-penance, title: "Sin, Sorrow and Forgiveness", course: live, status: todo,
-     replaces: [what-is-penance, what-are-some-ideas-for-penance]}
+  - id: what-is-penance
+    title: "Sin, Sorrow and Forgiveness"
+    course: live
+    status: todo
+    replaces: [what-is-penance, what-are-some-ideas-for-penance]
+    voxels:
+      characters:
+        - {slug: priest-idle, label: Priest in Confession, note: "Forgiving sins and giving a penance"}
+        - {slug: child-kneel, label: Child praying, note: "Examination of conscience and praying a penance (also on Candle Rack checklist)"}
+        - {slug: pope-idle, label: Pope Gregory VII, note: "Forgiving King Henry IV after his penance (shared across lessons)"}
+        - {slug: king-penitent, label: King Henry IV, note: "Barefoot king in simple robe waiting in the winter snow"}
+      props:
+        - {slug: confessional, label: Confessional, note: "Going to Confession to receive forgiveness"}
+        - {slug: flowers-bouquet, label: Bouquet of flowers, note: "Example from the script: showing you're sorry with actions"}
+        - {slug: rosary, label: Rosary beads, note: "Common form of penance (shared with What Is Prayer?)"}
+        - {slug: gospel-book, label: Bible / Gospels, note: "Reading Scripture as a penance (shared across lessons)"}
 
   # ── Pillar 4: how we pray ──
-  - {id: an-introduction-to-prayer, title: "What Is Prayer?", course: pray, status: todo,
-     replaces: [an-introduction-to-prayer, the-need-for-prayer, what-difference-does-prayer-make, conditions-of-prayer]}
-  - {id: what-is-vocal-prayer, title: "Ways to Pray", course: pray, status: todo,
-     replaces: [what-is-vocal-prayer, what-is-mental-prayer, what-is-public-and-private-prayer, posture-during-prayer, why-pay-attention-during-prayer]}
-  - {id: why-should-we-make-the-sign-of-the-cross, title: "The Sign of the Cross", course: pray, status: todo,
-     replaces: [why-should-we-make-the-sign-of-the-cross], note: "West; the Byzantine one is made (next line)"}
+  - id: an-introduction-to-prayer
+    title: "What Is Prayer?"
+    course: pray
+    status: todo
+    replaces: [an-introduction-to-prayer, the-need-for-prayer, what-difference-does-prayer-make, conditions-of-prayer]
+    voxels:
+      characters:
+        - {slug: child-kneel, label: Child praying, note: "Morning and night prayer, asking God with faith (also on Candle Rack checklist)"}
+        - {slug: man-kneel, label: Humble tax collector, note: "Praying humbly in the back of the temple (Luke 18; also on Candle Rack checklist)"}
+        - {slug: pharisee-idle, label: Proud Pharisee, note: "Standing tall in fancy robes in Jesus's parable (Luke 18)"}
+        - {slug: priest-idle, label: Priest, note: "Priests, monks, and nuns praying for the world"}
+        - {slug: nun-idle, label: Nun, note: "Dark habit and veil praying (shared with Ways to Pray)"}
+      props:
+        - {slug: rosary, label: Rosary beads, note: "Praying together as a family (shared with Sin, Sorrow and Forgiveness)"}
+        - {slug: simple-meal, label: Loaf of bread, note: "Parable of the friend knocking late at night for bread (shared with What Is Advent?)"}
+        - {slug: church-votive-candle, label: Prayer candle, note: "Offering prayers and intercessions (also on Candle Rack checklist)"}
+  - id: what-is-vocal-prayer
+    title: "Ways to Pray"
+    course: pray
+    status: todo
+    replaces: [what-is-vocal-prayer, what-is-mental-prayer, what-is-public-and-private-prayer, posture-during-prayer, why-pay-attention-during-prayer]
+    voxels:
+      characters:
+        - {slug: child-kneel, label: Child kneeling, note: "Private prayer and reverent posture (also on Candle Rack checklist)"}
+        - {slug: child-orans, label: Child in Orans posture, note: "Standing with hands raised open in prayer (early Christian posture)"}
+        - {slug: priest-mass-idle, label: Priest at Mass, note: "Leading public prayer of the Church"}
+        - {slug: monk-idle, label: Monk meditating, note: "Quiet mental prayer and daily meditation"}
+        - {slug: nun-idle, label: Nun (St. Teresa), note: "Carmelite daily mental prayer (shared with What Is Prayer?)"}
+      props:
+        - {slug: prayer-book, label: Prayer book / Psalms, note: "Vocal prayers like the Our Father and Psalms"}
+        - {slug: church-pew, label: Church pew, note: "Public prayer together as a community (also on Candle Rack checklist)"}
+        - {slug: thought-cloud, label: Quiet heart / thought cloud, note: "Mental prayer and keeping focus on God"}
+  - id: why-should-we-make-the-sign-of-the-cross
+    title: "The Sign of the Cross"
+    course: pray
+    status: todo
+    replaces: [why-should-we-make-the-sign-of-the-cross]
+    note: "West; the Byzantine one is made (next line)"
+    voxels:
+      characters:
+        - {slug: priest-bless, label: Roman priest blessing, note: "Making the Sign of the Cross during Mass and blessings"}
+        - {slug: child-cross, label: Child making the Sign of the Cross, note: "Animated forehead, chest, left shoulder, right shoulder"}
+        - {slug: st-cyril-idle, label: Saint Cyril of Jerusalem, note: "4th-century bishop teaching the seal of the cross in daily life"}
+      props:
+        - {slug: cross-stand, label: Standing cross, note: "Venerating the cross of Christ (shared with Byzantine Sign of the Cross)"}
+        - {slug: simple-meal, label: Bread & cup, note: "St. Cyril: signing the bread we eat and cup we drink (shared with What Is Advent?)"}
+        - {slug: holy-water-font, label: Holy water font, note: "Blessing ourselves as we enter church"}
   - {id: the-sign-of-the-cross, title: "The Sign of the Cross, Right to Left", course: pray, status: done, lesson: byzantine-rite-for-kids/04-the-sign-of-the-cross}
   - {id: the-our-father, title: "The Our Father", course: pray, status: todo, note: "line by line"}
   - {id: the-hail-mary, title: "The Hail Mary", course: pray, status: todo}
@@ -101,7 +347,24 @@ videos:
   - {id: the-jesus-prayer, title: "The Jesus Prayer", course: pray, status: todo}
   - {id: the-rosary, title: "The Rosary", course: pray, status: todo}
   - {id: morning-and-night-prayers, title: "Morning and Night Prayers", course: pray, status: todo}
-  - {id: what-are-the-stations-of-the-cross, title: "The Stations of the Cross", course: pray, status: todo, replaces: [what-are-the-stations-of-the-cross]}
+  - id: what-are-the-stations-of-the-cross
+    title: "The Stations of the Cross"
+    course: pray
+    status: todo
+    replaces: [what-are-the-stations-of-the-cross]
+    voxels:
+      characters:
+        - {slug: jesus-cross, label: Jesus carrying the cross, note: "Walking the Via Dolorosa (Stations 2–9)"}
+        - {slug: mary-idle, label: Mary, note: "Station 4: Jesus meets his mother (shared with What Is Christmas?)"}
+        - {slug: simon-cyrene-walk, label: Simon of Cyrene, note: "Station 5: helping Jesus carry the cross"}
+        - {slug: st-veronica-idle, label: Saint Veronica, note: "Station 6: wiping the face of Jesus with a cloth"}
+        - {slug: roman-soldier-idle, label: Roman soldier, note: "Stations 1, 10 & 11 (shared with Jesus Is Risen!)"}
+        - {slug: child-kneel, label: Child praying, note: "Stopping at each station in church (also on Candle Rack checklist)"}
+      props:
+        - {slug: station-plaque, label: Station plaque, note: "Framed station marker with small cross on a church wall"}
+        - {slug: veronica-veil, label: Veronica's veil, note: "White cloth showing the face of Jesus"}
+        - {slug: wooden-cross, label: Heavy wooden cross, note: "Carried along the Way of Sorrows"}
+        - {slug: empty-tomb, label: Stone tomb, note: "Station 14 & optional 15th Resurrection (shared with Jesus Is Risen!)"}
 
   # ── Church history, East and West (each stop short, with its saint or pope) ──
   - {id: history-pentecost, title: "Pentecost: the Church Is Born", course: history, status: todo}
@@ -111,13 +374,43 @@ videos:
   - {id: history-nicaea, title: "The Council of Nicaea and the Creed", course: history, status: todo, note: "325; St Nicholas, St Athanasius"}
   - {id: history-desert-fathers, title: "The Desert Fathers: Saint Anthony", course: history, status: todo}
   - {id: history-augustine, title: "Saint Augustine", course: history, status: todo}
-  - {id: history-patrick, title: "Saint Patrick", course: history, status: todo, old: [who-is-saint-aidan-of-lindisfarne], note: "Aidan's old video can lend Irish monks"}
+  - id: history-patrick
+    title: "Saint Patrick"
+    course: history
+    status: todo
+    old: [who-is-saint-aidan-of-lindisfarne]
+    note: "Aidan's old video can lend Irish monks"
+    voxels:
+      characters:
+        - {slug: st-patrick-idle, label: Saint Patrick, note: "Green/white bishop vestments, mitre, and crozier"}
+        - {slug: irish-monk-walk, label: Irish monk (like St. Aidan), note: "Brown monastic robe walking village to village teaching people"}
+        - {slug: king-idle, label: King (King Oswald), note: "Crown and cloak welcoming Irish missionaries"}
+        - {slug: child-idle, label: Child / villager, note: "Listening and learning from traveling monks (shared across lessons)"}
+      props:
+        - {slug: shamrock, label: Shamrock, note: "Three-leaf clover teaching the Holy Trinity"}
+        - {slug: stone-abbey, label: Stone island monastery, note: "Lindisfarne / Irish stone abbey and church"}
+        - {slug: gospel-book, label: Gospel book, note: "Carried by Irish monks on missionary walks (shared across lessons)"}
   - {id: history-benedict, title: "Saint Benedict and the Monks", course: history, status: todo}
   - {id: history-hagia-sophia, title: "Hagia Sophia", course: history, status: todo}
   - {id: history-gregory-the-great, title: "Pope Saint Gregory the Great", course: history, status: todo}
   - {id: history-cyril-and-methodius, title: "Saints Cyril and Methodius", course: history, status: todo}
-  - {id: who-is-vladimir-the-great-a-video-for-catholic-kid, title: "Saint Vladimir and the Baptism of Kyiv", course: history, status: todo,
-     replaces: [who-is-vladimir-the-great-a-video-for-catholic-kid], note: "988"}
+  - id: who-is-vladimir-the-great-a-video-for-catholic-kid
+    title: "Saint Vladimir and the Baptism of Kyiv"
+    course: history
+    status: todo
+    replaces: [who-is-vladimir-the-great-a-video-for-catholic-kid]
+    note: "988"
+    voxels:
+      characters:
+        - {slug: st-vladimir-idle, label: Saint Vladimir, note: "Fur-trimmed royal cloak, crown, and cross (Grand Prince of Kyiv)"}
+        - {slug: princess-anna-idle, label: Princess Anna, note: "Byzantine imperial purple/gold gown and crown"}
+        - {slug: viking-warrior-walk, label: Viking warrior, note: "Round shield and helmet (Vladimir's Varangian warriors)"}
+        - {slug: east-priest-idle, label: Byzantine priest, note: "Baptizing Vladimir and Kyiv in 988 (also on Candle Rack checklist)"}
+      props:
+        - {slug: viking-ship, label: Viking longship, note: "Boat sailing across the sea"}
+        - {slug: baptism-river, label: Dnieper River water, note: "Water ripples for the Baptism of Kyiv (988)"}
+        - {slug: church-dome, label: Golden-domed church, note: "Churches Vladimir built in Kyiv (shared with What Is the Byzantine Rite?)"}
+        - {slug: charity-basket, label: Food for the poor, note: "Vladimir sharing food and drink with the poor (shared with What Is Lent?)"}
   - {id: history-east-and-west, title: "East and West Grow Apart", course: history, status: todo, note: "1054, and the Eastern Catholic Churches that returned to union; hedge as the sources do"}
   - {id: history-francis-and-dominic, title: "Saint Francis and Saint Dominic", course: history, status: todo}
   - {id: history-thomas-aquinas, title: "Saint Thomas Aquinas", course: history, status: todo}
@@ -128,8 +421,22 @@ videos:
   - {id: history-kateri, title: "Saint Kateri Tekakwitha", course: history, status: todo}
   - {id: history-therese, title: "Saint Thérèse", course: history, status: todo}
   - {id: history-lourdes-and-fatima, title: "Lourdes and Fátima", course: history, status: todo}
-  - {id: the-story-of-blessed-stepinac, title: "Martyrs Under Communism", course: history, status: todo,
-     replaces: [the-story-of-blessed-stepinac], note: "Blessed Stepinac and the Greek Catholic martyrs"}
+  - id: the-story-of-blessed-stepinac
+    title: "Martyrs Under Communism"
+    course: history
+    status: todo
+    replaces: [the-story-of-blessed-stepinac]
+    note: "Blessed Stepinac and the Greek Catholic martyrs"
+    voxels:
+      characters:
+        - {slug: bl-stepinac-idle, label: Blessed Aloysius Stepinac, note: "Red cardinal / archbishop cassock and biretta, courageous shepherd"}
+        - {slug: east-bishop-idle, label: Greek Catholic martyr bishop, note: "Eastern bishops who stayed faithful to the Pope (shared with Married Priests)"}
+        - {slug: priest-idle, label: Parish priest, note: "Priests sheltering people in danger"}
+        - {slug: pope-idle, label: The Pope, note: "Pope Pius XII naming him cardinal and St. John Paul II beatifying him (shared across lessons)"}
+      props:
+        - {slug: cardinal-hat, label: Red cardinal biretta, note: "Named cardinal while under house arrest"}
+        - {slug: prison-bars, label: Prison window / bars, note: "Imprisonment and house arrest for the faith"}
+        - {slug: cross-stand, label: Cross of fidelity, note: "Standing firm in love and faith (shared across lessons)"}
   - {id: history-vatican-ii, title: "The Second Vatican Council", course: history, status: todo}
   - {id: history-john-paul-and-teresa, title: "Saint John Paul II and Saint Teresa of Calcutta", course: history, status: todo}
   - {id: history-today, title: "Today: One Church in Every Country", course: history, status: todo}

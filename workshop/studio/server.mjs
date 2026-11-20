@@ -617,10 +617,10 @@ async function handle(req, res) {
         let voxels = null;
         if (lesson) {
           try {
-            const vp = voxelPlan(YAML.parse(fs.readFileSync(path.join(ROOT, 'courses', lesson, 'lesson.yml'), 'utf8')), haveVox);
-            if (vp) voxels = {ready: vp.ready, total: vp.total};
+            voxels = voxelPlan(YAML.parse(fs.readFileSync(path.join(ROOT, 'courses', lesson, 'lesson.yml'), 'utf8')), haveVox);
           } catch { /* ignore unreadable lesson */ }
         }
+        if (!voxels && v.voxels) voxels = voxelPlan(v, haveVox);
         return {...v, lesson, voxels};
       });
       return json(res, 200, {courses: plan.courses ?? {}, videos, bonus: plan.bonus ?? []});
