@@ -96,6 +96,29 @@ function summary(id) {
   }
 }
 
+/** A lesson's voxel characters & props checklist (`voxels:` in lesson.yml), checked against voxels/. */
+function voxelPlan(lesson, have = new Set(listVoxels().filter((v) => !v.removed).map((v) => v.slug))) {
+  const raw = lesson?.voxels;
+  if (!raw || typeof raw !== 'object') return null;
+  const norm = (list) => [].concat(list ?? []).map((item) => {
+    if (typeof item === 'string') return {slug: null, label: item.trim(), note: '', have: false};
+    if (!item || typeof item !== 'object') return null;
+    const slug = item.slug ? String(item.slug).trim() : null;
+    return {slug, label: String(item.label ?? slug ?? '').trim(), note: String(item.note ?? '').trim(), have: !!(slug && have.has(slug))};
+  }).filter((x) => x && x.label);
+  const characters = norm(raw.characters);
+  const props = norm(raw.props);
+  if (!characters.length && !props.length) return null;
+  const all = [...characters, ...props];
+  return {
+    note: raw.note ? String(raw.note).trim() : '',
+    characters,
+    props,
+    ready: all.filter((x) => x.have).length,
+    total: all.length,
+  };
+}
+
 function detail(id) {
   const dir = lessonPath(id);
   const {lesson, course, segments, kids} = loadLesson(dir);
@@ -116,7 +139,7 @@ function detail(id) {
   return {
     id, course: course.title, number: lesson.number, title: lesson.title, status: lesson.status,
     backup: backup.last, // the studio's last backup to GitHub (any lesson)
-    sections, video, requests: openRequests(dir),
+    sections, video, requests: openRequests(dir), voxels: voxelPlan(lesson),
     // Kids lessons: the drawing on the kids-site thumbnail (`thumb:` in lesson.yml), else what it falls back to.
     kids: kids ? {thumb: lesson.thumb?.sprite ?? null, fallback: course.thumb?.sprite ?? segments.flatMap((x) => x.scenes).find((sc) => sc?.type === 'sprite')?.sprite ?? null} : null,
   };
@@ -588,11 +611,22 @@ async function handle(req, res) {
       let plan;
       try { plan = YAML.parse(fs.readFileSync(path.join(ROOT, 'plan', 'videos.yml'), 'utf8')) ?? {}; } catch (e) { throw httpError(500, 'The checklist (plan/videos.yml) can’t be read: ' + e.message); }
       const have = new Set(lessonIds());
-      const videos = (plan.videos ?? []).map((v) => ({...v, lesson: v.lesson && have.has(v.lesson) ? v.lesson : null}));
+      const haveVox = new Set(listVoxels().filter((v) => !v.removed).map((v) => v.slug));
+      const videos = (plan.videos ?? []).map((v) => {
+        const lesson = v.lesson && have.has(v.lesson) ? v.lesson : null;
+        let voxels = null;
+        if (lesson) {
+          try {
+            const vp = voxelPlan(YAML.parse(fs.readFileSync(path.join(ROOT, 'courses', lesson, 'lesson.yml'), 'utf8')), haveVox);
+            if (vp) voxels = {ready: vp.ready, total: vp.total};
+          } catch { /* ignore unreadable lesson */ }
+        }
+        return {...v, lesson, voxels};
+      });
       return json(res, 200, {courses: plan.courses ?? {}, videos, bonus: plan.bonus ?? []});
     }
     if (p === '/api/voxels') {
-      const r = await syncVoxels();
+      const r = await syncVoxels({force: url.searchParams.get('force') === '1'});
       if (r.added?.length || r.changed?.length) backupSoon('voxels', ['voxels'], 'voxel models');
       return json(res, 200, {voxels: listVoxels(), offline: !!r.offline});
     }

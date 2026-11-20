@@ -170,3 +170,26 @@ thumb:
   strip: true
 
 watch_id: the-sign-of-the-cross
+
+voxels:
+  note: "Characters are 8 × 8 × 8, facing front, one .vox per pose (same as Candle Rack)."
+  characters:
+    - slug: priest-bless
+      label: Roman priest, blessing
+      note: "Point 4 — Roman Catholic side beside the Eastern priest/monk"
+    - slug: east-priest-idle
+      label: Eastern priest
+      note: "Point 1, 2 & 4 — Byzantine side (also on Candle Rack checklist)"
+    - slug: east-monk-cross
+      label: Eastern monk making the Sign of the Cross
+      note: "Intro, Point 1 & 2 — dark monastic habit, animated forehead → chest → right → left"
+    - slug: child-idle
+      label: Child, standing
+      note: "Point 1 & 2 — kid praying with their whole body (shared with Who Is God?)"
+  props:
+    - slug: byzantine-hand
+      label: Hand showing 3 + 2 fingers
+      note: "Point 3 — close-up hand with thumb and two fingers joined, two fingers tucked to the palm"
+    - slug: cross-stand
+      label: Standing cross
+      note: "Point 2 & 4 — simple wooden or gold cross"

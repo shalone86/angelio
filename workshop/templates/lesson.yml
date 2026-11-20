@@ -51,3 +51,11 @@ outro:
   notes: []
   scenes:
     - type: recap
+
+# Voxel characters & props to make for this lesson (shown in Lesson Studio's header and Home checklist).
+# voxels:
+#   note: "Characters are 8 × 8 × 8, facing front, one .vox per pose (same as Candle Rack)."
+#   characters:
+#     - { slug: priest-idle, label: Priest, note: "Point 1 — ..." }
+#   props:
+#     - { slug: prop-name, label: Prop, note: "Point 1 — ..." }

@@ -27,7 +27,8 @@ names one.
    each on one exact quotation with its link, a 60–100-word explanation in plain kids words, 1–2 visuals (his pixel or
    voxel characters guide; real pictures for real things), and a quiz (mix `choice`, `truefalse`, `blank` with
    `wrong:`). Set `replaces:` when it takes an old video's place. Facts for his intro/outro go in `notes`; their
-   `text` holds only his fixed lines (the template has them).
+   `text` holds only his fixed lines (the template has them). Also add a `voxels:` block (`characters:` and `props:`,
+   reusing Candle Rack and shared lesson slugs where possible) so he knows which MagicaVoxel models to build for the script.
 4. `npm run check -- <course>/<lesson>` until it passes; set the checklist entry to `script`.
 
 **Stop.** He reads the script and the quiz together in the studio (Script & recording), edits anything, writes him

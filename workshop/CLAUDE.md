@@ -195,6 +195,11 @@ If it's already running, `npm start` just opens the page.
   frames come from the file's scene, not its list of models. His pixel characters stay for PICO-8 games; new
   characters start as voxels (decided Nov 2026), and get a pixel version only when a PICO-8 game needs one.
   (The Blender characters were removed in Nov 2026: they never got used.)
+- **Voxel build notes per lesson** (`voxels:` in `lesson.yml`): each lesson lists the voxel `characters` and `props`
+  to make from its script (`[{slug, label, note}]`, plus an optional `note:`), reusing Candle Rack and shared lesson
+  slugs where possible. Lesson Studio shows it as a collapsible note in the lesson header (`#voxel-note` in
+  `studio/index.html`, checked against `voxels/` by `voxelPlan()` in `studio/server.mjs`, with **Check for new
+  models** hitting `/api/voxels?force=1`) and as a short remaining count on Home (`/api/plan`).
 - **Nudging:** clicking any scene block shows Move ← ↑ ↓ → / Smaller / Bigger
   (Shift moves further), and lets him drag it on the video (its corner handles or the mouse wheel there: size), saved in timing.yml as `scenes.<i>.nudge: {x, y, size, flip}` (⇋ Flip mirrors a picture or drawing, not its caption or credit)
   (pixels of 1920×1080, %), e.g. to lift a scene off the progress bar.

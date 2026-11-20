@@ -161,3 +161,35 @@ outro:
     - type: recap
 thumb:
   sprite: east-priest-blessing
+
+voxels:
+  note: "Characters are 8 × 8 × 8, facing front, one .vox per pose (same as Candle Rack)."
+  characters:
+    - slug: priest-idle
+      label: Roman priest
+      note: "Point 4 — unmarried Roman priest, paired with the Eastern priest for both are good"
+    - slug: east-priest-idle
+      label: Eastern priest
+      note: "Point 2, 3 & 4 — Byzantine priest (also on Candle Rack checklist)"
+    - slug: east-deacon-walk
+      label: Eastern deacon
+      note: "Point 3 — sticharion and orarion, for Wedding → Deacon → Priest"
+    - slug: east-bishop-idle
+      label: Eastern bishop
+      note: "Point 2 — mitre, omophorion, and crozier (bishops are chosen from unmarried men)"
+    - slug: st-peter-idle
+      label: Saint Peter
+      note: "Point 1 — beard, tunic, holding the keys (reusable in Pope and Church lessons)"
+    - slug: woman-walk
+      label: Wife / mother
+      note: "Point 1, 2 & 3 — Peter's family and a married priest's wife (also on Candle Rack checklist)"
+    - slug: child-walk
+      label: Child
+      note: "Intro & Point 2 — for a priest's wife and children (also on Candle Rack checklist)"
+  props:
+    - slug: wedding-crowns
+      label: Byzantine wedding crowns
+      note: "Point 3 — pair of golden wedding crowns for marriage comes first"
+    - slug: peters-keys
+      label: Keys of Saint Peter
+      note: "Point 1 — crossed gold and silver keys (reusable in Church & Pope lessons)"

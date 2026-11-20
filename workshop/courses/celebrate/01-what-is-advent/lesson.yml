@@ -150,3 +150,35 @@ outro:
     - Aim for about 40–50 words, ending with your usual sign-off.
   scenes:
     - type: recap
+
+voxels:
+  note: "Characters are 8 × 8 × 8, facing front, one .vox per pose (same as Candle Rack)."
+  characters:
+    - slug: priest-mass-idle
+      label: Priest in chasuble
+      note: "Point 4 — already on this slide (pink works for Gaudete Sunday; add priest-mass-purple if you want purple too)"
+    - slug: east-priest-idle
+      label: Eastern priest
+      note: "Point 2 — standing in a phelonion, for the Nativity Fast (also on Candle Rack checklist)"
+    - slug: john-the-baptist-point
+      label: John the Baptist, pointing
+      note: "Point 3 — beard, brown camel-hair tunic, pointing to the side toward Jesus"
+    - slug: jesus-idle
+      label: Jesus, standing
+      note: "Point 3 — who John points to (reusable in almost every lesson)"
+    - slug: child-kneel
+      label: Child praying
+      note: "Intro & Point 2 — kneeling in prayer, getting ready for Jesus (also on Candle Rack checklist)"
+  props:
+    - slug: advent-wreath
+      label: Advent wreath
+      note: "Point 4 & Outro — evergreen ring with 3 purple candles and 1 pink candle, flickering flames"
+    - slug: manger
+      label: Manger with baby Jesus
+      note: "Point 1 — wooden manger with straw and baby Jesus in Bethlehem (reused in Christmas)"
+    - slug: bethlehem-star
+      label: Star of Bethlehem
+      note: "Point 1 — bright golden star, 2–3 twinkling frames (reused in Christmas)"
+    - slug: simple-meal
+      label: Simple bread & bowl
+      note: "Point 2 — plain loaf of bread and bowl for the Nativity Fast"
