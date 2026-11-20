@@ -104,7 +104,11 @@ points:
     text: >-
       John the Baptist told everyone to get ready, because Jesus was coming! He didn't want people looking at him. He
       wanted them looking at Jesus. In Advent we try to do the same: a little less me, a little more Jesus.
-    visuals: []
+    visuals:
+      - type: voxel
+        voxel: priest-bless
+        view: front-right
+        with: over
     quiz:
       type: truefalse
       question: John the Baptist wanted people to look at him instead of Jesus.
