@@ -2,9 +2,10 @@
 
 An Angelio game (angelio.org/candles/): the time before Mass or the Divine Liturgy, getting the church ready. Tap a
 candle to light it, tap one that flickers "just in time", swipe along a row to light several, keep the sanctuary lamp
-burning (tap it when it's low). The candles that can be lit glow. People come and kneel in front of a rack, in the way
-of the candles behind them, and leave after a while; tap the priest or the altar server and he walks over (down the
-aisle, never through a rack) and kindly sends them to a pew. The door creaks before a draft blows out a row. A round is
+burning (tap it when it's low). The candles that can be lit glow. People come and kneel in front of a rack to pray, in
+the way of the candles behind them, and leave on their own; tap the priest or the altar server and he goes round behind
+that rack (never through it) and lights those candles for you. A combo meter (like a fighting game's hit counter) shows
+the count, the multiplier and a bar running out. The door creaks before a draft blows out a row. A round is
 90 seconds; at Mass the bells ring, every candle still burning counts, and the procession walks up the aisle.
 
 Easy to play, hard to master (the Angelio ROADMAP.md, "Games for Angelio"): anyone can light candles; a high score

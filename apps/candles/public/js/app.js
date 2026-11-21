@@ -1,5 +1,5 @@
 // Candle Rack: get the church ready before Mass. Tap the candles to light them, keep the sanctuary lamp burning,
-// and when someone kneels in the way, tap the priest or the server to help. Easy to play, hard to master: combos,
+// and when someone kneels to pray in front of the candles, tap the priest or the server to light those from behind. Easy to play, hard to master: combos,
 // "just in time", chains and the best score. The rules are in game.js, the church on screen in church.js, the
 // Church year (the vestments' and cloths' color) in season.js.
 import * as S from "./kit/store.js";
@@ -13,7 +13,7 @@ import * as FX from "./kit/fx.js";
 import { showLesson } from "./kit/lesson.js";
 import { vary } from "./kit/vary.js";
 import { esc, say, showFinish, stickerBook, viewGrownups, installClickSounds, wireVoiceToggle } from "./kit/ui.js";
-import { newGame, tick, tapCandle, tapLamp, chainBonus, lightFree, helpPerson, blockerOf, starsFor, needy, multFor, STAR3, WALK_IN } from "./game.js";
+import { newGame, tick, tapCandle, tapLamp, chainBonus, lightFree, helperLight, blockedNeedy, blockerOf, COMBO_GAP, starsFor, needy, multFor, STAR3, WALK_IN } from "./game.js";
 import { seasonOf } from "./season.js";
 import { createChurch, loadModels } from "./church.js";
 
@@ -75,6 +75,7 @@ function viewPlay() {
         <button class="icon-btn toggle" data-voice title="Read aloud">🔊</button>
       </div>
       <div class="bubble candle-bubble" aria-live="polite"><span class="mascot" aria-hidden="true">🕯️</span><p class="say"></p></div>
+      <div class="combo-meter" hidden aria-hidden="true"><b>0</b><em>COMBO</em><i>×1</i><span></span></div>
       <div class="prayers" aria-hidden="true"></div>
       <div class="pops" aria-hidden="true"></div>
       <div class="card candle-lesson" hidden></div>
@@ -121,23 +122,39 @@ function viewPlay() {
         sfx.chime();
         pop(`+${r.points}`, x, y, r.type === "just-in-time" ? "jit" : "");
         if (r.type === "just-in-time") talk.once("jit", vary("jit", ["Just in time!", "Phew, just in time!", "Saved it!"]));
-        if (r.mult > lastMult) { sfx.pop(); pop(`Combo ×${r.mult}!`, x, y - 34, "chain"); talk.once("combo", "A combo! Keep lighting quickly!"); }
+        if (r.mult > lastMult) { sfx.pop(); talk.once("combo", "A combo! Keep lighting quickly!"); }
         lastMult = r.mult;
         return true;
       }
-      if (r.type === "blocked") { sfx.tap(); pop("🙏", x, y); talk.once("blocked", "Someone is praying there. Tap the priest or the server to help!", { urgent: true }); }
+      if (r.type === "blocked") { sfx.tap(); pop("🙏", x, y); talk.once("blocked", "Someone is praying there. Tap the priest or the server, and he'll light those from behind!", { urgent: true }); }
       return false;
     };
-    // the priest or the server goes to whoever is in the way (the one blocking the most candles that need lighting)
+    // the priest or the server goes behind the rack where someone is praying and lights the candles there (the person
+    // with the most candles needing light behind them); the person keeps praying and leaves on their own
     const sendHelp = (who, x, y) => {
-      const waiting = g.people.filter((p) => g.t >= p.at && !p.helped);
+      const waiting = g.people.filter((p) => g.t >= p.at && blockedNeedy(g, p.id).length);
       if (!waiting.length || church.helperBusy(who)) { sfx.tap(); return; }
-      const need = g.candles.filter((c) => c.active && (!c.lit || c.life < 0.25));
-      const score = (p) => need.filter((c) => blockerOf(g, c.id) === p).length;
-      const p = waiting.sort((a, b) => score(b) - score(a))[0];
-      helpPerson(g, p.id, church.helpTime(who, p.id) + 0.6);
-      church.helpPerson(who, p.id);
-      sfx.pop(); pop(who === "priest" ? "⛪" : "🙋", x, y);
+      const p = waiting.sort((a, b) => blockedNeedy(g, b.id).length - blockedNeedy(g, a.id).length)[0];
+      church.helpLight(who, p.id, () => {
+        if (!alive || ended) return;
+        const ids = helperLight(g, p.id);
+        if (ids.length) { sfx.chime(); const at = church.personHead(p.id); if (at) pop(`+${ids.length}`, at.x, at.y - 20); talk.once("helped", who === "priest" ? "Thank you, Father!" : "Thank you! The server lit them from behind.") }
+      });
+      sfx.pop();
+    };
+
+    // the combo meter (like a fighting game's hit counter): the count, the multiplier, and a bar running out
+    const meter = $(".combo-meter"), meterN = meter.querySelector("b"), meterX = meter.querySelector("i"), meterBar = meter.querySelector("span");
+    let shown = 0;
+    const showCombo = () => {
+      const n = g.combo;
+      if (n >= 2) {
+        if (n !== shown) { meter.classList.remove("bump", "out"); void meter.offsetWidth; meter.classList.add("bump"); }
+        meter.hidden = false; meterN.textContent = n; meterX.textContent = `×${multFor(n)}`;
+        meter.dataset.m = multFor(n);
+        meterBar.style.transform = `scaleX(${Math.max(0, 1 - (g.t - g.lastLight) / COMBO_GAP)})`;
+      } else if (shown >= 2) { meter.classList.add("out"); setTimeout(() => { if (g.combo < 2) meter.hidden = true; }, 500); }
+      shown = n;
     };
     canvas.addEventListener("pointerdown", (e) => {
       if (g.over) return;
@@ -193,7 +210,7 @@ function viewPlay() {
           else if (ev.type === "person") {
             church.personArrive(ev, WALK_IN);
             const el = document.createElement("div"); el.className = "prayer"; el.textContent = "🙏"; prayersEl.append(el); prayers.set(ev.id, el);
-            setTimeout(() => { if (alive && !ended && g.people.some((p) => p.id === ev.id)) talk.once("person", "Someone is kneeling in the way! Tap the priest or the server to help.", { urgent: true }); }, WALK_IN * 1000);
+            setTimeout(() => { if (alive && !ended && g.people.some((p) => p.id === ev.id)) talk.once("person", "Someone came to pray. Tap the priest or the server to light the candles behind them.", { urgent: true }); }, WALK_IN * 1000);
           }
           else if (ev.type === "person-left") { prayers.get(ev.id)?.remove(); prayers.delete(ev.id); church.personLeave(ev.id); }
           else if (ev.type === "end") ended = true;
@@ -202,6 +219,7 @@ function viewPlay() {
         $("[data-clock]").textContent = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`;
         $("[data-score]").textContent = g.score;
         $("[data-combo]").textContent = multFor(g.combo) > 1 ? ` ×${multFor(g.combo)}` : "";
+        showCombo();
         if (!said30 && left <= 30) { said30 = true; talk("Thirty seconds until Mass!", { urgent: true }); }
         if (g.t >= helpAt) { helpAt = g.t + 22 + g.t / 6; help(); }
         for (const [id, el] of prayers) { const at = church.personHead(id); if (at) { el.style.left = at.x + "px"; el.style.top = at.y + "px"; } }
@@ -229,7 +247,7 @@ function viewPlay() {
       });
       const fin = app.querySelector(".finish h1");
       fin?.insertAdjacentHTML("afterend", `<p class="final-score">You scored <b>${g.score}</b>${newBest ? " · a new best!" : ` · your best: ${best}`}</p>
-        <p class="muted">${g.lit + g.justInTime} candles lit · ${g.justInTime} just in time · best combo ${g.bestCombo} · ${g.ready} burning when Mass began${g.helped ? ` · ${g.helped} helped to a pew` : ""}${stars < 3 ? ` · ${STAR3} for three stars` : ""}</p>`);
+        <p class="muted">${g.lit + g.justInTime} candles lit · ${g.justInTime} just in time · best combo ${g.bestCombo} · ${g.ready} burning when Mass began${g.helperLit ? ` · ${g.helperLit} lit by the priest and server` : ""}${stars < 3 ? ` · ${STAR3} for three stars` : ""}</p>`);
     }
   })();
 

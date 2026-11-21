@@ -4,8 +4,8 @@
 // Candles burn down; tap one that's out to light it. Tap one that's flickering (nearly out) for "just in time!",
 // worth more. Light them quickly one after another for a combo: each light within COMBO_GAP seconds of the last adds
 // to it, and the combo multiplies the points; pause too long and it ends. Swipe along a row to light several in one go
-// (a chain). People come and kneel in front of a rack, and the candles behind them can't be reached until they leave
-// on their own, or the priest or the server kindly sends them to a pew (helpPerson). The door creaks before a draft
+// (a chain). People come and kneel in front of a rack to pray, and the candles behind them can't be reached until they
+// leave on their own; the priest or the server can go round behind the rack and light those for you (helperLight). The door creaks before a draft
 // blows out a row. The sanctuary lamp must never go out: tap it to add oil. At Mass, the round ends, and every candle
 // still burning counts.
 
@@ -41,7 +41,7 @@ export function newGame({ seed = 1, length = ROUND } = {}) {
     candles.push({ id: candles.length, rack, row, slot, size: 0.8 + r() * 0.5, life: 0, lit: false, active: false });
   }
   const g = { r, t: 0, length, candles, lamp: 1, lampOut: false, score: 0, combo: 0, bestCombo: 0, lastLight: -Infinity,
-    lit: 0, justInTime: 0, outs: 0, helped: 0, ready: 0, people: [], nextPerson: 10, nextDraft: Infinity, draft: null,
+    lit: 0, justInTime: 0, outs: 0, helperLit: 0, ready: 0, people: [], nextPerson: 10, nextDraft: Infinity, draft: null,
     over: false, nextPersonId: 1 };
   activate(g);
   for (const c of g.candles) if (c.active) { c.lit = true; c.life = 0.5 + r() * 0.5; } // the first ones already burning
@@ -105,12 +105,12 @@ export function tick(g, dt) {
   if (g.t >= g.nextPerson && g.people.length < 2 && g.t < g.length - 10) {
     const rack = g.people.length ? 1 - g.people[0].rack : Math.floor(g.r() * RACKS); // never two at one rack
     // they walk in for WALK_IN seconds (the screen shows it), then kneel and are in the way
-    const p = { id: g.nextPersonId++, rack, slot: Math.floor(g.r() * (PER_ROW - 1)), came: g.t, at: g.t + WALK_IN, until: g.t + WALK_IN + 10 + g.r() * 5, helped: false };
+    const p = { id: g.nextPersonId++, rack, slot: Math.floor(g.r() * (PER_ROW - 1)), came: g.t, at: g.t + WALK_IN, until: g.t + WALK_IN + 10 + g.r() * 5 };
     g.people.push(p); ev.push({ type: "person", ...p });
     g.nextPerson = g.t + d.personEvery * (0.8 + g.r() * 0.4);
   }
   for (const p of [...g.people]) {
-    if (g.t >= p.until) { g.people.splice(g.people.indexOf(p), 1); ev.push({ type: "person-left", id: p.id, helped: p.helped }); }
+    if (g.t >= p.until) { g.people.splice(g.people.indexOf(p), 1); ev.push({ type: "person-left", id: p.id }); }
   }
   if (g.t >= g.length) {
     g.over = true;
@@ -155,14 +155,17 @@ export function swipe(g, ids) {
   return { results, chain: good >= 3 ? good : 0, bonus };
 }
 
-/** The priest or the server goes to someone kneeling in the way and kindly sends them to a pew. They leave `after`
- * seconds from now (the time it takes him to walk over). Returns false if that person is already going. */
-export function helpPerson(g, id, after = 1.5) {
-  const p = g.people.find((x) => x.id === id);
-  if (!p || p.helped || g.over) return false;
-  p.helped = true; p.until = Math.min(p.until, g.t + after);
-  g.helped++;
-  return true;
+/** The candles someone kneeling is in the way of that need lighting (out or flickering). */
+export const blockedNeedy = (g, personId) => g.candles.filter((c) => c.active && (!c.lit || c.life < LOW) && blockerOf(g, c.id)?.id === personId).map((c) => c.id);
+
+/** The priest or the server, from behind the rack, lights the candles this person is in the way of: a point each (the
+ * combo doesn't change). Returns the ids he lit. */
+export function helperLight(g, personId) {
+  if (g.over) return [];
+  const ids = blockedNeedy(g, personId);
+  for (const id of ids) { const c = g.candles[id]; c.lit = true; c.life = 1; }
+  g.helperLit += ids.length; g.score += ids.length;
+  return ids;
 }
 
 /** The server's own help: he lights a candle that's out (no points, the combo stays). */

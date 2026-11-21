@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { newGame, tick, tapCandle, tapLamp, swipe, starsFor, needy, difficulty, helpPerson, blockerOf, lightFree, LOW, ROUND, COMBO_GAP } from "../public/js/game.js";
+import { newGame, tick, tapCandle, tapLamp, swipe, starsFor, needy, difficulty, helperLight, blockedNeedy, blockerOf, lightFree, LOW, ROUND, COMBO_GAP } from "../public/js/game.js";
 
 /** Play a whole round: every `every` seconds the player does one thing (or nothing). */
 function play(policy, { seed = 7, every = 1, dt = 0.1 } = {}) {
@@ -16,14 +16,15 @@ function play(policy, { seed = 7, every = 1, dt = 0.1 } = {}) {
 const idle = () => {};
 // a small child: taps any candle that's out, now and then; remembers the lamp only when it's out
 const slowKid = (g) => { const out = needy(g).map((id) => g.candles[id]).find((c) => !c.lit); if (out) tapCandle(g, out.id); else if (g.lampOut) tapLamp(g); };
-// a focused player: lamp when low, sends for help when someone's in the way, flickering candles just in time, then any out
+// a focused player: lamp when low, flickering candles just in time, then any that are out; when nothing can be tapped,
+// sends the priest or the server to light the candles behind someone kneeling
 const focused = (g) => {
   if (g.lampOut || g.lamp < 0.3) return tapLamp(g);
-  const p = g.people.find((x) => !x.helped);
-  if (p) return helpPerson(g, p.id);
   const n = needy(g).map((id) => g.candles[id]);
   const pick = n.find((c) => c.lit) ?? n[0];
-  if (pick) tapCandle(g, pick.id);
+  if (pick) return tapCandle(g, pick.id);
+  const p = g.people.find((x) => g.t >= x.at && blockedNeedy(g, x.id).length);
+  if (p) helperLight(g, p.id);
 };
 
 test("stars: never tapping gets 1, a slow little one 2, a quick focused player 3", () => {
@@ -67,7 +68,7 @@ test("combos: quick lights build a multiplier, a pause ends it", () => {
   assert.equal(g.bestCombo, 7);
 });
 
-test("someone kneeling blocks the candles behind them until they leave or the priest sends them to a pew", () => {
+test("someone kneeling blocks the candles behind them; the priest or server lights those from behind the rack", () => {
   const g = newGame({ seed: 5 });
   for (let i = 0; i < 300 && !g.people.length; i++) tick(g, 0.1);
   const p = g.people[0];
@@ -80,17 +81,17 @@ test("someone kneeling blocks the candles behind them until they leave or the pr
   assert.equal(tapCandle(g, behind[0].id).type, "blocked");
   assert.ok(!needy(g).includes(behind[0].id), "a blocked candle isn't shown as tappable");
   assert.equal(lightFree(g, behind[0].id), false);
-  assert.ok(helpPerson(g, p.id, 1));
-  assert.equal(helpPerson(g, p.id), false, "he's already going");
-  let left;
-  for (let i = 0; i < 20 && !left; i++) left = tick(g, 0.1).find((e) => e.type === "person-left");
-  assert.equal(left.id, p.id); assert.equal(left.helped, true);
-  assert.equal(tapCandle(g, behind[0].id).type, "lit");
+  const score = g.score, combo = g.combo;
+  assert.deepEqual(helperLight(g, p.id).sort(), behind.map((c) => c.id).sort());
+  assert.equal(g.score - score, 4); assert.equal(g.combo, combo);
+  assert.ok(behind.every((c) => c.lit));
+  assert.deepEqual(helperLight(g, p.id), [], "nothing left to light");
+  assert.ok(g.people.includes(p), "they keep praying");
 });
 
 test("people leave on their own too, and never two at one rack", () => {
   const { events } = play(idle, { seed: 8 });
-  assert.ok(events.some((e) => e.type === "person-left" && !e.helped));
+  assert.ok(events.some((e) => e.type === "person-left"));
   const g = newGame({ seed: 8 });
   while (!g.over) { tick(g, 0.1); if (g.people.length === 2) assert.notEqual(g.people[0].rack, g.people[1].rack); }
 });

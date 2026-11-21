@@ -7,6 +7,7 @@
 // below). The stand-ins are not art: they only hold the place and are replaced, piece by piece, by his models.
 // The parts of his models painted pink (#FF77A8) are recolored with the season's color (season.js).
 import { readVox, toScene } from "./vox.js";
+import { blockedNeedy } from "./game.js";
 
 const T = () => window.THREE;
 const ART = /(^|\.)angelio\.org$/.test(location.hostname) ? "" : "https://angelio.org";
@@ -18,7 +19,7 @@ export const LAYOUT = {
   slotGap: 3.2, rowY: [1.8, 3.2], rowZ: [1.1, -1.1],
   lamp: { x: 5.5, y: 11, z: -10 },
   door: { x: -23, z: 6 },
-  sacristy: { x: 16, z: -12.5 }, serverHome: { x: -18, z: -6.6 }, behindRacks: -6.6, frontLane: 6, aisle: { x: 0, z: 14 },
+  sacristy: { x: 16, z: -12.5 }, serverHome: { x: -16, z: -12.5 }, behindRacks: -6.6, frontLane: 6, aisle: { x: 0, z: 14 },
   kneelZ: 3.6, // where someone kneels in front of a rack
 };
 // the racks' footprint (with a little room around them): nobody walks through it
@@ -127,8 +128,12 @@ export function createChurch(canvas, { season, models = {} }) {
     const m = models[name];
     if (!m) return null;
     const g = new THREE.Group();
+    // stand each model on its own middle (his models sit a voxel off-center; turning around would swing him sideways)
+    const all = m.vox.frames.flatMap((_, f) => toScene(m.vox, f));
+    const mid = (k) => (Math.min(...all.map((c) => c[k])) + Math.max(...all.map((c) => c[k]))) / 2;
+    const cx = all.length ? mid(0) : 0, cz = all.length ? mid(2) : 0;
     g.userData.frames = m.vox.frames.map((_, f) => {
-      const cells = toScene(m.vox, f);
+      const cells = toScene(m.vox, f).map(([x, y, z, c]) => [x - cx, y, z - cz, c]);
       const im = new THREE.InstancedMesh(box, new THREE.MeshLambertMaterial(), cells.length);
       const o = new THREE.Object3D(), col = new THREE.Color();
       cells.forEach(([x, y, z, c], i) => { o.position.set(x, y, z); o.updateMatrix(); im.setMatrixAt(i, o.matrix); im.setColorAt(i, col.set(recolor && isPink(c) ? season.hex : c)); });
@@ -212,12 +217,13 @@ export function createChurch(canvas, { season, models = {} }) {
   // ── camera: the whole church fits, whatever the screen's shape ──
   // The camera comes as close as it can while the racks, the altar and the lamp all fit between the clock at the top
   // and the speech bubble at the bottom (pad: pixels kept clear), whatever the screen's shape.
-  const KEEP = [[-20, 0, 2.5], [20, 0, 2.5], [-20, 9, -3], [20, 9, -3], [0, 13, -13], [LAYOUT.lamp.x, LAYOUT.lamp.y + 2, LAYOUT.lamp.z], [-20, 0, 6], [20, 0, 6]];
+  const KEEP = [[-20, 0, 2.5], [20, 0, 2.5], [-20, 9, -3], [20, 9, -3], [0, 13, -13], [LAYOUT.lamp.x, LAYOUT.lamp.y + 2, LAYOUT.lamp.z], [-20, 0, 7], [20, 0, 7], [0, 14, -16]];
   let pad = { top: 70, bottom: 90 };
   function resize(newPad) {
     if (newPad) pad = newPad;
     const w = canvas.clientWidth, h = canvas.clientHeight;
     R.setSize(w, h, false); cam.aspect = w / h;
+    cam.clearViewOffset(); // measure without the last fit's shift (it made big screens zoom in too far)
     const top = 1 - (2 * pad.top) / h, bottom = -1 + (2 * pad.bottom) / h, look = new THREE.Vector3(0, 3, -4), v = new THREE.Vector3();
     for (let d = 18; d < 160; d += 1) {
       cam.position.set(0, d * 0.62, d * 0.78 - 4); cam.lookAt(look); cam.updateProjectionMatrix(); cam.updateMatrixWorld();
@@ -270,7 +276,7 @@ export function createChurch(canvas, { season, models = {} }) {
       if (m) animate(m, time - (a.t0 ?? 0));
     }
     // the helpers' rings: gold and pulsing while someone is in the way and they're free
-    const waiting = !g.over && g.people.some((p) => g.t >= p.at && !p.helped);
+    const waiting = !g.over && g.people.some((p) => g.t >= p.at && blockedNeedy(g, p.id).length);
     for (const a of [priest, server]) { a.ring.material.opacity = waiting && !a.busy ? 0.45 + 0.35 * Math.sin(time * 6) : 0; a.ring.visible = waiting && !a.busy; }
     R.render(scene, cam);
   }
@@ -309,17 +315,17 @@ export function createChurch(canvas, { season, models = {} }) {
       await server.goHome();
     },
     helperBusy: (who) => !!helpers[who]?.busy,
-    /** How long the priest or the server takes to reach someone kneeling (seconds), to tell the rules when they leave. */
-    helpTime: (who, personId) => { const p = people.get(personId), a = helpers[who]; if (!p || !a) return 0; const at = p.a.g.position; return a.timeTo(at.x, at.z + 3, 14); },
-    /** He hurries over (around the racks), stands by the person while they get up, and goes back. */
-    helpPerson: async (who, personId) => {
+    /** He hurries round behind the rack (never through it, never shooing anyone), to the spot behind the person
+     * praying, lights the candles there (`light` is called then), and goes back. */
+    helpLight: async (who, personId, light) => {
       const p = people.get(personId), a = helpers[who];
       if (!p || !a || a.busy) return false;
       a.busy = true;
-      const at = p.a.g.position;
-      await a.go(at.x, at.z + 3, "walk", 14);
-      a.g.rotation.y = Math.PI; a.pose("idle");
-      await new Promise((r) => setTimeout(r, 700));
+      await a.go(p.a.g.position.x, LAYOUT.behindRacks, "walk", 14);
+      a.g.rotation.y = 0; a.pose("light");
+      await new Promise((r) => setTimeout(r, 900));
+      light();
+      await new Promise((r) => setTimeout(r, 500));
       a.busy = false;
       a.goHome();
       return true;
