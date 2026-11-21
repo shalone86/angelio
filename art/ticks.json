@@ -1,4 +1,25 @@
 {
  "favorites": [],
- "done": {}
+ "done": {
+  "priest-idle": true,
+  "priest-walk-fast": true,
+  "priest-walk-slow": true,
+  "priest-bless": true,
+  "priest-mass-idle": true,
+  "priest-mass-walk": true,
+  "server-idle": true,
+  "server-light": true,
+  "server-candle-idle": true,
+  "server-candle-walk": true,
+  "server-walk": true,
+  "server-cross-idle": true,
+  "server-cross-walk": true,
+  "east-server-ripidion-idle": true,
+  "east-server-ripidion-walk": true,
+  "east-server-cross-idle": true,
+  "east-server-cross-walk": true,
+  "east-server-light": true,
+  "east-server-idle": true,
+  "east-server-walk": true
+ }
 }
