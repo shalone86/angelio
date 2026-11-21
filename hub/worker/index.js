@@ -18,6 +18,7 @@ export const APPS = {
   watch: "WATCH", // Watch & Sing (watch Worker): the kids video lessons, quizzes and songs
   // Articulate also keeps its own address (articulate.shalonely.com): both work, no redirect.
   articulate: "ARTICULATE", // Articulate (articulation Worker)
+  candles: "CANDLES", // Candle Rack (candles Worker): the game of getting the church ready before Mass
 };
 
 import { normalizeCode, newCode, codeStatus, day, month } from "./codes.js";

@@ -14,7 +14,8 @@
     { "binding": "LETTERS", "service": "letters" },
     { "binding": "READALOUD", "service": "readaloud" },
     { "binding": "WATCH", "service": "watch" },
-    { "binding": "ARTICULATE", "service": "articulation" }
+    { "binding": "ARTICULATE", "service": "articulation" },
+    { "binding": "CANDLES", "service": "candles" }
   ],
   // Family codes and daily safety caps, shared with the app Workers (worker/codes.js).
   // The admin page (/admin/) needs a secret: npx wrangler secret put ADMIN_KEY

@@ -45,6 +45,10 @@ export const APP_LIST = [
     name: "Watch & Sing", path: "watch", subject: "faith", grades: "All ages", emoji: "🎵",
     blurb: "Catholic video lessons with little quizzes, and songs to sing along with.",
   },
+  {
+    name: "Candle Rack", path: "candles", subject: "faith", grades: "All ages", emoji: "🕯️",
+    blurb: "A game: get the church ready before Mass. Light the candles, keep the sanctuary lamp burning, and light a candle for each prayer.",
+  },
   // Coming soon (see ROADMAP.md)
   { name: "Spelling", subject: "language", grades: "Grades 1–3", emoji: "🔤", blurb: "Hear a word, build it letter by letter, and learn the spelling patterns." },
   { name: "Writing Skills", subject: "language", grades: "Grades 1–4", emoji: "📝", blurb: "From sentences to paragraphs: build, fix and grow your writing." },
