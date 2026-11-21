@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Say the Word · Angelio speech test</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="/css/hub.css">
+  <style>
+    .st { max-width: 720px; margin: 0 auto; padding: calc(14px + env(safe-area-inset-top)) 0 calc(40px + env(safe-area-inset-bottom)); display: grid; gap: 14px; }
+    .st h1 { margin: 4px 0 0; font: 900 2rem/1.1 Baloo, Nunito, sans-serif; }
+    .box { background: var(--card); border-radius: 22px; padding: 16px; box-shadow: 0 6px 0 rgb(0 0 0 / .12); display: grid; gap: 10px; }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .pill { font: 800 1rem Nunito, sans-serif; padding: 10px 16px; min-height: 46px; border-radius: 99px; border: 2px solid #b9d8f5; background: var(--card); color: var(--ink); cursor: pointer; }
+    .pill[aria-pressed="true"] { background: #2a6db3; color: #fff; border-color: #2a6db3; }
+    .pill:disabled { opacity: .5; cursor: default; }
+    .go { background: #2fa866; color: #fff; border-color: #2fa866; }
+    .bar { height: 12px; border-radius: 99px; background: var(--sky-2); overflow: hidden; }
+    .bar i { display: block; height: 100%; width: 0; background: #2fa866; transition: width .2s; }
+    .word { text-align: center; font: 900 clamp(3rem, 16vw, 5.5rem)/1.1 Baloo, Nunito, sans-serif; margin: 6px 0; overflow-wrap: anywhere; }
+    .mic { justify-self: center; width: 132px; height: 132px; border-radius: 50%; border: 0; font-size: 3.4rem; background: #ff6b5a; color: #fff; box-shadow: 0 8px 0 #c94a3c; cursor: pointer; position: relative; }
+    .mic:active { transform: translateY(4px); box-shadow: 0 4px 0 #c94a3c; }
+    .mic:disabled { opacity: .45; cursor: default; }
+    .mic.on { background: #2fa866; box-shadow: 0 8px 0 #1f7a49; animation: breathe 1s ease-in-out infinite; }
+    .mic .lvl { position: absolute; inset: -10px; border-radius: 50%; border: 6px solid #2fa866; opacity: 0; pointer-events: none; }
+    @keyframes breathe { 50% { transform: scale(1.04); } }
+    .answer { text-align: center; font: 800 1.3rem Nunito, sans-serif; min-height: 2em; }
+    .answer.yes { color: #1f8a50; } .answer.no { color: #c0522f; }
+    .muted { color: var(--muted); font-size: .95rem; margin: 0; }
+    table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+    td, th { text-align: left; padding: 6px 4px; border-bottom: 1px solid var(--sky-2); }
+    input[type=text] { font: 700 1.1rem Nunito, sans-serif; padding: 10px 12px; border-radius: 14px; border: 2px solid #b9d8f5; min-width: 0; flex: 1 1 160px; background: var(--card); color: var(--ink); }
+    @media (prefers-reduced-motion: reduce) { .mic.on { animation: none; } }
+  </style>
+</head>
+<body>
+  <main class="st">
+    <a href="/">← Angelio</a>
+    <h1>🎤 Say the Word</h1>
+    <p class="muted">A test for grown-ups: does on-device speech checking work on this phone, tablet or computer, with your
+      kids' voices? The listening happens <b>on this device</b>: the voice never leaves it. The first time, it downloads the
+      listening model once (use Wi-Fi). Then try words with each child and with a grown-up, and say a <b>wrong</b> word on
+      purpose too. When you're done, <b>Copy the results</b> and send them to Claude.</p>
+
+    <section class="box">
+      <b>1. The listening model</b>
+      <div class="row" id="models"></div>
+      <div class="row"><button class="pill go" id="load">Get ready</button><span class="muted" id="loadNote"></span></div>
+      <div class="bar" hidden id="bar"><i></i></div>
+    </section>
+
+    <section class="box">
+      <b>2. Who's talking?</b>
+      <div class="row" id="who"></div>
+      <b>3. Pick words</b>
+      <div class="row" id="sets"></div>
+      <div class="row" id="own" hidden><input type="text" id="ownWord" placeholder="Type a word or a short phrase"><button class="pill" id="ownGo">Use it</button></div>
+    </section>
+
+    <section class="box" aria-live="polite">
+      <div class="row" style="justify-content:space-between"><button class="pill" id="hear">🔊 Hear it</button><span class="muted" id="count"></span><button class="pill" id="next">Next word ➜</button></div>
+      <div class="word" id="word">…</div>
+      <button class="mic" id="mic" disabled aria-label="Tap and say the word">🎤<span class="lvl" id="lvl"></span></button>
+      <div class="answer" id="answer">Get ready first (step 1).</div>
+      <p class="muted" id="heardRaw" style="text-align:center"></p>
+    </section>
+
+    <section class="box">
+      <div class="row" style="justify-content:space-between"><b>Results</b><span class="row"><button class="pill" id="copy">📋 Copy the results</button><button class="pill" id="clear">Clear</button></span></div>
+      <p class="muted" id="summary"></p>
+      <table><thead><tr><th>Who</th><th>Word</th><th>Heard</th><th></th><th>Time</th></tr></thead><tbody id="rows"></tbody></table>
+    </section>
+  </main>
+  <script type="module" src="speech.js"></script>
+</body>
+</html>

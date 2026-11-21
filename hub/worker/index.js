@@ -54,12 +54,34 @@ export default {
       return res;
     }
 
+    // Speech-check files too big for the site's own files (over 25 MB): the Whisper models and the speech engine
+    // (ONNX Runtime), kept in R2 under models/ and downloaded once by each device. Their paths carry their version,
+    // so they never change: cached for a year. Usable from the apps' other addresses.
+    if (url.pathname.startsWith("/models/")) {
+      const key = url.pathname.slice(1);
+      if (!/^models\/[A-Za-z0-9._-]+(\/[A-Za-z0-9._-]+)*$/.test(key) || key.includes("..")) return new Response("not found", { status: 404 });
+      const obj = env.WATCH_MEDIA ? await env.WATCH_MEDIA.get(key) : null;
+      if (!obj) return new Response("not found", { status: 404 });
+      const type = { wasm: "application/wasm", mjs: "text/javascript", js: "text/javascript", json: "application/json" }[key.split(".").pop()] ?? "application/octet-stream";
+      return new Response(obj.body, { headers: { "content-type": type, "cache-control": "public, max-age=31536000, immutable", "access-control-allow-origin": "*", etag: obj.httpEtag } });
+    }
+
     // The shared fonts: usable from the apps' other addresses (fonts need CORS), kept for a month.
     if (url.pathname.startsWith("/fonts/")) {
       const res = await env.ASSETS.fetch(request);
       const out = new Response(res.body, res);
       out.headers.set("access-control-allow-origin", "*");
       if (res.ok) out.headers.set("cache-control", "public, max-age=2592000");
+      return out;
+    }
+
+    // The speech test page: cross-origin isolated, so the speech engine may use several processor cores (faster);
+    // everything it loads is from angelio.org itself.
+    if (url.pathname === "/speech" || url.pathname.startsWith("/speech/")) {
+      const res = await env.ASSETS.fetch(request);
+      const out = new Response(res.body, res);
+      out.headers.set("cross-origin-opener-policy", "same-origin");
+      out.headers.set("cross-origin-embedder-policy", "require-corp");
       return out;
     }
 

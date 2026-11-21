@@ -32,8 +32,10 @@ whole words and wrongly accepted none of 702 wrong-word pairs; about 0.6 s a wor
 whisper-tiny.en (40 MB) was close behind (24/27, faster). Words built from Dad's separate syllables ("can"+"dul") were
 heard 17 of 25 times. Single letter sounds ("tuh", "shh") don't work: Whisper turns them into words or nothing, so
 letter-sound checks stay out. The checker compares how words sound (numbers as words, spellings simplified; short
-words keep their vowels, so "bit" is never accepted for "bot"). Next: a test page on angelio.org to try it on real
-phones with the kids' own voices; then Articulate and Read Aloud.
+words keep their vowels, so "bit" is never accepted for "bot"). The test page for real phones and the kids' own voices
+is **angelio.org/speech/** ("Say the Word": pick a model, who's talking, words; Copy the results and send them to
+Claude). The engine and the models are on angelio.org (R2 `models/`, served by the hub at /models/), nothing from
+outside sites; the checker is `hub/public/js/sounds-like.js`. Then Articulate and Read Aloud.
 
 Phase 1 (done, free codes, no payments):
 - Codes live in the shared KV store `angelio-codes` (binding `CODES`); logic in `worker/codes.js`
