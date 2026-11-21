@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Family voices · Angelio</title>
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <style>
+    :root { --ink: #183153; --muted: #4b6584; --line: #cfe6fb; --sun: #ffc93c; --bad: #e5484d; --good: #16a34a; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 16px/1.45 Nunito, system-ui, sans-serif; color: var(--ink); background: #f2f9ff; }
+    main { max-width: 760px; margin: 0 auto; padding: 16px; }
+    h1 { font-size: 1.5rem; margin: 6px 0 2px; } h2 { font-size: 1.15rem; margin: 0 0 8px; }
+    .card { background: #fff; border-radius: 18px; padding: 14px 16px; margin: 12px 0; box-shadow: 0 4px 0 var(--line); }
+    label { display: block; font-weight: 700; margin: 6px 0 2px; }
+    input[type=text], input[type=password] { font: inherit; width: 100%; padding: 10px 12px; border: 2px solid var(--line); border-radius: 12px; }
+    .row { display: flex; gap: 8px; align-items: end; flex-wrap: wrap; } .row > * { flex: 1 1 140px; }
+    button { font: inherit; font-weight: 800; border: 0; border-radius: 12px; padding: 10px 16px; background: var(--sun); color: #4a3300; cursor: pointer; min-height: 44px; }
+    button.ghost { background: #eef6ff; color: var(--ink); } button.small { padding: 6px 10px; font-size: .85rem; min-height: 38px; } button.bad { color: var(--bad); }
+    .muted { color: var(--muted); font-size: .9rem; }
+    .item { display: grid; grid-template-columns: 1fr; gap: 6px; padding: 12px 0; border-top: 1px solid var(--line); }
+    .item .who { font-size: 1.15rem; } .item .em { font-size: 1.6rem; vertical-align: -4px; }
+    .tools { display: flex; flex-wrap: wrap; gap: 6px; }
+    .bar { height: 8px; background: #eef6ff; border-radius: 4px; overflow: hidden; } .bar i { display: block; height: 100%; background: var(--good); }
+    .link { font: 600 .85rem ui-monospace, monospace; word-break: break-all; background: #fff4cc; padding: 6px 8px; border-radius: 8px; }
+    .err { color: var(--bad); font-weight: 700; }
+    .chk { display: flex; gap: 8px; align-items: center; font-weight: 400; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+<main>
+  <p><a href="/admin/">← Admin</a></p>
+  <h1>🗣️ Family voices</h1>
+  <p class="muted">Family and friends record the lines every game says most, and kids pick whose voice reads to them (on angelio.org
+    and in each game's grown-ups page). Add a person, then send them their own link: they record on their phone, no key needed.
+    A <b>family-only</b> voice (a child's, say) is heard only on devices with a family code. Ask each person first, and use
+    first names ("Grandma Rose").</p>
+
+  <section class="card" id="login">
+    <h2>Admin key</h2>
+    <form id="login-form" class="row"><div><label for="key">Your admin key</label><input id="key" type="password" autocomplete="current-password" required></div><button>Open</button></form>
+    <p class="err" id="login-err" hidden></p>
+  </section>
+
+  <div id="panel" hidden>
+    <section class="card">
+      <h2>Add a person</h2>
+      <form id="add" class="row">
+        <div><label for="name">Name kids will see</label><input id="name" type="text" maxlength="40" placeholder="Grandma Rose" required></div>
+        <div style="flex:0 1 110px"><label for="emoji">Emoji</label><input id="emoji" type="text" maxlength="8" placeholder="👵"></div>
+        <button>Add</button>
+      </form>
+      <label class="chk"><input type="checkbox" id="private"> Family only (a child's voice, or anyone who'd rather not be public)</label>
+    </section>
+    <section class="card"><h2>Voices</h2><div id="list"></div><p class="err" id="err" hidden></p></section>
+  </div>
+</main>
+<script type="module">
+  import { zipFiles } from "/js/zip.js";
+  const $ = (s) => document.querySelector(s);
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  let key = (() => { try { return localStorage.getItem("angelio:admin") || sessionStorage.getItem("angelio:admin") || ""; } catch { return ""; } })();
+  let shared = 48, voices = [];
+
+  async function call(path, body) {
+    const r = await fetch(path, { method: body ? "POST" : "GET", headers: { "x-admin-key": key, ...(body ? { "content-type": "application/json" } : {}) }, body: body ? JSON.stringify(body) : undefined });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw Object.assign(new Error(j.error || `error ${r.status}`), { status: r.status });
+    return j;
+  }
+  const linkOf = (v) => `${location.origin}/voice/?t=${v.token}`;
+  function draw() {
+    $("#list").innerHTML = voices.map((v) => `
+      <div class="item">
+        <div class="who"><span class="em">${esc(v.emoji)}</span> <b>${esc(v.name)}</b>${v.private ? " · 🔒 family only" : ""}
+          <span class="muted">· ${v.lines} line${v.lines === 1 ? "" : "s"} recorded${v.lines >= shared ? " 🎉" : ` (the main ${shared}: kids hear these most)`}</span></div>
+        <div class="bar"><i style="width:${Math.min(100, (100 * v.lines) / shared)}%"></i></div>
+        ${v.token ? `<div class="link">${esc(linkOf(v))}</div>` : `<div class="muted">No recording link (make one to send).</div>`}
+        <div class="tools">
+          ${v.token ? `<button class="small" data-copy="${v.id}">📋 Copy their link</button>` : ""}
+          <button class="ghost small" data-newlink="${v.id}">${v.token ? "New link (old one stops)" : "Make a link"}</button>
+          ${v.token ? `<button class="ghost small" data-nolink="${v.id}">Turn the link off</button>` : ""}
+          <button class="ghost small" data-rename="${v.id}">Rename</button>
+          ${v.id.startsWith("v-") ? `<button class="ghost small" data-private="${v.id}">${v.private ? "Make public" : "Make family only"}</button>` : ""}
+          ${v.lines ? `<button class="ghost small" data-zip="${v.id}">⬇️ Download their recordings</button>` : ""}
+          ${v.id.startsWith("v-") ? `<button class="ghost small bad" data-delete="${v.id}">Delete</button>` : ""}
+        </div>
+      </div>`).join("");
+  }
+  async function load() {
+    const j = await call("/api/admin/voices");
+    voices = j.voices;
+    $("#login").hidden = true; $("#panel").hidden = false;
+    draw();
+  }
+  const update = async (body) => { voices = (await call("/api/admin/voices/update", body)).voices; draw(); };
+  document.addEventListener("click", async (e) => {
+    const b = e.target.closest("button[data-copy],button[data-newlink],button[data-nolink],button[data-rename],button[data-private],button[data-zip],button[data-delete]");
+    if (!b) return;
+    const id = Object.values(b.dataset)[0], v = voices.find((x) => x.id === id);
+    $("#err").hidden = true;
+    try {
+      if (b.dataset.copy) { await navigator.clipboard.writeText(linkOf(v)).catch(() => prompt("Copy the link:", linkOf(v))); b.textContent = "✅ Copied"; return; }
+      if (b.dataset.newlink) { if (!v.token || confirm(`Make a new link for ${v.name}? The old one stops working.`)) await update({ id, newLink: true }); }
+      if (b.dataset.nolink && confirm(`Turn off ${v.name}'s link? Their recordings stay.`)) await update({ id, noLink: true });
+      if (b.dataset.rename) { const n = prompt("Name kids will see:", v.name); const em = n && prompt("Emoji:", v.emoji); if (n) await update({ id, name: n, emoji: em || v.emoji }); }
+      if (b.dataset.private) await update({ id, private: !v.private });
+      if (b.dataset.delete && confirm(`Delete ${v.name} and all ${v.lines} of their recordings? Download them first if you want to keep them.`)) {
+        voices = (await call("/api/admin/voices/delete", { id })).voices; draw();
+      }
+      if (b.dataset.zip) await download(v, b);
+    } catch (err) { $("#err").hidden = false; $("#err").textContent = err.message; }
+  });
+
+  // The family keepsake: every recording of one person, named by its words, in one .zip (made in this browser)
+  async function download(v, b) {
+    const [{ index }, lines, { lineId }] = await Promise.all([
+      call(`/api/admin/voices/index?set=${v.id}`), fetch("/admin/lines.json").then((r) => r.json()), import("/letters/js/kit/tts.js"),
+    ]);
+    const words = new Map(lines.groups.flatMap((g) => g.lines.map((l) => [lineId(l.text), l.text])));
+    const ids = Object.keys(index), files = [];
+    for (const [i, id] of ids.entries()) {
+      b.textContent = `Downloading ${i + 1} of ${ids.length}…`;
+      const r = await fetch(`/api/clip?set=${v.id}&id=${id}&v=${index[id]}`, { headers: { "x-admin-key": key } });
+      if (!r.ok) continue;
+      const name = (words.get(id) ?? id).replace(/[\\/:*?"<>|]/g, "").slice(0, 60);
+      files.push({ name: `${String(i + 1).padStart(3, "0")} ${name}.wav`, data: new Uint8Array(await r.arrayBuffer()) });
+    }
+    files.push({ name: "about.txt", data: new TextEncoder().encode(`${v.name}'s voice for Angelio (angelio.org), downloaded ${new Date().toDateString()}.\n${files.length} recordings.\n`) });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(zipFiles(files)); a.download = `${v.name} - Angelio voice.zip`; a.click();
+    b.textContent = "⬇️ Download their recordings";
+  }
+
+  $("#add").onsubmit = async (e) => {
+    e.preventDefault();
+    try { voices = (await call("/api/admin/voices", { name: $("#name").value, emoji: $("#emoji").value, private: $("#private").checked })).voices; $("#add").reset(); draw(); }
+    catch (err) { $("#err").hidden = false; $("#err").textContent = err.message; }
+  };
+  $("#login-form").onsubmit = async (e) => {
+    e.preventDefault(); key = $("#key").value.trim();
+    try { await load(); try { localStorage.setItem("angelio:admin", key); } catch { /* fine */ } }
+    catch (err) { $("#login-err").hidden = false; $("#login-err").textContent = err.status === 401 ? "That key didn't work." : err.message; }
+  };
+  fetch("/admin/lines.json").then((r) => r.json()).then((j) => { shared = j.groups[0].lines.length; if (voices.length) draw(); }).catch(() => {});
+  if (key) load().catch(() => {});
+</script>
+</body>
+</html>

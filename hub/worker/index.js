@@ -25,6 +25,7 @@ import { normalizeCode, newCode, codeStatus, day, month } from "./codes.js";
 import { stripeApi } from "./stripe.js";
 import { studioApi, backupToGitHub, READING_LIVE, ART_LIVE, CANDLES_LAYOUT, voxKey } from "./studio.js";
 import { artSlug } from "../public/js/art-content.js";
+import { voiceSet, publicClips, isPrivate, putClip, deleteClip, voiceLinkApi, voicesAdminApi } from "./voices.js";
 
 export default {
   // Every night: copy the Studio's library into GitHub (does nothing without a GITHUB_TOKEN secret).
@@ -97,7 +98,8 @@ export default {
 //   GET  /api/admin/codes            → { codes: [{ code, name, limit, used, revoked, created }], today }
 //   POST /api/admin/codes            { name, limit } → { code }
 //   POST /api/admin/codes/update     { code, limit?, revoked? }
-//   GET  /api/clips                  → { clips: { f: { sound: version }, m: {…} } }   (recorded sounds: Mom's and Dad's)
+//   GET  /api/clips                  → { clips: { f: { sound: version }, m: {…}, "v-…": {…} }, voices: [...] }
+//                                       (Mom's and Dad's sounds and lines, and the family voices: worker/voices.js)
 //   GET  /api/clip?set=f&id=tuh&v=…  → audio/wav
 //   POST /api/admin/clip?set=f&id=tuh  (body: audio/wav) · POST /api/admin/clip/delete?set=f&id=tuh
 
@@ -105,8 +107,8 @@ export default {
 const sheetId = (s) => (/^[a-z0-9][a-z0-9-]{0,79}$/.test(String(s ?? "")) ? s : null);
 
 /** A sound's name as the apps say it ("tuh", "shh", "fruh"): lowercase letters only. */
-/** Whose recordings: "f" (Mom) or "m" (Dad). */
-const clipSet = (x) => (x === "m" ? "m" : "f");
+/** Whose recordings: "f" (Mom), "m" (Dad), or a family voice "v-…" (voices.js); none given means Mom's. */
+const clipSet = (x) => (x == null || x === "" ? "f" : voiceSet(x));
 // A sound ("tuh") or a whole line ("line-" + a hash of its words, see the apps' tts.js lineId).
 const clipId = (x) => (/^([a-z][a-z' -]{0,19}|line-[0-9a-z]{1,8})$/.test(String(x ?? "")) ? String(x) : null);
 
@@ -127,16 +129,23 @@ async function api(request, url, env) {
   }
   // Recorded sounds ("tuh", "shh"): a grown-up records them at /admin/, every reading app plays them
   // instead of the robot voice (the apps live on angelio.org, so they ask the hub).
+  // Family voices (voices.js): who can read to the kids, and their recorded lines. A family-only voice is listed and
+  // played only with a family code (header x-angelio-code, or ?code= on a recording's address).
+  const familyCode = async () => !!(await codeStatus(env, request.headers.get("x-angelio-code") || url.searchParams.get("code"))).valid;
   if (route === "GET /api/clips") {
-    const clips = { f: {}, m: {}, ...((await env.CODES.get("clips:index", "json")) ?? {}) };
-    return new Response(JSON.stringify({ clips }), { headers: { "content-type": "application/json", "cache-control": "public, max-age=60" } });
+    const hasCode = (request.headers.get("x-angelio-code") || url.searchParams.get("code")) ? await familyCode() : false;
+    return new Response(JSON.stringify(await publicClips(env.CODES, hasCode)), { headers: { "content-type": "application/json", "cache-control": hasCode ? "private, no-store" : "public, max-age=60" } });
   }
   if (route === "GET /api/clip") {
     const id = clipId(url.searchParams.get("id")), set = clipSet(url.searchParams.get("set"));
-    const wav = id && (await env.CODES.get(`clip:${set}:${id}`, "arrayBuffer"));
+    const secret = set && (await isPrivate(env.CODES, set));
+    if (secret && !(await familyCode()) && !(await sameSecret(request.headers.get("x-admin-key"), env.ADMIN_KEY))) return json({ error: "no recording" }, 404);
+    const wav = id && set && (await env.CODES.get(`clip:${set}:${id}`, "arrayBuffer"));
     if (!wav) return json({ error: "no recording" }, 404);
-    return new Response(wav, { headers: { "content-type": "audio/wav", "cache-control": "public, max-age=31536000, immutable" } });
+    return new Response(wav, { headers: { "content-type": "audio/wav", "cache-control": secret ? "private, max-age=31536000, immutable" : "public, max-age=31536000, immutable" } });
   }
+  const link = await voiceLinkApi(request, url, env); // a family member's own recording link
+  if (link) return link;
   // The reading lessons saved in the Studio (Letter Lane and Read Aloud load them; 404 = use their own copy).
   if (route === "GET /api/content/reading") {
     const obj = env.WATCH_MEDIA ? await env.WATCH_MEDIA.get(READING_LIVE) : null;
@@ -179,6 +188,8 @@ async function api(request, url, env) {
     return json({ error: "wrong admin key" }, 401);
   }
   if (url.pathname.startsWith("/api/admin/studio/")) return studioApi(request, url, env);
+  const voices = await voicesAdminApi(request, url, env);
+  if (voices) return voices;
   const kv = env.CODES;
   if (route === "GET /api/admin/codes") {
     const codes = [];
@@ -197,15 +208,9 @@ async function api(request, url, env) {
   }
   if (route === "POST /api/admin/clip") {
     const id = clipId(url.searchParams.get("id")), set = clipSet(url.searchParams.get("set"));
-    if (!id) return json({ error: "bad sound name" }, 400);
-    const wav = await request.arrayBuffer();
-    const most = id.startsWith("line-") ? 3_000_000 : 400_000; // a line can be about 30 seconds; a sound, a few
-    if (wav.byteLength < 100 || wav.byteLength > most) return json({ error: "recording is empty or too long" }, 400);
-    await kv.put(`clip:${set}:${id}`, wav);
-    const index = { f: {}, m: {}, ...((await kv.get("clips:index", "json")) ?? {}) };
-    index[set][id] = Date.now();
-    await kv.put("clips:index", JSON.stringify(index));
-    return json({ id, set, v: index[set][id] });
+    if (!id || !set) return json({ error: "bad sound name" }, 400);
+    const r = await putClip(kv, set, id, await request.arrayBuffer());
+    return json(r.error ? { error: r.error } : r, r.error ? 400 : 200);
   }
   if (route === "POST /api/admin/leadsheet") {
     const id = sheetId(url.searchParams.get("id"));
@@ -226,8 +231,7 @@ async function api(request, url, env) {
   }
   if (route === "POST /api/admin/clip/delete") {
     const id = clipId(url.searchParams.get("id")), set = clipSet(url.searchParams.get("set"));
-    const index = { f: {}, m: {}, ...((await kv.get("clips:index", "json")) ?? {}) };
-    if (id) { delete index[set][id]; await kv.delete(`clip:${set}:${id}`); await kv.put("clips:index", JSON.stringify(index)); }
+    if (id && set) await deleteClip(kv, set, id);
     return json({ ok: true });
   }
   const body = await request.json().catch(() => ({}));

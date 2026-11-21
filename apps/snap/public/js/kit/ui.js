@@ -2,7 +2,7 @@
 // the grown-ups settings card, and a click sound for every button.
 
 import * as S from "./store.js";
-import { speak, stop, browserVoices, whenQuiet } from "./tts.js";
+import { speak, stop, browserVoices, whenQuiet, chooseVoice, chosenVoice, familyVoices } from "./tts.js";
 import { health } from "./api.js";
 import { sfx } from "./sound.js";
 import { confetti } from "./fx.js";
@@ -126,6 +126,7 @@ export async function viewGrownups(app, { extraToggles = [], about = "" } = {}) 
   app.innerHTML = `
     <section>
       <h1>For grown-ups</h1>
+      <div class="card" data-voice-picker hidden></div>
       <div class="card">
         ${toggle("readAloud", "Read aloud", "Says every step out loud, for kids who are still learning to read.")}
         ${toggle("slow", "Slower voice", "")}
@@ -156,6 +157,7 @@ export async function viewGrownups(app, { extraToggles = [], about = "" } = {}) 
   app.querySelectorAll("[data-k]").forEach((el) => {
     el.onchange = () => S.setSetting(el.dataset.k, el.type === "checkbox" ? el.checked : el.value);
   });
+  showVoicePicker(app.querySelector("[data-voice-picker]"));
   app.querySelector("[data-test]").onclick = () => speak("Hello! Let's learn something fun.", { force: true });
   app.querySelector("[data-reset]").onclick = () => {
     if (confirm("Reset all stars and stickers?")) { S.resetProgress(); location.hash = "#/"; }
@@ -163,6 +165,26 @@ export async function viewGrownups(app, { extraToggles = [], about = "" } = {}) 
   const h = await health();
   const st = app.querySelector("[data-voice-status]");
   if (st) st.textContent = h.tts ? "Cloudflare voice is available." : `Using this device's voice${browserVoices().length ? "" : " (if it has one)"}.`;
+}
+
+/**
+ * "Who reads to you?": Mom, Dad, the family and friends who recorded lines (angelio.org/voice/), or the robot. The
+ * pick is shared by every game on angelio.org; a line that person didn't record is read by Mom, Dad, then the robot.
+ * Fills `el` (and shows it) once the voices are known; stays hidden when there's nobody but the robot.
+ */
+export async function showVoicePicker(el) {
+  if (!el) return;
+  const voices = await familyVoices();
+  if (!voices.some((v) => v.lines > 0)) return;
+  const draw = () => {
+    const now = chosenVoice();
+    el.innerHTML = `<p style="margin:0 0 8px"><b>Who reads to you?</b><br><span class="muted small">Real people we know recorded the lines the games say most. Pick one!</span></p>
+      <div class="row" style="margin-top:0">${[...voices, { id: "robot", name: "Robot", emoji: "🤖" }].map((v) =>
+        `<button class="btn${v.id === now ? " primary" : ""}" data-voice-id="${esc(v.id)}" aria-pressed="${v.id === now}">${esc(v.emoji)} ${esc(v.name)}</button>`).join("")}</div>`;
+    el.querySelectorAll("[data-voice-id]").forEach((b) => b.onclick = () => { chooseVoice(b.dataset.voiceId); draw(); speak("Great job!", { force: true }); });
+  };
+  draw();
+  el.hidden = false;
 }
 
 /** Every button and link clicks, except ones that make their own sound (mark them data-own-sound). */

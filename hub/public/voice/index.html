@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Record your voice · Angelio</title>
+  <meta name="robots" content="noindex">
+  <meta name="referrer" content="no-referrer">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="/css/hub.css">
+  <style>
+    .vr { max-width: 680px; margin: 0 auto; padding: calc(14px + env(safe-area-inset-top)) 0 calc(48px + env(safe-area-inset-bottom)); display: grid; gap: 14px; }
+    .vr h1 { margin: 4px 0 0; font: 900 2rem/1.15 Baloo, Nunito, sans-serif; }
+    .box { background: var(--card); border-radius: 22px; padding: 16px; box-shadow: 0 6px 0 rgb(0 0 0 / .12); display: grid; gap: 10px; }
+    .bar { height: 14px; border-radius: 99px; background: var(--sky-2); overflow: hidden; }
+    .bar i { display: block; height: 100%; width: 0; background: #2fa866; transition: width .3s; }
+    .line { display: grid; grid-template-columns: 1fr auto; gap: 8px 12px; align-items: center; padding: 12px 0; border-top: 1px solid var(--sky-2); }
+    .line:first-of-type { border-top: 0; }
+    .line .t { font: 800 1.2rem/1.3 Nunito, sans-serif; }
+    .line .w { color: var(--muted); font-size: .85rem; }
+    .line.done .t::before { content: "✅ "; }
+    .line.now { background: rgb(47 168 102 / .08); border-radius: 14px; padding: 12px 10px; }
+    .btns { display: flex; gap: 6px; }
+    .b { font: 800 1rem Nunito, sans-serif; min-height: 48px; min-width: 48px; padding: 8px 14px; border-radius: 99px; border: 2px solid #b9d8f5; background: var(--card); color: var(--ink); cursor: pointer; }
+    .b.rec { background: #ff6b5a; border-color: #ff6b5a; color: #fff; }
+    .b.rec.on { background: #2fa866; border-color: #2fa866; animation: pulse 1s ease-in-out infinite; }
+    .b:disabled { opacity: .4; cursor: default; }
+    @keyframes pulse { 50% { transform: scale(1.06); } }
+    details summary { cursor: pointer; font-weight: 800; }
+    .err { color: #c0522f; font-weight: 700; }
+    .muted { color: var(--muted); margin: 0; }
+    @media (max-width: 480px) { .line { grid-template-columns: 1fr; } }
+    @media (prefers-reduced-motion: reduce) { .b.rec.on { animation: none; } }
+  </style>
+</head>
+<body>
+  <main class="vr">
+    <h1 id="hello">🎙️ Record your voice</h1>
+    <section class="box" id="intro">
+      <p class="muted">Thank you for lending your voice! Kids playing the Angelio learning games can pick <b>you</b> to read to
+        them. Each line is something the games say a lot, like praise when an answer is right, or a gentle "try again".</p>
+      <p class="muted"><b>How:</b> find a quiet spot, tap <b>⏺ Record</b>, say the line warmly (like you're talking to a
+        5-year-old you love), then tap <b>⏹ Stop</b>. Listen with ▶ and record again if you like. The silence at the start and end
+        is cut for you. You can stop any time and come back to this same link later.</p>
+      <p class="muted" id="privacyNote"></p>
+    </section>
+    <section class="box">
+      <div class="row" style="display:flex;justify-content:space-between;gap:8px"><b id="progress">Loading…</b><span class="muted" id="pct"></span></div>
+      <div class="bar"><i id="fill"></i></div>
+      <p class="err" id="err" hidden></p>
+    </section>
+    <section class="box" id="main"></section>
+    <section class="box"><details id="more"><summary>More lines, for each game (if you'd like to keep going)</summary><div id="extra"></div></details></section>
+  </main>
+  <script type="module" src="voice.js"></script>
+</body>
+</html>

@@ -15,6 +15,16 @@ voice; donations welcome; a paid Pro voice (natural Cloudflare voice) with an ac
 | Read Aloud | /read/ | 1–3 | shalone86/readaloud |
 | Articulate | /articulate/ (and articulate.shalonely.com, kept on purpose: a friend uses it) | All ages | shalone86/articulation |
 
+## Family voices (Nov 21, 2026)
+
+Family and friends record the lines every game says most (the 48 shared ones first; more per game if they like), and
+kids pick whose voice reads to them: "Who reads to you?" on angelio.org and in every game's grown-ups page (the pick is
+shared by every game). The owner adds a person at angelio.org/admin/voices.html and sends them their own recording link
+(angelio.org/voice/?t=…, no key); a family-only voice (a child's) plays only on devices with a family code. A line that
+person didn't record is read by Mom, then Dad, then the robot. Each person's recordings download as a .zip for the family.
+Code: hub `worker/voices.js`, `public/voice/`, `public/admin/voices.html`; the games' `kit/tts.js` (chosenVoice).
+Ideas for later: lines for each game (Read Aloud's stories stay robot), a photo instead of an emoji.
+
 ## Backburner (remind the owner after each new thing we finish)
 
 **Paid speech checks.** Reading aloud stays free (device voice). "Say it out loud" checking costs

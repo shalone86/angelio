@@ -119,3 +119,36 @@ async function showCode(code, { fresh = false } = {}) {
 
 codeForm?.addEventListener("submit", (e) => { e.preventDefault(); showCode(codeIn.value.trim().toUpperCase(), { fresh: true }); });
 if (codeForm) showCode(getCode());
+
+// Who reads to you? The family voices (Mom, Dad, and family and friends who recorded at angelio.org/voice/), picked
+// here for every game ("angelio:voice", the same pick the games' grown-ups page makes; the games' kit/tts.js plays it).
+(async () => {
+  const box = document.getElementById("readers"), row = document.getElementById("reader-row");
+  if (!box) return;
+  const get = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
+  const code = get("angelio:code");
+  let j;
+  try { j = await (await fetch("/api/clips", code ? { headers: { "x-angelio-code": code } } : undefined)).json(); } catch { return; }
+  const voices = (j.voices ?? []).filter((v) => v.lines > 0 || v.id === "f" || v.id === "m");
+  if (!voices.some((v) => v.lines > 0)) return;
+  // a short sample in their own voice: the first of the shared lines they recorded ("Great job!" if they did)
+  const lines = await fetch("/admin/lines.json").then((r) => r.json()).then((x) => x.groups[0].lines.map((l) => l.text)).catch(() => []);
+  const { lineId } = await import("/letters/js/kit/tts.js");
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+  const draw = () => {
+    const now = get("angelio:voice") || "f";
+    row.innerHTML = [...voices, { id: "robot", name: "Robot", emoji: "🤖" }].map((v) =>
+      `<button type="button" class="reader" data-reader="${esc(v.id)}" aria-pressed="${v.id === now}"><span class="em" aria-hidden="true">${esc(v.emoji)}</span>${esc(v.name)}</button>`).join("");
+  };
+  draw();
+  box.hidden = false;
+  row.onclick = (e) => {
+    const b = e.target.closest("[data-reader]");
+    if (!b) return;
+    try { localStorage.setItem("angelio:voice", b.dataset.reader); } catch { /* storage blocked */ }
+    draw();
+    const set = b.dataset.reader, idx = j.clips?.[set] ?? {};
+    const sample = ["Great job!", ...lines].find((t) => idx[lineId(t)] != null);
+    if (sample) new Audio(`/api/clip?set=${set}&id=${lineId(sample)}&v=${idx[lineId(sample)]}${set.startsWith("v-") && code ? `&code=${encodeURIComponent(code)}` : ""}`).play().catch(() => {});
+  };
+})();

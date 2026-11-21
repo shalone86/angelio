@@ -102,25 +102,42 @@ async function speakBrowser(text, rate, id) {
 // (see setClips); without one it's read like the rest of the text.
 let clipFor = () => null;
 
-// Whole lines a grown-up recorded (angelio.org/admin/sounds, the "Lines" tabs), found by their exact words:
-// a whole thing to say, or one sentence of it ("Great job!"). Mom's or Dad's voice, whichever is picked, else
-// the other one, else the robot. The list of recordings comes from the hub (/api/clips).
-let lineIndex = null;
+// Whole lines a real person recorded, found by their exact words: a whole thing to say, or one sentence of it
+// ("Great job!"). Mom and Dad record at angelio.org/admin/sounds; family and friends with their own recording link
+// (angelio.org/voice/; the hub's worker/voices.js). Whose voice reads is the child's pick, shared by every game on
+// angelio.org ("angelio:voice": a voice's id, or "robot"); a line that person didn't record is read by Mom, else
+// Dad, else the robot. The list of voices and recordings comes from the hub (/api/clips); family-only voices come
+// only with the family code (localStorage "angelio:code").
+let lineIndex = null, voiceList = [];
 /** The id of a line: "line-" + a short hash of its words (the recorder uses the same one). */
 export function lineId(text) {
   let h = 0x811c9dc5;
   for (const ch of String(text).replace(/\s+/g, " ").trim()) { h ^= ch.codePointAt(0); h = Math.imul(h, 0x01000193) >>> 0; }
   return `line-${h.toString(36)}`;
 }
-const voicePick = () => { try { return (settings().soundVoice ?? localStorage.getItem("angelio:voice")) === "m" ? "m" : "f"; } catch { return "f"; } };
+const local = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
+/** Whose voice reads the lines: a voice id ("f", "m", "v-…") or "robot". */
+export const chosenVoice = () => { try { return local("angelio:voice") || settings().soundVoice || "f"; } catch { return "f"; } };
+/** Pick whose voice reads, for every game on this site. */
+export function chooseVoice(id) { try { localStorage.setItem("angelio:voice", id); } catch { /* storage blocked */ } }
 function lineClip(text) {
-  if (!lineIndex) return null;
-  const id = lineId(text), want = voicePick();
-  for (const set of [want, want === "m" ? "f" : "m"]) { const v = lineIndex[set]?.[id]; if (v != null) return `/api/clip?set=${set}&id=${id}&v=${v}`; }
+  const want = chosenVoice();
+  if (!lineIndex || want === "robot") return null;
+  const id = lineId(text), code = local("angelio:code");
+  for (const set of [...new Set([want, "f", "m"])]) {
+    const v = lineIndex[set]?.[id];
+    if (v != null) return `/api/clip?set=${set}&id=${id}&v=${v}${set.startsWith("v-") && code ? `&code=${encodeURIComponent(code)}` : ""}`;
+  }
   return null;
 }
-if (typeof fetch !== "undefined" && typeof location !== "undefined" && location.protocol === "https:")
-  fetch("/api/clips").then((r) => (r.ok ? r.json() : null)).then((j) => { if (j?.clips) lineIndex = j.clips; }).catch(() => {});
+let voicesReady = Promise.resolve([]);
+if (typeof fetch !== "undefined" && typeof location !== "undefined" && location.protocol === "https:") {
+  const code = local("angelio:code");
+  voicesReady = fetch("/api/clips", code ? { headers: { "x-angelio-code": code } } : undefined).then((r) => (r.ok ? r.json() : null))
+    .then((j) => { if (j?.clips) lineIndex = j.clips; voiceList = j?.voices ?? []; return voiceList; }).catch(() => []);
+}
+/** The people who can read (Mom and Dad, then family and friends who recorded at least one line): [{ id, name, emoji, lines }]. */
+export const familyVoices = () => voicesReady.then(() => voiceList.filter((v) => v.lines > 0 || v.id === "f" || v.id === "m"));
 /** fn(sound) → URL of a recording of that sound, or null. */
 export function setClips(fn) { clipFor = fn; }
 const MARK = /\{\{([^}]+)\}\}/g;
