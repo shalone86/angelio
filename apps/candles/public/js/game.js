@@ -5,16 +5,22 @@
 // worth more. Light them quickly one after another for a combo: each light within COMBO_GAP seconds of the last adds
 // to it, and the combo multiplies the points; pause too long and it ends. Swipe along a row to light several in one go
 // (a chain). People come and kneel in front of a rack to pray, and the candles behind them can't be reached until they
-// leave on their own; the priest or the server can go round behind the rack and light those for you (helperLight). The door creaks before a draft
-// blows out a row. The sanctuary lamp must never go out: tap it to add oil. At Mass, the round ends, and every candle
-// still burning counts.
+// leave on their own; the priest or the server can go round behind the rack and light those for you (helperLight). The
+// door creaks before a draft blows out a row. The sanctuary lamp must never go out: tap it to add oil. At Mass, the
+// round ends, and every candle still burning counts.
+//
+// STAGES (stages.js) change the rules: from the second on, the player's TAPER lights only so many candles before it has
+// to be lit again at the big candle (tapBigCandle); busier feasts bring more people (up to two at a rack, side by side);
+// at Pascha the church starts dark, every candle out.
 
 export const ROUND = 90; // seconds before Mass
 export const RACKS = 2, ROWS = 2, PER_ROW = 4; // 16 candle spots
 export const COMBO_GAP = 2; // seconds between lights to keep a combo going
 const LOW = 0.25; // a candle with less than a quarter of its wax left flickers
-export const READY_BONUS = 2;
-export const WALK_IN = 2; // seconds someone takes to walk up to the rack before kneeling // each candle burning when Mass begins
+export const READY_BONUS = 2; // each candle burning when Mass begins
+export const WALK_IN = 2; // seconds someone takes to walk up to the rack before kneeling
+/** The rules of the first stage (stages.js has every stage; newGame takes any of them). */
+export const SUNDAY = { taper: 0, maxPeople: 2, peopleRate: 1, burn: 1, dark: false, star2: 30, star3: 450 };
 
 /** A small seeded random (mulberry32), so a round can be replayed (today's game, tests). */
 export function rng(seed) {
@@ -34,7 +40,7 @@ export function difficulty(p) {
   };
 }
 
-export function newGame({ seed = 1, length = ROUND } = {}) {
+export function newGame({ seed = 1, length = ROUND, stage = SUNDAY } = {}) {
   const r = rng(seed);
   const candles = [];
   for (let rack = 0; rack < RACKS; rack++) for (let row = 0; row < ROWS; row++) for (let slot = 0; slot < PER_ROW; slot++) {
@@ -42,9 +48,11 @@ export function newGame({ seed = 1, length = ROUND } = {}) {
   }
   const g = { r, t: 0, length, candles, lamp: 1, lampOut: false, score: 0, combo: 0, bestCombo: 0, lastLight: -Infinity,
     lit: 0, justInTime: 0, outs: 0, helperLit: 0, ready: 0, people: [], nextPerson: 10, nextDraft: Infinity, draft: null,
-    over: false, nextPersonId: 1 };
+    over: false, nextPersonId: 1, stage: { ...SUNDAY, ...stage }, taper: stage.taper ?? 0, tapers: 0 };
+  g.nextPerson = 10 / g.stage.peopleRate;
   activate(g);
-  for (const c of g.candles) if (c.active) { c.lit = true; c.life = 0.5 + r() * 0.5; } // the first ones already burning
+  // the first ones already burning (at Pascha, all dark)
+  if (!g.stage.dark) for (const c of g.candles) if (c.active) { c.lit = true; c.life = 0.5 + r() * 0.5; }
   return g;
 }
 
@@ -80,7 +88,7 @@ export function tick(g, dt) {
   for (const c of g.candles) {
     if (!c.active || !c.lit) continue;
     const was = c.life;
-    c.life -= (dt * d.burn) / (18 * c.size);
+    c.life -= (dt * d.burn * g.stage.burn) / (18 * c.size);
     if (was >= LOW && c.life < LOW) ev.push({ type: "flicker", id: c.id });
     if (c.life <= 0) { c.life = 0; c.lit = false; g.outs++; ev.push({ type: "out", id: c.id }); }
   }
@@ -101,13 +109,22 @@ export function tick(g, dt) {
     g.outs += hit.length;
     g.draft = null; g.nextDraft = g.t + d.draftEvery * (0.8 + g.r() * 0.4);
   }
-  // people come and kneel in front of a rack, in the way, for a while
-  if (g.t >= g.nextPerson && g.people.length < 2 && g.t < g.length - 10) {
-    const rack = g.people.length ? 1 - g.people[0].rack : Math.floor(g.r() * RACKS); // never two at one rack
-    // they walk in for WALK_IN seconds (the screen shows it), then kneel and are in the way
-    const p = { id: g.nextPersonId++, rack, slot: Math.floor(g.r() * (PER_ROW - 1)), came: g.t, at: g.t + WALK_IN, until: g.t + WALK_IN + 10 + g.r() * 5 };
-    g.people.push(p); ev.push({ type: "person", ...p });
-    g.nextPerson = g.t + d.personEvery * (0.8 + g.r() * 0.4);
+  // people come and kneel in front of a rack, in the way, for a while (never two in the same spot)
+  if (g.t >= g.nextPerson && g.people.length < g.stage.maxPeople && g.t < g.length - 10) {
+    const free = [];
+    for (let rack = 0; rack < RACKS; rack++) for (let slot = 0; slot < PER_ROW - 1; slot++) {
+      if (!g.people.some((q) => q.rack === rack && Math.abs(q.slot - slot) < 2)) free.push({ rack, slot });
+    }
+    // one rack at a time while there's room elsewhere, so both racks get busy
+    const empty = free.filter((f) => !g.people.some((q) => q.rack === f.rack));
+    const pool = empty.length ? empty : free;
+    if (pool.length) {
+      const { rack, slot } = pool[Math.floor(g.r() * pool.length)];
+      // they walk in for WALK_IN seconds (the screen shows it), then kneel and are in the way
+      const p = { id: g.nextPersonId++, rack, slot, came: g.t, at: g.t + WALK_IN, until: g.t + WALK_IN + 10 + g.r() * 5 };
+      g.people.push(p); ev.push({ type: "person", ...p });
+    }
+    g.nextPerson = g.t + (d.personEvery / g.stage.peopleRate) * (0.8 + g.r() * 0.4);
   }
   for (const p of [...g.people]) {
     if (g.t >= p.until) { g.people.splice(g.people.indexOf(p), 1); ev.push({ type: "person-left", id: p.id }); }
@@ -121,13 +138,16 @@ export function tick(g, dt) {
   return ev;
 }
 
-/** Tap a candle. Returns {type: 'lit' | 'just-in-time' | 'already' | 'blocked' | 'inactive', points, combo, person?}. */
+/** Tap a candle. Returns {type: 'lit' | 'just-in-time' | 'already' | 'blocked' | 'no-taper' | 'inactive', points, combo,
+ * person?, taper?}. */
 export function tapCandle(g, id) {
   const c = g.candles[id];
   if (!c || g.over || !c.active) return { type: "inactive", points: 0 };
   const person = blockerOf(g, id);
   if (person) return { type: "blocked", points: 0, person };
   if (c.lit && c.life >= LOW) return { type: "already", points: 0 };
+  if (g.stage.taper && g.taper <= 0) return { type: "no-taper", points: 0 };
+  if (g.stage.taper) g.taper--;
   const jit = c.lit; // still burning, but low
   c.lit = true; c.life = 1;
   g.combo = g.t - g.lastLight <= COMBO_GAP ? g.combo + 1 : 1;
@@ -136,7 +156,7 @@ export function tapCandle(g, id) {
   const points = (jit ? 3 : 1) * mult(g);
   if (jit) g.justInTime++; else g.lit++;
   g.score += points;
-  return { type: jit ? "just-in-time" : "lit", points, combo: g.combo, mult: mult(g) };
+  return { type: jit ? "just-in-time" : "lit", points, combo: g.combo, mult: mult(g), taper: g.taper };
 }
 
 /** The bonus for lighting `n` candles in one swipe (three or more), added to the score. */
@@ -176,6 +196,15 @@ export function lightFree(g, id) {
   return true;
 }
 
+/** Tap the big candle: light the taper again (full). The combo keeps going if the child is quick about it. */
+export function tapBigCandle(g) {
+  if (g.over || !g.stage.taper) return { type: "inactive" };
+  if (g.taper >= g.stage.taper) return { type: "full" };
+  g.taper = g.stage.taper; g.tapers++;
+  if (g.combo) g.lastLight = g.t; // the trip to the big candle doesn't break the combo
+  return { type: "taper" };
+}
+
 /** Tap the sanctuary lamp: add oil (or light it again). */
 export function tapLamp(g) {
   if (g.over) return { type: "inactive", points: 0 };
@@ -186,10 +215,9 @@ export function tapLamp(g) {
 }
 
 /** Stars for a finished round: two for any child who keeps lighting, three takes real focus (the best score is the
- * open-ended chase). Tuned with pretend players in test/game.test.js. */
-export const STAR2 = 30, STAR3 = 450;
+ * open-ended chase). Each stage has its own (stages.js), tuned with pretend players in test/game.test.js. */
 export function starsFor(g) {
-  return g.score >= STAR3 ? 3 : g.score >= STAR2 ? 2 : 1;
+  return g.score >= g.stage.star3 ? 3 : g.score >= g.stage.star2 ? 2 : 1;
 }
 
 /** The candles a child can tap now: out or flickering, and not behind someone kneeling. */

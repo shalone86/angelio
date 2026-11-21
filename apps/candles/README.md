@@ -8,6 +8,13 @@ that rack (never through it) and lights those candles for you. A combo meter (li
 the count, the multiplier and a bar running out. The door creaks before a draft blows out a row. A round is
 90 seconds; at Mass the bells ring, every candle still burning counts, and the procession walks up the aisle.
 
+**Stages** (`public/js/stages.js`), each opened by two stars on the one before: Sunday Mass (a Roman church), the Divine
+Liturgy (a Byzantine church: an iconostasis whose royal doors open at the end, tapers in sand trays), Christmas Midnight
+Mass (busier, gold) and Pascha (it starts dark and brightens as the candles are lit; busiest). From the second stage on
+the player carries a **taper** that lights 5–6 candles before it must be lit again at the big candle. Busier feasts bring
+more people to pray, up to two at a rack side by side. The Byzantine church uses his `east-…` models where they exist.
+The tips of whatever a server holds (the lighter, a candle) glow.
+
 Easy to play, hard to master (the Angelio ROADMAP.md, "Games for Angelio"): anyone can light candles; a high score
 takes focus (lights within two seconds of each other make a combo that multiplies the points, just-in-time and chains are worth more, more candles burn faster as
 Mass gets closer). Two stars for any child who keeps lighting, three take real focus, and the best score is the

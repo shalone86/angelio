@@ -64,3 +64,21 @@ body.candle-game main { max-width: none; padding: 0 !important; }
   .topbar .nav::-webkit-scrollbar { display: none; }
   .topbar .nav a { white-space: nowrap; }
 }
+
+/* Home: the stages, one card each (locked ones say how to open them). */
+.stages { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin: 8px 0 18px; }
+.stage { display: grid; gap: 4px; justify-items: center; text-align: center; text-decoration: none; color: var(--text); padding: 16px 14px; }
+.stage b { font: 800 1.2rem var(--font-display); }
+.stage-icon { font-size: 2.2rem; line-height: 1; }
+.stage-stars { color: #d9a400; font-weight: 800; letter-spacing: .05em; }
+.stage.locked { opacity: .6; }
+a.stage:active { transform: translateY(3px); }
+
+/* The taper in the top bar: one flame per candle it can still light; it shakes when it's out. */
+.candle-play .taper { display: flex; align-items: center; gap: 3px; background: rgb(255 248 235 / .92); border-radius: 16px; padding: 6px 10px; box-shadow: 0 2px 0 rgb(0 0 0 / .25); }
+.candle-play .taper[hidden] { display: none; }
+.taper-stick { width: 6px; height: 22px; border-radius: 3px; background: #e6c065; margin-right: 4px; box-shadow: inset -2px 0 0 #b8902e; }
+.candle-play .taper i { width: 9px; height: 13px; border-radius: 50% 50% 45% 45% / 60% 60% 40% 40%; background: #d8cfc0; }
+.candle-play .taper i.on { background: radial-gradient(circle at 50% 70%, #fff3b0, #ffb02e 60%, #ff7a1a); box-shadow: 0 0 6px #ffb02e; }
+.candle-play .taper.out { animation: shake .3s linear 3; background: #ffd9d2; }
+@media (max-width: 420px) { .candle-play .taper { padding: 5px 7px; gap: 2px; } .candle-play .taper i { width: 7px; height: 11px; } .candle-play .clock-label { display: none; } }

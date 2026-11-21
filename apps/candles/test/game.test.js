@@ -1,10 +1,11 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { newGame, tick, tapCandle, tapLamp, swipe, starsFor, needy, difficulty, helperLight, blockedNeedy, blockerOf, lightFree, LOW, ROUND, COMBO_GAP } from "../public/js/game.js";
+import { STAGES } from "../public/js/stages.js";
+import { tapBigCandle, newGame, tick, tapCandle, tapLamp, swipe, starsFor, needy, difficulty, helperLight, blockedNeedy, blockerOf, lightFree, LOW, ROUND, COMBO_GAP } from "../public/js/game.js";
 
 /** Play a whole round: every `every` seconds the player does one thing (or nothing). */
-function play(policy, { seed = 7, every = 1, dt = 0.1 } = {}) {
-  const g = newGame({ seed });
+function play(policy, { seed = 7, every = 1, dt = 0.1, stage } = {}) {
+  const g = newGame({ seed, stage });
   let wait = 0, events = [];
   while (!g.over) {
     events.push(...tick(g, dt));
@@ -15,11 +16,12 @@ function play(policy, { seed = 7, every = 1, dt = 0.1 } = {}) {
 }
 const idle = () => {};
 // a small child: taps any candle that's out, now and then; remembers the lamp only when it's out
-const slowKid = (g) => { const out = needy(g).map((id) => g.candles[id]).find((c) => !c.lit); if (out) tapCandle(g, out.id); else if (g.lampOut) tapLamp(g); };
+const slowKid = (g) => { if (g.stage.taper && g.taper <= 0) return tapBigCandle(g); const out = needy(g).map((id) => g.candles[id]).find((c) => !c.lit); if (out) tapCandle(g, out.id); else if (g.lampOut) tapLamp(g); };
 // a focused player: lamp when low, flickering candles just in time, then any that are out; when nothing can be tapped,
 // sends the priest or the server to light the candles behind someone kneeling
 const focused = (g) => {
   if (g.lampOut || g.lamp < 0.3) return tapLamp(g);
+  if (g.stage.taper && g.taper <= 0) return tapBigCandle(g);
   const n = needy(g).map((id) => g.candles[id]);
   const pick = n.find((c) => c.lit) ?? n[0];
   if (pick) return tapCandle(g, pick.id);
@@ -34,6 +36,45 @@ test("stars: never tapping gets 1, a slow little one 2, a quick focused player 3
     assert.equal(starsFor(play(focused, { seed, every: 2 }).g), 2, `focused but slow, seed ${seed}`);
     assert.equal(starsFor(play(focused, { seed, every: 0.8 }).g), 3, `focused, seed ${seed}: ${play(focused, { seed, every: 0.8 }).g.score}`);
   }
+});
+
+test("every stage: never tapping gets 1, a slow little one 2, a quick focused player 3", () => {
+  for (const stage of STAGES) for (const seed of [1, 2, 3, 7, 42]) {
+    assert.equal(starsFor(play(idle, { seed, stage }).g), 1, `${stage.id} idle, seed ${seed}`);
+    assert.equal(starsFor(play(slowKid, { seed, every: 2, stage }).g), 2, `${stage.id} slow kid, seed ${seed}`);
+    const f = play(focused, { seed, every: 0.8, stage }).g;
+    assert.equal(starsFor(f), 3, `${stage.id} focused, seed ${seed}: ${f.score}`);
+  }
+});
+
+test("the taper lights so many candles, then the big candle lights it again", () => {
+  const stage = STAGES.find((s) => s.taper);
+  const g = newGame({ seed: 3, stage });
+  g.people = []; g.nextPerson = Infinity;
+  for (const c of g.candles) { c.active = true; c.lit = false; }
+  for (let i = 0; i < stage.taper; i++) assert.equal(tapCandle(g, i).type, "lit");
+  assert.equal(g.taper, 0);
+  assert.equal(tapCandle(g, stage.taper).type, "no-taper");
+  assert.equal(tapBigCandle(g).type, "taper");
+  assert.equal(g.taper, stage.taper);
+  assert.equal(tapBigCandle(g).type, "full");
+  assert.equal(tapCandle(g, stage.taper).type, "lit");
+  assert.equal(tapBigCandle(newGame({ seed: 1 })).type, "inactive", "Sunday Mass has no taper");
+});
+
+test("busier feasts bring more people, never in the same spot; Pascha starts dark", () => {
+  const busiest = STAGES[STAGES.length - 1];
+  let most = 0;
+  const g = newGame({ seed: 9, stage: busiest });
+  assert.ok(g.candles.every((c) => !c.lit), "all dark at the start");
+  while (!g.over) {
+    tick(g, 0.1); most = Math.max(most, g.people.length);
+    for (const a of g.people) for (const b of g.people) if (a !== b && a.rack === b.rack) assert.ok(Math.abs(a.slot - b.slot) >= 2);
+  }
+  assert.ok(most >= 3, `up to ${most} at once`);
+  const quiet = newGame({ seed: 9 });
+  let q = 0; while (!quiet.over) { tick(quiet, 0.1); q = Math.max(q, quiet.people.length); }
+  assert.ok(q <= 2);
 });
 
 test("a round lasts its length and ends once", () => {
@@ -93,7 +134,7 @@ test("people leave on their own too, and never two at one rack", () => {
   const { events } = play(idle, { seed: 8 });
   assert.ok(events.some((e) => e.type === "person-left"));
   const g = newGame({ seed: 8 });
-  while (!g.over) { tick(g, 0.1); if (g.people.length === 2) assert.notEqual(g.people[0].rack, g.people[1].rack); }
+  while (!g.over) { tick(g, 0.1); if (g.people.length === 2) assert.notEqual(g.people[0].rack, g.people[1].rack); } // Sunday: one per rack
 });
 
 test("every candle still burning when Mass begins counts", () => {

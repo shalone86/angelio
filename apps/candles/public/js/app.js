@@ -13,39 +13,58 @@ import * as FX from "./kit/fx.js";
 import { showLesson } from "./kit/lesson.js";
 import { vary } from "./kit/vary.js";
 import { esc, say, showFinish, stickerBook, viewGrownups, installClickSounds, wireVoiceToggle } from "./kit/ui.js";
-import { newGame, tick, tapCandle, tapLamp, chainBonus, lightFree, helperLight, blockedNeedy, blockerOf, COMBO_GAP, starsFor, needy, multFor, STAR3, WALK_IN } from "./game.js";
-import { seasonOf } from "./season.js";
+import { newGame, tick, tapCandle, tapLamp, tapBigCandle, chainBonus, lightFree, helperLight, blockedNeedy, blockerOf, COMBO_GAP, starsFor, needy, multFor, WALK_IN } from "./game.js";
+import { seasonOf, COLORS } from "./season.js";
+import { STAGES, stageById, isOpen } from "./stages.js";
 import { createChurch, loadModels } from "./church.js";
 
 const app = document.getElementById("app");
 const season = seasonOf(new Date());
 const MODELS = ["priest-idle", "priest-walk-fast", "priest-mass-walk", "priest-walk-slow", "priest-mass-idle",
   "server-idle", "server-walk", "server-light", "server-cross-walk", "server-cross-idle", "server-candle-walk", "server-candle-idle",
+  // the Byzantine church (east-…): whichever of these he has made are used, the rest stand in
+  ...["priest-idle", "priest-walk", "priest-walk-fast", "priest-walk-slow", "priest-vested-idle", "priest-bless", "server-idle", "server-walk", "server-light",
+    "server-cross-walk", "server-cross-idle", "server-candle-walk", "server-candle-idle", "server-ripidion-walk", "server-ripidion-idle"].map((n) => `east-${n}`),
   ...["man", "woman", "child", "grandparent"].flatMap((k) => [`${k}-kneel`, `${k}-idle`, `${k}-walk`])];
 
 const route = createRouter([
   [/^$/, viewHome],
-  [/^play$/, viewPlay],
+  [/^play(?:\/([a-z]+))?$/, viewPlay],
   [/^grownups$/, () => viewGrownups(app, { about: `<p><b>Candle Rack</b> is a little game about getting the church ready before Mass or the Divine
-    Liturgy: lighting the votive candles and keeping the sanctuary lamp burning, while people come in to pray (tap the
+    Liturgy: lighting the votive candles (or the tapers, in a Byzantine church) and keeping the sanctuary lamp burning, while people come in to pray (tap the
     priest or the altar server to kindly send them to a pew). A round is a minute and a half. Anyone can play by tapping;
-    a high score takes focus (combos, "just in time", swiping a row, watching the door for drafts).
+    a high score takes focus (combos, "just in time", swiping a row, watching the door for drafts). Two stars open the next
+    stage: the Divine Liturgy in a Byzantine church (from here on the player's taper lights six candles before it must be
+    lit again at the big candle), Christmas Midnight Mass (busier) and Pascha (it starts in the dark, and it's busiest).
     The colors in the church follow the Church year, worked out from the date. Nothing is collected; the best score stays on
     this device.</p>` })],
 ], { before() { stop(); FX.clearFx(); document.body.classList.remove("in-game", "candle-game"); } });
 
+// each stage's stars and best score (Sunday Mass keeps the ones from before there were stages)
+const progressId = (st) => st.progress ?? `rack-${st.id}`;
+const bestKey = (st) => (st.id === "sunday" ? "best" : `best-${st.id}`);
+const starsOf = (st) => S.progress(progressId(st)).stars;
+
 function viewHome() {
-  const best = S.settings().best || 0, p = S.progress("rack");
   app.innerHTML = `
     <section class="hero candle-hero">
       <h1 class="title">Candle Rack</h1>
-      <p class="lede">Mass starts soon! Light the candles, keep the sanctuary lamp burning, and get help when someone kneels in the way.</p>
+      <p class="lede">Mass starts soon! Light the candles, keep the sanctuary lamp burning, and get the church ready.</p>
       <p class="season-chip" style="--season:${season.hex}"><span></span>${esc(season.name)}</p>
-      <a class="btn big primary play-btn" href="#/play">🕯️ Play</a>
-      ${best ? `<p class="muted">Your best: <b>${best}</b>${p.stars ? ` · ${"★".repeat(p.stars)}` : ""}</p>` : ""}
+    </section>
+    <section class="stages">
+      ${STAGES.map((st, i) => {
+        const open = isOpen(i, starsOf), p = S.progress(progressId(st)), best = S.settings()[bestKey(st)] || 0;
+        return open
+          ? `<a class="stage card" href="#/play/${st.id}"><span class="stage-icon">${st.icon}</span><b>${esc(st.name)}</b>
+              <span class="muted">${esc(st.blurb)}</span>
+              <span class="stage-stars">${"★".repeat(p.stars)}${"☆".repeat(3 - p.stars)}${best ? ` · best ${best}` : ""}</span></a>`
+          : `<div class="stage card locked" aria-disabled="true"><span class="stage-icon">🔒</span><b>${esc(st.name)}</b>
+              <span class="muted">Get two stars in ${esc(STAGES[i - 1].name)} to open it.</span></div>`;
+      }).join("")}
     </section>
     ${stickerBook()}`;
-  speak(`${season.say} Mass starts soon. Can you get the church ready?`);
+  speak(`${season.say} Mass starts soon. Can you get the church ready? Pick a church.`);
 }
 
 // what to say: most lines only once a round (after that a sound and a pop-up are enough), never too close together
@@ -63,7 +82,11 @@ function talker(bubble) {
   return talk;
 }
 
-function viewPlay() {
+function viewPlay(stageId) {
+  const stage = stageById(stageId), si = STAGES.indexOf(stage);
+  if (!isOpen(si, starsOf)) { location.hash = "#/"; return; }
+  // the feasts have their own color; otherwise the Church year's
+  const hex = stage.color ? COLORS[stage.color] : season.hex;
   document.body.classList.add("in-game", "candle-game");
   app.innerHTML = `
     <section class="candle-play">
@@ -71,6 +94,7 @@ function viewPlay() {
       <div class="hud">
         <a class="icon-btn" href="#/" aria-label="Stop and go home">✕</a>
         <div class="clock" aria-label="Time until Mass"><span class="clock-label">Mass in</span> <b data-clock>1:30</b></div>
+        <div class="taper" data-taper hidden aria-label="Your taper"></div>
         <div class="score"><b data-score>0</b><span data-combo class="streak"></span></div>
         <button class="icon-btn toggle" data-voice title="Read aloud">🔊</button>
       </div>
@@ -88,9 +112,14 @@ function viewPlay() {
 
   (async () => {
     // "How it works", the first time (and whenever asked again from the card)
-    if (!S.progress("rack").plays) {
+    if (!S.progress(progressId(stage)).plays && (si === 0 || stage.taper)) {
       const card = $(".candle-lesson"); card.hidden = false;
-      await showLesson(card, {
+      await showLesson(card, si > 0 ? {
+        emoji: stage.icon, title: stage.name,
+        rule: `You carry a <b>taper</b> now. It lights <b>${stage.taper}</b> candles, then tap the <b>big candle</b> to light it again.${stage.dark ? " The church starts <b>dark</b>: bring the light to every candle!" : ""}`,
+        exampleHtml: `<p class="center lesson-candles">${"🔥".repeat(Math.min(stage.taper, 6))} ➜ 🕯️</p>`,
+        voice: `${stage.blurb} You carry a taper now. It lights ${stage.taper} candles. When it's out, tap the big candle to light it again.`,
+      } : {
         emoji: "🕯️", title: "Get the church ready",
         rule: "Tap the <b>glowing</b> candles to light them, quickly for a <b>combo</b>. Tap the <b>red lamp</b> when it's low. If someone kneels in the way, tap the <b>priest</b> or the <b>server</b> to help.",
         exampleHtml: `<p class="center lesson-candles">🕯️ 🕯️ 🔴 🙏</p>`,
@@ -102,14 +131,18 @@ function viewPlay() {
     say(bubble, "Getting the church ready…", { speakText: false });
     const models = await loadModels(MODELS);
     if (!alive) return;
-    church = createChurch(canvas, { season, models });
+    church = createChurch(canvas, { season, models, rite: stage.rite, hex, dark: stage.dark, taper: !!stage.taper });
     // keep the racks clear of the clock (top) and the speech bubble (bottom)
-    const fitView = () => church.resize({ top: ($(".hud")?.offsetHeight ?? 60) + 6, bottom: (bubble.offsetHeight || 60) + 16 });
+    const fitView = () => church?.resize({ top: ($(".hud")?.offsetHeight ?? 60) + 6, bottom: (bubble.offsetHeight || 60) + 16 });
     fitView(); addEventListener("resize", fitView);
-    const g = newGame({ seed: Math.floor(Math.random() * 1e9) });
+    const g = newGame({ seed: Math.floor(Math.random() * 1e9), stage });
     const prayers = new Map(); // person id → 🙏 above their head
     window.__candleRack = { game: g, church }; // (for the browser tests; nothing reads it in the game)
-    talk(`${season.say} Mass starts soon. Light the glowing candles!`, { urgent: true });
+    talk(stage.color ? stage.say : `${season.say} ${stage.say}`, { urgent: true });
+    // the taper: one flame per candle it can still light
+    const taperEl = $("[data-taper]");
+    const showTaper = () => { if (!stage.taper) return; taperEl.hidden = false; taperEl.classList.toggle("out", g.taper === 0); taperEl.innerHTML = `<span class="taper-stick"></span>${Array.from({ length: stage.taper }, (_, i) => `<i class="${i < g.taper ? "on" : ""}"></i>`).join("")}`; };
+    showTaper();
 
     // tapping and swiping (where tap areas overlap, the candle that can be lit wins)
     const needsLight = (id) => needy(g).includes(id);
@@ -124,8 +157,11 @@ function viewPlay() {
         if (r.type === "just-in-time") talk.once("jit", vary("jit", ["Just in time!", "Phew, just in time!", "Saved it!"]));
         if (r.mult > lastMult) { sfx.pop(); talk.once("combo", "A combo! Keep lighting quickly!"); }
         lastMult = r.mult;
+        showTaper();
+        if (stage.taper && g.taper === 0) talk.once("taper-out", "Your taper is out! Tap the big candle to light it again.", { urgent: true });
         return true;
       }
+      if (r.type === "no-taper") { sfx.tap(); pop("🕯️", x, y); talk("Your taper is out! Tap the big candle.", { urgent: true }); return false; }
       if (r.type === "blocked") { sfx.tap(); pop("🙏", x, y); talk.once("blocked", "Someone is praying there. Tap the priest or the server, and he'll light those from behind!", { urgent: true }); }
       return false;
     };
@@ -162,6 +198,7 @@ function viewPlay() {
       if (!hit) return;
       canvas.setPointerCapture(e.pointerId);
       if (hit.kind === "helper") { sendHelp(hit.who, e.clientX, e.clientY); return; }
+      if (hit.kind === "big") { const r = tapBigCandle(g); if (r.type === "taper") { sfx.pop(); pop("🔥", e.clientX, e.clientY, "lamp"); showTaper(); } else sfx.tap(); return; }
       if (hit.kind === "lamp") {
         const r = tapLamp(g);
         if (r.type === "filled" || r.type === "relit") { sfx.pop(); pop(r.points ? `+${r.points}` : "🔥", e.clientX, e.clientY, "lamp"); if (r.type === "relit") talk.once("relit", "The lamp is burning again. Keep it lit!"); }
@@ -238,20 +275,24 @@ function viewPlay() {
       await church.procession();
       await new Promise((r) => setTimeout(r, 1200));
       if (!alive) return;
-      const stars = starsFor(g), best = Math.max(S.settings().best || 0, g.score), newBest = g.score > (S.settings().best || 0);
-      S.setSetting("best", best);
+      const old = S.settings()[bestKey(stage)] || 0;
+      const stars = starsFor(g), best = Math.max(old, g.score), newBest = g.score > old;
+      S.setSetting(bestKey(stage), best);
       cancelAnimationFrame(raf); church.dispose(); church = null;
+      document.body.classList.remove("candle-game"); // the finish screen scrolls like any page
+      const nextStage = STAGES[si + 1], opens = nextStage && Math.max(stars, starsOf(stage)) >= 2;
       showFinish(app, {
-        id: "rack", stars, mistakes: 3 - stars, title: newBest ? "A new best!" : "The church is ready!",
-        done: `You scored ${g.score}.`, again: "#/play", onAgain: route,
+        id: progressId(stage), stars, mistakes: 3 - stars, title: newBest ? "A new best!" : "The church is ready!",
+        done: `You scored ${g.score}.`, again: `#/play/${stage.id}`, onAgain: route,
+        next: opens ? { href: `#/play/${nextStage.id}`, label: `${nextStage.icon} ${nextStage.name}` } : null,
       });
       const fin = app.querySelector(".finish h1");
       fin?.insertAdjacentHTML("afterend", `<p class="final-score">You scored <b>${g.score}</b>${newBest ? " · a new best!" : ` · your best: ${best}`}</p>
-        <p class="muted">${g.lit + g.justInTime} candles lit · ${g.justInTime} just in time · best combo ${g.bestCombo} · ${g.ready} burning when Mass began${g.helperLit ? ` · ${g.helperLit} lit by the priest and server` : ""}${stars < 3 ? ` · ${STAR3} for three stars` : ""}</p>`);
+        <p class="muted">${g.lit + g.justInTime} candles lit · ${g.justInTime} just in time · best combo ${g.bestCombo} · ${g.ready} burning when Mass began${g.helperLit ? ` · ${g.helperLit} lit by the priest and server` : ""}${stars < 3 ? ` · ${stage.star3} for three stars` : ""}${g.tapers ? ` · taper lit ${g.tapers} times` : ""}</p>`);
     }
   })();
 
-  return () => { alive = false; cancelAnimationFrame(raf); church?.dispose(); };
+  return () => { alive = false; cancelAnimationFrame(raf); church?.dispose(); church = null; };
 }
 
 // church bells: a few soft rings, made with Web Audio (no files)

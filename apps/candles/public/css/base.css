@@ -114,7 +114,7 @@ body.in-game .topbar { display: none; }
 .sticker-book .stickers { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 2.2rem; }
 .sticker-book .stickers .mini { font-size: 1.3rem; opacity: .85; }
 .sticker-book .world-link { margin-top: 10px; }
-.world-link { background: linear-gradient(#e9f6ff, #fff); }
+.world-link { background: linear-gradient(var(--blue-soft), var(--surface)); }
 
 /* play screen */
 .play { padding-bottom: 210px; }

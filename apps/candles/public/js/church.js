@@ -53,8 +53,9 @@ export async function loadModels(names) {
 }
 
 /** The church, drawn into `canvas`. */
-export function createChurch(canvas, { season, models = {} }) {
+export function createChurch(canvas, { season, models = {}, rite = "roman", hex = season.hex, dark = false, taper = false }) {
   const THREE = T();
+  const BYZ = rite === "byzantine";
   const R = new THREE.WebGLRenderer({ canvas, antialias: true });
   R.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
   const scene = new THREE.Scene();
@@ -68,10 +69,13 @@ export function createChurch(canvas, { season, models = {} }) {
   const block = (w, h, d, x, y, z, m, parent = scene) => { const o = new THREE.Mesh(box, m); o.scale.set(w, h, d); o.position.set(x, y + h / 2, z); parent.add(o); return o; };
 
   // ── light ──
-  scene.add(new THREE.HemisphereLight("#8c86c8", "#2a1d18", 0.55));
+  // (at Pascha the church starts dark and brightens as the candles are lit)
+  const hemi = new THREE.HemisphereLight("#8c86c8", "#2a1d18", 0.55); scene.add(hemi);
   const sun = new THREE.DirectionalLight("#ffd9a8", 0.35); sun.position.set(-20, 30, 10); scene.add(sun);
+  // the sanctuary lamp: over the altar in a Roman church; in a Byzantine church, the lampada before the icon of Christ
+  const L = BYZ ? { x: 4.6, y: 9.6, z: -7.9 } : LAYOUT.lamp;
   const rackLights = LAYOUT.racks.map((r) => { const l = new THREE.PointLight("#ffb347", 0.6, 30, 1.6); l.position.set(r.x, 7, r.z + 3); scene.add(l); return l; });
-  const lampLight = new THREE.PointLight("#ff3b30", 0.8, 18, 1.8); lampLight.position.set(LAYOUT.lamp.x, LAYOUT.lamp.y, LAYOUT.lamp.z); scene.add(lampLight);
+  const lampLight = new THREE.PointLight("#ff3b30", 0.8, 18, 1.8); lampLight.position.set(L.x, L.y, L.z); scene.add(lampLight);
 
   // ── the room (stand-in) ──
   for (let x = -24; x < 24; x += 4) for (let z = -16; z < 16; z += 4) block(4, 0.5, 4, x + 2, -0.5, z + 2, mat(((x + z) / 4) % 2 ? "#cfc4b0" : "#b7aa94"));
@@ -79,16 +83,44 @@ export function createChurch(canvas, { season, models = {} }) {
   block(1, 24, 32, -24.5, 0, 0, mat("#d3c8b5")); block(1, 24, 32, 24.5, 0, 0, mat("#d3c8b5"));
   const windowGlass = ["#3f7fd1", "#d13f4f", "#e8c24a", "#4fa36b"];
   for (const wx of [-17, -6, 6, 17]) for (let i = 0; i < 6; i++) block(1.2, 1.6, 0.3, wx - 1.8 + (i % 3) * 1.8, 11 + Math.floor(i / 3) * 2, -15.9, glow(windowGlass[(i + wx) & 3]));
-  block(22, 1, 9, 0, 0, -12, mat("#a99a82"));                   // sanctuary step
+  block(22, 1, 9, 0, 0, -12, mat(BYZ ? "#9c8a6c" : "#a99a82"));   // sanctuary step
   const altar = block(11, 5, 4, 0, 1, -12.5, mat("#efe7d6"));     // altar (stand-in)
-  const frontal = block(8, 3, 0.3, 0, 2, -10.4, mat(season.hex));  // its front cloth: the season's color
+  const frontal = block(8, 3, 0.3, 0, 2, -10.4, mat(hex));  // its front cloth: the season's color
   block(3, 3, 2, 0, 6, -13.2, mat("#d6a93a"));                   // tabernacle (stand-in)
-  const veil = block(3.2, 2.2, 0.3, 0, 6.3, -12.15, mat(season.hex));
+  const veil = block(3.2, 2.2, 0.3, 0, 6.3, -12.15, mat(hex));
   block(0.4, 5, 0.4, 0, 9, -13.2, mat("#d6a93a")); block(2, 0.4, 0.4, 0, 12.3, -13.2, mat("#d6a93a")); // cross (stand-in)
 
+  // the iconostasis (Byzantine, stand-in): the icon screen across the sanctuary, with the royal doors in the middle
+  // (they open when the Liturgy begins) and a deacon door on each side
+  const royal = [];
+  if (BYZ) {
+    const Z = -9.2, gold = mat("#c99a3c"), wood = mat("#6b4428");
+    block(22, 1, 0.8, 0, 1, Z, gold); block(22, 1.2, 0.8, 0, 12, Z, gold);           // sill and top beam
+    block(22, 1.8, 0.6, 0, 13.2, Z - 0.1, mat("#8a2c2c"));                               // the row of feasts (red band)
+    for (const x of [-10.6, -5.3, -2.3, 2.3, 5.3, 10.6]) block(0.8, 11, 0.9, x, 2, Z, gold); // posts
+    // icons: Christ (right of the royal doors), the Theotokos (left), Saint John the Baptist, the church's saint; deacon doors
+    const icon = (x, robe, mantle) => {
+      block(3.6, 6, 0.4, x, 4, Z + 0.3, mat("#d9b45a"));                 // gold ground
+      block(2.2, 3.6, 0.3, x, 4.4, Z + 0.55, mat(robe));                 // the figure
+      block(1.4, 1.6, 0.3, x, 6.2, Z + 0.6, mat(mantle));
+      block(1.0, 1.0, 0.3, x, 7.8, Z + 0.62, mat("#e9c4a0"));            // face
+      block(1.8, 1.8, 0.2, x, 7.4, Z + 0.5, mat("#f2d27a"));             // halo
+    };
+    icon(-3.8, "#2e4f9a", "#8a1f2f"); icon(3.8, "#8a2c2c", "#2e4f9a"); icon(-8.6, "#5e7a3a", "#7a5a2a"); icon(8.6, "#7a5a2a", "#5e7a3a");
+    for (const x of [-8.6, 8.6]) { const d = block(3.4, 7, 0.3, x, 2, Z + 0.25, wood); d.position.z = Z + 0.2; }
+    for (const x of [-8.6, 8.6]) { block(1.6, 3, 0.3, x, 4.4, Z + 0.45, mat("#e8e2d0")); block(1.2, 1.2, 0.3, x, 7.6, Z + 0.5, mat("#f2d27a")); } // angels on the deacon doors
+    // the royal doors: two gold halves on hinges
+    for (const side of [-1, 1]) {
+      const pivot = new THREE.Group(); pivot.position.set(side * 2.3, 1, Z + 0.1); scene.add(pivot);
+      block(2.3, 7, 0.3, -side * 1.15, 1, 0, gold, pivot);
+      block(1.5, 2.2, 0.3, -side * 1.15, 4.6, 0.1, mat("#2e4f9a"), pivot);   // the Annunciation, half on each door
+      royal.push({ pivot, side });
+    }
+  }
+
   // the sanctuary lamp (stand-in): red glass on a chain; its flame dims with the oil
-  const L = LAYOUT.lamp;
   block(0.2, 24 - L.y - 2, 0.2, L.x, L.y + 2, L.z, mat("#8a7a52"));
+  if (BYZ) block(1, 0.3, 1, L.x, L.y - 0.3, L.z, mat("#c99a3c"));
   const lampGlass = block(1.6, 2.2, 1.6, L.x, L.y, L.z, new THREE.MeshLambertMaterial({ color: "#c8262f", transparent: true, opacity: 0.75, emissive: "#5a0a0a" }));
   const lampFlame = block(0.5, 0.8, 0.5, L.x, L.y + 0.7, L.z, glow("#ffcc66"));
   const lampHit = block(5, 6, 5, L.x, L.y - 1.5, L.z, new THREE.MeshBasicMaterial({ visible: false }));
@@ -101,16 +133,18 @@ export function createChurch(canvas, { season, models = {} }) {
   // ── the racks and candles (stand-in) ──
   const hits = [lampHit], candles = [];
   const GLASS_HEX = ["#e0453f", "#3d7fe0", "#f2f2f2"]; // red, blue and clear glass, just for looks
+  // Roman: votive candles in colored glass on wooden racks. Byzantine: thin beeswax tapers standing in sand trays.
   LAYOUT.racks.forEach((r, ri) => {
-    block(LAYOUT.rackW, LAYOUT.rowY[0], 2.4, r.x, 0, r.z + LAYOUT.rowZ[0], mat("#5a3a24"));
-    block(LAYOUT.rackW, LAYOUT.rowY[1], 2.4, r.x, 0, r.z + LAYOUT.rowZ[1], mat("#4d311f"));
+    block(LAYOUT.rackW, LAYOUT.rowY[0], 2.4, r.x, 0, r.z + LAYOUT.rowZ[0], mat(BYZ ? "#8a6a2e" : "#5a3a24"));
+    block(LAYOUT.rackW, LAYOUT.rowY[1], 2.4, r.x, 0, r.z + LAYOUT.rowZ[1], mat(BYZ ? "#7a5c26" : "#4d311f"));
+    if (BYZ) for (let row = 0; row < 2; row++) block(LAYOUT.rackW - 0.4, 0.25, 2.1, r.x, LAYOUT.rowY[row], r.z + LAYOUT.rowZ[row], mat("#d9c79a")); // sand
     for (let row = 0; row < 2; row++) for (let s = 0; s < 4; s++) {
       const id = ri * 8 + row * 4 + s;
       const x = r.x + (s - 1.5) * LAYOUT.slotGap, y = LAYOUT.rowY[row], z = r.z + LAYOUT.rowZ[row];
       const g = new THREE.Group(); g.position.set(x, y, z); scene.add(g);
       const glass = new THREE.Mesh(box, new THREE.MeshLambertMaterial({ color: GLASS_HEX[(id + row) % 3], transparent: true, opacity: 0.55 }));
-      glass.scale.set(1.9, 2.2, 1.9); glass.position.y = 1.1; g.add(glass);
-      const wax = new THREE.Mesh(box, mat("#f6f0e2")); wax.scale.set(1.2, 1.6, 1.2); wax.position.y = 0.8; g.add(wax);
+      glass.scale.set(1.9, 2.2, 1.9); glass.position.y = 1.1; g.add(glass); glass.visible = !BYZ;
+      const wax = new THREE.Mesh(box, mat(BYZ ? "#e6c065" : "#f6f0e2")); wax.scale.set(BYZ ? 0.45 : 1.2, 1.6, BYZ ? 0.45 : 1.2); wax.position.y = 0.8; g.add(wax);
       const flame = new THREE.Mesh(box, glow("#ffb02e")); flame.scale.set(0.5, 0.95, 0.5); flame.position.y = 2.2; g.add(flame);
       const core = new THREE.Mesh(box, glow("#fff3b0")); core.scale.set(0.25, 0.5, 0.25); core.position.y = 2; g.add(core);
       // "tap me": a soft glow around a candle that's out (steady) or flickering (fast, orange); none when it's fine
@@ -123,6 +157,22 @@ export function createChurch(canvas, { season, models = {} }) {
     }
   });
 
+  // the big candle (stages with a taper): the player lights the taper again here. Roman: a tall candle by the altar;
+  // Byzantine: a big candle in a stand before the icons (at Pascha, the Paschal candle)
+  const BIG = BYZ ? { x: -6.2, z: -6.4 } : { x: -7.5, z: -8.6 };
+  const bigCandle = new THREE.Group(); bigCandle.position.set(BIG.x, BYZ ? 0 : 1, BIG.z); scene.add(bigCandle);
+  block(1.6, 0.6, 1.6, 0, 0, 0, mat("#c99a3c"), bigCandle); block(0.5, 3.4, 0.5, 0, 0.6, 0, mat("#c99a3c"), bigCandle);
+  block(1.4, 0.4, 1.4, 0, 4, 0, mat("#c99a3c"), bigCandle);
+  block(0.9, 4.2, 0.9, 0, 4.4, 0, mat("#fbf6ea"), bigCandle);
+  block(0.5, 0.15, 0.95, 0, 6.6, 0, mat("#c8262f"), bigCandle); block(0.15, 0.9, 0.95, 0, 6.25, 0, mat("#c8262f"), bigCandle); // a red cross
+  const bigFlame = block(0.5, 1.1, 0.5, 0, 8.6, 0, glow("#ffb02e"), bigCandle);
+  const bigLight = new THREE.PointLight("#ffb347", 0.7, 14, 1.8); bigLight.position.set(0, 9.5, 1); bigCandle.add(bigLight);
+  const bigRing = new THREE.Mesh(box, new THREE.MeshBasicMaterial({ color: "#fff1a8", transparent: true, opacity: 0, depthWrite: false }));
+  bigRing.scale.set(2.2, 6, 2.2); bigRing.position.y = 6.8; bigCandle.add(bigRing);
+  const bigHit = block(4, 11, 4, 0, 0, 0, new THREE.MeshBasicMaterial({ visible: false }), bigCandle); bigHit.userData = { kind: "big" };
+  hits.push(bigHit);
+  bigCandle.visible = taper;
+
   // ── his voxel models ──
   const meshFor = (name, recolor = true) => {
     const m = models[name];
@@ -132,16 +182,39 @@ export function createChurch(canvas, { season, models = {} }) {
     const all = m.vox.frames.flatMap((_, f) => toScene(m.vox, f));
     const mid = (k) => (Math.min(...all.map((c) => c[k])) + Math.max(...all.map((c) => c[k]))) / 2;
     const cx = all.length ? mid(0) : 0, cz = all.length ? mid(2) : 0;
+    // a lighter or a candle in his hands: its tip glows (the top of whatever isn't in his plain idle pose)
+    const base = /-(light|candle)/.test(name) && models[name.replace(/-(light|candle)(-walk|-idle)?$/, "-idle")];
+    const plain = base ? new Set(base.vox.frames.flatMap((_, f) => toScene(base.vox, f).map((c) => c[3]))) : null;
     g.userData.frames = m.vox.frames.map((_, f) => {
       const cells = toScene(m.vox, f).map(([x, y, z, c]) => [x - cx, y, z - cz, c]);
-      const im = new THREE.InstancedMesh(box, new THREE.MeshLambertMaterial(), cells.length);
+      const held = plain ? cells.filter((c) => !plain.has(c[3])) : [];
+      const top = held.length ? Math.max(...held.map((c) => c[1])) : Infinity;
+      const tips = held.filter((c) => c[1] === top), body = cells.filter((c) => !tips.includes(c));
+      const fr = new THREE.Group();
+      const im = new THREE.InstancedMesh(box, new THREE.MeshLambertMaterial(), body.length);
       const o = new THREE.Object3D(), col = new THREE.Color();
-      cells.forEach(([x, y, z, c], i) => { o.position.set(x, y, z); o.updateMatrix(); im.setMatrixAt(i, o.matrix); im.setColorAt(i, col.set(recolor && isPink(c) ? season.hex : c)); });
-      im.visible = f === 0; g.add(im); return im;
+      body.forEach(([x, y, z, c], i) => { o.position.set(x, y, z); o.updateMatrix(); im.setMatrixAt(i, o.matrix); im.setColorAt(i, col.set(recolor && isPink(c) ? hex : c)); });
+      fr.add(im);
+      for (const [x, y, z, c] of tips) {
+        const t = new THREE.Mesh(box, glow("#" + new THREE.Color(c).lerp(new THREE.Color("#ffc94a"), 0.75).getHexString())); t.position.set(x, y, z); fr.add(t);
+        const halo = new THREE.Sprite(haloMat()); halo.position.set(x, y + 0.4, z); halo.scale.set(2.6, 2.6, 1); halo.userData.halo = true; fr.add(halo);
+      }
+      fr.visible = f === 0; g.add(fr); return fr;
     });
     g.userData.fps = m.fps;
     return g;
   };
+  // a soft warm glow (a sprite that always faces the camera), shared by every glowing tip
+  let haloTex = null;
+  function haloMat() {
+    if (!haloTex) {
+      const c = document.createElement("canvas"); c.width = c.height = 64; const x = c.getContext("2d");
+      const gr = x.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, "rgba(255,230,150,1)"); gr.addColorStop(0.35, "rgba(255,170,60,.55)"); gr.addColorStop(1, "rgba(255,140,40,0)");
+      x.fillStyle = gr; x.fillRect(0, 0, 64, 64); haloTex = new THREE.CanvasTexture(c);
+    }
+    return new THREE.SpriteMaterial({ map: haloTex, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true });
+  }
+
   // a stand-in person: plain boxes, a body color and a head, kneeling or standing (until his models exist)
   const standIn = (bodyHex, kneel) => {
     const g = new THREE.Group();
@@ -173,8 +246,14 @@ export function createChurch(canvas, { season, models = {} }) {
     scene.add(a.g); actors.push(a);
     return a;
   }
-  const priest = actor({ idle: "priest-idle", walk: "priest-walk-fast", slow: ["priest-mass-walk", "priest-walk-slow"], vested: ["priest-mass-idle", "priest-idle"] },
-    "#1d1b22", { x: LAYOUT.sacristy.x, z: LAYOUT.sacristy.z, turn: -0.5 });
+  // Byzantine: his east-priest and east-server models (until a pose is made, the nearest one he has stands in); they
+  // wait at the sides, in front of the iconostasis
+  const E = (n) => (BYZ ? [`east-${n}`] : [n]);
+  const PH = BYZ ? { x: 18.5, z: -10 } : LAYOUT.sacristy, SH = BYZ ? { x: -18.5, z: -10 } : LAYOUT.serverHome;
+  const priest = actor(BYZ
+    ? { idle: "east-priest-idle", walk: ["east-priest-walk-fast", "east-priest-walk"], slow: ["east-priest-walk-slow", "east-priest-walk"], vested: ["east-priest-vested-idle", "east-priest-bless", "east-priest-idle"] }
+    : { idle: "priest-idle", walk: "priest-walk-fast", slow: ["priest-mass-walk", "priest-walk-slow"], vested: ["priest-mass-idle", "priest-idle"] },
+    "#1d1b22", { x: PH.x, z: PH.z, turn: -0.5 });
   // the priest and the server can be tapped to help: a big invisible tap area on each, and a gold ring at their feet
   // that pulses when someone is in the way and they're free to go
   const helperRing = (a, who) => {
@@ -182,11 +261,13 @@ export function createChurch(canvas, { season, models = {} }) {
     const ring = new THREE.Mesh(new THREE.RingGeometry(2.6, 3.4, 24), new THREE.MeshBasicMaterial({ color: "#ffd75e", transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide }));
     ring.rotation.x = -Math.PI / 2; ring.position.y = 0.15; a.g.add(ring); a.ring = ring;
   };
-  const server = actor({ idle: "server-idle", walk: "server-walk", light: "server-light", cross: "server-cross-walk", crossIdle: "server-cross-idle",
-    candle: "server-candle-walk", candleIdle: "server-candle-idle" }, "#b02a2a", { ...LAYOUT.serverHome, turn: 0.4 });
+  const CANDLE = BYZ ? ["east-server-candle-walk", "east-server-ripidion-walk"] : ["server-candle-walk"];
+  const CANDLE_IDLE = BYZ ? ["east-server-candle-idle", "east-server-ripidion-idle"] : ["server-candle-idle"];
+  const server = actor({ idle: E("server-idle"), walk: E("server-walk"), light: E("server-light"), cross: E("server-cross-walk"), crossIdle: E("server-cross-idle"),
+    candle: CANDLE, candleIdle: CANDLE_IDLE }, "#b02a2a", { ...SH, turn: 0.4 });
   // a second server only for the procession (two candle bearers walk beside each other), hidden until then
   helperRing(priest, "priest"); helperRing(server, "server");
-  const server2 = actor({ idle: "server-candle-idle", candle: "server-candle-walk", candleIdle: "server-candle-idle" }, "#b02a2a", { x: 0, z: 30, turn: 0 });
+  const server2 = actor({ idle: CANDLE_IDLE, candle: CANDLE, candleIdle: CANDLE_IDLE }, "#b02a2a", { x: 0, z: 30, turn: 0 });
   server2.g.visible = false;
 
   // people who come to pray: they walk up from the front, kneel in front of a rack (in the way of the candles behind
@@ -217,7 +298,7 @@ export function createChurch(canvas, { season, models = {} }) {
   // ── camera: the whole church fits, whatever the screen's shape ──
   // The camera comes as close as it can while the racks, the altar and the lamp all fit between the clock at the top
   // and the speech bubble at the bottom (pad: pixels kept clear), whatever the screen's shape.
-  const KEEP = [[-20, 0, 2.5], [20, 0, 2.5], [-20, 9, -3], [20, 9, -3], [0, 13, -13], [LAYOUT.lamp.x, LAYOUT.lamp.y + 2, LAYOUT.lamp.z], [-20, 0, 7], [20, 0, 7], [0, 14, -16]];
+  const KEEP = [[-20, 0, 2.5], [20, 0, 2.5], [-20, 9, -3], [20, 9, -3], [0, 13, -13], [L.x, L.y + 2, L.z], [-20, 0, 7], [20, 0, 7], [0, 14, -16]];
   let pad = { top: 70, bottom: 90 };
   function resize(newPad) {
     if (newPad) pad = newPad;
@@ -238,7 +319,7 @@ export function createChurch(canvas, { season, models = {} }) {
   resize();
 
   // ── each frame: draw the game's state ──
-  let doorOpen = 0, doorTarget = 0;
+  let doorOpen = 0, doorTarget = 0, doorsOpen = false;
   const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
   function update(g, dt) {
     time += dt;
@@ -254,10 +335,20 @@ export function createChurch(canvas, { season, models = {} }) {
       const f = c.lit ? (low ? 0.45 + 0.35 * Math.abs(Math.sin(time * 18 + v.phase)) : 0.85 + 0.15 * Math.sin(time * 9 + v.phase)) : 0;
       v.flame.visible = v.core.visible = c.lit;
       v.flame.scale.set(0.5 * f + 0.07, 0.95 * f + 0.12, 0.5 * f + 0.07);
-      v.wax.scale.y = 0.4 + 1.2 * (c.lit ? Math.max(0.15, c.life) : 0.5); v.wax.position.y = v.wax.scale.y / 2;
+      const wax = c.lit ? Math.max(0.15, c.life) : 0.5; // tapers are tall and thin, votives short
+      v.wax.scale.y = BYZ ? 0.6 + 2.2 * wax : 0.4 + 1.2 * wax; v.wax.position.y = v.wax.scale.y / 2;
       v.flame.position.y = v.wax.scale.y + 0.6; v.core.position.y = v.wax.scale.y + 0.45;
     });
     LAYOUT.racks.forEach((r, ri) => { const n = g.candles.filter((c) => c.rack === ri && c.lit).length; rackLights[ri].intensity = 0.15 + n * 0.12; });
+    // at Pascha the church is dark until the candles are lit
+    if (dark) { const k = g.candles.filter((c) => c.active && c.lit).length / 16; hemi.intensity = 0.12 + 0.45 * k; sun.intensity = 0.05 + 0.3 * k; }
+    // the big candle glows "tap me" when the taper is out or nearly
+    if (taper) {
+      const want = !g.over && g.taper <= 1;
+      bigRing.visible = want; bigRing.material.opacity = want ? (g.taper ? 0.22 : 0.3 + 0.25 * Math.abs(Math.sin(time * 6))) : 0;
+      const bf = 0.85 + 0.15 * Math.sin(time * 8); bigFlame.scale.set(0.5 * bf, 1.1 * bf, 0.5 * bf);
+    }
+    for (const d of royal) { d.open = d.open ?? 0; d.open += ((doorsOpen ? 1 : 0) - d.open) * Math.min(1, dt * 2.5); d.pivot.rotation.y = d.side * d.open * 1.6; }
     lampFlame.visible = !g.lampOut;
     const lf = g.lampOut ? 0 : 0.4 + 0.6 * g.lamp;
     lampFlame.scale.set(0.5 * lf, 0.8 * lf, 0.5 * lf);
@@ -274,6 +365,7 @@ export function createChurch(canvas, { season, models = {} }) {
       }
       const m = a.poses[a.now];
       if (m) animate(m, time - (a.t0 ?? 0));
+      if (m?.visible) m.traverse((o) => { if (o.userData.halo) { const k = 2.4 + 0.5 * Math.sin(time * 11 + o.id); o.scale.set(k, k, 1); } });
     }
     // the helpers' rings: gold and pulsing while someone is in the way and they're free
     const waiting = !g.over && g.people.some((p) => g.t >= p.at && blockedNeedy(g, p.id).length);
@@ -330,10 +422,22 @@ export function createChurch(canvas, { season, models = {} }) {
       a.goHome();
       return true;
     },
-    /** The entrance procession: the cross, two candles, then the priest in his vestments, up the aisle to the altar. */
+    /** The entrance: Roman, the procession up the aisle (the cross, two candles, the priest in his vestments).
+     * Byzantine, the royal doors open, the servers come out with candles and the priest stands in the doors. */
     procession: async () => {
       const A = LAYOUT.aisle;
       server.walk = null; priest.walk = null; server2.g.visible = true; server.busy = priest.busy = true;
+      if (BYZ) {
+        doorsOpen = true;
+        server.place(-8.6, -10.5, 0, "candle"); server2.place(8.6, -10.5, 0, "candle"); priest.place(0, -12, 0, "slow");
+        await new Promise((r) => setTimeout(r, 700));
+        await Promise.all([
+          server.walkTo(-8.6, -8.7, "candle", 3).then(() => server.walkTo(-3.4, -8.7, "candle", 3)).then(() => { server.pose("candleIdle"); server.g.rotation.y = 0; }),
+          server2.walkTo(8.6, -8.7, "candle", 3).then(() => server2.walkTo(3.4, -8.7, "candle", 3)).then(() => { server2.pose("candleIdle"); server2.g.rotation.y = 0; }),
+          new Promise((r) => setTimeout(r, 1200)).then(() => priest.walkTo(0, -8.4, "slow", 2.4)).then(() => { priest.pose("vested"); priest.g.rotation.y = 0; }),
+        ]);
+        return;
+      }
       server.place(A.x, A.z, Math.PI, "cross");
       server2.place(A.x - 3, A.z + 5, Math.PI, "candle");
       priest.place(A.x, A.z + 12, Math.PI, "slow");
@@ -348,6 +452,7 @@ export function createChurch(canvas, { season, models = {} }) {
     },
     door: (open) => { doorTarget = open ? 1 : 0; },
     hasModels: () => Object.keys(models),
+    bigSpot: () => ({ x: BIG.x, y: BYZ ? 7 : 8, z: BIG.z }),
     dispose: () => { R.dispose(); },
   };
 }
