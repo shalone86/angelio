@@ -1,16 +1,20 @@
-// Candle Rack's rules: the time before Mass, getting the church ready. Pure (no screen), so it's tested in Node
-// (test/game.test.js) and the screen (app.js + church.js) only draws what happens here.
+// Candle Rack's rules: the minute and a half before Mass, getting the church ready. Pure (no screen), so it's tested
+// in Node (test/game.test.js) and the screen (app.js + church.js) only draws what happens here.
 //
 // Candles burn down; tap one that's out to light it. Tap one that's flickering (nearly out) for "just in time!",
-// worth more. Keep lighting without letting any go out: the streak grows and multiplies the points. Swipe along a
-// row to light several in one go (a chain). People come to pray with a colored intention: light a candle of that
-// color for them. The door creaks before a draft blows out a row. The sanctuary lamp must never go out: tap it to add
-// oil. When the clock reaches Mass, the round ends.
+// worth more. Light them quickly one after another for a combo: each light within COMBO_GAP seconds of the last adds
+// to it, and the combo multiplies the points; pause too long and it ends. Swipe along a row to light several in one go
+// (a chain). People come and kneel in front of a rack, and the candles behind them can't be reached until they leave
+// on their own, or the priest or the server kindly sends them to a pew (helpPerson). The door creaks before a draft
+// blows out a row. The sanctuary lamp must never go out: tap it to add oil. At Mass, the round ends, and every candle
+// still burning counts.
 
-export const ROUND = 180; // seconds before Mass
+export const ROUND = 90; // seconds before Mass
 export const RACKS = 2, ROWS = 2, PER_ROW = 4; // 16 candle spots
-export const GLASS = ["red", "blue", "white"];
+export const COMBO_GAP = 2; // seconds between lights to keep a combo going
 const LOW = 0.25; // a candle with less than a quarter of its wax left flickers
+export const READY_BONUS = 2;
+export const WALK_IN = 2; // seconds someone takes to walk up to the rack before kneeling // each candle burning when Mass begins
 
 /** A small seeded random (mulberry32), so a round can be replayed (today's game, tests). */
 export function rng(seed) {
@@ -22,11 +26,11 @@ export function rng(seed) {
 export function difficulty(p) {
   const q = Math.max(0, Math.min(1, p));
   return {
-    active: Math.round(6 + q * 10),          // 6 candles at the start, all 16 near the end
-    burn: 1 + q * 1.3,                        // burn speed
-    draftEvery: q < 0.2 ? Infinity : 40 - q * 22, // no drafts in the first ~36 s
-    personEvery: 18 - q * 8,
-    lampDrain: 1 / (45 - q * 15),             // the lamp lasts 45 s, then 30 s
+    active: Math.round(6 + q * 10),               // 6 candles at the start, all 16 near the end
+    burn: 1 + q * 1.2,                             // burn speed
+    draftEvery: q < 0.2 ? Infinity : 22 - q * 10,  // no drafts in the first ~18 s
+    personEvery: 14 - q * 6,
+    lampDrain: 1 / (30 - q * 10),                  // the lamp lasts 30 s, then 20 s
   };
 }
 
@@ -34,22 +38,31 @@ export function newGame({ seed = 1, length = ROUND } = {}) {
   const r = rng(seed);
   const candles = [];
   for (let rack = 0; rack < RACKS; rack++) for (let row = 0; row < ROWS; row++) for (let slot = 0; slot < PER_ROW; slot++) {
-    const i = candles.length;
-    candles.push({ id: i, rack, row, slot, glass: GLASS[(i + rack + row) % 3], size: 0.8 + r() * 0.5, life: 0, lit: false, active: false });
+    candles.push({ id: candles.length, rack, row, slot, size: 0.8 + r() * 0.5, life: 0, lit: false, active: false });
   }
-  const g = { r, t: 0, length, candles, lamp: 1, lampOut: false, score: 0, streak: 0, bestStreak: 0, lit: 0, justInTime: 0, prayers: 0, outs: 0,
-    people: [], nextPerson: 8, nextDraft: Infinity, draft: null, over: false, nextPersonId: 1 };
+  const g = { r, t: 0, length, candles, lamp: 1, lampOut: false, score: 0, combo: 0, bestCombo: 0, lastLight: -Infinity,
+    lit: 0, justInTime: 0, outs: 0, helped: 0, ready: 0, people: [], nextPerson: 10, nextDraft: Infinity, draft: null,
+    over: false, nextPersonId: 1 };
   activate(g);
   for (const c of g.candles) if (c.active) { c.lit = true; c.life = 0.5 + r() * 0.5; } // the first ones already burning
   return g;
 }
 
-const mult = (g) => 1 + Math.min(4, Math.floor(g.streak / 5));
+/** The combo multiplier: ×2 at 3 in a row, ×3 at 6, ×4 at 9, ×5 at 12. */
+export const multFor = (combo) => 1 + Math.min(4, Math.floor(combo / 3));
+const mult = (g) => multFor(g.combo);
+
 /** Turn on candle spots as the round gets busier (they start out, waiting to be lit). */
 function activate(g) {
   const want = difficulty(g.t / g.length).active;
   const order = [0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15]; // fill both racks evenly
   for (const i of order) { if (g.candles.filter((c) => c.active).length >= want) break; g.candles[i].active = true; }
+}
+
+/** Who is kneeling in front of this candle, if anyone (a person blocks two spots across, both rows). */
+export function blockerOf(g, id) {
+  const c = g.candles[id];
+  return c ? g.people.find((p) => g.t >= p.at && p.rack === c.rack && (c.slot === p.slot || c.slot === p.slot + 1)) ?? null : null;
 }
 
 /** Move time on by dt seconds. Returns what happened: [{type, …}] for the screen to show and say. */
@@ -61,59 +74,69 @@ export function tick(g, dt) {
   const before = g.candles.filter((c) => c.active).length;
   activate(g);
   if (g.candles.filter((c) => c.active).length > before) ev.push({ type: "more" });
-  // candles burn (a big one lasts longer); 25 s for an average candle at the start
+  // a combo ends when the child pauses too long
+  if (g.combo && g.t - g.lastLight > COMBO_GAP) { ev.push({ type: "combo-end", combo: g.combo }); g.combo = 0; }
+  // candles burn (a big one lasts longer); 18 s for an average candle at the start
   for (const c of g.candles) {
     if (!c.active || !c.lit) continue;
     const was = c.life;
-    c.life -= (dt * d.burn) / (25 * c.size);
+    c.life -= (dt * d.burn) / (18 * c.size);
     if (was >= LOW && c.life < LOW) ev.push({ type: "flicker", id: c.id });
-    if (c.life <= 0) { c.life = 0; c.lit = false; g.outs++; ev.push({ type: "out", id: c.id, streakLost: g.streak }); g.streak = 0; }
+    if (c.life <= 0) { c.life = 0; c.lit = false; g.outs++; ev.push({ type: "out", id: c.id }); }
   }
   // the sanctuary lamp
   if (!g.lampOut) {
     const was = g.lamp;
     g.lamp = Math.max(0, g.lamp - dt * d.lampDrain);
     if (was >= 0.3 && g.lamp < 0.3) ev.push({ type: "lamp-low" });
-    if (g.lamp === 0) { g.lampOut = true; ev.push({ type: "lamp-out", streakLost: g.streak }); g.streak = 0; }
+    if (g.lamp === 0) { g.lampOut = true; ev.push({ type: "lamp-out" }); }
   }
   // drafts: the door creaks, then two seconds later the wind blows out one row
-  if (g.nextDraft === Infinity && d.draftEvery !== Infinity) g.nextDraft = g.t + 4;
+  if (g.nextDraft === Infinity && d.draftEvery !== Infinity) g.nextDraft = g.t + 3;
   if (!g.draft && g.t >= g.nextDraft) { g.draft = { rack: Math.floor(g.r() * RACKS), row: Math.floor(g.r() * ROWS), at: g.t + 2 }; ev.push({ type: "creak", ...g.draft }); }
   if (g.draft && g.t >= g.draft.at) {
     const hit = g.candles.filter((c) => c.active && c.lit && c.rack === g.draft.rack && c.row === g.draft.row);
     for (const c of hit) { c.lit = false; c.life = 0; }
     ev.push({ type: "gust", rack: g.draft.rack, row: g.draft.row, ids: hit.map((c) => c.id) });
-    if (hit.length) { g.outs += hit.length; g.streak = 0; }
+    g.outs += hit.length;
     g.draft = null; g.nextDraft = g.t + d.draftEvery * (0.8 + g.r() * 0.4);
   }
-  // people come to pray, each with an intention of one color, and wait a while
-  if (g.t >= g.nextPerson && g.people.length < 3 && g.t < g.length - 8) {
-    const p = { id: g.nextPersonId++, glass: GLASS[Math.floor(g.r() * 3)], rack: Math.floor(g.r() * RACKS), wait: 14, came: g.t };
+  // people come and kneel in front of a rack, in the way, for a while
+  if (g.t >= g.nextPerson && g.people.length < 2 && g.t < g.length - 10) {
+    const rack = g.people.length ? 1 - g.people[0].rack : Math.floor(g.r() * RACKS); // never two at one rack
+    // they walk in for WALK_IN seconds (the screen shows it), then kneel and are in the way
+    const p = { id: g.nextPersonId++, rack, slot: Math.floor(g.r() * (PER_ROW - 1)), came: g.t, at: g.t + WALK_IN, until: g.t + WALK_IN + 10 + g.r() * 5, helped: false };
     g.people.push(p); ev.push({ type: "person", ...p });
     g.nextPerson = g.t + d.personEvery * (0.8 + g.r() * 0.4);
   }
-  for (const p of [...g.people]) { p.wait -= dt; if (p.wait <= 0) { g.people.splice(g.people.indexOf(p), 1); ev.push({ type: "person-left", id: p.id }); } }
-  if (g.t >= g.length) { g.over = true; ev.push({ type: "end" }); }
+  for (const p of [...g.people]) {
+    if (g.t >= p.until) { g.people.splice(g.people.indexOf(p), 1); ev.push({ type: "person-left", id: p.id, helped: p.helped }); }
+  }
+  if (g.t >= g.length) {
+    g.over = true;
+    g.ready = g.candles.filter((c) => c.active && c.lit).length;
+    g.score += g.ready * READY_BONUS;
+    ev.push({ type: "end", ready: g.ready, bonus: g.ready * READY_BONUS });
+  }
   return ev;
 }
 
-/** Tap a candle. Returns what happened: {type: 'lit' | 'just-in-time' | 'already' | 'inactive', points, prayer?}. */
+/** Tap a candle. Returns {type: 'lit' | 'just-in-time' | 'already' | 'blocked' | 'inactive', points, combo, person?}. */
 export function tapCandle(g, id) {
   const c = g.candles[id];
-  if (!c || g.over) return { type: "inactive", points: 0 };
-  if (!c.active) return { type: "inactive", points: 0 };
+  if (!c || g.over || !c.active) return { type: "inactive", points: 0 };
+  const person = blockerOf(g, id);
+  if (person) return { type: "blocked", points: 0, person };
   if (c.lit && c.life >= LOW) return { type: "already", points: 0 };
   const jit = c.lit; // still burning, but low
   c.lit = true; c.life = 1;
-  g.streak++; g.bestStreak = Math.max(g.bestStreak, g.streak);
-  let points = (jit ? 3 : 1) * mult(g);
+  g.combo = g.t - g.lastLight <= COMBO_GAP ? g.combo + 1 : 1;
+  g.lastLight = g.t;
+  g.bestCombo = Math.max(g.bestCombo, g.combo);
+  const points = (jit ? 3 : 1) * mult(g);
   if (jit) g.justInTime++; else g.lit++;
-  // someone praying at this rack for this color?
-  const who = g.people.find((p) => p.glass === c.glass && p.rack === c.rack) ?? g.people.find((p) => p.glass === c.glass);
-  let prayer = null;
-  if (who) { g.people.splice(g.people.indexOf(who), 1); points += 5 * mult(g); g.prayers++; prayer = who; }
   g.score += points;
-  return { type: jit ? "just-in-time" : "lit", points, prayer, streak: g.streak };
+  return { type: jit ? "just-in-time" : "lit", points, combo: g.combo, mult: mult(g) };
 }
 
 /** The bonus for lighting `n` candles in one swipe (three or more), added to the score. */
@@ -132,10 +155,20 @@ export function swipe(g, ids) {
   return { results, chain: good >= 3 ? good : 0, bonus };
 }
 
-/** The priest's help: he lights a candle that's out (no points, the streak stays). */
+/** The priest or the server goes to someone kneeling in the way and kindly sends them to a pew. They leave `after`
+ * seconds from now (the time it takes him to walk over). Returns false if that person is already going. */
+export function helpPerson(g, id, after = 1.5) {
+  const p = g.people.find((x) => x.id === id);
+  if (!p || p.helped || g.over) return false;
+  p.helped = true; p.until = Math.min(p.until, g.t + after);
+  g.helped++;
+  return true;
+}
+
+/** The server's own help: he lights a candle that's out (no points, the combo stays). */
 export function lightFree(g, id) {
   const c = g.candles[id];
-  if (!c?.active || c.lit || g.over) return false;
+  if (!c?.active || c.lit || g.over || blockerOf(g, id)) return false;
   c.lit = true; c.life = 1;
   return true;
 }
@@ -151,11 +184,11 @@ export function tapLamp(g) {
 
 /** Stars for a finished round: two for any child who keeps lighting, three takes real focus (the best score is the
  * open-ended chase). Tuned with pretend players in test/game.test.js. */
-export const STAR2 = 120, STAR3 = 700;
+export const STAR2 = 30, STAR3 = 450;
 export function starsFor(g) {
   return g.score >= STAR3 ? 3 : g.score >= STAR2 ? 2 : 1;
 }
 
-/** The candles a child can see as needing them: out, or flickering. */
-export const needy = (g) => g.candles.filter((c) => c.active && (!c.lit || c.life < LOW)).map((c) => c.id);
+/** The candles a child can tap now: out or flickering, and not behind someone kneeling. */
+export const needy = (g) => g.candles.filter((c) => c.active && (!c.lit || c.life < LOW) && !blockerOf(g, c.id)).map((c) => c.id);
 export { LOW };
