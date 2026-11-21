@@ -63,7 +63,9 @@ export default {
       const obj = env.WATCH_MEDIA ? await env.WATCH_MEDIA.get(key) : null;
       if (!obj) return new Response("not found", { status: 404 });
       const type = { wasm: "application/wasm", mjs: "text/javascript", js: "text/javascript", json: "application/json" }[key.split(".").pop()] ?? "application/octet-stream";
-      return new Response(obj.body, { headers: { "content-type": type, "cache-control": "public, max-age=31536000, immutable", "access-control-allow-origin": "*", etag: obj.httpEtag } });
+      // (the engine starts a helper from these scripts: on the cross-origin isolated speech page it needs these two)
+      return new Response(obj.body, { headers: { "content-type": type, "cache-control": "public, max-age=31536000, immutable", "access-control-allow-origin": "*",
+        "cross-origin-resource-policy": "cross-origin", "cross-origin-embedder-policy": "require-corp", etag: obj.httpEtag } });
     }
 
     // The shared fonts: usable from the apps' other addresses (fonts need CORS), kept for a month.

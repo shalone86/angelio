@@ -30,6 +30,7 @@ test("the speech files come from storage (cached a year); the test page may use 
   assert.equal(ok.status, 200);
   assert.equal(ok.headers.get("content-type"), "application/json");
   assert.match(ok.headers.get("cache-control"), /immutable/);
+  assert.equal(ok.headers.get("cross-origin-embedder-policy"), "require-corp"); // the engine's helper needs it
   assert.equal((await worker.fetch(new Request("https://angelio.org/models/bad%20name!.onnx"), env)).status, 404);
   assert.equal((await worker.fetch(new Request("https://angelio.org/models/nope.onnx"), env)).status, 404);
   const page = await worker.fetch(new Request("https://angelio.org/speech/"), env);
