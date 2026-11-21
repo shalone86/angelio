@@ -164,8 +164,8 @@ body.mode-home .tabs,body.mode-home .meta,body.mode-tool header{display:none}
 body.lesson-off .lesson-tabs{display:none}
 .plan-group{border-top:1px solid var(--rule);padding:8px 0}
 .plan-group summary{cursor:pointer;padding:4px 0}
-.plan-list{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px}
-.plan-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center}
+.plan-list{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:8px}
+.plan-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 10px;align-items:center}
 .plan-title{min-width:0}
 .plan-chip{font:600 12px/1 var(--sans);padding:6px 9px;border-radius:99px;border:1px solid var(--rule);color:var(--muted);white-space:nowrap}
 .plan-chip.script{border-color:var(--gold);color:var(--gold)}
@@ -254,6 +254,24 @@ body.lesson-off .lesson-tabs{display:none}
 .vx-tile small{color:var(--muted);font-weight:500}
 .vx-tile[aria-selected="true"]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
 @media (max-width:700px){.vx-big{width:140px;height:140px}}
+.voxel-note,.plan-vox{border-radius:10px;border:1px solid var(--rule);font-size:14px}
+.voxel-note{margin-top:6px;padding:10px 14px;background:var(--paper)}
+.plan-vox{grid-column:1/-1;margin:2px 0 4px;padding:7px 12px;background:var(--bg)}
+.voxel-note summary,.plan-vox summary{cursor:pointer;font-weight:600;display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline;list-style:none}
+.voxel-note summary::-webkit-details-marker,.plan-vox summary::-webkit-details-marker{display:none}
+.voxel-note summary::before,.plan-vox summary::before{content:"▸";color:var(--muted);display:inline-block;width:1em;transition:transform .12s}
+.voxel-note[open] summary::before,.plan-vox[open] summary::before{transform:rotate(90deg)}
+.vx-count{font-weight:500;color:var(--muted);margin-left:auto}
+.vx-count.done{color:var(--ok)}
+.vx-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:12px 20px;margin-top:10px;padding-top:10px;border-top:1px solid var(--rule)}
+.vx-cols h3{font:600 12px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:0 0 6px}
+.vx-cols ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.vx-cols li{display:flex;gap:7px;align-items:flex-start;line-height:1.4;overflow-wrap:anywhere}
+.vx-mark{flex:none;width:1.1em;text-align:center;font-weight:700;color:var(--gold)}
+.vx-cols li.have .vx-mark{color:var(--ok)}
+.vx-cols code{font:12px/1.2 ui-monospace,Menlo,monospace;background:var(--bg);border:1px solid var(--rule);border-radius:5px;padding:1px 5px;color:var(--ink)}
+.plan-vox .vx-cols code{background:var(--paper)}
+.voxel-note .vx-foot{margin-top:10px;padding-top:8px;border-top:1px dashed var(--rule);font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
 /* Phones held upright: the pixel editor fills the screen like a drawing app (built in studio/pixels.js, class pxm). */
 .pxm-play,.pxm-top,.pxm-tools,.pxm-sheet,.pxm-words,.pxm-layers{display:none}
 .px-frame.off,.pxm-frame.off{opacity:.4}
@@ -410,6 +428,7 @@ textarea.quote-edit{font-style:italic;border-left:4px solid var(--gold)}
       </div>
     </div>
     <div class="meta"><span id="status"></span><select id="pick" hidden aria-label="Choose a lesson"></select><button class="btn" id="new-lesson" type="button">+ New lesson</button></div>
+    <div id="voxel-note" hidden></div>
   </header>
   <main id="view"></main>
 </div>
@@ -542,6 +561,74 @@ function renderHeader() {
     // On a phone the tabs are one row that slides sideways: keep the open one in sight.
     if (S.tab === t && S.tabShown !== t) { S.tabShown = t; const row = b.parentElement; if (row.scrollWidth > row.clientWidth) row.scrollLeft = b.offsetLeft - (row.clientWidth - b.offsetWidth) / 2; }
   }
+  renderVoxelNote(L && S.tab !== 'new' && S.tab !== 'archive' ? L : null);
+}
+
+function voxelCountText(v) {
+  if (v.ready === v.total) return 'All ' + v.total + ' ready ✓';
+  return v.ready > 0 ? (v.total - v.ready) + ' to make · ' + v.ready + ' ready' : v.total + ' to make';
+}
+
+function voxelColsEl(v) {
+  const col = (title, items) => {
+    if (!items || !items.length) return null;
+    return el('div', {}, [
+      el('h3', {text: title}),
+      el('ul', {}, items.map((item) => el('li', {class: item.have ? 'have' : ''}, [
+        el('span', {class: 'vx-mark', text: item.have ? '✓' : '○', 'aria-label': item.have ? 'Ready' : 'To make'}),
+        el('span', {}, [
+          el('strong', {text: item.label}),
+          item.slug ? ' ' : null,
+          item.slug ? el('code', {text: item.slug}) : null,
+          item.have ? ' ' : null,
+          item.have ? el('span', {class: 'ok small', text: '(ready)'}) : null,
+          item.note ? el('span', {class: 'muted', text: ' — ' + item.note}) : null,
+        ]),
+      ]))),
+    ]);
+  };
+  return el('div', {class: 'vx-cols'}, [col('Characters', v.characters), col('Props', v.props)]);
+}
+
+function renderVoxelNote(L) {
+  const box = document.getElementById('voxel-note');
+  if (!box) return;
+  const v = L && L.voxels;
+  if (!v) { box.hidden = true; box.replaceChildren(); return; }
+  const saved = store.get('voxelNoteOpen');
+  const wantOpen = saved === null ? v.ready < v.total : !!saved;
+  const checkBtn = el('button', {class: 'btn', type: 'button', style: 'padding:6px 10px;font-size:13px', text: 'Check for new models', onclick: async () => {
+    checkBtn.disabled = true;
+    checkBtn.textContent = 'Checking…';
+    try {
+      const r = await api('/api/voxels?force=1');
+      if (r.offline) {
+        checkBtn.textContent = 'Couldn’t reach Angelio';
+        setTimeout(() => { checkBtn.textContent = 'Check for new models'; checkBtn.disabled = false; }, 2500);
+        return;
+      }
+      await refresh();
+      render();
+    } catch {
+      checkBtn.textContent = 'Check failed';
+      setTimeout(() => { checkBtn.textContent = 'Check for new models'; checkBtn.disabled = false; }, 2500);
+    }
+  }});
+  const det = el('details', {class: 'voxel-note', open: wantOpen ? true : null, ontoggle: (e) => {
+    if (e.target.open !== wantOpen) store.set('voxelNoteOpen', e.target.open);
+  }}, [
+    el('summary', {}, [
+      el('span', {text: 'Voxel characters & props to make'}),
+      el('span', {class: 'vx-count' + (v.ready === v.total ? ' done' : ''), text: voxelCountText(v)}),
+    ]),
+    voxelColsEl(v),
+    el('div', {class: 'vx-foot'}, [
+      el('span', {text: (v.note ? v.note + ' ' : '') + 'Upload .vox files on angelio.org/studio/draw/.'}),
+      checkBtn,
+    ]),
+  ]);
+  box.hidden = false;
+  box.replaceChildren(det);
 }
 
 function render() {
@@ -626,11 +713,38 @@ function planView() {
         el('span', {class: 'plan-title'}, [v.title, v.note ? el('span', {class: 'small muted', text: ' · ' + v.note}) : null,
           v.replaces && v.replaces.length ? el('span', {class: 'small muted', text: ' · replaces ' + v.replaces.length + ' old video' + (v.replaces.length > 1 ? 's' : '')}) : null]),
         v.lesson ? el('button', {class: 'btn', type: 'button', text: 'Open', onclick: () => { S.tab = 'script'; store.set('tab', 'script'); openLesson(v.lesson, 0); }}) : el('span'),
+        v.voxels ? el('details', {class: 'plan-vox'}, [
+          el('summary', {}, [
+            el('span', {text: 'Voxels needed'}),
+            el('span', {class: 'vx-count' + (v.voxels.ready === v.voxels.total ? ' done' : ''), text: voxelCountText(v.voxels)}),
+          ]),
+          voxelColsEl(v.voxels),
+        ]) : null,
       ]))),
     ]);
   });
+  const checkBtn = el('button', {class: 'btn', type: 'button', style: 'padding:6px 10px;font-size:13px', text: 'Check for new models', onclick: async () => {
+    checkBtn.disabled = true;
+    checkBtn.textContent = 'Checking…';
+    try {
+      const r = await api('/api/voxels?force=1');
+      if (r.offline) {
+        checkBtn.textContent = 'Couldn’t reach Angelio';
+        setTimeout(() => { checkBtn.textContent = 'Check for new models'; checkBtn.disabled = false; }, 2500);
+        return;
+      }
+      S.plan = null;
+      render();
+    } catch {
+      checkBtn.textContent = 'Check failed';
+      setTimeout(() => { checkBtn.textContent = 'Check for new models'; checkBtn.disabled = false; }, 2500);
+    }
+  }});
   return el('section', {class: 'card stack'}, [
-    el('div', {class: 'row', style: 'justify-content:space-between;align-items:baseline'}, [el('h2', {text: 'Videos to make'}), el('span', {class: 'muted', text: done + ' of ' + vids.length + ' done'})]),
+    el('div', {class: 'row', style: 'justify-content:space-between;align-items:baseline'}, [
+      el('h2', {text: 'Videos to make'}),
+      el('span', {class: 'row', style: 'gap:10px'}, [el('span', {class: 'muted', text: done + ' of ' + vids.length + ' done'}), checkBtn]),
+    ]),
     el('div', {class: 'bar'}, el('i', {style: 'width:' + Math.round(100 * done / Math.max(1, vids.length)) + '%'})),
     ready.length ? el('div', {class: 'notice', text: ready.length + ' script' + (ready.length > 1 ? 's are' : ' is') + ' ready for you to read, with ' + (ready.length > 1 ? 'their quizzes' : 'its quiz') + ': ' + ready.map((v) => v.title).join(', ') + '.'}) : null,
     ...groups,

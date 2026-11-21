@@ -258,3 +258,29 @@ outro:
     - type: recap
 
 watch_id: what-does-byzantine-mean
+
+voxels:
+  note: "Characters are 8 × 8 × 8, facing front, one .vox per pose (same as Candle Rack)."
+  characters:
+    - slug: constantine-idle
+      label: Emperor Constantine
+      note: "Point 2 — purple imperial cloak and golden crown (reusable in Church history)"
+    - slug: byzas-idle
+      label: Byzas
+      note: "Point 1 — ancient Greek founder in tunic and cloak"
+    - slug: missionary-walk
+      label: Byzantine missionary
+      note: "Point 3 — monk/priest walking with a cross and Gospel book"
+    - slug: pope-idle
+      label: The Pope
+      note: "Point 4 & 5 — white cassock and zucchetto (shared with What Is the Byzantine Rite?)"
+    - slug: patriarch-idle
+      label: Eastern Patriarch
+      note: "Point 5 — white klobuk hood with cross, dark robe, beside the Pope"
+  props:
+    - slug: hagia-sophia
+      label: Hagia Sophia
+      note: "Point 2 — mini dome and arches of Constantinople's great church (reusable in Church history)"
+    - slug: gospel-book
+      label: Gold Gospel book
+      note: "Point 3 — ornate golden book carried by missionaries"

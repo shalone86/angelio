@@ -58,8 +58,8 @@ Every app has a last level; when it's done it's frozen (bug fixes only), and new
 9. Marked "1.0, finished" here.
 
 **What Angelio will be when it's done:**
-- Math (PreK–3): PreK Math, Regroup, Doubles, Fraction Feast. Essentially done.
-- Reading (PreK–3): Letter Lane, Read Aloud, Grammar; still to build: Spelling, maybe Writing 1–3 (fenced to grades 1–3).
+- Math (6 tiles total): PreK Math (PreK–K; was Snap & Split), Regroup!, Doubles, Fraction Feast, plus Measurement, Time & Money and Maps, Grids & Geometry (PreK–3 essentials for v1.0; optional Grade 4–5 cap inside the same apps, never new apps).
+- Reading & Writing (6 tiles total): Letter Lane, Read Aloud, Grammar!, Articulate, plus Spelling and Writing Skills (PreK–3 essentials for v1.0; optional Grade 4–5 cap inside the same apps; no separate Word Workshop app).
 - Faith: the four pillars below as Watch & Sing lessons with quizzes, plus Prayers, Catechism sorting, and a salvation-history
   timeline (about 20 events, Creation to the Church). Music: open-ended, his to make as he likes.
 - Out (owner's leaning, Nov 18): general history apps (World, U.S., Catholic history as a whole) and Civics. Through 3rd grade
@@ -265,12 +265,12 @@ wherever a sound is marked `{{tuh}}` in spoken text (kit `tts.js` → `setClips`
   endings, plurals); weekly word lists a parent can type in. Coming-soon card is on the hub.
 - **Writing skills** (1–4): build and expand sentences ("The dog ran." → "The big dog ran fast."), fix run-ons, order sentences into a paragraph, topic sentences.
 - ~~**Fractions**~~: live as **Fraction Feast** (angelio.org/fractions/). Next ideas: animate equivalent fractions (cut each half into 2 → 4 quarters), fractions greater than 1, grade 4.
-- **Multiplication & division beyond Doubles** (3–4): arrays → area model, dealing into groups, remainders.
-- **Measurement** (K–3, from the owner's list): drag a ruler to measure (start at 0, not at the end!), inches and
+- **Multiplication & division beyond Doubles** (folded into **Doubles**, G4–5 cap): arrays → area model, dealing into groups, remainders.
+- **Measurement, Time & Money** (K–3, optional G4–5 — expands A8 into 4 tabs): drag a ruler to measure (start at 0, not at the end!), inches and
   centimeters, longer/shorter; liquids: pour between cups and jugs to compare and measure capacity (cups,
-  quarts, liters); weight on a balance scale; reading clocks could live here too.
-- **Maps & grids** (K–3): left/right/above/below, follow directions on a grid ("3 steps right, 2 up"), find
-  things by row and column (A3, B5), then simple coordinates; read a map with a key and compass rose (N, S, E, W).
+  quarts, liters); weight on a balance scale; clocks, elapsed time & calendars; money (coins, bills, making change); and charts & graphs (tallies, picture/bar graphs, line plots).
+- **Maps, Grids & Geometry** (K–3, optional G4–5 — expands A7): left/right/above/below, follow directions on a grid ("3 steps right, 2 up"), find
+  things by row and column (A3, B5), simple coordinates / `(x, y)` coordinate plane, map key and compass rose (N, S, E, W), plus lines, angles, polygons, symmetry, and (G5) unit-cube volume.
   Pairs well with the history apps' maps later.
 - **Catholic history**: saints, the early Church, councils and great moments on drag-and-drop timelines; maps of missions and pilgrimages.
 - **World history**: build timelines and maps yourself (drag events, place civilizations), memory games.
@@ -296,7 +296,7 @@ Topics only: we write all our own sentences, pictures and wording.
 - **Mechanics**: initials, titles of respect (Mr., Mrs., Dr., Fr., Sr.), names of places, days, months and
   holidays (with feast days: All Saints' Day, Christmas, Easter), titles of books and songs, commas in place
   names and dates, apostrophes.
-- **Words** (maybe its own "Word Workshop" app): rhyming words, synonyms and antonyms, homographs, homophones
+- **Words** (folded into **Read Aloud**, **Grammar!**, and **Spelling** — no separate "Word Workshop" app): rhyming words, synonyms and antonyms, homographs, homophones
   (Articulate already has a homophone list), troublesome words (to/too/two, their/there/they're), compound
   words, prefixes and suffixes.
 - **Research skills**: ABC order (to the 1st, 2nd letter), dictionary guide words, parts of a book (title page,
@@ -317,6 +317,35 @@ Topics only: we write all our own sentences, pictures and wording.
 - Telling time and metric units → the Measurement app above.
 - Problem solving → word problems in Regroup! and Doubles ("12 children came to Mass, then 9 more…"), read aloud,
   with the blocks to model them.
+
+## Curriculum essentials without bloat (Nov 20, 2026)
+
+Reviewed against PreK–5 Math & ELA scopes (IXL PreK–Grade 5). Core rule: **zero new Reading/Writing tiles** (stay at 6: the 4 live + Spelling and Writing Skills already on the hub) and **at most 2 new Math tiles** (Measurement and Maps & Grids already on the roadmap, making 6 Math tiles total). Drop standalone *Word Workshop*, *Comprehension*, *Geometry*, and *Multiplication 3–4* app ideas by folding them into existing apps.
+
+Ship **PreK–3 essentials first** as the v1.0 finish line; treat the **Grade 4–5 cap** as optional final levels inside the same apps (never new apps).
+
+### Math (6 tiles total)
+- **PreK Math** (was Snap & Split) *(PreK → PreK–K)*: Add **count to 20 / teen numbers**, **Make 10 & bridge to 20** (two ten-frames), **3D solid shapes**, **sides & corners**, and **position words**.
+- **Regroup!** *(1–3, optional G4–5)*: Add **compare (`< > =`) & order**, **even/odd**, **rounding (10/100)**, and **word problems**. *(G4–5 cap: a **Decimals** world using the same colored trading lanes.)*
+- **Doubles** *(1–3, optional G4–5)*: Add **`×0, 1, 3, 6, 7, 8, 9` strategy levels** (facts to 12), **Area & Perimeter** on the existing array grid, and **word problems**. *(G4–5 cap: area-model multi-digit ×, division with remainders, factors/primes, order of operations.)*
+- **Fraction Feast** *(1–3, optional G4–5)*: Add **fractions = whole numbers** and ordering. *(G4–5 cap: mixed numbers / fractions > 1, add/subtract fractions, multiply fractions, fractions ↔ decimals.)*
+- **Measurement, Time & Money** *(K–3, optional G4–5 — expands planned A8 into 4 tabs)*:
+  1. **Rulers, Weight & Volume** *(+ G4–5 unit conversions)*
+  2. **Clocks, Elapsed Time & Calendars**
+  3. **Money** *(coins, bills, counting, making change)*
+  4. **Charts & Graphs** *(tallies, picture/bar graphs, line plots; G4–5 mean/median/mode)*
+- **Maps, Grids & Geometry** *(K–3, optional G4–5 — expands planned A7)*: Directions, grids, compass rose, plus **lines, angles, polygons & symmetry**. *(G4–5 cap: `(x, y)` coordinate plane and unit-cube volume.)*
+
+### Reading & Writing (6 tiles total — no new tiles)
+- **Letter Lane** *(PreK–K)*: Add **Sight / Heart words**, **ending & middle sounds**, **Swap-a-Sound** (phoneme manipulation), **confused letters** (`b/d`, `p/q`), **vowels vs. consonants**, and `wh/qu/x` + `-ff/-ll/-ss/-zz`.
+- **Read Aloud** *(1–3, optional G4–5)*: Add **Sight / Heart words** (G1–2), **open vs. closed syllables**, **Short Stories with comprehension questions** (4–6 graded stories per grade covering sequence, main idea, character/setting, cause/effect, inference; G4–5 theme/POV/author's purpose), and **Word Meaning** (synonyms/antonyms, context clues, affix meanings; G4–5 Greek/Latin roots & similes/idioms).
+- **Grammar!** *(1–3, optional G4–5)*: Add **Proofreading marks** *(next up)*, **run-ons**, **4 sentence types**, **subject & predicate**, **helping/linking verbs & future tense**, **confused homophones** (`to/too/two`, `there/their/they're`, `your/you're`, `its/it's`), and **abbreviations/titles**. *(G4–5 cap: 6 compact levels — compound/complex sentences, prepositional phrases, progressive/perfect/modal verbs, reflexive/relative pronouns, adj vs. adv, title formatting.)*
+- **Spelling** *(planned)*: Phonics-order spelling + parent lists + **suffix spelling rules** (drop `e`, double consonant, `y → i`, `-f/-fe`) + **ABC order & guide words**.
+- **Writing Skills** *(planned)*: Sentence building/expanding/combining, paragraph ordering + **"doesn't belong"**, **topic & concluding sentences**, transitions, **fact vs. opinion + reasons**, friendly letters. *(G4–5 cap: short summarizing.)*
+- **Articulate**: Keep as-is.
+
+### Explicitly Out (to prevent bloat)
+- Financial literacy (taxes, pay stubs, credit), Roman numerals, stem-and-leaf plots, Grade 5 pre-algebra/variables, formal research/plagiarism drills, poetry rhyme schemes, and standalone Comprehension / Vocabulary / Geometry / Multiplication-2 apps.
 
 ## Catechism with the game styles we already have (owner's idea, Nov 2026)
 

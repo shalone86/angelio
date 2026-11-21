@@ -207,3 +207,32 @@ outro:
     - type: recap
 
 watch_id: what-is-the-byzantine-rite
+
+voxels:
+  note: "Characters are 8 × 8 × 8, facing front, one .vox per pose (same as Candle Rack)."
+  characters:
+    - slug: priest-idle
+      label: Roman priest
+      note: "Point 3 & 5 — Latin/Roman Rite beside the Eastern priest"
+    - slug: east-priest-idle
+      label: Eastern priest
+      note: "Intro, Point 3 & 5 — Byzantine Rite guide (also on Candle Rack checklist)"
+    - slug: st-peter-idle
+      label: Saint Peter
+      note: "Point 1 & 5 — lived in Antioch; the Pope is his successor (shared with Married Priests)"
+    - slug: st-paul-idle
+      label: Saint Paul
+      note: "Point 1 — bearded apostle holding a scroll/letter, lived in Antioch"
+    - slug: pope-idle
+      label: The Pope
+      note: "Point 5 — white cassock and zucchetto, united with all Catholic Churches"
+  props:
+    - slug: communion-spoon
+      label: Golden Communion spoon & chalice
+      note: "Intro & Point 5 — golden Byzantine chalice with small Communion spoon"
+    - slug: icon-frame
+      label: Byzantine icon
+      note: "Intro & Point 3 — gold-backed icon on a stand"
+    - slug: church-dome
+      label: Byzantine church dome
+      note: "Point 2 & 3 — domed Eastern church roof"

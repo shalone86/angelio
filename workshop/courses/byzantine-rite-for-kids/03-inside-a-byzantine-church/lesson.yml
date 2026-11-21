@@ -216,3 +216,35 @@ outro:
     - type: recap
 
 watch_id: inside-a-byzantine-church
+
+voxels:
+  note: "Characters are 8 × 8 × 8, facing front, one .vox per pose (same as Candle Rack)."
+  characters:
+    - slug: priest-idle
+      label: Roman priest
+      note: "Point 5 — paired with the Eastern priest for different, but equal"
+    - slug: east-priest-walk
+      label: Eastern priest, walking
+      note: "Point 2 & 5 — coming out through the Royal Doors (also on Candle Rack checklist)"
+    - slug: angel-idle
+      label: Angel
+      note: "Point 4 — touching Isaiah's lips with a burning coal (shared with Who Is God?)"
+    - slug: prophet-isaiah-idle
+      label: Prophet Isaiah
+      note: "Point 4 — bearded Old Testament prophet in a mantle"
+  props:
+    - slug: church-byz-royal-doors
+      label: Royal Doors
+      note: "Point 1 & 2 — frame 1 shut, frame 2 open (also on Candle Rack checklist)"
+    - slug: church-byz-iconostasis-left
+      label: Iconostasis panel
+      note: "Point 1 & 3 — wall of icons beside the Royal Doors (also on Candle Rack checklist)"
+    - slug: communion-spoon
+      label: Golden Communion spoon & chalice
+      note: "Intro & Point 4 — golden chalice and small spoon (shared with What Is the Byzantine Rite?)"
+    - slug: burning-coal
+      label: Burning coal & tongs
+      note: "Point 4 — glowing orange/red ember held in golden tongs, flickering frames"
+    - slug: icon-frame
+      label: Byzantine icon
+      note: "Point 3 — gold-framed icon on a stand (shared with What Is the Byzantine Rite?)"

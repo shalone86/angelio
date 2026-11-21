@@ -67,6 +67,8 @@ export const CHECKLISTS = [
       p("priest-mass-walk", "Priest in the chasuble, walking", "The entrance procession."),
       p("server-idle", "Altar server, standing"), p("server-walk", "Altar server, walking"),
       p("server-light", "Altar server, lighting", "Holding the long candle lighter: the upgrade that keeps a row lit."),
+      p("server-candle-idle", "Altar server with candle, standing"), p("server-candle-walk", "Altar server with candle, walking"),
+      p("server-cross-idle", "Altar server with cross, standing"), p("server-cross-walk", "Altar server with cross, walking"),
       p("man-walk", "Man, walking"), p("man-kneel", "Man, kneeling to pray"),
       p("woman-walk", "Woman, walking"), p("woman-kneel", "Woman, kneeling to pray"),
       p("child-walk", "Child, walking"), p("child-kneel", "Child, kneeling to pray"),
@@ -75,6 +77,8 @@ export const CHECKLISTS = [
       p("east-priest-walk", "Eastern priest, walking"), p("east-priest-cense", "Eastern priest, censing"),
       p("east-server-idle", "Byzantine server, standing"), p("east-server-walk", "Byzantine server, walking"),
       p("east-server-light", "Byzantine server, lighting"),
+      p("east-server-cross-idle", "Byzantine server with cross, standing"), p("east-server-cross-walk", "Byzantine server with cross, walking"),
+      p("east-server-ripidion-idle", "Byzantine server with ripidion, standing"), p("east-server-ripidion-walk", "Byzantine server with ripidion, walking"),
     ],
   },
   {

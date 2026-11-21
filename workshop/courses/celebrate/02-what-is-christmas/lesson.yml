@@ -138,3 +138,44 @@ outro:
     - Aim for about 40–50 words, ending with your usual sign-off.
   scenes:
     - type: recap
+
+voxels:
+  note: "Characters are 8 × 8 × 8, facing front, one .vox per pose (same as Candle Rack)."
+  characters:
+    - slug: mary-idle
+      label: Mary
+      note: "Point 1 & 2 — blue and white veil, standing or kneeling by the manger"
+    - slug: st-joseph-idle
+      label: Saint Joseph
+      note: "Point 1 & 2 — beard, brown cloak, holding a staff by the manger"
+    - slug: shepherd-idle
+      label: Shepherd
+      note: "Point 1 & 2 — simple tunic and wooden crook, first visitors to the stable"
+    - slug: angel-sing
+      label: Angel singing
+      note: "Point 2 — white robe, wings, halo, singing Glory to God in the highest"
+    - slug: wise-man-idle
+      label: Wise man (Magi)
+      note: "Point 2 & 4 — royal robe and crown holding a gift box (can recolor for all three)"
+    - slug: jesus-idle
+      label: Jesus, standing
+      note: "Point 4 — for Theophany / Baptism in the Jordan (shared with What Is Advent?)"
+    - slug: john-the-baptist-point
+      label: John the Baptist
+      note: "Point 4 — baptizing Jesus at Theophany (shared with What Is Advent?)"
+  props:
+    - slug: manger
+      label: Manger with baby Jesus
+      note: "Point 1 & 2 — wooden manger with straw and baby Jesus (shared with What Is Advent?)"
+    - slug: bethlehem-star
+      label: Star of Bethlehem
+      note: "Point 2 & 4 — bright golden star, 2–3 twinkling frames (shared with What Is Advent?)"
+    - slug: sheep
+      label: Sheep
+      note: "Point 1 — little woolly sheep for the stable and shepherds"
+    - slug: holy-eve-table
+      label: Holy Eve supper table
+      note: "Point 3 — white tablecloth with straw underneath, lit candle, and simple bowls"
+    - slug: christmas-tree
+      label: Christmas tree
+      note: "Outro — evergreen tree (if you mention the evergreen from the outro notes)"

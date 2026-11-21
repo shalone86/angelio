@@ -1,7 +1,7 @@
 // Draw one of his MagicaVoxel models (a `voxel` scene; art made by scripts/voxels.mjs) on a 2D canvas, at any angle.
 // No 3D library: each block's faces that can be seen are painted as flat shapes, the far ones first, with a light
-// from the upper left. The video (video/scenes/Voxel.tsx), the Timing tab's preview and the studio's picker all
-// use this one file, so they look the same.
+// straight from the front so the sides sit in shadow. The video (video/scenes/Voxel.tsx), the Timing tab's preview
+// and the studio's picker all use this one file, so they look the same.
 //
 // art: {kind: 'voxel', fps, size: [x, y, z], palette: [null, '#rrggbb', …], frames: [[[x, y, z, color], …], …]}
 // (MagicaVoxel's numbers: z is up and the model's front looks toward -y, at the viewer.)
@@ -11,9 +11,14 @@ export const VIEWS = {front: 0, 'front-right': 35, right: 90, 'back-right': 145,
 export const VIEW_NAMES = {front: 'Facing you', 'front-right': 'Turned a little to the right', right: 'Side, looking right', 'back-right': 'Turned away, to the right',
   back: 'Back to you', 'back-left': 'Turned away, to the left', left: 'Side, looking left', 'front-left': 'Turned a little to the left'};
 const PITCH = 0.42; // looking down a little (radians)
-const LIGHT = norm([-0.45, 0.8, 0.5]); // in the camera's terms: from the upper left, in front
+const TOP_LIGHT = 0.9; // gentle overhead light on top faces so they stay distinct from both front and sides
 
-function norm(v) { const l = Math.hypot(...v); return v.map((x) => x / l); }
+/** Brightness for a turned face normal `d`: lit brightly on the front (+z), softly on top (+y), shadowed on the sides. */
+function faceLight(d) {
+  if (d[1] > 0.5) return TOP_LIGHT;
+  const front = Math.min(1, Math.max(0, d[2]) * 1.18);
+  return 0.45 + 0.55 * (front ** 2.4);
+}
 const shade = (hex, k) => {
   const n = parseInt(hex.slice(1), 16);
   const c = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) => Math.max(0, Math.min(255, Math.round(v * k))));
@@ -42,7 +47,7 @@ function shapes(art, yawDeg) {
   const turn = ([X, Y, Z]) => [X * cos + Z * sin, Y, -X * sin + Z * cos];
   const see = ([X, Y, Z]) => { const [xr, y, zr] = turn([X, Y, Z]); return [xr, -y * cp + zr * sp, zr * cp + y * sp]; };
   const view = [0, sp, cp];
-  const faces = FACES.map((f) => { const d = turn(f.d); return {...f, front: d[0] * view[0] + d[1] * view[1] + d[2] * view[2] > 1e-6, light: 0.58 + 0.42 * Math.max(0, d[0] * LIGHT[0] + d[1] * LIGHT[1] + d[2] * LIGHT[2])}; });
+  const faces = FACES.map((f) => { const d = turn(f.d); return {...f, front: d[0] * view[0] + d[1] * view[1] + d[2] * view[2] > 1e-6, light: faceLight(d)}; });
   let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
   const frames = art.frames.map((voxels) => {
     const filled = new Set(voxels.map((v) => v[0] + ',' + v[1] + ',' + v[2]));
