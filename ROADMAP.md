@@ -146,7 +146,10 @@ is the content, so they never need new levels.
    style game: walk, auto-prayer, candles left behind, grace, pick one of three, 12 combos, a 5-minute day). Art: test page
    https://claude.ai/artifact/FFkp1FnQTM6aEeBn78PFqM (A: PICO-8 as is, B: crisp pixels + smooth light and words, C: voxels
    made automatically from his drawings).
-   - **Candle Rack** (first; he wants to play it). Decided Nov 19, 2026: **voxels only**, his own MagicaVoxel models
+   - **Candle Rack** (first; he wants to play it). **v1 live Nov 21, 2026 at angelio.org/candles/** (apps/candles): the round
+     before Mass, lighting, just in time, chains, intentions, drafts, the lamp, the bells and procession, the season's color,
+     his priest models, stand-in boxes for the rest. Next: pick-one-of-three upgrades, the Byzantine church, Church-year events,
+     today's game. Decided Nov 19, 2026: **voxels only**, his own MagicaVoxel models
      (.vox, uploaded on the Studio's Drawings page, where the checklist of people and church pieces lives); pixel versions
      can be redone later. **Each round is the time before Mass or the Divine Liturgy**: getting the sanctuary ready ("Mass
      starts in 3 minutes"), the priest (hurrying) or server comes by, people come early to pray and light candles for their
