@@ -192,8 +192,21 @@ is the content, so they never need new levels.
 5. **Garden Givers.** Tap to plant, water and pick; fill the food bank's basket. Ramp: crops ripen at different speeds,
    rain helps, crows steal, the food bank asks for certain foods, picked food spoils if left. Pick-one-of-three upgrades
    (a bigger watering can, a helper). Score: meals given.
-6. **Mass Usher.** Tap a family, then a pew where they fit (a gentle Tetris). Ramp: families of different sizes, the clock
-   until Mass starts, late arrivals, a bonus for keeping families together, and packed Christmas and Easter Masses.
+6. **Mass Usher.** Seat arriving families in the church pews (a gentle Tetris). Notes, Nov 21, 2026:
+   - **Screen & layout:** One screen filled with pews, the altar, and the front doors to the narthex. You stand at the
+     front doors as people arrive in families of various sizes.
+   - **Loop & controls:** Tap a pew (one with free spots, or one you want to clear space in) to walk over there with the
+     family. Once at the pew, you can swipe/slide along the pew first to get seated people to move down and make space
+     (if there is any), then tap the pew again to seat however many can fit. If you have leftovers, tap a different pew
+     to walk over and seat the rest (you can tap two pews—or even multiple pews when Mass is busy—to split a family).
+     Once the whole family is seated, you autowalk back to the front doors to get more people, going back and forth all
+     round.
+   - **Seating habits:** Some people will sit on the edges, some only in the middle, etc., affecting how they scoot when
+     you slide a pew.
+   - **Scoring:** More points if you seat each family together; splitting a family loses points, and the further apart
+     you split the family, the fewer points you get.
+   - **Ramp:** Families of different sizes, the clock until Mass starts, late arrivals, and packed Christmas and Easter
+     Masses.
 7. **Coloring.** Tap to fill his drawings (no brushes or layers). The one game with no score; done is a set of pages plus
    seasonal pages. The picture saves to the device only.
 
