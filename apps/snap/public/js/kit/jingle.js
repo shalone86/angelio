@@ -47,7 +47,7 @@ export const JINGLES = {
   },
   // Regroup!: two blocks clack together, then a bright ding.
   regroup() { noise(0, { freq: 900, vol: 0.2 }); noise(0.11, { freq: 1300, vol: 0.2 }); bell(0.24, 1567.98, 0.09, 0.7); },
-  // Snap & Split: a snap and a quick pop upward.
+  // PreK Math (Snap & Split): a snap and a quick pop upward.
   snap() { noise(0, { dur: 0.03, freq: 3500, vol: 0.25 }); tone(0.06, 400, { to: 950, dur: 0.16, type: "triangle", vol: 0.1 }); tone(0.24, 1318.5, { dur: 0.35, vol: 0.07 }); },
   // Doubles: the same note twice, then its double (an octave up).
   doubles() { tone(0, 659.25, { dur: 0.16, type: "triangle", vol: 0.1 }); tone(0.15, 659.25, { dur: 0.16, type: "triangle", vol: 0.1 }); bell(0.32, 1318.5, 0.09, 0.6); },

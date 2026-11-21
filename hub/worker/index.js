@@ -9,7 +9,7 @@
 
 export const APPS = {
   regroup: "REGROUP", // Regroup! (regroup Worker)
-  snap: "SNAP", // Snap & Split (snap-split Worker)
+  snap: "SNAP", // PreK Math, was Snap & Split (snap-split Worker)
   doubles: "DOUBLES", // Doubles (doubles Worker)
   grammar: "GRAMMAR", // Grammar (grammar Worker)
   fractions: "FRACTIONS", // Fraction Feast (fractions Worker)

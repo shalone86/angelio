@@ -1,4 +1,4 @@
-// Snap & Split levels and problems (pure, tested in Node).
+// PreK Math (Snap & Split) levels and problems (pure, tested in Node).
 //   count: how many blocks?            join: a + b (snap two groups together)
 //   split: whole − take (take some away and see what's left)
 

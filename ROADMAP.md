@@ -7,7 +7,7 @@ voice; donations welcome; a paid Pro voice (natural Cloudflare voice) with an ac
 
 | App | Path | Grades | Repo |
 |---|---|---|---|
-| Snap & Split | /snap/ | PreK | shalone86/snap-split |
+| PreK Math | /snap/ | PreK | shalone86/snap-split |
 | Regroup! | /regroup/ | 1–3 | shalone86/regroup |
 | Doubles | /doubles/ | 1–3 | not on GitHub yet |
 | Grammar! | /grammar/ | 1–3 | not on GitHub yet |
@@ -58,7 +58,7 @@ Every app has a last level; when it's done it's frozen (bug fixes only), and new
 9. Marked "1.0, finished" here.
 
 **What Angelio will be when it's done:**
-- Math (PreK–3): Snap & Split, Regroup, Doubles, Fraction Feast. Essentially done.
+- Math (PreK–3): PreK Math, Regroup, Doubles, Fraction Feast. Essentially done.
 - Reading (PreK–3): Letter Lane, Read Aloud, Grammar; still to build: Spelling, maybe Writing 1–3 (fenced to grades 1–3).
 - Faith: the four pillars below as Watch & Sing lessons with quizzes, plus Prayers, Catechism sorting, and a salvation-history
   timeline (about 20 events, Creation to the Church). Music: open-ended, his to make as he likes.
@@ -240,7 +240,7 @@ wherever a sound is marked `{{tuh}}` in spoken text (kit `tts.js` → `setClips`
 
 ## Next apps
 
-- ~~**PreK math beyond counting**~~: Nov 18, 2026, in **Snap & Split** (kept as the one PreK math app, so Math stays 4 tiles):
+- ~~**PreK math beyond counting**~~: Nov 18, 2026, in **PreK Math** (kept as the one PreK math app, so Math stays 4 tiles):
   topics Numbers (blocks), Shapes (find, more shapes, shapes all around), Colors & sorting (find a color, sort by color, sort
   by shape, which one doesn't belong), Patterns (AB, ABB/AAB, ABC/AABB), More or fewer (more/fewer, same, big and small,
   longer, taller). Shapes are drawn (apps/snap/public/js/prek.js + prek-view.js). Next ideas: position words (above, below,

@@ -16,7 +16,7 @@ let chromium;
 try { ({ chromium } = require("playwright")); } catch { ({ chromium } = require(path.join(process.execPath, "../../lib/node_modules/playwright"))); }
 
 // [app, name, module with STAGES (for an app whose home has buttons, not links)]
-const APPS = [["snap", "Snap & Split"], ["regroup", "Regroup!"], ["doubles", "Doubles", "js/doubles.js"], ["fractions", "Fraction Feast"],
+const APPS = [["snap", "PreK Math"], ["regroup", "Regroup!"], ["doubles", "Doubles", "js/doubles.js"], ["fractions", "Fraction Feast"],
   ["letters", "Letter Lane"], ["read", "Read Aloud"], ["grammar", "Grammar!"]];
 const TYPES = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".svg": "image/svg+xml" };
 const sentences = (t) => String(t).split(/(?<=[.!?])\s+/).map((s) => s.trim()).filter((s) => /[\p{L}]/u.test(s));

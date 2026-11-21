@@ -1,4 +1,4 @@
-# 🧲 Snap & Split
+# 🧲 PreK Math
 
 Live at **https://snap.shalonely.com**
 

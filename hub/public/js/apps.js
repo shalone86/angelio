@@ -10,7 +10,7 @@ export const SUBJECTS = [
 
 export const APP_LIST = [
   {
-    name: "Snap & Split", path: "snap", subject: "math", grades: "PreK", emoji: "🧲",
+    name: "PreK Math", path: "snap", subject: "math", grades: "PreK", emoji: "🧲",
     blurb: "PreK math: counting and snapping blocks, shapes, colors and sorting, patterns, and more or fewer.",
   },
   {

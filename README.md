@@ -6,7 +6,7 @@ All of Angelio lives in this one repo.
 | Folder | What | Lives at |
 |---|---|---|
 | `hub/` | the angelio.org home page, Sticker World, the admin pages, and the router that puts every app under its path | angelio.org |
-| `apps/snap` | Snap & Split (PreK) | /snap/ |
+| `apps/snap` | PreK Math (PreK) | /snap/ |
 | `apps/regroup` | Regroup! (1–3) | /regroup/ |
 | `apps/doubles` | Doubles (1–3) | /doubles/ |
 | `apps/grammar` | Grammar! (1–3) | /grammar/ |

@@ -174,8 +174,11 @@ function shapeHint(s) {
   return { circle: "A circle is round, with no corners.", square: "A square has 4 sides that are all the same.", triangle: "A triangle has 3 sides and 3 corners.",
     rectangle: "A rectangle has 4 sides: 2 long and 2 short.", star: "A star has 5 points.", heart: "A heart is the shape of love.", oval: "An oval is like an egg.", diamond: "A diamond is like a kite." }[s] ?? "";
 }
-const pencil = (s) => `<svg viewBox="0 0 300 40" style="width:${Math.round(s * 100)}%" aria-hidden="true"><rect x="22" y="8" width="250" height="24" rx="3" fill="#f2c94c" stroke="#c9a227" stroke-width="2"/><polygon points="22,8 0,20 22,32" fill="#f4d9b0"/><polygon points="7,16 0,20 7,24" fill="#333"/><rect x="272" y="8" width="22" height="24" rx="4" fill="#f28ca0"/></svg>`;
-const snake = (s) => `<svg viewBox="0 0 300 40" style="width:${Math.round(s * 100)}%" aria-hidden="true"><rect x="0" y="10" width="285" height="20" rx="10" fill="#27ae60"/><circle cx="282" cy="20" r="14" fill="#27ae60"/><circle cx="287" cy="15" r="3" fill="#fff"/><circle cx="288" cy="15" r="1.5" fill="#000"/></svg>`;
+// Drawn at their real length (the same thickness), so a longer pencil or snake really is longer, lined up on the left.
+const LONG = 300;
+const lenOf = (s) => Math.round(LONG * s);
+const pencil = (s) => { const L = lenOf(s); return `<svg viewBox="0 0 ${L} 40" preserveAspectRatio="xMinYMid meet" style="width:${Math.round(s * 100)}%" aria-hidden="true"><rect x="22" y="8" width="${L - 50}" height="24" rx="3" fill="#f2c94c" stroke="#c9a227" stroke-width="2"/><polygon points="22,8 0,20 22,32" fill="#f4d9b0"/><polygon points="7,16 0,20 7,24" fill="#333"/><rect x="${L - 28}" y="8" width="22" height="24" rx="4" fill="#f28ca0"/></svg>`; };
+const snake = (s) => { const L = lenOf(s); return `<svg viewBox="0 0 ${L} 40" preserveAspectRatio="xMinYMid meet" style="width:${Math.round(s * 100)}%" aria-hidden="true"><rect x="0" y="10" width="${L - 15}" height="20" rx="10" fill="#27ae60"/><circle cx="${L - 18}" cy="20" r="14" fill="#27ae60"/><circle cx="${L - 13}" cy="15" r="3" fill="#fff"/><circle cx="${L - 12}" cy="15" r="1.5" fill="#000"/></svg>`; };
 
 /** Sort: one piece at a time; tap its basket. A wrong basket shakes and says which one. */
 function sortQuestion(q, ctx) {

@@ -1,4 +1,5 @@
-// Snap & Split: PreK adding and taking away with blocks that snap together and split apart.
+// PreK Math (was Snap & Split; still at angelio.org/snap/): adding and taking away with blocks that snap together and
+// split apart, then shapes, colors and sorting, patterns, and more or fewer.
 // Built on the learning-app template (see js/kit/). Plain ES modules, no build step.
 
 import * as S from "./kit/store.js";
@@ -30,7 +31,7 @@ const route = createRouter([
   [/^free$/, viewFree],
   [/^grownups$/, () => viewGrownups(app, {
     extraToggles: [["sentences", "Show number sentences", "After each problem, show 3 + 2 = 5 under the blocks."]],
-    about: `<p>Snap & Split is PreK math, for ages 3 to 5: numbers (counting, putting together and taking apart, up to 10), shapes,
+    about: `<p>PreK Math is math for PreK, for ages 3 to 5: numbers (counting, putting together and taking apart, up to 10), shapes,
       colors and sorting, patterns, and comparing (more, fewer, the same, bigger, longer, taller). Everything is said out loud, so no reading is needed.</p>
       <p><b>Snap:</b> a blue group and a yellow group. Kids tap the blocks and they snap together into a ten-frame (two rows of five). The colors stay, so they can still see the 3 and the 2 inside the 5.</p>
       <p><b>Split:</b> kids tap blocks to take them away. Each one moves into the "take away" box, so both parts stay visible.</p>
@@ -96,9 +97,9 @@ function viewHome() {
   const next = nextLevel();
   app.innerHTML = `
     <section class="hero">
-      <h1 class="title" aria-label="Snap and Split"><span class="cb">Snap</span> <span class="amp">&amp;</span> <span class="cy">Split</span></h1>
+      <h1 class="title" aria-label="PreK Math"><span class="cb">PreK</span> <span class="cy">Math</span></h1>
       <div class="hero-blocks" aria-hidden="true">${blocksHtml(3, "a")}<span class="snap-plus">+</span>${blocksHtml(2, "b")}</div>
-      <p class="lede">Snap blocks together. Split them apart. Count them all!</p>
+      <p class="lede">Count and snap blocks, then shapes, colors, patterns, and more or fewer!</p>
       <a class="btn big primary play-btn" href="#/play/${next.id}">▶ Play</a>
       <p class="muted small">${next.emoji} ${esc(next.title)}</p>
       <nav class="grade-jump" aria-label="Jump to a topic">${TOPICS.map((t) => `<button type="button" class="grade-chip" data-topic="${t.id}">${t.emoji} ${esc(t.title)}</button>`).join("")}</nav>
