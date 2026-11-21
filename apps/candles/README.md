@@ -39,3 +39,16 @@ open-ended chase. The levels are tuned with pretend players in `test/game.test.j
 Still to come (see ROADMAP.md): pick-one-of-three upgrades between rounds (longer wicks, glass covers, an altar
 server, a bigger rack), the Byzantine church to choose, Church-year events (the Advent wreath, Candlemas, the Easter
 Vigil), and "today's game" (the same round for everyone that day).
+
+## Next art pass (his decision, Nov 2026)
+
+The game is a demo until the rest of the art and the music are in. Then:
+- **Random hair and skin for everyone**, the priest and servers included: what makes a character unique is the model,
+  not its colors. He paints hair pure lime **#00FF00** (darker shade **#00AA00**); none of his other colors are near it.
+  The game swaps those for a random natural hair color (black, dark brown, brown, auburn, blond; grandparents mostly
+  gray or white), the darker green for a darker shade, the same way pink becomes the season's color (`isPink`).
+  Skin: his faces share one color; the game swaps it for a random skin tone (check the models first that it's used
+  for nothing else).
+- Still to make: `man-`, `woman-`, `child-`, `grandparent-` × `kneel`, `idle`, `walk`; `east-priest-walk`,
+  `east-priest-vested-idle`, `east-server-candle-walk`, `east-server-candle-idle`.
+- Music.
