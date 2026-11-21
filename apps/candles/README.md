@@ -13,7 +13,9 @@ open-ended chase. The levels are tuned with pretend players in `test/game.test.j
 - `public/js/game.js`: the rules (pure, tested): candles, the lamp, drafts, people, scoring, difficulty.
 - `public/js/season.js`: the Church year from the date (tested): the season's color goes on the altar cloth, the
   tabernacle veil, and every part of his models painted pink (#FF77A8), like the priest's chasuble.
-- `public/js/church.js`: the church on screen (three.js r128, `public/vendor/`, pinned). His MagicaVoxel models come
+- `public/js/church.js`: the church on screen (three.js r128, `public/vendor/`, pinned). The priest waits by the sacristy;
+  the altar server walks behind a rack to light a candle that went out (his `server-light` pose); when the bells ring,
+  the cross, two candles and the priest in his chasuble process up the aisle. His MagicaVoxel models come
   from angelio.org (`/api/art`, the Studio's Drawings page) and are used as soon as they exist; plain stand-in boxes
   hold the place of anything not made yet (the room, altar, racks, candles, people). The checklist of pieces is on the
   Drawings page.

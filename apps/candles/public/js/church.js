@@ -17,7 +17,7 @@ export const LAYOUT = {
   slotGap: 4, rowY: [3, 5.6], rowZ: [1.3, -1.3],
   lamp: { x: 5.5, y: 11, z: -10 },
   door: { x: -23, z: 6 },
-  sacristy: { x: 16, z: -12.5 }, aisle: { x: 0, z: 14 },
+  sacristy: { x: 16, z: -12.5 }, serverHome: { x: -18, z: -6.6 }, behindRacks: -6.6, aisle: { x: 0, z: 14 },
 };
 
 const isPink = (hex) => { const n = parseInt(hex.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255; return r > 190 && b > 110 && r - g > 55 && b - g > 10; };
@@ -44,6 +44,7 @@ export function createChurch(canvas, { season, models = {} }) {
   scene.background = new THREE.Color("#1a1430");
   const cam = new THREE.PerspectiveCamera(38, 1, 0.5, 300);
   const box = new THREE.BoxGeometry(1, 1, 1);
+  let time = 0; // seconds since the church appeared (the actors and flames use it)
   const mats = new Map();
   const mat = (hex, extra = {}) => { const k = hex + JSON.stringify(extra); if (!mats.has(k)) mats.set(k, new THREE.MeshLambertMaterial({ color: hex, ...extra })); return mats.get(k); };
   const glow = (hex) => { const k = "glow" + hex; if (!mats.has(k)) mats.set(k, new THREE.MeshBasicMaterial({ color: hex })); return mats.get(k); };
@@ -126,16 +127,31 @@ export function createChurch(canvas, { season, models = {} }) {
   };
   const animate = (g, t) => { const fr = g.userData.frames; if (fr?.length > 1) { const k = Math.floor(t * g.userData.fps) % fr.length; fr.forEach((m, i) => { m.visible = i === k; }); } };
 
-  // the priest: waits by the sacristy, hurries to help, and walks up the aisle when Mass begins
-  const priestPoses = { idle: meshFor("priest-idle"), hurry: meshFor("priest-walk-fast"), slow: meshFor("priest-mass-walk") ?? meshFor("priest-walk-slow") };
-  const priest = new THREE.Group(); scene.add(priest);
-  const priestPose = (k) => { for (const [n, m] of Object.entries(priestPoses)) if (m) { if (!m.parent) priest.add(m); m.visible = n === k || (!priestPoses[k] && n === "idle"); } };
-  if (!priestPoses.idle) priest.add(standIn("#1d1b22", false));
-  priestPose("idle"); priest.position.set(LAYOUT.sacristy.x, 1, LAYOUT.sacristy.z); priest.rotation.y = -0.5;
-  let walk = null; // {from, to, speed, done}
-  function walkTo(x, z, pose = "hurry", speed = 9) {
-    return new Promise((done) => { priestPose(pose); walk = { x, z, speed, done }; });
+  // Actors: someone who stands and walks with his poses (each pose one of his models; a stand-in if none is made).
+  // The priest waits by the sacristy; the altar server lights candles that went out and carries the cross or a candle
+  // in the procession when the bells ring.
+  const actors = [];
+  // the floor is at 0; the sanctuary step (x within 11, z behind -7.5) is 1 higher
+  const groundY = (x, z) => (z < -7.5 && Math.abs(x) < 11 ? 1 : 0);
+  function actor(poses, standInHex, home) {
+    const a = { g: new THREE.Group(), poses: {}, walk: null, home };
+    for (const [k, names] of Object.entries(poses)) { const m = [].concat(names).map((n) => meshFor(n)).find(Boolean); if (m) { a.poses[k] = m; m.visible = false; a.g.add(m); } }
+    if (!a.poses.idle) { const st = standIn(standInHex, false); a.poses.idle = st; a.g.add(st); }
+    a.pose = (k) => { const show = a.poses[k] ? k : a.poses.walk && /walk|hurry|slow/.test(k) ? "walk" : "idle"; for (const [n, m] of Object.entries(a.poses)) m.visible = n === show; a.now = show; a.t0 = time; };
+    a.walkTo = (x, z, pose = "walk", speed = 8) => new Promise((done) => { a.pose(pose); a.walk = { x, z, speed, done }; });
+    a.place = (x, z, turn = 0, pose = "idle") => { a.g.position.set(x, groundY(x, z), z); a.g.rotation.y = turn; a.pose(pose); };
+    a.goHome = () => a.walkTo(a.home.x, a.home.z, "walk").then(() => { a.pose("idle"); a.g.rotation.y = a.home.turn; });
+    a.place(home.x, home.z, home.turn);
+    scene.add(a.g); actors.push(a);
+    return a;
   }
+  const priest = actor({ idle: "priest-idle", walk: "priest-walk-fast", slow: ["priest-mass-walk", "priest-walk-slow"], vested: ["priest-mass-idle", "priest-idle"] },
+    "#1d1b22", { x: LAYOUT.sacristy.x, z: LAYOUT.sacristy.z, turn: -0.5 });
+  const server = actor({ idle: "server-idle", walk: "server-walk", light: "server-light", cross: "server-cross-walk", crossIdle: "server-cross-idle",
+    candle: "server-candle-walk", candleIdle: "server-candle-idle" }, "#b02a2a", { ...LAYOUT.serverHome, turn: 0.4 });
+  // a second server only for the procession (two candle bearers walk beside each other), hidden until then
+  const server2 = actor({ idle: "server-candle-idle", candle: "server-candle-walk", candleIdle: "server-candle-idle" }, "#b02a2a", { x: 0, z: 30, turn: 0 });
+  server2.g.visible = false;
 
   // people who came to pray
   const people = new Map();
@@ -173,7 +189,7 @@ export function createChurch(canvas, { season, models = {} }) {
   resize();
 
   // ── each frame: draw the game's state ──
-  let time = 0, doorOpen = 0, doorTarget = 0;
+  let doorOpen = 0, doorTarget = 0;
   const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
   function update(g, dt) {
     time += dt;
@@ -195,14 +211,17 @@ export function createChurch(canvas, { season, models = {} }) {
     lampLight.intensity = g.lampOut ? 0 : 0.2 + g.lamp * 0.9 + (g.lamp < 0.3 ? 0.3 * Math.sin(time * 14) : 0);
     lampGlass.material.emissive.set(g.lampOut ? "#100202" : "#5a0a0a");
     doorOpen += (doorTarget - doorOpen) * Math.min(1, dt * 4); doorPivot.rotation.y = -doorOpen * 1.1;
-    // the priest walking
-    if (walk) {
-      const dx = walk.x - priest.position.x, dz = walk.z - priest.position.z, d = Math.hypot(dx, dz);
-      priest.rotation.y = Math.atan2(dx, dz);
-      if (d < 0.3) { const done = walk.done; walk = null; done(); }
-      else { const s = Math.min(d, walk.speed * dt); priest.position.x += (dx / d) * s; priest.position.z += (dz / d) * s; }
+    // everyone walking
+    for (const a of actors) {
+      if (a.walk) {
+        const dx = a.walk.x - a.g.position.x, dz = a.walk.z - a.g.position.z, d = Math.hypot(dx, dz);
+        a.g.rotation.y = Math.atan2(dx, dz);
+        if (d < 0.3) { const done = a.walk.done; a.walk = null; done(); }
+        else { const st = Math.min(d, a.walk.speed * dt); a.g.position.x += (dx / d) * st; a.g.position.z += (dz / d) * st; a.g.position.y = groundY(a.g.position.x, a.g.position.z); }
+      }
+      const m = a.poses[a.now];
+      if (m) animate(m, time - (a.t0 ?? 0));
     }
-    for (const m of Object.values(priestPoses)) if (m?.visible) animate(m, time);
     for (const p of people.values()) animate(p.g, time);
     R.render(scene, cam);
   }
@@ -224,10 +243,35 @@ export function createChurch(canvas, { season, models = {} }) {
   const personHead = (id) => { const p = people.get(id); return p ? screenOf(p.g.position.x, 7, p.g.position.z) : null; };
 
   return {
-    update, pick, resize, screenOf, personHead, personArrive, personLeave, walkTo,
+    update, pick, resize, screenOf, personHead, personArrive, personLeave,
     candleSpot: (id) => { const v = candles[id].g.position; return { x: v.x, z: v.z }; },
-    priestHome: () => walkTo(LAYOUT.sacristy.x, LAYOUT.sacristy.z, "hurry").then(() => { priestPose("idle"); priest.rotation.y = -0.5; }),
-    procession: async () => { priest.position.set(LAYOUT.aisle.x, 1, LAYOUT.aisle.z); await walkTo(0, -7, "slow", 3.2); priestPose("idle"); priest.rotation.y = 0; },
+    /** The server walks to a candle, lights it (his lighting pose), and goes back. `light` is called at the moment it's lit. */
+    serverLights: async (id, light) => {
+      const v = candles[id].g.position;
+      // from behind the rack, so he never stands between the player and the candles
+      await server.walkTo(v.x, LAYOUT.behindRacks, "walk");
+      server.g.rotation.y = 0; server.pose("light");
+      const frames = server.poses.light?.userData.frames.length ?? 6, fps = server.poses.light?.userData.fps ?? 4;
+      await new Promise((r) => setTimeout(r, Math.min(3200, (frames / fps) * 1000)));
+      light();
+      await server.goHome();
+    },
+    /** The entrance procession: the cross, two candles, then the priest in his vestments, up the aisle to the altar. */
+    procession: async () => {
+      const A = LAYOUT.aisle;
+      server.walk = null; priest.walk = null; server2.g.visible = true;
+      server.place(A.x, A.z, Math.PI, "cross");
+      server2.place(A.x - 3, A.z + 5, Math.PI, "candle");
+      priest.place(A.x, A.z + 12, Math.PI, "slow");
+      const third = actor({ idle: "server-candle-idle", candle: "server-candle-walk", candleIdle: "server-candle-idle" }, "#b02a2a", { x: A.x + 3, z: A.z + 5, turn: Math.PI });
+      third.pose("candle");
+      await Promise.all([
+        server.walkTo(0, -8.5, "cross", 3.4).then(() => server.walkTo(-8.5, -9.5, "cross", 3.4)).then(() => { server.pose("crossIdle"); server.g.rotation.y = 0; }),
+        server2.walkTo(-3, -8.5, "candle", 3.2).then(() => server2.walkTo(-5, -9, "candle", 3.2)).then(() => { server2.pose("candleIdle"); server2.g.rotation.y = 0; }),
+        third.walkTo(3, -8.5, "candle", 3.2).then(() => third.walkTo(5, -9, "candle", 3.2)).then(() => { third.pose("candleIdle"); third.g.rotation.y = 0; }),
+        priest.walkTo(0, -8.6, "slow", 3.2).then(() => { priest.pose("vested"); priest.g.rotation.y = 0; }),
+      ]);
+    },
     door: (open) => { doorTarget = open ? 1 : 0; },
     hasModels: () => Object.keys(models),
     dispose: () => { R.dispose(); },

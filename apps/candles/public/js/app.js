@@ -19,7 +19,9 @@ import { createChurch, loadModels } from "./church.js";
 
 const app = document.getElementById("app");
 const season = seasonOf(new Date());
-const MODELS = ["priest-idle", "priest-walk-fast", "priest-mass-walk", "priest-walk-slow", "man-kneel", "woman-kneel", "child-kneel", "grandparent-kneel"];
+const MODELS = ["priest-idle", "priest-walk-fast", "priest-mass-walk", "priest-walk-slow", "priest-mass-idle",
+  "server-idle", "server-walk", "server-light", "server-cross-walk", "server-cross-idle", "server-candle-walk", "server-candle-idle",
+  "man-kneel", "woman-kneel", "child-kneel", "grandparent-kneel"];
 const HEART = { red: "❤️", blue: "💙", white: "🤍" };
 const COLOR_WORD = { red: "red", blue: "blue", white: "white" };
 
@@ -146,16 +148,14 @@ function viewPlay() {
     };
     canvas.addEventListener("pointerup", endSwipe); canvas.addEventListener("pointercancel", endSwipe);
 
-    // the priest helps now and then (more often at the start, for little ones)
+    // the altar server helps now and then (more often at the start, for little ones): walks over and lights one
     let helpAt = 25, helping = false;
     async function help() {
       const out = g.candles.filter((c) => c.active && !c.lit);
-      if (!out.length || helping) return;
+      if (!out.length || helping || ended) return;
       helping = true;
-      const c = out[Math.floor(Math.random() * out.length)], spot = church.candleSpot(c.id);
-      await church.walkTo(spot.x, spot.z + 5, "hurry");
-      if (alive && lightFree(g, c.id)) talk(vary("helper", ["Father lit one for you!", "Father is helping get ready too."]));
-      await church.priestHome();
+      const c = out[Math.floor(Math.random() * out.length)];
+      await church.serverLights(c.id, () => { if (alive && !ended && lightFree(g, c.id)) talk(vary("helper", ["The altar server lit one for you!", "The server is helping get ready too."])); });
       helping = false;
     }
 
