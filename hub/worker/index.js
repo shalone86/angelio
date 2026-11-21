@@ -23,7 +23,7 @@ export const APPS = {
 
 import { normalizeCode, newCode, codeStatus, day, month } from "./codes.js";
 import { stripeApi } from "./stripe.js";
-import { studioApi, backupToGitHub, READING_LIVE, ART_LIVE, voxKey } from "./studio.js";
+import { studioApi, backupToGitHub, READING_LIVE, ART_LIVE, CANDLES_LAYOUT, voxKey } from "./studio.js";
 import { artSlug } from "../public/js/art-content.js";
 
 export default {
@@ -124,6 +124,11 @@ async function api(request, url, env) {
     const obj = env.WATCH_MEDIA ? await env.WATCH_MEDIA.get(ART_LIVE) : null;
     if (!obj) return json({ drawings: {}, favorites: [], done: {} });
     return new Response(obj.body, { headers: { "content-type": "application/json", "cache-control": "public, max-age=20", "access-control-allow-origin": "*", etag: obj.httpEtag } });
+  }
+  // Candle Rack's placements (moved on the Studio's Candle Rack page); {} means the game's own
+  if (route === "GET /api/candles/layout") {
+    const obj = env.WATCH_MEDIA ? await env.WATCH_MEDIA.get(CANDLES_LAYOUT) : null;
+    return new Response(obj ? obj.body : "{}", { headers: { "content-type": "application/json", "cache-control": "public, max-age=20", "access-control-allow-origin": "*" } });
   }
   if (route === "GET /api/art/vox") {
     const slug = artSlug(url.searchParams.get("slug"));

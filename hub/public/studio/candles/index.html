@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Candle Rack · Angelio Studio</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#2b2b2e">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="../draw/pixel.css">
+  <style>
+    body { padding: 0 max(16px, env(safe-area-inset-left)) 0 max(16px, env(safe-area-inset-right)); }
+    .cr { max-width: 980px; margin: 0 auto; padding: calc(14px + env(safe-area-inset-top)) 0 calc(40px + env(safe-area-inset-bottom)); display: grid; gap: 12px; }
+    .cr h1 { font: 800 28px/1.1 var(--serif); margin: 0; }
+    .cr nav { display: flex; gap: 14px; flex-wrap: wrap; font: 600 14px var(--sans); }
+    .cr nav a { color: var(--muted); }
+    .row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+    .pill { font: 700 15px/1 var(--sans); padding: 11px 14px; border-radius: 99px; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); cursor: pointer; min-height: 44px; }
+    .pill[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+    .stage { position: relative; width: 100%; height: min(58vh, 560px); border-radius: 16px; overflow: hidden; background: #1a1430; }
+    .stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    .stage .loading { position: absolute; inset: 0; display: grid; place-items: center; color: #fff; font: 700 16px var(--sans); }
+    .pad { display: grid; grid-template-columns: repeat(3, 56px); grid-template-rows: repeat(2, 56px); gap: 6px; }
+    .pad button, .turns button { font: 800 22px/1 var(--sans); border-radius: 14px; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); cursor: pointer; min-width: 56px; min-height: 56px; }
+    .pad button:active, .turns button:active, .pill:active { transform: translateY(2px); }
+    .controls { display: flex; gap: 18px; flex-wrap: wrap; align-items: center; background: var(--paper); border: 1px solid var(--rule); border-radius: 16px; padding: 12px; }
+    .controls[hidden] { display: none; }
+    .turns { display: grid; gap: 6px; }
+    .readout { font: 600 14px var(--sans); color: var(--muted); display: grid; gap: 6px; }
+    .readout b { color: var(--ink); font-size: 16px; }
+    .save { background: var(--ok); color: #fff; border-color: var(--ok); }
+    .note { font-size: 14px; color: var(--muted); margin: 0; }
+    .status { font: 600 14px var(--sans); color: var(--muted); }
+    .key { position: fixed; inset: 0; display: grid; place-items: center; background: rgb(0 0 0 / .5); z-index: 20; }
+    .key[hidden] { display: none; }
+    .key div { background: var(--paper); color: var(--ink); padding: 20px; border-radius: 16px; display: grid; gap: 10px; width: min(92vw, 360px); }
+    .key input { font: 16px var(--sans); padding: 10px; border-radius: 10px; border: 1px solid var(--rule); }
+  </style>
+</head>
+<body>
+  <main class="cr">
+    <nav><a href="/studio/">← Studio</a><a href="/studio/draw/">🎨 Drawings</a><a href="/candles/">🕯️ Play Candle Rack</a></nav>
+    <h1>🕯️ Candle Rack: where everyone stands</h1>
+    <p class="note">Pick a church and a moment, tap a spot, then move it with the arrows: the blue ring shows where it is, and the
+      church changes as you go. <b>Save</b> puts it in the game for everyone.</p>
+    <div class="row" id="rites"></div>
+    <div class="row" id="views"></div>
+    <div class="stage" id="stage"><div class="loading" id="loading">Loading the church…</div></div>
+    <div class="row" id="spots"></div>
+    <div class="controls" id="controls" hidden>
+      <div class="pad">
+        <span></span><button data-move="0,-1" title="Further back" aria-label="Further back">▲</button><span></span>
+        <button data-move="-1,0" title="Left" aria-label="Left">◀</button><button data-move="0,1" title="Closer to the front" aria-label="Closer to the front">▼</button><button data-move="1,0" title="Right" aria-label="Right">▶</button>
+      </div>
+      <div class="turns" id="turns"><button data-turn="1" title="Turn left">⟲</button><button data-turn="-1" title="Turn right">⟳</button></div>
+      <div class="turns" id="heights" hidden><button data-up="1" title="Higher">⤒</button><button data-up="-1" title="Lower">⤓</button></div>
+      <div class="readout"><b id="what"></b><span id="nums"></span>
+        <span class="row"><button class="pill" id="step">Small steps</button><button class="pill" id="reset">Back to the game's own</button></span></div>
+    </div>
+    <div class="row">
+      <label class="pill"><input type="checkbox" id="people"> People praying</label>
+      <button class="pill" id="play">▶ Play the start of Mass</button>
+      <button class="pill save" id="save">Save</button>
+      <span class="status" id="status"></span>
+    </div>
+  </main>
+  <div class="key" id="key" hidden><div><b>The Studio key</b><span class="note" id="keyErr"></span>
+    <input id="keyIn" type="password" autocomplete="current-password" placeholder="Your admin key"><button class="pill save" id="keyGo">OK</button></div></div>
+  <script src="/candles/vendor/three-r128.min.js"></script>
+  <script type="module" src="candles.js"></script>
+</body>
+</html>

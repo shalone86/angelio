@@ -16,16 +16,11 @@ import { esc, say, showFinish, stickerBook, viewGrownups, installClickSounds, wi
 import { newGame, tick, tapCandle, tapLamp, tapBigCandle, chainBonus, lightFree, helperLight, blockedNeedy, blockerOf, COMBO_GAP, starsFor, needy, multFor, WALK_IN } from "./game.js";
 import { seasonOf, COLORS } from "./season.js";
 import { STAGES, stageById, isOpen } from "./stages.js";
-import { createChurch, loadModels } from "./church.js";
+import { createChurch, loadModels, loadLayout, MODELS } from "./church.js";
 
 const app = document.getElementById("app");
 const season = seasonOf(new Date());
-const MODELS = ["priest-idle", "priest-walk-fast", "priest-mass-walk", "priest-walk-slow", "priest-mass-idle",
-  "server-idle", "server-walk", "server-light", "server-cross-walk", "server-cross-idle", "server-candle-walk", "server-candle-idle",
-  // the Byzantine church (east-…): whichever of these he has made are used, the rest stand in
-  ...["priest-idle", "priest-walk", "priest-walk-fast", "priest-walk-slow", "priest-vested-idle", "priest-bless", "server-idle", "server-walk", "server-light",
-    "server-cross-walk", "server-cross-idle", "server-candle-walk", "server-candle-idle", "server-ripidion-walk", "server-ripidion-idle"].map((n) => `east-${n}`),
-  ...["man", "woman", "child", "grandparent"].flatMap((k) => [`${k}-kneel`, `${k}-idle`, `${k}-walk`])];
+
 
 const route = createRouter([
   [/^$/, viewHome],
@@ -129,9 +124,9 @@ function viewPlay(stageId) {
       if (!alive) return;
     }
     say(bubble, "Getting the church ready…", { speakText: false });
-    const models = await loadModels(MODELS);
+    const [models, layout] = await Promise.all([loadModels(MODELS), loadLayout()]);
     if (!alive) return;
-    church = createChurch(canvas, { season, models, rite: stage.rite, hex, dark: stage.dark, taper: !!stage.taper });
+    church = createChurch(canvas, { season, models, rite: stage.rite, hex, dark: stage.dark, taper: !!stage.taper, layout });
     // keep the racks clear of the clock (top) and the speech bubble (bottom)
     const fitView = () => church?.resize({ top: ($(".hud")?.offsetHeight ?? 60) + 6, bottom: (bubble.offsetHeight || 60) + 16 });
     fitView(); addEventListener("resize", fitView);
@@ -167,9 +162,18 @@ function viewPlay(stageId) {
     };
     // the priest or the server goes behind the rack where someone is praying and lights the candles there (the person
     // with the most candles needing light behind them); the person keeps praying and leaves on their own
+    // Tapping him always does something: someone in the way first, else a candle that's out, else a thumbs-up.
     const sendHelp = (who, x, y) => {
+      if (church.helperBusy(who)) { sfx.tap(); pop("⏳", x, y); talk.once("busy", "He's busy. Just a moment!"); return; }
       const waiting = g.people.filter((p) => g.t >= p.at && blockedNeedy(g, p.id).length);
-      if (!waiting.length || church.helperBusy(who)) { sfx.tap(); return; }
+      if (!waiting.length) {
+        const out = g.candles.filter((c) => c.active && !c.lit && !blockerOf(g, c.id));
+        if (!out.length) { sfx.tap(); pop("👍", x, y); return; }
+        const c = out[Math.floor(Math.random() * out.length)];
+        sfx.pop();
+        church.helpCandle(who, c.id, () => { if (alive && !ended && lightFree(g, c.id)) sfx.chime(); });
+        return;
+      }
       const p = waiting.sort((a, b) => blockedNeedy(g, b.id).length - blockedNeedy(g, a.id).length)[0];
       church.helpLight(who, p.id, () => {
         if (!alive || ended) return;
@@ -227,7 +231,7 @@ function viewPlay(stageId) {
       if (!out.length || helping || ended || church.helperBusy("server")) return;
       helping = true;
       const c = out[Math.floor(Math.random() * out.length)];
-      await church.serverLights(c.id, () => { if (alive && !ended && lightFree(g, c.id)) talk.once("helper", "The altar server lit one for you!"); });
+      await church.helpCandle("server", c.id, () => { if (alive && !ended && lightFree(g, c.id)) talk.once("helper", "The altar server lit one for you!"); });
       helping = false;
     }
 
@@ -239,7 +243,7 @@ function viewPlay(stageId) {
       if (!ended) {
         for (const ev of tick(g, dt)) {
           if (ev.type === "creak") { sfx.whoosh(); church.door(true); talk.once("creak", "The door is open! Watch out for the wind!", { urgent: true }); }
-          else if (ev.type === "gust") { church.door(false); if (ev.ids.length) { sfx.crack(); talk.once("gust", "Whoosh! The wind blew some out."); } }
+          else if (ev.type === "gust") { church.door(false); church.gust(ev.rack, ev.row); if (ev.ids.length) { sfx.crack(); talk.once("gust", "Whoosh! The wind blew some out."); } }
           else if (ev.type === "lamp-low") talk(vary("lamp-low", ["The sanctuary lamp needs oil! Tap the red lamp.", "The red lamp is getting low!", "Oil for the lamp, quick!"]), { urgent: true });
           else if (ev.type === "lamp-out") { sfx.oops(); talk(vary("lamp-out", ["Oh no, the sanctuary lamp went out! Tap it to light it again.", "The lamp went out! Tap it."]), { urgent: true }); }
           else if (ev.type === "out") talk.once("out", "A candle went out. You can light it again!");

@@ -36,6 +36,30 @@ export const READING_LIVE = DOCS.reading.live;
 // ticks. Each save keeps the drawing's old version in content/art/history/<slug>/; a deleted one goes to content/art/trash/.
 // Anyone can read them (GET /api/art): Claude and the games load them from there.
 export const ART_LIVE = "content/art/drawings.json";
+
+// Candle Rack's placements: for each church, spots by name, each only {x, y, z, turn} numbers in range (anything else is
+// dropped, so a bad save can never break the game; the game lays these over its own, apps/candles/public/js/church.js).
+export const CANDLES_LAYOUT = "content/candles/layout.json";
+const CANDLE_SPOTS = ["priestHome", "serverHome", "big", "lamp", "priestStart", "endPriest", "endCross", "endCandleL", "endCandleR"];
+const RANGE = { x: [-24, 24], y: [0, 22], z: [-16, 16], turn: [-7, 7] };
+export function cleanLayout(layout) {
+  const out = {};
+  for (const rite of ["roman", "byzantine"]) {
+    const src = layout?.[rite];
+    if (!src || typeof src !== "object") continue;
+    for (const name of CANDLE_SPOTS) {
+      const v = src[name];
+      if (!v || typeof v !== "object") continue;
+      const spot = {};
+      for (const [f, [lo, hi]] of Object.entries(RANGE)) {
+        const n = Number(v[f]);
+        if (v[f] !== undefined && v[f] !== null && Number.isFinite(n)) spot[f] = Math.round(Math.max(lo, Math.min(hi, n)) * 100) / 100;
+      }
+      if (Object.keys(spot).length) (out[rite] ??= {})[name] = spot;
+    }
+  }
+  return out;
+}
 export const voxKey = (slug) => `content/art/vox/${slug}.vox`;
 async function readArt(env) {
   const obj = await env.WATCH_MEDIA.get(ART_LIVE);
@@ -116,6 +140,21 @@ export async function studioApi(request, url, env) {
     const { parts = [] } = await request.json().catch(() => ({}));
     await up.complete(parts.map((p) => ({ partNumber: p.n, etag: p.etag })));
     return json({ ok: true, url: `media/${key}` });
+  }
+
+  // ── Candle Rack: where everyone stands (the Studio's Candle Rack page); history kept for undo ──
+  if (route === "GET /candles") {
+    const obj = await env.WATCH_MEDIA.get(CANDLES_LAYOUT);
+    return json({ layout: obj ? await obj.json() : {} });
+  }
+  if (route === "POST /candles") {
+    let body;
+    try { body = JSON.parse(await request.text()); } catch { return json({ error: "That wasn't readable." }, 400); }
+    const layout = cleanLayout(body.layout);
+    const old = await env.WATCH_MEDIA.get(CANDLES_LAYOUT);
+    if (old) await env.WATCH_MEDIA.put(`content/candles/history/${stamp()}.json`, await old.text(), { httpMetadata: { contentType: "application/json" } });
+    await env.WATCH_MEDIA.put(CANDLES_LAYOUT, JSON.stringify(layout), { httpMetadata: { contentType: "application/json" } });
+    return json({ ok: true, layout });
   }
 
   // ── drawings ──

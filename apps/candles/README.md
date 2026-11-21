@@ -15,6 +15,10 @@ the player carries a **taper** that lights 5–6 candles before it must be lit a
 more people to pray, up to two at a rack side by side. The Byzantine church uses his `east-…` models where they exist.
 The tips of whatever a server holds (the lighter, a candle) glow.
 
+**Where everyone stands** (SPOTS in `public/js/church.js`: where the priest and server wait, the big candle, the lamp,
+where everyone ends up at the start of Mass) can be moved on the Studio's Candle Rack page (angelio.org/studio/candles/),
+which draws this same church; it's saved online and the game reads it at `/api/candles/layout`.
+
 Easy to play, hard to master (the Angelio ROADMAP.md, "Games for Angelio"): anyone can light candles; a high score
 takes focus (lights within two seconds of each other make a combo that multiplies the points, just-in-time and chains are worth more, more candles burn faster as
 Mass gets closer). Two stars for any child who keeps lighting, three take real focus, and the best score is the
