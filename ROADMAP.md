@@ -26,6 +26,15 @@ nothing to pay or keep running, which fits "Angelio is meant to be finished". Th
 would be hosted on angelio.org and downloaded once. Plan: try it in Articulate and Read Aloud; keep the Cloudflare check
 (free 20 a day) for devices that can't; payments (Gumroad license keys, no webhooks) only if still wanted after that.
 
+Nov 21, 2026, first on-device test (his Mom and Dad recordings from the sounds page, run through the same Whisper
+models a browser downloads, transformers.js, quantized): **whisper-base.en** (75 MB, downloaded once) heard 25 of 27
+whole words and wrongly accepted none of 702 wrong-word pairs; about 0.6 s a word on a plain computer processor.
+whisper-tiny.en (40 MB) was close behind (24/27, faster). Words built from Dad's separate syllables ("can"+"dul") were
+heard 17 of 25 times. Single letter sounds ("tuh", "shh") don't work: Whisper turns them into words or nothing, so
+letter-sound checks stay out. The checker compares how words sound (numbers as words, spellings simplified; short
+words keep their vowels, so "bit" is never accepted for "bot"). Next: a test page on angelio.org to try it on real
+phones with the kids' own voices; then Articulate and Read Aloud.
+
 Phase 1 (done, free codes, no payments):
 - Codes live in the shared KV store `angelio-codes` (binding `CODES`); logic in `worker/codes.js`
   (same file in app-template and every app). The owner makes codes at angelio.org/admin/
