@@ -86,6 +86,7 @@ function viewPlay(stageId) {
   const stage = stageById(stageId ?? S.settings().lastStage), si = STAGES.indexOf(stage);
   if (!isOpen(si, starsOf)) { location.hash = "#/"; return; }
   S.setSetting("lastStage", stage.id);
+  const service = stage.rite === "byzantine" ? "Liturgy" : "Mass"; // a Byzantine church: the Divine Liturgy, not Mass
   document.body.classList.add("in-game", "usher-game");
   app.innerHTML = `
     <section class="ush-play${stage.endless ? " night" : ""}">
@@ -93,7 +94,7 @@ function viewPlay(stageId) {
       <div class="pew-btns" data-pew-btns></div>
       <div class="hud">
         <a class="icon-btn" href="#/" aria-label="Stop and go home">✕</a>
-        <div class="clock" aria-label="${stage.endless ? "How long you've been ushering" : "Time until Mass"}"><span class="clock-label">${stage.endless ? "🌙 Night" : "Mass in"}</span> <b data-clock>${stage.endless ? "0:00" : "2:00"}</b></div>
+        <div class="clock" aria-label="${stage.endless ? "How long you've been ushering" : `Time until ${service}`}"><span class="clock-label">${stage.endless ? "🌙 Night" : `${service} in`}</span> <b data-clock>${stage.endless ? "0:00" : "2:00"}</b></div>
         <div class="score"><b data-score>0</b></div>
         <button class="icon-btn toggle" data-voice title="Read aloud">🔊</button>
       </div>
@@ -240,7 +241,7 @@ function viewPlay(stageId) {
         say(bubble, `The line at the doors got too long. Time to rest! You ushered for ${m} minute${m === 1 ? "" : "s"} and ${sec} seconds.`);
         await new Promise((r) => setTimeout(r, 3500));
       } else {
-        say(bubble, "Ding, dong! Mass is starting. Thank you for being such a kind usher!");
+        say(bubble, `Ding, dong! ${service === "Liturgy" ? "The Divine Liturgy" : "Mass"} is starting. Thank you for being such a kind usher!`);
         await nave.procession();
         await new Promise((r) => setTimeout(r, 1200));
       }
@@ -250,7 +251,7 @@ function viewPlay(stageId) {
       cancelAnimationFrame(raf); nave.dispose(); nave = null;
       document.body.classList.remove("usher-game");
       const nextStage = STAGES[si + 1], opens = nextStage && !nextStage.endless && Math.max(stars, starsOf(stage)) >= 2;
-      showFinish(app, { id: progressId(stage), stars, mistakes: 3 - stars, title: newBest ? "A new best!" : stage.endless ? "What a night!" : "Everyone's ready for Mass!",
+      showFinish(app, { id: progressId(stage), stars, mistakes: 3 - stars, title: newBest ? "A new best!" : stage.endless ? "What a night!" : `Everyone's ready for ${service === "Liturgy" ? "the Liturgy" : "Mass"}!`,
         done: `You scored ${g.score}.`, again: `#/play/${stage.id}`, onAgain: route, next: opens ? { href: `#/play/${nextStage.id}`, label: `${nextStage.icon} ${nextStage.name}` } : null });
       app.querySelector(".finish h1")?.insertAdjacentHTML("afterend", `<p class="final-score">You scored <b>${g.score}</b>${newBest ? " · a new best!" : ` · your best: ${Math.max(old, g.score)}`}</p>
         <p class="muted">${stage.endless ? `ushered ${Math.floor(g.t / 60)}:${String(Math.floor(g.t % 60)).padStart(2, "0")} · ${g.left} went home · ` : ""}${g.together} families together · ${g.split} split up · ${g.seatedPeople} people seated${stars < 3 ? ` · ${stage.star3} for three stars` : ""}</p>`);

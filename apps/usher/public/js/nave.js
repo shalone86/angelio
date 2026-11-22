@@ -11,7 +11,7 @@ import { ROWS, SEATS, pewOf } from "./usher.js";
 const ART = /(^|\.)angelio\.org$/.test(location.hostname) ? "" : "https://angelio.org";
 
 // Where things stand (1 unit = one voxel; his people are 8 tall).
-export const SEAT_W = 5.4, AISLE = 3.6, ROW_GAP = 9, FRONT_Z = -28, DOORS_Z = 22;
+export const SEAT_W = 5.4, AISLE = 5.2, ROW_GAP = 9, FRONT_Z = -28, DOORS_Z = 22;
 const LANE = 3.2; // the space in front of a pew's seats (between it and the back of the pew ahead), where people walk in and out
 const KINDS = ["man", "woman", "grandfather", "grandmother", "child", "child-girl"];
 const QUIET = ["#6b6b6b", "#7a6a58", "#5a5a66", "#8a8478", "#4f5a52", "#6a5a5a"];
@@ -21,7 +21,7 @@ const SIZE = { man: 1.12, woman: 1.1, grandfather: 1.08, grandmother: 1.06, chil
 /** Every model the game asks for (whichever exist are used; his boy and girl stand in for the rest). */
 export const MODELS = ["usher-idle", "usher-walk", "usher-point", "server-idle", "server-walk", "priest-idle", "priest-mass-idle", "priest-mass-walk", "priest-kneel",
   "server-cross-walk", "server-cross-idle", "server-candle-walk", "server-candle-idle",
-  "east-priest-cense", "east-priest-phelonion-idle", "east-priest-phelonion-walk", "east-server-ripidion-walk", "east-server-ripidion-idle",
+  "east-priest-cense", "east-priest-phelonion-idle", "east-priest-phelonion-walk", "east-server-ripidion-walk", "east-server-ripidion-idle", "east-server-candle-walk", "east-server-candle-idle", "east-server-idle",
   ...KINDS.flatMap((k) => [`${k}-walk`, `${k}-sit`, `${k}-kneel`, `${k}-idle`])];
 
 export async function loadModels(names = MODELS) {
@@ -110,16 +110,54 @@ export function createNave(canvas, { models = {}, rite = "roman", night = false 
     const all = m.vox.frames.flatMap((_, f) => toScene(m.vox, f));
     const mid = (k) => (Math.min(...all.map((c) => c[k])) + Math.max(...all.map((c) => c[k]))) / 2;
     const cx = all.length ? mid(0) : 0, cz = all.length ? mid(2) : 0;
+    // a candle in his hands (a server's): its tip glows, like Candle Rack (the top of whatever isn't in the plain idle pose)
+    const base = /-candle/.test(name) && models[name.replace(/-candle(-walk|-idle)?$/, "-idle")];
+    const plain = base ? new Set(base.vox.frames.flatMap((_, f) => toScene(base.vox, f).map((c) => c[3]))) : null;
     g.userData.frames = m.vox.frames.map((_, f) => {
-      const cells = toScene(m.vox, f);
-      const im = new THREE.InstancedMesh(box, new THREE.MeshLambertMaterial(), cells.length);
+      const cells = toScene(m.vox, f).map(([x, y, z, c]) => [x - cx, y, z - cz, c]);
+      const held = plain ? cells.filter((c) => !plain.has(c[3])) : [];
+      const top = held.length ? Math.max(...held.map((c) => c[1])) : Infinity;
+      const tips = held.filter((c) => c[1] === top), body = cells.filter((c) => !tips.includes(c));
+      const fr = new THREE.Group();
+      // a censer (his #ccffff voxel in a censing pose): incense smoke rises from it
+      const censer = /cense/.test(name) ? cells.find((c) => c[3] === "#ccffff") : null;
+      if (censer) fr.userData.censer = new THREE.Vector3(censer[0], censer[1] + 0.6, censer[2]);
+      const im = new THREE.InstancedMesh(box, new THREE.MeshLambertMaterial(), body.length);
       const o = new THREE.Object3D(), col = new THREE.Color();
-      cells.forEach(([x, y, z, c], i) => { o.position.set(x - cx, y, z - cz); o.updateMatrix(); im.setMatrixAt(i, o.matrix); im.setColorAt(i, col.set(recolor(c, look, null))); });
-      im.visible = f === 0; g.add(im); return im;
+      body.forEach(([x, y, z, c], i) => { o.position.set(x, y, z); o.updateMatrix(); im.setMatrixAt(i, o.matrix); im.setColorAt(i, col.set(recolor(c, look, null))); });
+      fr.add(im);
+      for (const [x, y, z, c] of tips) {
+        const t = new THREE.Mesh(box, new THREE.MeshBasicMaterial({ color: new THREE.Color(c).lerp(new THREE.Color("#ffc94a"), 0.75) })); t.position.set(x, y, z); fr.add(t);
+        const halo = new THREE.Sprite(haloMat()); halo.position.set(x, y + 0.4, z); halo.scale.set(2.6, 2.6, 1); halo.userData.halo = true; fr.add(halo);
+      }
+      fr.visible = f === 0; g.add(fr); return fr;
     });
     g.userData.fps = m.fps;
     return g;
   };
+  // a soft warm glow (a sprite that always faces the camera), shared by every glowing candle tip
+  let haloTex = null;
+  function haloMat() {
+    if (!haloTex) {
+      const c = document.createElement("canvas"); c.width = c.height = 64; const x = c.getContext("2d");
+      const gr = x.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, "rgba(255,230,150,1)"); gr.addColorStop(0.35, "rgba(255,170,60,.55)"); gr.addColorStop(1, "rgba(255,140,40,0)");
+      x.fillStyle = gr; x.fillRect(0, 0, 64, 64); haloTex = new THREE.CanvasTexture(c);
+    }
+    return new THREE.SpriteMaterial({ map: haloTex, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true });
+  }
+  // incense smoke: soft gray-white puffs from a censer (Candle Rack's)
+  const smoke = [];
+  let smokeTex = null;
+  function puff(at) {
+    if (!smokeTex) {
+      const c = document.createElement("canvas"); c.width = c.height = 64; const x = c.getContext("2d");
+      const gr = x.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, "rgba(245,245,250,.9)"); gr.addColorStop(0.5, "rgba(225,225,235,.45)"); gr.addColorStop(1, "rgba(220,220,230,0)");
+      x.fillStyle = gr; x.fillRect(0, 0, 64, 64); smokeTex = new THREE.CanvasTexture(c);
+    }
+    if (smoke.length > 60) return;
+    const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: smokeTex, transparent: true, depthWrite: false, opacity: 0.55 }));
+    s.position.copy(at); scene.add(s); smoke.push({ s, life: 0, seed: Math.random() * 6 });
+  }
   const standIn = (hex, sit) => { const g = new THREE.Group(); block(3, sit ? 3.5 : 5, 2, 0, 0, 0, mat(hex), g); block(2.4, 2.4, 2.2, 0, sit ? 3.5 : 5, 0, mat("#e9c4a0"), g); g.userData.frames = []; return g; };
   const animate = (g, t) => { const fr = g.userData.frames; if (fr?.length > 1) { const k = Math.floor(t * g.userData.fps) % fr.length; fr.forEach((m, i) => { m.visible = i === k; }); } };
 
@@ -164,7 +202,7 @@ export function createNave(canvas, { models = {}, rite = "roman", night = false 
   // church: out of the royal doors, the priest censing). At Adoration, the priest kneels before the altar the whole night.
   const priest = actor(BYZ ? { idle: ["east-priest-phelonion-idle", "east-priest-cense"], walk: ["east-priest-cense", "east-priest-phelonion-walk"], kneel: ["priest-kneel", "priest-idle"] }
     : { idle: ["priest-mass-idle", "priest-idle"], walk: ["priest-mass-walk", "priest-mass-idle", "priest-idle"], kneel: ["priest-kneel", "priest-idle"] }, randomLook(), 1.25, "#1d1b22");
-  const servers = [0, 1, 2].map((i) => actor(BYZ ? { idle: ["east-server-ripidion-idle"], walk: ["east-server-ripidion-walk"] }
+  const servers = [0, 1, 2].map((i) => actor(BYZ ? (i === 1 ? { idle: ["east-server-candle-idle", "east-server-ripidion-idle"], walk: ["east-server-candle-walk", "east-server-ripidion-walk"] } : { idle: ["east-server-ripidion-idle"], walk: ["east-server-ripidion-walk"] })
     : i === 0 ? { idle: ["server-cross-idle", "server-idle"], walk: ["server-cross-walk", "server-walk"] } : { idle: ["server-candle-idle", "server-idle"], walk: ["server-candle-walk", "server-walk"] }, randomLook(), 1.05, "#b02a2a"));
   for (const a of [priest, ...servers]) a.g.visible = false;
   if (night) { priest.g.visible = true; priest.place(0, FRONT_Z - 9, "kneel", Math.PI); priest.g.rotation.y = Math.PI; }
@@ -275,6 +313,19 @@ export function createNave(canvas, { models = {}, rite = "roman", night = false 
         if (m.t >= 1) { a.move = null; a.pose(m.end); if (m.end === "sit") a.g.rotation.y = Math.PI; m.done(); }
       }
       const pm = a.poses[a.now]; if (pm) animate(pm, time);
+      if (pm && a.g.visible) {
+        const fr = pm.userData.frames?.find((f) => f.visible);
+        if (fr?.userData.censer && time >= (a.nextPuff ?? 0)) { a.nextPuff = time + 0.13; puff(fr.localToWorld(fr.userData.censer.clone())); }
+        fr?.children.forEach((o) => { if (o.userData.halo) { const k = 2.4 + 0.5 * Math.sin(time * 11 + o.id); o.scale.set(k, k, 1); } });
+      }
+    }
+    // incense smoke rises, spreads and fades
+    for (const sp of [...smoke]) {
+      sp.life += dt;
+      sp.s.position.y += dt * 2.3; sp.s.position.x += Math.sin(sp.life * 2 + sp.seed) * dt * 0.6;
+      const k = (0.55 + sp.life * 0.8) * 2.2; sp.s.scale.set(k, k, 1); // bigger than Candle Rack's: the church is seen from farther away
+      sp.s.material.opacity = 0.8 * Math.max(0, 1 - sp.life / 2.6);
+      if (sp.life >= 2.6) { scene.remove(sp.s); sp.s.material.dispose(); smoke.splice(smoke.indexOf(sp), 1); }
     }
     pewGlow.forEach((m) => { m.material.opacity = m.userData.on ? 0.35 + 0.2 * Math.sin(time * 5) : 0; });
     for (const d of royal) { d.open += ((doorsOpen ? 1 : 0) - d.open) * Math.min(1, dt * 2.5); d.pivot.rotation.y = d.side * d.open * 1.6; }

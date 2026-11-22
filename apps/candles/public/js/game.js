@@ -41,9 +41,12 @@ export function difficulty(p, total = 16) {
   };
 }
 
-// ENDLESS (the Adoration chapel at night): no clock to Mass. It gets harder for RAMP seconds, then keeps burning a little
-// faster; the night ends when the chapel stays dark (fewer than DARK_SHARE of the candles lit) for DARK_LIMIT seconds.
-export const RAMP = 240, DARK_SHARE = 0.34, DARK_LIMIT = 8;
+// ENDLESS (the Adoration chapel at night): no clock to Mass. More candles for RAMP seconds; after the first minute they
+// burn faster and faster all night (FASTER: twice as fast after another FASTER seconds, and on). The night ends the moment
+// OUT_SHARE of the candles in use are out at once (a warning WARN_AT candles before).
+export const RAMP = 240, FASTER = 180, OUT_SHARE = 0.45, WARN_AT = 3;
+/** How many candles out at once end the night (10 at first; 14 of the chapel's 32 once they're all in use). */
+export const outLimit = (g) => Math.max(10, Math.round(g.candles.filter((c) => c.active).length * OUT_SHARE));
 /** How far into the round it is, 0 → 1 (an endless night: how far up the ramp). */
 const progress = (g) => (g.stage.endless ? Math.min(1, g.t / RAMP) : g.t / g.length);
 
@@ -89,7 +92,7 @@ export function tick(g, dt) {
   if (g.over) return ev;
   g.t = Math.min(g.length, g.t + dt);
   const d = difficulty(progress(g), g.candles.length);
-  if (g.stage.endless) d.burn += Math.max(0, g.t - RAMP) / 400; // past the ramp, a little faster all night
+  if (g.stage.endless) d.burn *= 0.6 + g.t / FASTER; // slow at first, then faster and faster all night
   const before = g.candles.filter((c) => c.active).length;
   activate(g);
   if (g.candles.filter((c) => c.active).length > before) ev.push({ type: "more" });
@@ -140,14 +143,13 @@ export function tick(g, dt) {
   for (const p of [...g.people]) {
     if (g.t >= p.until) { g.people.splice(g.people.indexOf(p), 1); ev.push({ type: "person-left", id: p.id }); }
   }
-  // the endless night: too dark for too long, and the night is over (a warning first)
+  // the endless night: too many candles out at once, and the night is over (a warning first)
   if (g.stage.endless) {
-    const active = g.candles.filter((c) => c.active), lit = active.filter((c) => c.lit).length;
-    if (lit < active.length * DARK_SHARE) {
-      g.dark += dt;
-      if (!g.darkWarned && g.dark >= 1.5) { g.darkWarned = true; ev.push({ type: "dark" }); }
-      if (g.dark >= DARK_LIMIT) { g.over = true; ev.push({ type: "end", reason: "dark", time: g.t }); }
-    } else { g.dark = Math.max(0, g.dark - dt * 2); if (g.dark === 0) g.darkWarned = false; }
+    const out = g.candles.filter((c) => c.active && !c.lit).length, limit = outLimit(g);
+    g.dark = out; // (the screen shows how close it is)
+    if (out >= limit) { g.over = true; ev.push({ type: "end", reason: "dark", time: g.t }); }
+    else if (out >= limit - WARN_AT) { if (!g.darkWarned) { g.darkWarned = true; ev.push({ type: "dark" }); } }
+    else if (out < limit - WARN_AT - 2) g.darkWarned = false;
     return ev;
   }
   if (g.t >= g.length) {

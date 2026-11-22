@@ -167,7 +167,7 @@ test("the same seed plays the same round (today's game)", () => {
   assert.equal(play(focused, { seed: 11, every: 0.6 }).g.score, play(focused, { seed: 11, every: 0.6 }).g.score);
 });
 
-test("Adoration at Night: endless, four racks, nobody to help; the night ends when the chapel stays dark (a warning first)", () => {
+test("Adoration at Night: endless, four racks, nobody to help; the night ends when too many candles are out (a warning first)", () => {
   const stage = STAGES.find((s) => s.endless);
   const g = newGame({ seed: 4, stage });
   assert.equal(g.candles.length, 32);
@@ -180,7 +180,7 @@ test("Adoration at Night: endless, four racks, nobody to help; the night ends wh
   assert.ok(g.t < 60, `an untended chapel goes dark soon (${g.t} s)`);
   // people still come; the priest and server don't
   const h = newGame({ seed: 4, stage });
-  while (!h.people.some((p) => h.t >= p.at)) tick(h, 0.1);
+  while (!h.people.some((p) => h.t >= p.at)) { for (const c of h.candles) if (c.active) { c.lit = true; c.life = 1; } tick(h, 0.1); } // (keep it lit until someone kneels)
   for (const c of h.candles) c.lit = false;
   assert.deepEqual(helperLight(h, h.people[0].id), []);
   assert.ok(new Set(h.people.map((p) => p.rack)).size >= 1 && h.people.every((p) => p.rack < 4));
@@ -189,5 +189,15 @@ test("Adoration at Night: endless, four racks, nobody to help; the night ends wh
 test("a busy player keeps the chapel lit far longer than a slow one", () => {
   const stage = STAGES.find((s) => s.endless);
   const last = (policy, every) => { const g = newGame({ seed: 2, stage }); let w = 0; while (!g.over && g.t < 900) { tick(g, 0.1); w -= 0.1; if (w <= 0) { policy(g); w = every; } } return g.t; };
-  assert.ok(last(focused, 0.6) > 2 * last(slowKid, 2));
+  assert.ok(last(focused, 0.6) > 1.3 * last(slowKid, 2));
+});
+
+test("Adoration at Night always ends: candles burn faster and faster, even for a very quick player", () => {
+  const stage = STAGES.find((s) => s.endless);
+  // a very quick player: taps the right candle three times a second
+  const g = newGame({ seed: 5, stage });
+  let w = 0;
+  while (!g.over && g.t < 1200) { tick(g, 0.1); w -= 0.1; if (w <= 0) { focused(g); w = 0.3; } }
+  assert.ok(g.over, "the night ended");
+  assert.ok(g.t > 100 && g.t < 600, `a very quick player keeps watch a few minutes (${Math.round(g.t)} s)`);
 });

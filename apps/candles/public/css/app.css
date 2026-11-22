@@ -83,3 +83,12 @@ a.stage:active { transform: translateY(3px); }
 .candle-play .taper.out { animation: shake .3s linear 3; background: #ffd9d2; }
 @media (max-width: 420px) { .candle-play .taper { padding: 5px 7px; gap: 2px; } .candle-play .taper i { width: 7px; height: 11px; } .candle-play .clock-label { display: none; } }
 .games-link { margin: 18px 0 8px; }
+/* Adoration at Night: the candles that are out (when the row fills, the night is over) */
+.out-meter { position: absolute; left: 50%; transform: translateX(-50%); top: calc(58px + env(safe-area-inset-top)); display: flex; align-items: center; gap: 3px;
+  padding: 4px 10px; border-radius: 99px; background: rgb(255 248 235 / .92); box-shadow: 0 2px 0 rgb(0 0 0 / .2); pointer-events: none; z-index: 3; }
+.out-meter span { font-size: .95rem; margin-right: 3px; }
+.out-meter i { width: 9px; height: 14px; border-radius: 3px; background: rgb(0 0 0 / .12); }
+.out-meter i.on { background: #5a5560; }
+.out-meter.danger i.on { background: #e0453f; animation: outPulse .8s ease-in-out infinite; }
+@keyframes outPulse { 50% { opacity: .55; } }
+@media (prefers-reduced-motion: reduce) { .out-meter.danger i.on { animation: none; } }

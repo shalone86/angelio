@@ -17,8 +17,10 @@ The tips of whatever a server holds (the lighter, a candle) glow.
 
 **Adoration at Night** (endless; opens with two stars on Sunday Mass): late at night in the adoration chapel, the
 monstrance glowing on the altar, two racks in front and one on each side turned toward it (32 candles), people still come
-to pray but nobody helps. No clock to Mass: it gets harder for four minutes, then keeps burning a little faster; the
-night ends when fewer than a third of the candles stay lit for eight seconds (a warning first). The clock counts how long
+to pray but nobody helps. No clock to Mass: candles start burning slower than on a Sunday and burn faster and faster all
+night (`FASTER` in game.js), more of them for four minutes; the night ends the moment too many are out at once (10 at
+first, 45% of those in use later: `outLimit`), a warning three before. A 🕯️ meter under the top bar shows the candles
+that are out. Tuned in the tests: a slow little one keeps watch about a minute, a quick tapper two or three. The clock counts how long
 you kept watch. **Censer smoke**: a priest's censing pose (his #ccffff censer voxel) puffs incense that rises and fades.
 
 **Where everyone stands** (SPOTS in `public/js/church.js`: where the priest and server wait, the big candle, the lamp,

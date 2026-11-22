@@ -34,7 +34,7 @@ export const STAGES = [
     id: "adoration", name: "Adoration at Night", rite: "roman", layout: "chapel", color: "white", icon: "🌙", opensAfter: "sunday",
     blurb: "Late at night in the adoration chapel: as long as you can! Nobody to help this time.",
     say: "It's late at night in the adoration chapel. Keep the candles burning near Jesus as long as you can!",
-    endless: true, racks: 4, helpers: false, taper: 6, maxPeople: 3, peopleRate: 1, burn: 1, dark: false, star2: 20, star3: 1200,
+    endless: true, racks: 4, helpers: false, taper: 6, maxPeople: 3, peopleRate: 1, burn: 1, dark: false, star2: 12, star3: 500,
   },
 ];
 
