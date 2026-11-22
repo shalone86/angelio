@@ -16,7 +16,8 @@ import * as FX from "./kit/fx.js";
 import { showLesson } from "./kit/lesson.js";
 import { vary } from "./kit/vary.js";
 import { esc, say, showFinish, stickerBook, viewGrownups, installClickSounds, wireVoiceToggle } from "./kit/ui.js";
-import { newGame, tick, tapPew, scoot, current, starsFor, ROWS } from "./usher.js";
+import { newGame, tick, tapPew, scoot, autoScoot, current, starsFor } from "./usher.js";
+import { USHERS, usherById, usherOpen } from "./ushers.js";
 import { STAGES, stageById, isOpen } from "./stages.js";
 import { createNave, loadModels, MODELS } from "./nave.js";
 
@@ -58,10 +59,22 @@ function viewHome() {
               <span class="muted">Get two stars in ${esc((st.opensAfter ? stageById(st.opensAfter) : STAGES[i - 1]).name)} to open it.</span></div>`;
       }).join("")}
     </section>
+    <h2 class="center ushers-title">Your usher</h2>
+    <section class="ushers">
+      ${USHERS.map((u) => {
+        const open = usherOpen(u, (id) => starsOf(stageById(id))), picked = myUsher().id === u.id;
+        return open
+          ? `<button type="button" class="usher-pick card${picked ? " picked" : ""}" data-usher="${u.id}" aria-pressed="${picked}"><span class="stage-icon">${u.icon}</span><b>${esc(u.name)}</b><span class="muted">${esc(u.blurb)}</span>${picked ? `<span class="picked-tag">✓ Playing</span>` : ""}</button>`
+          : `<div class="usher-pick card locked" aria-disabled="true"><span class="stage-icon">🔒</span><b>${esc(u.name)}</b><span class="muted">Get two stars in ${esc(stageById(u.opensAfter).name)} to meet them.</span></div>`;
+      }).join("")}
+    </section>
     ${stickerBook()}
     ${gamesLink}`;
+  app.querySelectorAll("[data-usher]").forEach((b) => b.addEventListener("click", () => { const u = usherById(b.dataset.usher); S.setSetting("usher", u.id); viewHome(); speak(u.say); }));
   speak("Families are coming to Mass! Can you find everyone a seat? Pick a church.");
 }
+/** The usher you picked (if it's open; else the first). */
+function myUsher() { const u = usherById(S.settings().usher); return usherOpen(u, (id) => starsOf(stageById(id))) ? u : USHERS[0]; }
 
 // what to say: most lines once a round, never too close together
 function talker(bubble) {
@@ -130,10 +143,11 @@ function viewPlay(stageId) {
     say(bubble, "Opening the church doors…", { speakText: false });
     const models = await loadModels(MODELS);
     if (!alive) return;
-    nave = createNave(canvas, { models, rite: stage.rite, night: !!stage.endless });
+    const who = myUsher();
+    nave = createNave(canvas, { models, rite: stage.rite, night: !!stage.endless, usherId: who.id, speed: who.speed });
     const fitView = () => nave?.resize({ top: ($(".hud")?.offsetHeight ?? 56) + 6, bottom: (bubble.offsetHeight || 60) + ($(".line-up")?.offsetHeight ?? 40) + 20 });
     fitView(); addEventListener("resize", fitView);
-    const g = newGame({ seed: Math.floor(Math.random() * 1e9), stage });
+    const g = newGame({ seed: Math.floor(Math.random() * 1e9), stage, usher: who });
     window.__usher = { game: g, nave }; // (for the browser tests)
     nave.sync(g); nave.family(current(g));
     talk(stage.say, { urgent: true });
@@ -142,7 +156,7 @@ function viewPlay(stageId) {
     const popAt = (id, text, cls) => { const p = nave.pewScreen(id); pop(text, p.x, p.y - 20, cls); };
 
     // ── a big button by each pew (its empty seats on it): the only way to pick a pew, so taps land cleanly ──
-    btns.innerHTML = Array.from({ length: ROWS * 2 }, (_, id) => `<button type="button" class="pew-btn" data-pew="${id}" aria-label="Pew ${id + 1}"></button>`).join("");
+    btns.innerHTML = g.pews.map((p) => `<button type="button" class="pew-btn${p.standing ? " stand" : ""}" data-pew="${p.id}" aria-label="${p.standing ? "Standing room" : `Pew ${p.id + 1}`}"></button>`).join("");
     const btnOf = (id) => btns.querySelector(`[data-pew="${id}"]`);
     // a pew is picked by its button or by tapping the pew itself (a swipe never picks one)
     const choose = async (id) => {
@@ -151,15 +165,18 @@ function viewPlay(stageId) {
       if (r.type === "walk") {
         walking = true; sfx.tap(); nave.sync(g);
         await nave.walkTo(id); walking = false;
+        // the experienced usher: people scoot as soon as you get there
+        if (autoScoot(g, id).type === "scooted") { sfx.whoosh(); nave.sync(g); talk.once("auto", "Scoot over, please! People make room right away for the experienced usher."); }
         const empty = g.pews[id].seats.filter((s) => !s).length;
         if (current(g) && empty === 0) talk("This pew is full. Tap a different pew!");
-        else talk.once("at-pew", "Swipe to make room, then tap the button again to seat them!");
+        else talk.once("at-pew", who.noScoot ? "Tap the pew again to seat them!" : "Swipe to make room, then tap the button again to seat them!");
         return;
       }
       if (r.type === "full") { sfx.tap(); talk("This pew is full. Tap a different pew!", { urgent: true }); return; }
       if (r.type === "some") { sfx.chime(); nave.sync(g); talk(`${NUM[r.left] ?? r.left} more to seat. Tap another pew!`, { urgent: true }); return; }
       if (r.type === "seated") {
         nave.sync(g);
+        if (g.pews[id].standing) talk.once("stand", "They can stand at the back. A seat is better, but standing works when the pews are full!", { urgent: true });
         if (r.together) { sfx.win(); popAt(id, `Together! +${r.points}`, "good"); talk(vary("together", ["Together! Wonderful!", "The whole family, side by side!", "Perfect, all together!"])); }
         else { sfx.chime(); popAt(id, `+${r.points}`); talk.once("split", "Seated! Families like to sit together, so try to keep them in one pew."); }
         if (r.quick) setTimeout(() => popAt(id, "Quick! ⚡", "quick"), 350);
@@ -180,6 +197,7 @@ function viewPlay(stageId) {
       // toward the wall is +1 (a left pew's wall is on the left of the screen, a right pew's on the right)
       const dir = (g.at % 2 === 0 ? -dx : dx) > 0 ? 1 : -1;
       const r = scoot(g, g.at, dir);
+      if (r.type === "shy") { sfx.tap(); talk.once("shy", "The young usher is too shy to ask people to scoot. Find a pew with room!", { urgent: true }); return; }
       if (r.type === "scooted") { sfx.whoosh(); nave.sync(g); talk.once("scooted", "Scoot over, please! Now tap the button to seat the family."); }
       else sfx.tap();
     });
@@ -210,14 +228,15 @@ function viewPlay(stageId) {
         $("[data-clock]").textContent = `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, "0")}`;
         $("[data-score]").textContent = g.score;
         // the pew buttons: where each pew is on screen; the one you're at says "Sit!"
-        for (let id = 0; id < ROWS * 2; id++) {
+        for (const { id, standing } of g.pews) {
           const b = btnOf(id), at = nave.pewButton(id);
           b.style.left = at.x + "px"; b.style.top = at.y + "px";
           // no numbers on them: counting the empty seats is part of the game
-          const here = g.at === id, label = here ? "Sit!" : "";
+          // standing room at the back shows a 🧍 (fewer points than a seat)
+          const here = g.at === id, label = here ? (standing ? "Stand!" : "Sit!") : standing ? "🧍" : "";
           if (b.textContent !== label) b.textContent = label;
           b.classList.toggle("here", here); b.disabled = walking;
-          b.setAttribute("aria-label", here ? "Seat them in this pew" : `Pew ${id + 1}`);
+          b.setAttribute("aria-label", here ? (standing ? "Have them stand here" : "Seat them in this pew") : standing ? "Standing room at the back" : `Pew ${id + 1}`);
         }
         // the 📌 over anyone who won't scoot
         const seen = new Set();
@@ -236,7 +255,11 @@ function viewPlay(stageId) {
 
     async function finish() {
       btns.hidden = true;
-      if (endReason === "line") {
+      if (endReason === "full") {
+        say(bubble, `The church is full! ${service === "Liturgy" ? "The Divine Liturgy" : "Mass"} can start early. Ding, dong! Thank you for being such a kind usher!`);
+        await nave.procession();
+        await new Promise((r) => setTimeout(r, 1200));
+      } else if (endReason === "line") {
         const m = Math.floor(g.t / 60), sec = Math.floor(g.t % 60);
         say(bubble, `The line at the doors got too long. Time to rest! You ushered for ${m} minute${m === 1 ? "" : "s"} and ${sec} seconds.`);
         await new Promise((r) => setTimeout(r, 3500));

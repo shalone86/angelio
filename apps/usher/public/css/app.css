@@ -67,3 +67,15 @@ body.usher-game .topbar { display: none; }
 @keyframes herePulse { 50% { box-shadow: 0 3px 0 #1f7a49, 0 0 0 9px rgb(255 215 94 / .5); } }
 @media (prefers-reduced-motion: reduce) { .pew-btn.here { animation: none; } }
 @media (orientation: landscape) and (max-height: 520px) { .pew-btn { width: 38px; height: 38px; font-size: .95rem; } .pew-btn.here { width: 46px; height: 46px; } }
+/* standing room at the back: a different color, and a 🧍 on the button */
+.pew-btn.stand { background: #b8742a; box-shadow: 0 3px 0 #7a4a14, 0 4px 10px rgb(0 0 0 / .3); font-size: 1.2rem; }
+.pew-btn.stand.here { font-size: .8rem; background: #2fa866; box-shadow: 0 3px 0 #1f7a49, 0 0 0 5px rgb(255 215 94 / .8); }
+
+/* Home: pick your usher (ushers.js); locked ones say which church opens them */
+.ushers-title { margin: 10px 0 4px; font: 800 1.3rem var(--font-display); }
+.ushers { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin: 6px 0 18px; }
+.usher-pick { display: grid; gap: 4px; justify-items: center; text-align: center; padding: 14px 10px; font: inherit; color: var(--text); cursor: pointer; border: 3px solid transparent; }
+.usher-pick b { font: 800 1.05rem var(--font-display); }
+.usher-pick.picked { border-color: #2fa866; }
+.usher-pick .picked-tag { color: #1f7a49; font-weight: 800; }
+.usher-pick.locked { opacity: .6; cursor: default; }

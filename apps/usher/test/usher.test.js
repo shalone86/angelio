@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { newGame, tick, tapPew, scoot, current, familyPoints, starsFor, SEATS, ROUND } from "../public/js/usher.js";
+import { newGame, tick, tapPew, scoot, autoScoot, longestRun, current, familyPoints, starsFor, SEATS, ROUND } from "../public/js/usher.js";
 import { STAGES, isOpen } from "../public/js/stages.js";
 
 const P = (spec) => spec.split("").map((c) => (c === "." ? null : { family: 0, stay: c === "S" })); // "x" sits, "S" stays
@@ -29,10 +29,10 @@ test("walk a family to a pew, seat them together; leftovers go to another pew; t
 });
 
 test("points: together scores most; split less, and less the farther apart", () => {
-  const near = { size: 4, parts: [{ pew: 0 }, { pew: 2 }] }, far = { size: 4, parts: [{ pew: 0 }, { pew: 13 }] };
-  assert.equal(familyPoints({ size: 4, parts: [{ pew: 0 }] }), 40);
+  const near = { size: 4, parts: [{ pew: 0, seats: [0, 1] }, { pew: 2, seats: [0, 1] }] }, far = { size: 4, parts: [{ pew: 0, seats: [0, 1] }, { pew: 9, seats: [0, 1] }] };
+  assert.equal(familyPoints({ size: 4, parts: [{ pew: 0, seats: [0, 1, 2, 3] }] }), 40);
   assert.ok(familyPoints(near) < 40 && familyPoints(far) < familyPoints(near));
-  assert.ok(familyPoints({ size: 3, parts: [{ pew: 0 }, { pew: 13 }, { pew: 1 }] }) >= 6);
+  assert.ok(familyPoints({ size: 3, parts: [{ pew: 0, seats: [0] }, { pew: 9, seats: [0] }, { pew: 1, seats: [0] }] }) >= 6);
 });
 
 // a pretend usher: picks the pew with the longest run of empty seats (scooting first if that makes room), every `every` s
@@ -89,7 +89,7 @@ test("stages open in order; Adoration opens with two stars on Sunday Mass", () =
 
 test("a round lasts until Mass and ends once", () => {
   const g = play(2);
-  assert.equal(g.t, ROUND); assert.equal(newGame({ stage: STAGES[0] }).pews.length, 10);
+  assert.equal(g.t, ROUND); assert.equal(newGame({ stage: STAGES[0] }).pews.length, 12); // ten pews and two standing places
   assert.deepEqual(tick(g, 1), []);
   assert.ok(g.pews.every((p) => p.seats.length === SEATS));
 });
@@ -99,4 +99,46 @@ test("a family seated quickly after reaching the front scores a little more", ()
   const fam = current(g); fam.size = 2; fam.stay = [false, false];
   tapPew(g, 0); const r = tapPew(g, 0);
   assert.equal(r.quick, true); assert.equal(r.points, 26);
+});
+
+test("standing room at the back: five places a side, no regulars there, fewer points than a seat", () => {
+  const g = newGame({ seed: 4, regulars: 0.5 });
+  const stand = g.pews.filter((p) => p.standing);
+  assert.equal(g.pews.length, 12); assert.equal(stand.length, 2);
+  assert.ok(stand.every((p) => p.seats.length === 5 && p.seats.every((s) => !s)));
+  const seated = { size: 3, parts: [{ pew: 0, seats: [0, 1, 2] }] }, standing = { size: 3, parts: [{ pew: stand[0].id, seats: [0, 1, 2] }] };
+  assert.ok(familyPoints(standing) < familyPoints(seated));
+});
+
+test("a full church: Mass starts early, even with time left", () => {
+  const g = newGame({ seed: 2 });
+  let pid = 900;
+  for (const p of g.pews) p.seats = p.seats.map((s) => s ?? { family: 0, stay: false, pid: pid++, kind: "man" });
+  const ev = tick(g, 0.1);
+  const end = ev.find((e) => e.type === "end");
+  assert.equal(end.reason, "full"); assert.ok(g.over); assert.ok(end.left > 100);
+});
+
+test("the ushers: the young one can't scoot, the experienced one scoots on arrival, the respected one moves anyone", async () => {
+  const { USHERS, usherOpen } = await import("../public/js/ushers.js");
+  const u = (id) => USHERS.find((x) => x.id === id);
+  const setup = (usher) => {
+    const g = newGame({ seed: 1, regulars: 0, usher });
+    const p = g.pews[0];
+    p.seats = [{ family: 0, stay: false, pid: 501, kind: "man" }, null, { family: 0, stay: true, pid: 502, kind: "woman" }, null, null];
+    while (current(g).size < 2) { g.queue.shift(); if (!g.queue.length) tick(g, 30); }
+    tapPew(g, 0);
+    return g;
+  };
+  let g = setup(u("young"));
+  assert.equal(scoot(g, 0, -1).type, "shy");
+  g = setup(u("usher"));
+  scoot(g, 0, +1); assert.equal(g.pews[0].seats[2].pid, 502, "someone who likes their spot stays put");
+  g = setup(u("respected"));
+  scoot(g, 0, -1); assert.deepEqual(g.pews[0].seats.map((s) => s?.pid ?? null), [501, 502, null, null, null], "the respected usher moves them too");
+  g = setup(u("experienced"));
+  g.pews[0].seats = [null, { family: 0, stay: false, pid: 601, kind: "man" }, null, { family: 0, stay: false, pid: 602, kind: "man" }, null];
+  const r = autoScoot(g, 0);
+  assert.equal(r.type, "scooted"); assert.equal(longestRun(g.pews[0]), 3);
+  assert.ok(usherOpen(USHERS[0], () => 0) && !usherOpen(u("young"), () => 0) && usherOpen(u("young"), (id) => (id === "sunday" ? 2 : 0)));
 });

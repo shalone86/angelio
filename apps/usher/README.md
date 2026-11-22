@@ -22,6 +22,15 @@ identical by `test/copies.test.js`.
   church, the priest kneeling before the monstrance at the center of the altar; people come, pray a while and go
   home (their seats free up), it gets busier (a family every 6 seconds at first, faster and bigger as the night goes on), and the night ends when
   six are waiting at the doors (the 🚪 meter by the line fills up).
+- Standing room at the back: five places each side (🧍 buttons, an orange color), 4 points a person instead of 10. When
+  every seat and standing place is taken, the round ends right away and Mass (or the Liturgy) begins, time left or not.
+- Ushers (`public/js/ushers.js`, picked on the home page, saved on the device): the Usher; the Young Usher (two stars on
+  Sunday Mass) walks 1.5× as fast but can't make anyone scoot; the Experienced Usher (two stars on the Divine Liturgy)
+  gets people to scoot the most useful way as soon as he reaches the pew (`autoScoot`) but walks at 0.7×; the Respected
+  Usher (two stars on Christmas) moves even people with a 📌. Stand-ins until his usher-young / usher-old /
+  usher-respected models (Drawings page, "Mass Usher: people").
+- The servers' candles glow and the censing priest's incense rises (both from Candle Rack). The Drawings page can
+  download the game's pew as a .vox (Mass Usher: the church → Pew) to try his sitting people in it.
 - Points: 10 a person seated together; a split family scores less, and less again the farther apart its parts are
   (rows apart, or across the aisle). Seated within 8 seconds of reaching the front of the line: +3 a person.
 - Families come faster and bigger as Mass gets closer (two minutes). Each stage has its own stars. Stars are tuned with pretend ushers in

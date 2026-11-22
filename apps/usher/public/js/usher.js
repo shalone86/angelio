@@ -10,6 +10,9 @@
 export const ROUND = 120;          // seconds until Mass
 export const QUICK = 8;            // a family seated within 8 seconds of reaching the front of the line: +3 a person
 export const ROWS = 5, SEATS = 5;  // five rows, a pew on each side of the aisle; seat 0 is by the aisle, 4 by the wall
+// Standing room at the back: one more "row" (row ROWS), five places on each side, worth less than a seat.
+export const STAND_POINTS = 4;     // a person standing (10 seated)
+export const isStanding = (id) => pewOf(id).row === ROWS;
 export const RAMP = 240;           // an endless night gets busier over four minutes
 export const COLORS = ["#e0453f", "#2e5fa8", "#2f8a4c", "#e3b341", "#8a5cc2", "#e07a2e", "#2a9a9a", "#d65a9a"];
 
@@ -47,16 +50,16 @@ export function familyKinds(size, r) {
 /** pew id → {row, side}; side 0 = left of the aisle, 1 = right. */
 export const pewOf = (id) => ({ row: Math.floor(id / 2), side: id % 2 });
 
-export function newGame({ seed = 1, length = ROUND, stage = SUNDAY, regulars } = {}) {
+export function newGame({ seed = 1, length = ROUND, stage = SUNDAY, regulars, usher = {} } = {}) {
   const r = rng(seed);
   stage = { ...SUNDAY, ...stage };
   regulars ??= stage.regulars;
   if (stage.endless) length = Infinity;
   // the pews, with some regulars already sitting here and there (some of them won't scoot: "stay")
-  const pews = Array.from({ length: ROWS * 2 }, (_, id) => ({ id, ...pewOf(id), seats: Array(SEATS).fill(null) }));
+  const pews = Array.from({ length: (ROWS + 1) * 2 }, (_, id) => ({ id, ...pewOf(id), standing: isStanding(id), seats: Array(SEATS).fill(null) }));
   let pid = 1;
-  for (const p of pews) for (let s = 0; s < SEATS; s++) if (r() < regulars) p.seats[s] = { family: 0, stay: r() < 0.3, pid: pid++, kind: pick(KINDS_ALONE, r) };
-  const g = { r, t: 0, length, stage, pews, nextPid: pid, left: 0, queue: [], nextFamily: 1, nextArrival: 0, families: {}, at: null, group: null,
+  for (const p of pews) if (!p.standing) for (let s = 0; s < SEATS; s++) if (r() < regulars) p.seats[s] = { family: 0, stay: r() < 0.3, pid: pid++, kind: pick(KINDS_ALONE, r) };
+  const g = { r, t: 0, length, stage, usher, pews, nextPid: pid, left: 0, queue: [], nextFamily: 1, nextArrival: 0, families: {}, at: null, group: null,
     score: 0, together: 0, split: 0, seatedPeople: 0, over: false };
   if (stage.endless) for (const p of pews) for (const who of p.seats) if (who) who.until = stayTime(g) * (0.3 + r() * 0.7); // already praying a while
   arrive(g);
@@ -87,6 +90,13 @@ export function tick(g, dt) {
     });
     // the night is over when the line at the doors gets too long
     if (g.queue.length >= g.stage.maxLine) { g.over = true; ev.push({ type: "end", reason: "line", time: g.t }); }
+    return ev;
+  }
+  // every seat and standing place is taken: Mass starts now, even with time left
+  if (g.pews.every((p) => p.seats.every(Boolean))) {
+    g.over = true;
+    const waiting = g.queue.reduce((n, id) => n + g.families[id].size - g.families[id].seated, 0);
+    ev.push({ type: "end", reason: "full", waiting, left: g.length - g.t });
     return ev;
   }
   if (g.t >= g.length) {
@@ -142,10 +152,10 @@ export function seat(g, id) {
   return { type: "seated", pew: id, placed, points, quick, together: fam.parts.length === 1, family: fam.id };
 }
 
-/** A family's points: 10 a person seated together; split, 8 less for each extra part and 3 less for each row (or
- * the aisle) between the parts; never less than 2 a person. */
+/** A family's points: 10 a person seated together (4 a person standing at the back); split, 8 less for each extra part
+ * and 3 less for each row (or the aisle) between the parts; never less than 2 a person. */
 export function familyPoints(fam) {
-  const base = fam.size * 10;
+  const base = fam.parts.reduce((n, part) => n + part.seats.length * (isStanding(part.pew) ? STAND_POINTS : 10), 0) || fam.size * 10;
   if (fam.parts.length <= 1) return base;
   let apart = 0;
   for (let i = 1; i < fam.parts.length; i++) {
@@ -160,6 +170,8 @@ export function familyPoints(fam) {
 export function scoot(g, id, dir) {
   const p = g.pews[id];
   if (g.over || g.at !== id || !p) return { type: "none" };
+  if (g.usher.noScoot) return { type: "shy", pew: id }; // the young usher doesn't ask anyone to scoot
+  const firm = (who) => who.stay && !g.usher.moveStayers; // the respected usher moves even people who like their spot
   const before = JSON.stringify(p.seats);
   const order = dir > 0 ? [...Array(SEATS).keys()].reverse() : [...Array(SEATS).keys()];
   const out = Array(SEATS).fill(null);
@@ -168,12 +180,28 @@ export function scoot(g, id, dir) {
   for (const s of order) {
     const who = p.seats[s];
     if (!who) continue;
-    if (who.stay) { out[s] = who; to = next(s); continue; }
+    if (firm(who)) { out[s] = who; to = next(s); continue; }
     while (out[to]) to = next(to);
     out[to] = who; to = next(to);
   }
   p.seats = out;
   return { type: JSON.stringify(out) === before ? "nothing" : "scooted", pew: id };
+}
+
+/** The longest run of empty seats in a pew. */
+export const longestRun = (p) => { let best = 0, n = 0; for (const s of p.seats) { n = s ? 0 : n + 1; best = Math.max(best, n); } return best; };
+/** The experienced usher: on reaching a pew, people scoot whichever way makes the most room (or the room the family
+ * needs, toward the wall if both do). */
+export function autoScoot(g, id) {
+  const p = g.pews[id], fam = current(g);
+  if (!g.usher.autoScoot || g.over || g.at !== id || !p || !fam) return { type: "none" };
+  const need = fam.size - fam.seated, before = p.seats;
+  const tryDir = (dir) => { p.seats = before; scoot(g, id, dir); const run = longestRun(p), seats = p.seats; p.seats = before; return { dir, run, seats }; };
+  const [wall, aisle] = [tryDir(+1), tryDir(-1)];
+  const pick = Math.min(wall.run, need) >= Math.min(aisle.run, need) ? wall : aisle;
+  if (pick.run <= longestRun(p)) return { type: "nothing", pew: id };
+  p.seats = pick.seats;
+  return { type: "scooted", pew: id, dir: pick.dir };
 }
 
 /** Stars: two for seating families steadily, three for seating them quickly and together. Tuned in the tests. */

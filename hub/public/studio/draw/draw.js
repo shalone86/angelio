@@ -5,6 +5,14 @@
 import { CHECKLISTS } from "/js/art-content.js";
 import { readVox, voxSummary } from "/js/vox.js";
 import { voxThumb, voxViewer } from "./voxview.js";
+import { pewVox } from "/js/voxwrite.js";
+
+// Pieces the games already draw themselves, ready to download as .vox (to try his people beside them in MagicaVoxel)
+const GAME_PIECES = { pew: { make: pewVox, file: "game-pew.vox", label: "Download the game's pew (.vox)" } };
+function download(bytes, name) {
+  const url = URL.createObjectURL(new Blob([bytes], { type: "application/octet-stream" }));
+  const a = h("a", { href: url, download: name }); document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
 
 const $ = (id) => document.getElementById(id);
 const store = { get: (k) => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch { /* fine */ } } };
@@ -171,7 +179,7 @@ function renderDetail() {
   const it = detail, v = art.voxels[it.slug];
   const stageEl = h("div", { class: "dt-stage" });
   const back = () => { if (history.state?.detail) history.back(); else render(); };
-  $("list").replaceChildren(
+  $("list").replaceChildren(...[ // (a missing piece is left out, not shown as "null")
     h("div", { class: "dt-top" }, [h("button", { class: "btn", type: "button", text: "← Checklist", onclick: back }), h("span", { style: "flex:1" }), tick(it)]),
     h("h1", { text: it.label }),
     h("p", { class: "cl-note", text: [status(it), it.note].filter(Boolean).join(". ") }),
@@ -183,11 +191,13 @@ function renderDetail() {
         if (!(await window.ask("Remove this model? It's kept in the trash, so Claude can bring it back."))) return;
         try { await studio("/art/vox-delete", { slug: it.slug }); voxCache.delete(it.slug); renderDetail(); } catch (e) { alert("Couldn't remove it: " + e.message); } } }) : null,
     ]),
+    GAME_PIECES[it.download] ? h("div", { class: "cl-more" }, [h("button", { class: "btn", type: "button", text: GAME_PIECES[it.download].label, onclick: () => download(GAME_PIECES[it.download].make(), GAME_PIECES[it.download].file) })]) : null,
     v && v.frames > 1 ? speedControl(it.slug, v) : null,
     h("code", { class: "small muted", text: `${it.slug}.vox` }),
-  );
+  ].filter(Boolean));
   if (v) model(it.slug).then((m) => { if (detail === it && m) viewer = voxViewer(stageEl, m.vox, { fps: v.fps ?? 4 }); }).catch((e) => { stageEl.textContent = "Couldn't show it: " + e.message; });
   else if (art.drawings[it.slug]) { const c = thumb(art.drawings[it.slug]); c.className = "dt-pixels"; stageEl.replaceChildren(c); }
+  else if (GAME_PIECES[it.download]) { viewer = voxViewer(stageEl, readVox(GAME_PIECES[it.download].make()), { fps: 4 }); stageEl.append(h("p", { class: "small muted center", text: "The game's own pew, until you upload yours." })); }
   else stageEl.replaceChildren(h("span", { class: "muted", text: "Nothing here yet. Upload the model from MagicaVoxel, or draw it in pixels." }));
 }
 addEventListener("popstate", () => { if (detail && !tab) render(); });
