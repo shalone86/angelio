@@ -12,6 +12,7 @@ const ART = /(^|\.)angelio\.org$/.test(location.hostname) ? "" : "https://angeli
 
 // Where things stand (1 unit = one voxel; his people are 8 tall).
 export const SEAT_W = 5.4, AISLE = 3.6, ROW_GAP = 9, FRONT_Z = -28, DOORS_Z = 22;
+const LANE = 3.2; // the space in front of a pew's seats (between it and the back of the pew ahead), where people walk in and out
 const KINDS = ["man", "woman", "grandfather", "grandmother", "child", "child-girl"];
 const QUIET = ["#6b6b6b", "#7a6a58", "#5a5a66", "#8a8478", "#4f5a52", "#6a5a5a"];
 const GIRLISH = new Set(["woman", "grandmother", "child-girl"]);
@@ -203,10 +204,13 @@ export function createNave(canvas, { models = {}, rite = "roman", night = false 
       if (!a) {
         const fam = who.family ? g.families[who.family] : null, i = fam ? fam.pids.indexOf(who.pid) : -1;
         a = fam && walking[i] ? walking[i] : person(who.kind, fam?.color, /^grand/.test(who.kind));
-        if (fam && walking[i]) { walking[i] = null; a.goTo(spot.x, spot.z, 14, "walk", "sit"); } // into the pew
+        // into the pew the way people do: up the aisle to the pew, then along the space in front of the seats (never
+        // through the pews), then sit
+        if (fam && walking[i]) { walking[i] = null; const lane = spot.z - LANE, ax = Math.sign(spot.x) * 2.4; a.entering = true;
+          a.goTo(ax, a.g.position.z, 16).then(() => a.goTo(ax, lane, 14)).then(() => a.goTo(spot.x, lane, 12)).then(() => a.goTo(spot.x, spot.z, 10, "walk", "sit")).then(() => { a.entering = false; }); }
         else a.place(spot.x, spot.z, "sit");
         a.stay = who.stay; seated.set(who.pid, a);
-      } else if (Math.abs(a.g.position.x - spot.x) > 0.1 && !a.move) a.goTo(spot.x, spot.z, 18, "sit", "sit"); // scooted
+      } else if (Math.abs(a.g.position.x - spot.x) > 0.1 && !a.move && !a.entering) a.goTo(spot.x, spot.z, 18, "sit", "sit"); // scooted
     });
     pewGlow.forEach((m, id) => { m.userData.on = g.at === id; });
   }
@@ -234,7 +238,9 @@ export function createNave(canvas, { models = {}, rite = "roman", night = false 
     if (!a) return;
     seated.delete(pid);
     const x = a.g.position.x, z = a.g.position.z;
-    a.goTo(x < 0 ? -1.4 : 1.4, z + 2.5, 10).then(() => a.goTo(x < 0 ? -1.4 : 1.4, DOORS_Z + 6, 12)).then(() => { scene.remove(a.g); actors.splice(actors.indexOf(a), 1); });
+    // out along the space in front of the seats to the aisle (not through the pew), then down the aisle
+    const ax = x < 0 ? -1.4 : 1.4;
+    a.goTo(x, z - LANE, 8).then(() => a.goTo(ax, z - LANE, 10)).then(() => a.goTo(ax, DOORS_Z + 6, 12)).then(() => { scene.remove(a.g); actors.splice(actors.indexOf(a), 1); });
   }
   /** Mass begins: you step aside, and the priest and servers process up the aisle (or out of the royal doors). */
   async function procession() {

@@ -9,17 +9,19 @@ their own looks (`looks.js`, a copy of Candle Rack's); a family wears its color,
 can tell families apart from behind; regulars wear quiet colors. `vox.js`, `looks.js` and three.js are copies kept
 identical by `test/copies.test.js`.
 
-- Each pew has a big round button by its wall end (its number = empty seats); only the buttons pick a pew, so taps on
-  a phone are always clean. Tap one: you walk the family at the front of the line there and it turns green ("Sit!").
-  Swipe anywhere: the people in that pew scoot toward the wall or the aisle (a swipe never picks another pew; someone
-  with a 📌 likes their spot and won't move). Tap "Sit!": as many of the family as fit sit down, in the longest run of
-  empty seats. Anyone left over: tap another pew's button. Then back to the doors.
+- Tap a pew, or the big round button by its wall end (the buttons make a clean tap easy on a phone; they show no
+  numbers, since counting the empty seats is the game). You walk the family at the front of the line there and the
+  button turns green ("Sit!"). Swipe anywhere: the people in that pew scoot toward the wall or the aisle (a swipe never
+  picks another pew; someone with a 📌 likes their spot and won't move). Tap the pew or "Sit!" again: as many of the
+  family as fit sit down, in the longest run of empty seats. Anyone left over: tap another pew. Then back to the doors.
+  People walk up the aisle and in along the space in front of the seats, never through the pews (and out the same way).
 - Stages (`public/js/stages.js`, like Candle Rack's): Sunday Mass, Divine Liturgy (Byzantine church), Christmas
   Midnight Mass, Pascha; each opens with two stars on the one before. Nobody is up front while you seat people; when
   the clock reaches Mass the priest and servers come up the aisle from the doors (Byzantine: the priest comes out of
   the royal doors and censes down the aisle and back). Adoration at Night (endless, opens after Sunday Mass): a dark
   church, the priest kneeling before the monstrance at the center of the altar; people come, pray a while and go
-  home (their seats free up), it gets busier, and the night ends when six are waiting at the doors.
+  home (their seats free up), it gets busier (a family every 6 seconds at first, faster and bigger as the night goes on), and the night ends when
+  six are waiting at the doors (the 🚪 meter by the line fills up).
 - Points: 10 a person seated together; a split family scores less, and less again the farther apart its parts are
   (rows apart, or across the aisle). Seated within 8 seconds of reaching the front of the line: +3 a person.
 - Families come faster and bigger as Mass gets closer (two minutes). Each stage has its own stars. Stars are tuned with pretend ushers in

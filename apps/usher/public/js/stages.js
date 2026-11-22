@@ -33,8 +33,8 @@ export const STAGES = [
   {
     id: "adoration", name: "Adoration at Night", rite: "roman", icon: "🌙", opensAfter: "sunday", endless: true,
     blurb: "Late at night in the chapel: people come and go. As long as you can!",
-    say: "It's late at night, and Jesus is on the altar for adoration. People come to pray and go home again. Seat them as long as you can!",
-    regulars: 0.2, every: [11, 4], biggest: [2, 4], stayFor: [25, 50], maxLine: 6, star2: 100, star3: 1500,
+    say: "It's late at night, and Jesus is on the altar for adoration. People come to pray and go home again. Seat them as long as you can! If the line at the doors fills up, the night is over.",
+    regulars: 0.2, every: [6, 3], biggest: [2, 4], stayFor: [25, 50], maxLine: 6, star2: 50, star3: 1800,
   },
 ];
 

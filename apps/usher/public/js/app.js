@@ -2,9 +2,9 @@
 // voxel (nave.js) with his models where they exist and stand-ins for the rest. The rules are in usher.js, the stages
 // (Sunday Mass, the Divine Liturgy, Christmas, Pascha, and the endless Adoration at Night) in stages.js.
 //
-// Tap a pew's button: you walk the family there. Swipe anywhere: the people in that pew scoot down and make room
+// Tap a pew (or the round button by it): you walk the family there. Swipe anywhere: the people in that pew scoot down and make room
 // (someone with a 📌 likes their spot and won't move); a swipe never picks a pew. Tap the button again: the family
-// sits. Anyone left over: another pew's button. Then you walk back to the doors for the next family.
+// sits. Anyone left over: another pew. Then you walk back to the doors for the next family.
 import * as S from "./kit/store.js";
 import { jingleOnce } from "./kit/jingle.js";
 S.init("usher:v1", { best: 0 });
@@ -26,7 +26,7 @@ const route = createRouter([
   [/^$/, viewHome],
   [/^play(?:\/([a-z]+))?$/, viewPlay],
   [/^grownups$/, () => viewGrownups(app, { about: `<p><b>Mass Usher</b> is a little game about seating families before Mass.
-    Tap the button by a pew to walk a family there, swipe so people scoot down and make room, and tap again to seat them.
+    Tap a pew (or the round button by it) to walk a family there, swipe so people scoot down and make room, and tap again to seat them.
     Families seated together score the most; splitting a family scores less, and less the farther apart. Two stars open
     the next church: the Divine Liturgy, Christmas Midnight Mass (packed) and Pascha (busiest); Adoration at Night is
     endless, people come and go, and it ends when the line at the doors gets too long. It practices counting, planning and
@@ -89,7 +89,7 @@ function viewPlay(stageId) {
   document.body.classList.add("in-game", "usher-game");
   app.innerHTML = `
     <section class="ush-play${stage.endless ? " night" : ""}">
-      <canvas class="nave" aria-label="The church: tap the button by a pew to walk the family there, swipe to make room"></canvas>
+      <canvas class="nave" aria-label="The church: tap a pew to walk the family there, swipe to make room"></canvas>
       <div class="pew-btns" data-pew-btns></div>
       <div class="hud">
         <a class="icon-btn" href="#/" aria-label="Stop and go home">✕</a>
@@ -97,7 +97,7 @@ function viewPlay(stageId) {
         <div class="score"><b data-score>0</b></div>
         <button class="icon-btn toggle" data-voice title="Read aloud">🔊</button>
       </div>
-      <div class="line-up" aria-label="Families waiting"><span data-with></span><span class="queue" data-queue></span></div>
+      <div class="line-up" aria-label="Families waiting"><span data-with></span><span class="queue" data-queue></span>${stage.endless ? `<span class="wait-meter" data-wait aria-label="How long the line at the doors is"></span>` : ""}</div>
       <div class="pins" aria-hidden="true"></div>
       <div class="bubble ush-bubble" aria-live="polite"><span class="mascot" aria-hidden="true">⛪</span><p class="say"></p></div>
       <div class="pops" aria-hidden="true"></div>
@@ -119,9 +119,9 @@ function viewPlay(stageId) {
         voice: "It's late at night, and Jesus is on the altar for adoration. People come to pray, and after a while they go home again, so seats free up. Keep seating everyone! If the line at the doors gets too long, the night is over.",
       } : {
         emoji: "⛪", title: "Seat the families",
-        rule: "Tap the <b>button</b> by a pew to walk a family there. <b>Swipe</b> so the people in that pew scoot down. Tap the button <b>again</b> to seat the family. Seat each family <b>together</b>!",
+        rule: "Tap a <b>pew</b> (or the round button by it) to walk a family there. <b>Swipe</b> so the people in that pew scoot down. Tap it <b>again</b> to seat the family. Seat each family <b>together</b>!",
         exampleHtml: `<p class="center ush-example">👨‍👩‍👧 ➜ 🪑🪑🪑</p>`,
-        voice: "Families are coming to Mass! Tap the button by a pew to walk a family there. Swipe so the people in that pew scoot down and make room. Then tap the button again to seat the family. Families like to sit together!",
+        voice: "Families are coming to Mass! Tap a pew to walk a family there. Swipe so the people in that pew scoot down and make room. Then tap the pew again to seat the family. Families like to sit together!",
       });
       card.hidden = true;
       if (!alive) return;
@@ -143,10 +143,10 @@ function viewPlay(stageId) {
     // ── a big button by each pew (its empty seats on it): the only way to pick a pew, so taps land cleanly ──
     btns.innerHTML = Array.from({ length: ROWS * 2 }, (_, id) => `<button type="button" class="pew-btn" data-pew="${id}" aria-label="Pew ${id + 1}"></button>`).join("");
     const btnOf = (id) => btns.querySelector(`[data-pew="${id}"]`);
-    btns.addEventListener("click", async (e) => {
-      const b = e.target.closest("[data-pew]");
-      if (!b || walking || g.over) return;
-      const id = +b.dataset.pew, r = tapPew(g, id);
+    // a pew is picked by its button or by tapping the pew itself (a swipe never picks one)
+    const choose = async (id) => {
+      if (walking || g.over || id == null) return;
+      const r = tapPew(g, id);
       if (r.type === "walk") {
         walking = true; sfx.tap(); nave.sync(g);
         await nave.walkTo(id); walking = false;
@@ -165,15 +165,16 @@ function viewPlay(stageId) {
         walking = true; await nave.walkHome(); walking = false;
         nave.family(current(g));
       }
-    });
+    };
+    btns.addEventListener("click", (e) => { const b = e.target.closest("[data-pew]"); if (b) choose(+b.dataset.pew); });
 
-    // ── a swipe anywhere scoots the pew you're at (it never picks a different pew) ──
+    // ── a tap on a pew picks it; a swipe anywhere scoots the pew you're at (it never picks a different pew) ──
     let down = null;
-    canvas.addEventListener("pointerdown", (e) => { down = { x: e.clientX }; });
+    canvas.addEventListener("pointerdown", (e) => { down = { x: e.clientX, y: e.clientY }; });
     canvas.addEventListener("pointerup", (e) => {
       if (!down || g.over) { down = null; return; }
-      const dx = e.clientX - down.x; down = null;
-      if (Math.abs(dx) < 24) { talk.once("use-buttons", "Tap the round button by a pew to pick it."); return; }
+      const down0 = down, dx = e.clientX - down.x; down = null;
+      if (Math.abs(dx) < 24) { if (Math.abs(e.clientY - down0.y) < 24) choose(nave.pick(e.clientX, e.clientY)); return; }
       if (g.at === null || walking) { sfx.tap(); talk.once("swipe-first", "Pick a pew first, then swipe to make room."); return; }
       // toward the wall is +1 (a left pew's wall is on the left of the screen, a right pew's on the right)
       const dir = (g.at % 2 === 0 ? -dx : dx) > 0 ? 1 : -1;
@@ -199,18 +200,23 @@ function viewPlay(stageId) {
         if (fam && fam.id === lastFront && !walking && g.at === null && !fam.announced) { fam.announced = true; talk(`${fam.size === 1 ? "One person" : `A family of ${NUM[fam.size] ?? fam.size}`}! Tap a pew for them.`); }
         if (!fam && lastFront !== null && !walking) { lastFront = null; nave.family(null); }
         $("[data-with]").innerHTML = fam ? `<b>Now:</b> ${dots(fam)}` : "";
+        // Adoration: the night ends when the line at the doors fills this meter (one box a person or family waiting)
+        const meter = $("[data-wait]");
+        if (meter) { const n = Math.min(g.queue.length, stage.maxLine), html = `🚪 ${"<i class=on></i>".repeat(n)}${"<i></i>".repeat(stage.maxLine - n)}`;
+          if (meter.innerHTML !== html) meter.innerHTML = html; meter.classList.toggle("danger", n >= stage.maxLine - 2); }
         $("[data-queue]").innerHTML = g.queue.length > 1 ? `<b>Next:</b> ${g.queue.slice(1, 4).map((id) => dots(g.families[id])).join("")}${g.queue.length > 4 ? ` <b>+${g.queue.length - 4}</b>` : ""}` : "";
         const secs = stage.endless ? Math.floor(g.t) : Math.max(0, Math.ceil(g.length - g.t));
         $("[data-clock]").textContent = `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, "0")}`;
         $("[data-score]").textContent = g.score;
-        // the pew buttons: where each pew is on screen, with its empty seats; the one you're at says "Sit!"
+        // the pew buttons: where each pew is on screen; the one you're at says "Sit!"
         for (let id = 0; id < ROWS * 2; id++) {
-          const b = btnOf(id), at = nave.pewButton(id), empty = g.pews[id].seats.filter((s) => !s).length;
+          const b = btnOf(id), at = nave.pewButton(id);
           b.style.left = at.x + "px"; b.style.top = at.y + "px";
-          const here = g.at === id, label = here ? "Sit!" : String(empty);
+          // no numbers on them: counting the empty seats is part of the game
+          const here = g.at === id, label = here ? "Sit!" : "";
           if (b.textContent !== label) b.textContent = label;
-          b.classList.toggle("here", here); b.classList.toggle("full", !empty); b.disabled = walking;
-          b.setAttribute("aria-label", here ? `Seat them in this pew (${empty} empty seats)` : `Pew with ${empty} empty seat${empty === 1 ? "" : "s"}`);
+          b.classList.toggle("here", here); b.disabled = walking;
+          b.setAttribute("aria-label", here ? "Seat them in this pew" : `Pew ${id + 1}`);
         }
         // the 📌 over anyone who won't scoot
         const seen = new Set();

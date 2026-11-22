@@ -16,8 +16,13 @@ body.usher-game .topbar { display: none; }
 .ush-play .clock-label { font-size: .85rem; font-weight: 700; opacity: .7; }
 /* the family with you, and who's waiting at the doors */
 .line-up { position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(96px + env(safe-area-inset-bottom)); display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
-  padding: 6px 12px; border-radius: 16px; background: rgb(255 248 235 / .92); color: #3b2a12; font-weight: 800; box-shadow: 0 2px 0 rgb(0 0 0 / .2); pointer-events: none; max-width: 94vw; }
-.line-up:empty, .line-up:has(> span:empty + span:empty) { display: none; }
+  padding: 6px 12px; border-radius: 16px; background: rgb(255 248 235 / .92); color: #3b2a12; font-weight: 800; box-shadow: 0 2px 0 rgb(0 0 0 / .2); pointer-events: none; width: max-content; max-width: 94vw; }
+.line-up:empty, .line-up:has(> span:empty + span:empty:last-child) { display: none; }
+/* Adoration: how full the line at the doors is (full = the night ends) */
+.wait-meter { display: inline-flex; align-items: center; gap: 3px; }
+.wait-meter i { width: 12px; height: 16px; border-radius: 4px; background: rgb(0 0 0 / .12); }
+.wait-meter i.on { background: #e3b341; }
+.wait-meter.danger i.on { background: #e0453f; animation: herePulse 1s ease-in-out infinite; }
 .queue { display: inline-flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .fam { display: inline-flex; gap: 2px; padding: 3px 5px; border-radius: 99px; background: #fff; box-shadow: 0 0 0 1px rgb(0 0 0 / .08); }
 .fam i { width: 12px; height: 12px; border-radius: 50%; background: var(--c); box-shadow: inset 0 -2px 0 rgb(0 0 0 / .2); }
@@ -50,12 +55,12 @@ body.usher-game .topbar { display: none; }
 .stage.locked { opacity: .6; }
 .games-link { margin: 18px 0 8px; }
 
-/* a big round button by each pew (its empty seats on it): picking a pew is always a clean tap */
+/* a big round button by each pew: picking a pew is always a clean tap (tapping the pew itself works too) */
 .pew-btns { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
 .pew-btns[hidden] { display: none; }
 .pew-btn { position: absolute; transform: translate(-50%, -50%); pointer-events: auto; width: 44px; height: 44px; border-radius: 50%;
   border: 3px solid #fff; background: #2a6db3; color: #fff; font: 900 1.05rem Nunito, sans-serif; box-shadow: 0 3px 0 #173f6e, 0 4px 10px rgb(0 0 0 / .3); cursor: pointer; touch-action: manipulation; }
-.pew-btn.full { background: #8a8f98; box-shadow: 0 3px 0 #5a5f66; }
+.pew-btn:empty::after { content: ""; display: block; width: 12px; height: 12px; margin: auto; border-radius: 50%; background: #fff; } /* no numbers: counting seats is the game */
 .pew-btn.here { background: #2fa866; box-shadow: 0 3px 0 #1f7a49, 0 0 0 5px rgb(255 215 94 / .8); width: 54px; height: 54px; font-size: .95rem; animation: herePulse 1s ease-in-out infinite; }
 .pew-btn:disabled { opacity: .55; }
 .pew-btn:active { transform: translate(-50%, -45%); }
