@@ -52,7 +52,7 @@ function mount(el: HTMLElement, initial: LessonProps): Api {
   };
 }
 
-// The kids thumbnail (Video & Ghost tab's thumbnail maker): one still frame, redrawn as she moves things.
+// The kids thumbnail (Video & Ghost tab's thumbnail maker): one still frame, redrawn as he moves things.
 function mountThumb(el: HTMLElement, initial: KidsThumbProps) {
   const root = createRoot(el);
   const draw = (props: KidsThumbProps) => root.render(
@@ -63,7 +63,7 @@ function mountThumb(el: HTMLElement, initial: KidsThumbProps) {
   return {setProps: draw};
 }
 
-// A music video (Music videos tool): the song with its slides, redrawn as she changes them.
+// A music video (Music videos tool): the song with its slides, redrawn as he changes them.
 function mountSong(el: HTMLElement, initial: SongProps) {
   const root = createRoot(el);
   const ref = createRef<PlayerRef>();

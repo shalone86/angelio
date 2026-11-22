@@ -5,12 +5,12 @@
 + Add a picture here → Puppet: character (every `<name>-<action>` drawing;
 missing poses fall back to the nearest one and are listed), item, size, where
 it stands first. Click its block → **● Play it from here** / From the start of
-this picture: the video plays and her keys are kept against the playhead
+this picture: the video plays and his keys are kept against the playhead
 (timing.yml `scenes.<i>.puppet: [[seconds, key, 1|0], …]`; playing again from a
 point keeps what came before it). Keys: ← → walk, Shift run, P point (the item
 shows beside it), ↑ look up, T talk, A pray, X sign of the cross (plays once), B blessing, K kneel (stays down while held),
 ↓ bow (once), I next item, Esc stops (2026-10-27: hold and point up removed). Tested with stand-in drawings
-(deleted); **waiting on her real drawings**. Not done yet: color versions
+(deleted); **waiting on his real drawings**. Not done yet: color versions
 (below), a turn frame, layered outfits, sketch-mode characters (pixel only).
 Each key press re-sends the props to the preview; if playback stutters while
 recording, batch those updates.
@@ -18,12 +18,12 @@ recording, batch those updates.
 The design below is what Shalone and Claude agreed on in chat. Read CLAUDE.md first for the rules.
 Keep messages short and plain.
 
-## What she wants
+## What he wants
 
 **Step 1.** A little game in the studio: a pixel character walks back and
 forth like Mario or the Chrome dino. Keys trigger actions (point, talk, hold
-an item up, pray...). While a lesson's video plays on the Timing tab she plays
-the character and **records her key presses against the playhead**, the way she
+an item up, pray...). While a lesson's video plays on the Timing tab he plays
+the character and **records his key presses against the playhead**, the way he
 records audio, so the timing is exactly right. The render then replays the
 recording.
 
@@ -70,7 +70,7 @@ character **points** (P), the scene's item appears beside it on the side it
 faces. Items are drawn at the characters' pixel size, so an item is a few
 pixels on an 8 × 8 grid (`item-<name>`, 8 × 8).
 
-**Bases** (body types she draws every pose for; give every part its own color:
+**Bases** (body types he draws every pose for; give every part its own color:
 hair, skin, shirt, pants, shoes, eyes, the mustache block):
 `skinny-woman`, `thick-woman`, `beard-guy`, `thick-beard-guy`, `thick-guy`,
 `skinny-guy`, plus a vestment base (e.g. `vested-guy`) for each body type that
@@ -79,13 +79,13 @@ needs a robe (the hem changes the feet, which a recolor can't do).
 Poses per base: `-idle`, `-walk`, `-run`, `-point`, `-pray`, `-look-up`
 (optional: `-idle-front`, `-talk`, `-cross`, `-bow`).
 
-**Built 2026-10-27: color versions** (Pixel art tab → New character from a base…; her poses are only idle, point, look-up, walk, run). She recolors one
+**Built 2026-10-27: color versions** (Pixel art tab → New character from a base…; his poses are only idle, point, look-up, walk, run). He recolors one
 pose of a base (usually idle) and saves it as a new character
 (`st-joseph-idle`); the tool compares it with the base pixel by pixel, learns
 the color swaps, and writes every other pose of that base with the same
-swaps (`st-joseph-walk` …). Never changes her base drawings. It warns when one
+swaps (`st-joseph-walk` …). Never changes his base drawings. It warns when one
 base color became two colors (two parts shared a color) and lists base colors
-that appear only in poses she didn't recolor. A mustache that isn't wanted is
+that appear only in poses he didn't recolor. A mustache that isn't wanted is
 recolored to skin.
 
 ## What to build (suggested order)
@@ -116,18 +116,18 @@ Design for the existing code, not a rewrite:
    size above the hands for the `hold` action.
 6. **Character picker per scene** (step 2): `character: bishop` on the scene.
 
-## Open questions to ask her
+## Open questions to ask him
 
-- Pixel-size rule for items needs her ok on a first test.
-- Does she want one key to cycle items mid-recording, or only per-scene choice?
-- Does she want walk to scroll the backdrop, or the character to cross the
+- Pixel-size rule for items needs his ok on a first test.
+- Does he want one key to cycle items mid-recording, or only per-scene choice?
+- Does he want walk to scroll the backdrop, or the character to cross the
   screen (current assumption: cross the screen like Mario)?
 
 ## Notes
 
 - Everything in the Pixel art tab is shared by all lessons
   (`sprites/<name>.json`; see CLAUDE.md → Pixel art tab).
-- She doesn't want AI-generated art: **she draws every sprite herself.**
-  Claude builds the tooling only; don't generate pixel art for her.
+- He doesn't want AI-generated art: **he draws every sprite himself.**
+  Claude builds the tooling only; don't generate pixel art for him.
 
 Commit and push to `main` as you go.

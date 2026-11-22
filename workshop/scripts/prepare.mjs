@@ -8,6 +8,7 @@ import {ROOT, ffprobeDuration, lessonDir, loadLesson, loadSite, outDir, smartSce
 import {detectBeats} from './beats.mjs';
 import {loadSprite, publishSketch, puppetArt, recolorArt} from './sprites.mjs';
 import {voxelArt} from './voxels.mjs';
+import {withLook} from '../video/voxel-draw.js';
 import {phraseSpan, phraseTime, transcribe, trimLead, trimVoice, whisperAvailable} from './voice.mjs';
 
 const FPS = 30;
@@ -68,7 +69,7 @@ export function prepare(arg) {
   // Pixel animations: the drawing itself goes into the props (sprites/<name>.json).
   for (const seg of out) for (const sc of seg.scenes) if (sc.type === 'sprite') sc.art = recolorArt(publishSketch(loadSprite(sc.sprite), publicDir, id), sc.colors);
   // His voxel characters (MagicaVoxel, from angelio.org; voxels/<name>.vox): the model goes into the props.
-  for (const seg of out) for (const sc of seg.scenes) if (sc.type === 'voxel') sc.art = voxelArt(sc.voxel);
+  for (const seg of out) for (const sc of seg.scenes) if (sc.type === 'voxel') sc.art = withLook(voxelArt(sc.voxel), sc.look); // his hair, skin, eyes, chasuble picks
   // The keyboard puppet: every drawing named <character>-<action>, and the items it points to.
   // (`colors:` recolors it for this scene only, every pose alike.)
   for (const seg of out) for (const sc of seg.scenes) if (sc.type === 'puppet') {

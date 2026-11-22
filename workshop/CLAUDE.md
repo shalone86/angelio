@@ -113,8 +113,8 @@ If it's already running, `npm start` just opens the page.
 - **Keys:** R/F19 record (F19 also presses Yes on an "Are you sure?"), F17/F18 change
   slide, F16 scrolls down the slide (back to the top at the bottom). (A prompter mode was tried
   and removed at his request; don't bring it back unasked.)
-- **Camera:** "Record my video too" (in the Microphone panel) records him
-  webcam with the voice. Clips go to `<lesson>/camera/` (gitignored: him
+- **Camera:** "Record my video too" (in the Microphone panel) records his
+  webcam with the voice. Clips go to `<lesson>/camera/` (gitignored: his
   face stays off the public repo, so it exists only on this Mac); a
   voice-only re-record drops that slide's clip. `prepare.mjs` cuts each clip
   so it lines up with the trimmed voice. Per slide, the Timing tab sets
@@ -181,13 +181,14 @@ If it's already running, `npm start` just opens the page.
 - **Puppet** (`type: puppet`, PUPPET.md): an 8 × 8 character he draws as
   `<name>-<action>` drawings (actions include blessing, B, and kneel, K), played with the keys while the video runs on the
   Timing tab; recorded in timing.yml (`scenes.<i>.puppet`).
-- **Voxel characters** (`type: voxel`; `scripts/voxels.mjs`, `video/voxel-draw.js`, `video/scenes/Voxel.tsx`): him
+- **Voxel characters** (`type: voxel`; `scripts/voxels.mjs`, `video/voxel-draw.js`, `video/scenes/Voxel.tsx`): his
   MagicaVoxel models, one .vox per pose (priest-idle, priest-walk-slow…), uploaded on Angelio's Drawings page
   (angelio.org/studio/draw/), which is their one home (the Angelio games use them too). Each has its speed, set there.
   The studio copies new and changed ones into `voxels/` (`<slug>.vox` + `index.json`) when the Timing tab asks
   (`/api/voxels`, at most every 20 s) or with `npm run voxels`, and backs them up; renders use that copy, so they work
   offline. Timing tab → + Add a picture here → Voxel character: pick from pictures of every model (search box), then
-  `view` (front, front-right, right, back-right, back, back-left, left, front-left), `move` (stay, hop, across,
+  `look` (his marker colors, picked per picture: hair #255359, eyes #0b346e, skin #fad689, chasuble #ff77a8; `withLook` in
+  video/voxel-draw.js, applied by prepare.mjs; ready colors or any color in the form), `view` (front, front-right, right, back-right, back, back-left, left, front-left), `move` (stay, hop, across,
   across-left: walking across with no view picked turns them three-quarters the way they go), `size`, `caption`.
   `voxel-draw.js` paints the blocks on a 2D canvas at any angle (no 3D library); the video, the Timing tab and the
   picker all use it. The reader `scripts/vox.mjs` is a copy of Angelio's `hub/public/js/vox.js`: keep them the same.
@@ -238,7 +239,7 @@ If it's already running, `npm start` just opens the page.
   (pixel mode shrinks it to the grid and matches the palette, and cuts a sprite sheet,
   a row, column or grid of frames at any whole-number enlargement, into its frames).
   His Pixel Studio .psp files can't be read; he exports PNG or a sprite sheet.
-- **The whole studio from other computers:** the same door as the drawing page (port 5179 and him
+- **The whole studio from other computers:** the same door as the drawing page (port 5179 and his
   https address, `STUDIO_DRAW_DOMAIN`), at its own address `https://studio.shalonely.com` (any host starting `studio.` opens the hub; `/studio` on the drawing address works too; pixel.shalonely.com stays the pixel editor; both are lines in `~/.cloudflared/config.yml`, tunnel `kokoro-voice`, which also carries his voice services). It asks for
   `STUDIO_PASSWORD` from .env (he types it there, 10 or more characters; without it the door stays shut;
   wrong tries wait longer and longer). Signed in, a computer can do everything this Mac's page can,
@@ -291,7 +292,7 @@ If it's already running, `npm start` just opens the page.
 ## Audio
 
 He records in the Lesson Studio and reads freely until it feels right. The
-studio transcribes each recording and offers to update the script to him
+studio transcribes each recording and offers to update the script to his
 words (the post text should match the video). Quotations must stay exact: if
 he misreads one, the studio tells him to re-record that slide. For phone
 uploads, `node scripts/voice.mjs <recording> <trimmed.wav>` does the same.

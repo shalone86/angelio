@@ -5,9 +5,11 @@
 // people who come to pray (man-kneel, woman-kneel, child-kneel, grandparent-kneel) and the church pieces on the
 // Candle Rack checklists. Until a piece is made, a plain STAND-IN of boxes takes its place (marked "stand-in"
 // below). The stand-ins are not art: they only hold the place and are replaced, piece by piece, by his models.
-// The parts of his models painted pink (#FF77A8) are recolored with the season's color (season.js).
+// His marker colors (looks.js): the chasuble pink (#FF77A8) becomes the season's color (season.js); the hair, skin
+// and eyes become each person's own, picked at random, so every round has its own people.
 import { readVox, toScene } from "./vox.js";
 import { blockedNeedy } from "./game.js";
+import { randomLook, recolor } from "./looks.js";
 
 const T = () => window.THREE;
 const ART = /(^|\.)angelio\.org$/.test(location.hostname) ? "" : "https://angelio.org";
@@ -233,7 +235,7 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
   bigCandle.visible = taper;
 
   // ── his voxel models ──
-  const meshFor = (name, recolor = true) => {
+  const meshFor = (name, look = null) => {
     const m = models[name];
     if (!m) return null;
     const g = new THREE.Group();
@@ -252,7 +254,7 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
       const fr = new THREE.Group();
       const im = new THREE.InstancedMesh(box, new THREE.MeshLambertMaterial(), body.length);
       const o = new THREE.Object3D(), col = new THREE.Color();
-      body.forEach(([x, y, z, c], i) => { o.position.set(x, y, z); o.updateMatrix(); im.setMatrixAt(i, o.matrix); im.setColorAt(i, col.set(recolor && isPink(c) ? hex : c)); });
+      body.forEach(([x, y, z, c], i) => { o.position.set(x, y, z); o.updateMatrix(); im.setMatrixAt(i, o.matrix); im.setColorAt(i, col.set(isPink(c) ? hex : recolor(c, look, hex))); });
       fr.add(im);
       for (const [x, y, z, c] of tips) {
         const t = new THREE.Mesh(box, glow("#" + new THREE.Color(c).lerp(new THREE.Color("#ffc94a"), 0.75).getHexString())); t.position.set(x, y, z); fr.add(t);
@@ -277,9 +279,9 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
   // The priest waits by the sacristy; the altar server lights candles that went out and carries the cross or a candle
   // in the procession when the bells ring.
   const actors = [];
-  function actor(poses, standInHex, home) {
-    const a = { g: new THREE.Group(), poses: {}, walk: null, home };
-    for (const [k, names] of Object.entries(poses)) { const m = [].concat(names).map((n) => meshFor(n)).find(Boolean); if (m) { a.poses[k] = m; m.visible = false; a.g.add(m); } }
+  function actor(poses, standInHex, home, look = randomLook()) {
+    const a = { g: new THREE.Group(), poses: {}, walk: null, home, look };
+    for (const [k, names] of Object.entries(poses)) { const m = [].concat(names).map((n) => meshFor(n, look)).find(Boolean); if (m) { a.poses[k] = m; m.visible = false; a.g.add(m); } }
     if (!a.poses.idle) { const st = standIn(standInHex, false); a.poses.idle = st; a.g.add(st); }
     a.pose = (k) => { const show = a.poses[k] ? k : a.poses.walk && /walk|hurry|slow/.test(k) ? "walk" : "idle"; for (const [n, m] of Object.entries(a.poses)) m.visible = n === show; a.now = show; a.t0 = time; };
     a.walkTo = (x, z, pose = "walk", speed = 8) => new Promise((done) => { a.pose(pose); a.walk = { x, z, speed, done }; });
@@ -331,7 +333,7 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
   const spotOf = (p) => { const r = LAYOUT.racks[p.rack]; return { x: r.x + (p.slot - 1) * LAYOUT.slotGap, z: r.z + LAYOUT.kneelZ + 2 }; };
   function personArrive(p, walkIn = 2) {
     const k = p.id % 4, kind = PERSON[k];
-    const a = actor({ idle: `${kind}-idle`, walk: `${kind}-walk`, kneel: `${kind}-kneel` }, BODY[k], { x: 0, z: 20, turn: Math.PI });
+    const a = actor({ idle: `${kind}-idle`, walk: `${kind}-walk`, kneel: `${kind}-kneel` }, BODY[k], { x: 0, z: 20, turn: Math.PI }, randomLook(Math.random, { older: kind === "grandparent" }));
     if (!a.poses.kneel) { const st = standIn(BODY[k], true); st.visible = false; a.poses.kneel = st; a.g.add(st); }
     const at = spotOf(p), from = { x: at.x + (at.x < 0 ? -4 : 4), z: 17 };
     a.place(from.x, from.z, Math.PI, "walk");

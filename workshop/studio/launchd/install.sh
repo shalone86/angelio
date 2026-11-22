@@ -1,5 +1,5 @@
 #!/bin/sh
-# npm run studio-autostart: the workshop starts when she logs in and restarts if it stops.
+# npm run studio-autostart: the workshop starts when he logs in and restarts if it stops.
 # Written for this folder (wherever the Angelio repo is on this Mac). Replaces the old sdcourses one.
 set -e
 DIR=$(cd "$(dirname "$0")/../.." && pwd)

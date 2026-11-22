@@ -501,8 +501,8 @@ async function boot() {
   }
   if (!S.lessons.length) { document.getElementById('title').textContent = 'No lessons yet'; view.replaceChildren(el('div', {class: 'notice', text: 'Ask Claude to start a lesson; it shows up here.'})); return; }
   const last = store.get('last');
-  // Open on the tab she was last on (a refresh keeps her place).
-  // A fresh start opens on Home; a refresh keeps her place (sessionStorage lasts as long as the browser tab).
+  // Open on the tab he was last on (a refresh keeps his place).
+  // A fresh start opens on Home; a refresh keeps his place (sessionStorage lasts as long as the browser tab).
   const tab = store.get('tab');
   let again = false;
   try { again = sessionStorage.getItem('studio.open') === '1'; sessionStorage.setItem('studio.open', '1'); } catch {}
@@ -666,7 +666,7 @@ document.getElementById('pick').addEventListener('change', async (e) => {
   openLesson(e.target.value, 0);
 });
 
-// Home: where the studio opens. The lesson she last worked on, and the tools that aren't part of a lesson.
+// Home: where the studio opens. The lesson he last worked on, and the tools that aren't part of a lesson.
 function homeView() {
   const L = S.L;
   const isDone = (l) => l.status === 'reviewed' || l.status === 'published';
@@ -840,7 +840,7 @@ function newLessonView() {
 
 // ---------- music videos ----------
 
-// The Music videos tab (studio/songs.js): words and dancing characters for a song she made in Logic. Kept alive between tab visits.
+// The Music videos tab (studio/songs.js): words and dancing characters for a song he made in Logic. Kept alive between tab visits.
 function songsView() {
   if (!S.songsRoot) {
     S.songsRoot = el('div', {class: 'stack'});
@@ -972,7 +972,7 @@ async function setCamera(on) {
   render();
 }
 
-/** Small live picture of the camera while it's on, so she can check her framing as she reads. */
+/** Small live picture of the camera while it's on, so he can check his framing as he reads. */
 function camPreview() {
   if (!S.stream || !S.stream.getVideoTracks().length) return null;
   const v = el('video', {class: 'campreview' + (S.rec ? ' rec' : ''), autoplay: true, playsinline: true, muted: true, 'aria-label': 'Camera preview'});
@@ -1004,7 +1004,7 @@ function slideEl(s) {
     kids.push(el('label', {for: id, text: label}), t);
   };
   if (s.kind === 'point' && s.own) {
-    // A slide she wrote here: each part in its own box, so the video and the post know what it is.
+    // A slide he wrote here: each part in its own box, so the video and the post know what it is.
     line('heading', 'Section title (shown big when the slide starts)', 'e.g. It started in Antioch');
     area('lead', 'lead', 'What you say first');
     area('quote', 'quote-edit', 'Direct quote (read it exactly; leave empty if this slide has none)');
@@ -1032,8 +1032,8 @@ function slideEl(s) {
 }
 
 /**
- * Quiz questions for one of her slides: multiple choice, true or false, fill in the blank.
- * Edits stay in S.quiz until she presses Save quiz (the server checks each question).
+ * Quiz questions for one of his slides: multiple choice, true or false, fill in the blank.
+ * Edits stay in S.quiz until he presses Save quiz (the server checks each question).
  */
 function quizEditor(s) {
   S.quiz = S.quiz || {};
@@ -1140,7 +1140,7 @@ function checkEl(c) {
   return el('div', {class: 'check', role: 'status'}, kids);
 }
 
-// What she said vs. the script (Whisper, run by the studio after each recording).
+// What he said vs. the script (Whisper, run by the studio after each recording).
 function heardEl(s) {
   const h = s.heard;
   if (h.pending) return el('div', {class: 'heard', role: 'status'}, [el('h3', {text: 'What you said'}), el('div', {class: 'small muted', text: 'Listening back to your recording…'})]);
@@ -1283,7 +1283,7 @@ async function ensureMic() {
   const video = S.camera ? {width: {ideal: 1280}, height: {ideal: 720}, frameRate: {ideal: 30}, ...(S.camId ? {deviceId: {exact: S.camId}} : {facingMode: 'user'})} : false;
   try { S.stream = await navigator.mediaDevices.getUserMedia({audio, video}); }
   catch (e) {
-    // The microphone or camera she picked before is gone (unplugged, or its id changed): use the usual one.
+    // The microphone or camera he picked before is gone (unplugged, or its id changed): use the usual one.
     if (e.name !== 'OverconstrainedError' || (!S.deviceId && !S.camId)) throw e;
     S.deviceId = ''; S.camId = ''; store.set('mic', ''); store.set('cam', '');
     delete audio.deviceId;

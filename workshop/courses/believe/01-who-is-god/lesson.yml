@@ -17,7 +17,7 @@ sources:
     url: https://ukrcatholic.org/fileadmin/user_upload/PDFs/Our_Faith/Christ-our-Pascha-Catechism-of-the-Ukrainian-Catholic-Church-by-Comission-for-the-Catehism-z-lib.org_.pdf
 
 intro:
-  # Shalone writes the start of the intro before this; it always ends with these words (hers).
+  # Shalone writes the start of the intro before this; it always ends with these words (his).
   text: >-
     I'm your host Shalone Cason, and let's begin in the name of the Father and of the Son and of the Holy Spirit.
   notes:
@@ -120,7 +120,7 @@ points:
         False! God "is always present in his creation" (Christ – Our Pascha 106).
 
 outro:
-  # Shalone writes the start of the outro before this; it always ends with these words (hers).
+  # Shalone writes the start of the outro before this; it always ends with these words (his).
   text: >-
     Thanks for learning with us. I've been your host Shalone, and until next time, stay holy, my friends.
   notes:

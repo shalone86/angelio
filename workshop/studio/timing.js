@@ -31,6 +31,14 @@
   const nl = (a) => (a || []).join('\n');
   let recapDefault = []; // the points' headings, what the summary says until he changes it
   const MOVES = [['stay', 'stays'], ['hop', 'hops'], ['across', 'walks across, left to right'], ['across-left', 'walks across, right to left']];
+  // A voxel character's look: ready colors for each of his marker colors (the same people colors as Candle Rack's
+  // looks.js; the liturgical colors for the chasuble), and the form's color box takes any other.
+  const LOOKS = {
+    hair: ['Hair', [['#1b1410', 'Black'], ['#4a2c1a', 'Dark brown'], ['#6b4226', 'Brown'], ['#8a3b1e', 'Auburn'], ['#d9b25f', 'Blond'], ['#8f8f8f', 'Gray'], ['#ece9e2', 'White']]],
+    skin: ['Skin', [['#f6d7b8', 'Light'], ['#e2b085', 'Light tan'], ['#cf9a6c', 'Tan'], ['#b97f55', 'Medium'], ['#9a6442', 'Brown'], ['#7a4c31', 'Dark brown'], ['#5a3622', 'Deep']]],
+    eyes: ['Eyes', [['#3b2414', 'Brown'], ['#2a1a10', 'Dark brown'], ['#2f6db5', 'Blue'], ['#3f7a4a', 'Green'], ['#7a5a2a', 'Hazel'], ['#5f7180', 'Gray']]],
+    chasuble: ['Chasuble', [['#2f8a4c', 'Green'], ['#6b3fa0', 'Violet'], ['#e58fb3', 'Rose'], ['#f4efe2', 'White'], ['#e3b341', 'Gold'], ['#c8262f', 'Red'], ['#222222', 'Black']]],
+  };
   // Which way a voxel character faces (video/voxel-draw.js VIEWS). Walking across with "Facing you", it turns
   // three-quarters the way it goes by itself, so the face still shows.
   const VOXEL_VIEWS = [['front', 'Facing you'], ['front-right', 'Turned a little to the right'], ['right', 'Side, looking right'], ['back-right', 'Turned away, to the right'],
@@ -98,10 +106,11 @@
         return {type: 'battle', battle: v.battle, ...(f || t !== null ? {clip: [f, t ?? 9999]} : {}), ...(v.palette && v.palette !== 'pico' ? {palette: v.palette} : {})}; },
       read: (sc) => ({battle: typeof sc.battle === 'string' ? sc.battle : sc.battle?.name || '', from: sc.clip ? String(sc.clip[0]) : '0', to: sc.clip && sc.clip[1] < 9999 ? String(sc.clip[1]) : '', palette: sc.palette || 'pico'})},
     voxel: {label: 'Voxel character (your MagicaVoxel models)', fields: [['voxel', 'Who, and what they do', 'voxel'], ['view', 'Which way they face', 'select', VOXEL_VIEWS],
-      ['move', 'How it moves', 'select', MOVES], ['size', 'Size', 'select', ['medium', 'small', 'big', 'full']], ['caption', 'Caption', 'text']],
+      ['move', 'How it moves', 'select', MOVES], ['size', 'Size', 'select', ['medium', 'small', 'big', 'full']], ['look', 'Look (his marker colors: hair, skin, eyes, chasuble)', 'look'], ['caption', 'Caption', 'text']],
       make: (v) => { if (!v.voxel) throw new Error('Pick a model (upload them on angelio.org/studio/draw/)');
-        return {type: 'voxel', voxel: v.voxel, ...(v.view && v.view !== 'front' ? {view: v.view} : {}), ...(v.move && v.move !== 'stay' ? {move: v.move} : {}), ...(v.size && v.size !== 'medium' ? {size: v.size} : {}), ...(v.caption ? {caption: v.caption} : {})}; },
-      read: (sc) => ({voxel: sc.voxel || '', view: sc.view || 'front', move: sc.move || 'stay', size: sc.size || 'medium', caption: sc.caption || ''})},
+        const look = Object.fromEntries(Object.entries(v.look || {}).filter(([, c]) => c));
+        return {type: 'voxel', voxel: v.voxel, ...(Object.keys(look).length ? {look} : {}), ...(v.view && v.view !== 'front' ? {view: v.view} : {}), ...(v.move && v.move !== 'stay' ? {move: v.move} : {}), ...(v.size && v.size !== 'medium' ? {size: v.size} : {}), ...(v.caption ? {caption: v.caption} : {})}; },
+      read: (sc) => ({voxel: sc.voxel || '', view: sc.view || 'front', move: sc.move || 'stay', size: sc.size || 'medium', look: sc.look || {}, caption: sc.caption || ''})},
     puppet: {label: 'Puppet (a character you play with the keys)', fields: [['character', 'Which character', 'character'], ['colors', 'Colors (just in this picture; every pose follows)', 'colors', 'character'], ['item', 'The item it points to (P)', 'item'],
       ['size', 'Size', 'select', ['medium', 'small', 'big']], ['start', 'Stands at first', 'select', ['center', 'left', 'right']]],
       make: (v) => { if (!v.character) throw new Error('Draw a character first: <name>-idle and <name>-walk on the Pixel art tab');
@@ -749,6 +758,23 @@
             });
             vals[name] = input;
             return h('label', {class: 'tl-field'}, [h('span', {text: label}), input, note]);
+          }
+          else if (type === 'look') {
+            // His marker colors (video/voxel-draw.js LOOK_MARK) picked for this picture: a few ready colors, or any.
+            const holder = {value: {...(value || {})}};
+            vals[name] = holder;
+            const rows = Object.entries(LOOKS).map(([part, [title, presets]]) => {
+              const any = h('input', {type: 'color', value: holder.value[part] || '#888888', title: 'Any color'});
+              const chips = h('span', {style: {display: 'inline-flex', flexWrap: 'wrap', gap: '4px'}});
+              const draw = () => chips.replaceChildren(
+                h('button', {type: 'button', class: 'small' + (holder.value[part] ? '' : ' primary'), text: 'As painted', onclick: () => { delete holder.value[part]; draw(); }}),
+                ...presets.map(([c, n]) => h('button', {type: 'button', title: n, 'aria-label': n, onclick: () => { holder.value[part] = c; any.value = c; draw(); },
+                  style: {width: '28px', height: '28px', borderRadius: '50%', background: c, border: holder.value[part] === c ? '3px solid var(--ink, #222)' : '1px solid #0003', padding: 0, cursor: 'pointer'}})));
+              any.addEventListener('input', () => { holder.value[part] = any.value; draw(); });
+              draw();
+              return h('div', {style: {display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap'}}, [h('b', {text: title, style: {minWidth: '70px'}}), chips, any]);
+            });
+            return h('div', {class: 'tl-field'}, [h('span', {text: label}), ...rows]);
           }
           else if (type === 'colors') {
             // The picked drawing's colors, changed for this picture only (studio/colors.js).

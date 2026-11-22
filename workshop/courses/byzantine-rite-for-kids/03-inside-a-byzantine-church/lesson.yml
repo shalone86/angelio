@@ -22,7 +22,7 @@ sources:
     url: https://www.vatican.va/archive/ENG0015/__P3C.HTM
 
 intro:
-  # Shalone writes the start of the intro before this; it always ends with these words (hers).
+  # Shalone writes the start of the intro before this; it always ends with these words (his).
   text: >-
     What does it look like inside Byzantine Churches? Do they look just like
     Roman Cathothic churches and why do they take communion with a spoon?
@@ -200,7 +200,7 @@ points:
         dignity."
 
 outro:
-  # Shalone writes the start of the outro before this; it always ends with these words (hers).
+  # Shalone writes the start of the outro before this; it always ends with these words (his).
   text: >-
     In a nutshell, Byzantine Churches have a wall of icons called an
     iconostasis, with royal or Holy doors in the middle. They take communion

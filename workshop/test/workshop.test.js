@@ -36,3 +36,13 @@ test("a whole lesson goes into the Watch & Sing library and passes its rules", (
   const lib = { courses: [{ id: "c", title: "C", items: [w.id] }], albums: [], songs: [], lessons: [w] };
   assert.deepEqual(validateLibrary(lib).errors, []);
 });
+
+import {withLook, LOOK_MARK} from '../video/voxel-draw.js';
+test('a voxel picture\'s look swaps only his marker colors', () => {
+  const art = {kind: 'voxel', fps: 4, size: [1, 1, 1], palette: [null, '#255359', '#FAD689', '#0b346e', '#ff77a8', '#24936e'], frames: []};
+  const out = withLook(art, {hair: '#1b1410', skin: '#B97F55', chasuble: '#6b3fa0'});
+  assert.deepEqual(out.palette, [null, '#1b1410', '#b97f55', '#0b346e', '#6b3fa0', '#24936e']); // eyes not picked: as painted
+  assert.equal(withLook(art, undefined), art);
+  assert.equal(withLook(art, {hair: 'red'}).palette[1], '#255359'); // only real colors
+  assert.equal(LOOK_MARK.hair, '#255359');
+});

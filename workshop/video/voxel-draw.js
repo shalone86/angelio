@@ -6,6 +6,16 @@
 // art: {kind: 'voxel', fps, size: [x, y, z], palette: [null, '#rrggbb', …], frames: [[[x, y, z, color], …], …]}
 // (MagicaVoxel's numbers: z is up and the model's front looks toward -y, at the viewer.)
 
+// His marker colors (Nov 2026, the same as Candle Rack's looks.js): he paints every character's hair, eyes and skin, and a
+// priest's chasuble, in these, and picks the real colors per picture (a voxel scene's `look`, the Timing tab form).
+export const LOOK_MARK = {hair: '#255359', eyes: '#0b346e', skin: '#fad689', chasuble: '#ff77a8'};
+/** The model with his marker colors swapped for this picture's `look` ({hair, eyes, skin, chasuble}; missing ones stay as painted). */
+export function withLook(art, look) {
+  if (!art || !look || !Object.values(look).some(Boolean)) return art;
+  const swap = Object.fromEntries(Object.entries(LOOK_MARK).filter(([k]) => /^#[0-9a-f]{6}$/i.test(look[k] ?? '')).map(([k, m]) => [m, look[k].toLowerCase()]));
+  return {...art, palette: art.palette.map((c) => (c && swap[c.toLowerCase()]) || c)};
+}
+
 /** Which way they face (degrees; turning toward the right of the screen is positive). */
 export const VIEWS = {front: 0, 'front-right': 35, right: 90, 'back-right': 145, back: 180, 'back-left': -145, left: -90, 'front-left': -35};
 export const VIEW_NAMES = {front: 'Facing you', 'front-right': 'Turned a little to the right', right: 'Side, looking right', 'back-right': 'Turned away, to the right',
