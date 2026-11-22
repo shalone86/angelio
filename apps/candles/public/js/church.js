@@ -302,7 +302,8 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
   const E = (n) => (BYZ ? [`east-${n}`] : [n]);
   const PH = SP.priestHome, SH = SP.serverHome;
   const priest = actor(BYZ
-    ? { idle: "east-priest-idle", walk: ["east-priest-walk-fast", "east-priest-walk"], slow: ["east-priest-phelonion-walk", "east-priest-walk"], vested: ["east-priest-phelonion-idle", "east-priest-idle"] }
+    ? { idle: "east-priest-idle", walk: ["east-priest-walk-fast", "east-priest-walk"], slow: ["east-priest-phelonion-walk", "east-priest-walk"], vested: ["east-priest-phelonion-idle", "east-priest-idle"],
+        cense: ["east-priest-cense", "east-priest-phelonion-walk"] }
     : { idle: "priest-idle", walk: "priest-walk-fast", slow: ["priest-mass-walk", "priest-walk-slow"], vested: ["priest-mass-idle", "priest-idle"] },
     "#1d1b22", { x: PH.x, z: PH.z, turn: PH.turn });
   // the priest and the server can be tapped to help: a big invisible tap area on each, and a gold ring at their feet
@@ -502,7 +503,7 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
       return true;
     },
     /** The entrance: Roman, the procession up the aisle (the cross, two candles, the priest in his vestments).
-     * Byzantine, the royal doors open, the servers come out with candles and the priest stands in the doors.
+     * Byzantine, the royal doors open, the servers come out with candles and the priest comes out of the royal doors censing.
      * Everyone ends on his spots (SPOTS: end…). */
     procession: async () => {
       const A = LAYOUT.aisle, E = SP;
@@ -511,12 +512,13 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
       server2.g.visible = true; server.busy = priest.busy = true;
       if (BYZ) {
         doorsOpen = true;
-        server.place(-8.6, -10.5, 0, "candle"); server2.place(8.6, -10.5, 0, "candle"); priest.place(E.priestStart.x, E.priestStart.z, E.priestStart.turn, "slow");
+        server.place(-8.6, -10.5, 0, "candle"); server2.place(8.6, -10.5, 0, "candle"); priest.place(E.priestStart.x, E.priestStart.z, E.priestStart.turn, "cense");
         await new Promise((r) => setTimeout(r, 700));
         await Promise.all([
           server.walkTo(-8.6, E.endCandleL.z, "candle", 3).then(() => server.walkTo(E.endCandleL.x, E.endCandleL.z, "candle", 3)).then(settle(server, E.endCandleL, "candleIdle")),
           server2.walkTo(8.6, E.endCandleR.z, "candle", 3).then(() => server2.walkTo(E.endCandleR.x, E.endCandleR.z, "candle", 3)).then(settle(server2, E.endCandleR, "candleIdle")),
-          new Promise((r) => setTimeout(r, 1200)).then(() => priest.walkTo(E.endPriest.x, E.endPriest.z, "slow", 2.4)).then(settle(priest, E.endPriest, "vested")),
+          // the priest comes out of the royal doors censing, and keeps censing as the Liturgy begins
+          new Promise((r) => setTimeout(r, 1200)).then(() => priest.walkTo(E.endPriest.x, E.endPriest.z, "cense", 2)).then(settle(priest, E.endPriest, "cense")),
         ]);
         return;
       }
@@ -540,7 +542,7 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
       if (!end) { server2.g.visible = server3.g.visible = false; priest.place(PH.x, PH.z, PH.turn); server.place(SH.x, SH.z, SH.turn); return; }
       const E = SP, at = (a, k, pose) => a.place(E[k].x, E[k].z, E[k].turn ?? 0, pose);
       server2.g.visible = true; server3.g.visible = !BYZ;
-      at(priest, "endPriest", "vested");
+      at(priest, "endPriest", BYZ ? "cense" : "vested");
       if (BYZ) { at(server, "endCandleL", "candleIdle"); at(server2, "endCandleR", "candleIdle"); }
       else { at(server, "endCross", "crossIdle"); at(server2, "endCandleL", "candleIdle"); at(server3, "endCandleR", "candleIdle"); }
     },
