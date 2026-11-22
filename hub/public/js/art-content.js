@@ -72,6 +72,7 @@ export const CHECKLISTS = [
       p("man-walk", "Man, walking"), p("man-kneel", "Man, kneeling to pray"),
       p("woman-walk", "Woman, walking"), p("woman-kneel", "Woman, kneeling to pray"),
       p("child-walk", "Child, walking"), p("child-kneel", "Child, kneeling to pray"),
+      p("child-girl-walk", "Child (girl), walking"), p("child-girl-kneel", "Child (girl), kneeling to pray"),
       p("grandparent-walk", "Grandparent, walking"), p("grandparent-kneel", "Grandparent, kneeling to pray"),
       p("east-priest-idle", "Eastern priest, standing"),
       p("east-priest-walk", "Eastern priest, walking"), p("east-priest-cense", "Eastern priest, censing"),
