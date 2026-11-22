@@ -216,6 +216,20 @@ building (the church's candle rack and doors, the chapel at night, the choir lof
      you split the family, the fewer points you get.
    - **Ramp:** Families of different sizes, the clock until Mass starts, late arrivals, and packed Christmas and Easter
      Masses.
+8. **Monastery Porter** (idea, Nov 22, 2026, from another chat; not started). You keep the monastery door, like St.
+   Benedict's porter (Rule ch. 66: he answers every knock "Thanks be to God") and the porter saints André Bessette and
+   Conrad of Parzham. Same round as Candle Rack and Mass Usher (about two minutes, voxel, stages with the two-star unlock).
+   - **Loop:** people line up outside (and monks inside, going out). Tap a person: they say who they are out loud, with a
+     picture (an appointment slip, a tool bag, a basket of bread). Then two big buttons: 👋 Welcome or 🙋 "Come back
+     later" (kind, never "go away"). No tap-twice-to-dismiss: little kids double-tap by accident. A regular's special
+     greeting just plays when you welcome them.
+   - **The door is the tension:** tap it open and whoever is at it walks in, so check first; left open, wind and rain blow
+     in (a candle flickers, the hall gets cold, points drop).
+   - **Not villains:** a goat, a peddler with too many pots, a lost tourist (point them to the guesthouse). Sending
+     someone the right way still welcomes them, in keeping with "receive every guest as Christ".
+   - **Stages:** Sunday Mass (almost everyone comes in), Guest Day (only those expected, the rest to the guesthouse),
+     Night / Great Silence (only the monks and someone who truly needs help; whisper voices). Maybe an endless one.
+   - Art: the gate and porter's lodge, a porter monk, the guest types.
 7. **Coloring.** Tap to fill his drawings (no brushes or layers). The one game with no score; done is a set of pages plus
    seasonal pages. The picture saves to the device only.
 
