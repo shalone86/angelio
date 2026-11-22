@@ -39,6 +39,7 @@ const route = createRouter([
 const progressId = (st) => st.progress ?? `rack-${st.id}`;
 const bestKey = (st) => (st.id === "sunday" ? "best" : `best-${st.id}`);
 const starsOf = (st) => S.progress(progressId(st)).stars;
+const gamesLink = `<p class="center games-link"><a class="btn" href="https://angelio.org/games/">🎮 All the Angelio games</a></p>`;
 
 function viewHome() {
   app.innerHTML = `
@@ -58,7 +59,8 @@ function viewHome() {
               <span class="muted">Get two stars in ${esc(STAGES[i - 1].name)} to open it.</span></div>`;
       }).join("")}
     </section>
-    ${stickerBook()}`;
+    ${stickerBook()}
+    ${gamesLink}`;
   speak(`${season.say} Mass starts soon. Can you get the church ready? Pick a church.`);
 }
 
@@ -306,6 +308,8 @@ function viewPlay(stageId) {
       const fin = app.querySelector(".finish h1");
       fin?.insertAdjacentHTML("afterend", `<p class="final-score">You scored <b>${g.score}</b>${newBest ? " · a new best!" : ` · your best: ${best}`}</p>
         <p class="muted">${stage.endless ? `kept watch ${Math.floor(g.t / 60)}:${String(Math.floor(g.t % 60)).padStart(2, "0")} · ` : ""}${g.lit + g.justInTime} candles lit · ${g.justInTime} just in time · best combo ${g.bestCombo}${stage.endless ? "" : ` · ${g.ready} burning when Mass began`}${g.helperLit ? ` · ${g.helperLit} lit by the priest and server` : ""}${stars < 3 ? ` · ${stage.star3} for three stars` : ""}${g.tapers ? ` · taper lit ${g.tapers} times` : ""}</p>`);
+      // the finish screen's "All Angelio games" goes to the games page here, not the home page
+      const all = app.querySelector(".finish .finish-links a[href=\"https://angelio.org/\"]"); if (all) all.href = "https://angelio.org/games/";
     }
   })();
 

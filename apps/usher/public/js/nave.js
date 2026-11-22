@@ -11,14 +11,16 @@ import { ROWS, SEATS, pewOf } from "./usher.js";
 const ART = /(^|\.)angelio\.org$/.test(location.hostname) ? "" : "https://angelio.org";
 
 // Where things stand (1 unit = one voxel; his people are 8 tall).
-export const SEAT_W = 5.4, AISLE = 3.6, ROW_GAP = 7, FRONT_Z = -32, DOORS_Z = 18;
+export const SEAT_W = 5.4, AISLE = 3.6, ROW_GAP = 9, FRONT_Z = -28, DOORS_Z = 22;
 const KINDS = ["man", "woman", "grandfather", "grandmother", "child", "child-girl"];
 const QUIET = ["#6b6b6b", "#7a6a58", "#5a5a66", "#8a8478", "#4f5a52", "#6a5a5a"];
 const GIRLISH = new Set(["woman", "grandmother", "child-girl"]);
 const SIZE = { man: 1.12, woman: 1.1, grandfather: 1.08, grandmother: 1.06, child: 0.95, "child-girl": 0.95 };
 
 /** Every model the game asks for (whichever exist are used; his boy and girl stand in for the rest). */
-export const MODELS = ["usher-idle", "usher-walk", "usher-point", "server-idle", "server-walk", "priest-idle", "priest-mass-idle",
+export const MODELS = ["usher-idle", "usher-walk", "usher-point", "server-idle", "server-walk", "priest-idle", "priest-mass-idle", "priest-mass-walk", "priest-kneel",
+  "server-cross-walk", "server-cross-idle", "server-candle-walk", "server-candle-idle",
+  "east-priest-cense", "east-priest-phelonion-idle", "east-priest-phelonion-walk", "east-server-ripidion-walk", "east-server-ripidion-idle",
   ...KINDS.flatMap((k) => [`${k}-walk`, `${k}-sit`, `${k}-kneel`, `${k}-idle`])];
 
 export async function loadModels(names = MODELS) {
@@ -42,11 +44,12 @@ export function seatSpot(pew, s) {
 /** Where you stand to seat a pew: in the aisle, at its end. */
 export const pewEnd = (pew) => { const { row, side } = pewOf(pew); return { x: side === 0 ? -2 : 2, z: FRONT_Z + row * ROW_GAP + 1.5 }; };
 
-export function createNave(canvas, { models = {} }) {
+export function createNave(canvas, { models = {}, rite = "roman", night = false }) {
+  const BYZ = rite === "byzantine";
   const THREE = window.THREE;
   const R = new THREE.WebGLRenderer({ canvas, antialias: true });
   R.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
-  const scene = new THREE.Scene(); scene.background = new THREE.Color("#2a2036");
+  const scene = new THREE.Scene(); scene.background = new THREE.Color(night ? "#0b0a1a" : "#2a2036");
   const cam = new THREE.PerspectiveCamera(40, 1, 0.5, 400);
   const box = new THREE.BoxGeometry(1, 1, 1);
   const mats = new Map();
@@ -55,14 +58,32 @@ export function createNave(canvas, { models = {} }) {
   let time = 0;
 
   // ── light and the room (stand-ins until his church pieces) ──
-  scene.add(new THREE.HemisphereLight("#fff4e0", "#4a3a2a", 0.85));
-  const sun = new THREE.DirectionalLight("#ffe6c0", 0.45); sun.position.set(-30, 50, 30); scene.add(sun);
+  scene.add(new THREE.HemisphereLight("#fff4e0", "#4a3a2a", night ? 0.38 : 0.85));
+  const sun = new THREE.DirectionalLight("#ffe6c0", night ? 0.12 : 0.45); sun.position.set(-30, 50, 30); scene.add(sun);
   const W = AISLE + SEAT_W * SEATS + 4, backZ = FRONT_Z + ROWS * ROW_GAP;
   block(W * 2, 0.5, DOORS_Z - FRONT_Z + 20, 0, -0.5, (DOORS_Z + FRONT_Z - 20) / 2, mat("#cdbb98"));            // floor
   block(5.2, 0.12, DOORS_Z - FRONT_Z + 14, 0, 0, (DOORS_Z + FRONT_Z - 14) / 2, mat("#a8323a"));                  // aisle carpet
   block(W * 2, 0.6, 14, 0, 0, FRONT_Z - 12, mat("#b9a886"));                                                      // sanctuary step
   block(14, 5, 5, 0, 0.6, FRONT_Z - 14, mat("#f1ead8")); block(10, 3, 0.3, 0, 1.6, FRONT_Z - 11.4, mat("#2f8a4c")); // altar and its cloth
   block(0.6, 9, 0.6, 0, 5.6, FRONT_Z - 16, mat("#c9971f")); block(4, 0.6, 0.6, 0, 12, FRONT_Z - 16, mat("#c9971f")); // cross
+  // Adoration at night: the monstrance on the altar, glowing (a stand-in until his model)
+  if (night) {
+    const gold = mat("#e0b33e"), M = new THREE.Group(); M.position.set(0, 5.6, FRONT_Z - 14); scene.add(M);
+    block(2.4, 0.5, 1.6, 0, 0, 0, gold, M); block(0.5, 2.4, 0.5, 0, 0.5, 0, gold, M);
+    for (let i = 0; i < 16; i++) { const ray = new THREE.Mesh(box, gold), a = (i / 16) * Math.PI * 2, len = i % 2 ? 1.3 : 2; ray.scale.set(0.28, len, 0.25); ray.position.set(Math.sin(a) * (1.25 + len / 2), 4.5 + Math.cos(a) * (1.25 + len / 2), 0); ray.rotation.z = -a; M.add(ray); }
+    const host = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 0.85, 0.12, 24), new THREE.MeshBasicMaterial({ color: "#fffaf0" })); host.rotation.x = Math.PI / 2; host.position.set(0, 4.5, 0.1); M.add(host);
+    const l = new THREE.PointLight("#ffe6a8", 1.1, 40, 1.4); l.position.set(0, 5, 3); M.add(l);
+  }
+  // a Byzantine church: the iconostasis across the front, its royal doors in the middle (they open when the Liturgy begins)
+  const royal = [];
+  if (BYZ) {
+    const Z = FRONT_Z - 8, gold = mat("#c99a3c");
+    block(30, 1.2, 0.8, 0, 13, Z, gold); block(30, 1, 0.8, 0, 0.6, Z, gold);
+    for (const x of [-14.6, -9, -3, 3, 9, 14.6]) block(0.8, 12.4, 0.9, x, 0.6, Z, gold);
+    for (const [x, robe] of [[-6, "#2e4f9a"], [6, "#8a2c2c"], [-11.8, "#5e7a3a"], [11.8, "#7a5a2a"]]) { block(4.2, 7, 0.4, x, 3, Z + 0.3, mat("#d9b45a")); block(2.4, 4, 0.3, x, 3.5, Z + 0.55, mat(robe)); block(1.2, 1.2, 0.3, x, 7.8, Z + 0.6, mat("#e9c4a0")); }
+    for (const side of [-1, 1]) { const pv = new THREE.Group(); pv.position.set(side * 3, 0.6, Z + 0.1); scene.add(pv); block(3, 9, 0.3, -side * 1.5, 0, 0, gold, pv); royal.push({ pivot: pv, side, open: 0 }); }
+  }
+  let doorsOpen = false;
   block(W * 2, 30, 1, 0, 0, FRONT_Z - 19, mat("#e6dcc6"));                                                        // back wall
   for (const sx of [-1, 1]) block(1, 30, DOORS_Z - FRONT_Z + 20, sx * W, 0, (DOORS_Z + FRONT_Z - 20) / 2, mat("#ded3bd"));
   for (const sx of [-1, 1]) for (let i = 0; i < 4; i++) block(0.4, 8, 3, sx * (W - 0.6), 8, FRONT_Z + 4 + i * 12, mat(["#3f7fd1", "#d13f4f", "#e8c24a", "#4fa36b"][(i + (sx > 0 ? 2 : 0)) % 4]));
@@ -138,11 +159,17 @@ export function createNave(canvas, { models = {} }) {
   const usher = actor({ idle: ["usher-idle", "server-idle"], walk: ["usher-walk", "server-walk"], point: ["usher-point", "usher-idle", "server-idle"] }, randomLook(), 1.25, "#2a3a5a");
   const HOME = { x: 0, z: DOORS_Z - 3 };
   usher.place(HOME.x, HOME.z, "idle");
-  // the priest waits by the altar
-  const priest = actor({ idle: ["priest-mass-idle", "priest-idle"] }, randomLook(), 1.25, "#1d1b22"); priest.place(-9, FRONT_Z - 12, "idle", 0);
+  // Nobody up front while families come in; when Mass begins, the priest and servers process up the aisle (a Byzantine
+  // church: out of the royal doors, the priest censing). At Adoration, the priest kneels before the altar the whole night.
+  const priest = actor(BYZ ? { idle: ["east-priest-phelonion-idle", "east-priest-cense"], walk: ["east-priest-cense", "east-priest-phelonion-walk"], kneel: ["priest-kneel", "priest-idle"] }
+    : { idle: ["priest-mass-idle", "priest-idle"], walk: ["priest-mass-walk", "priest-mass-idle", "priest-idle"], kneel: ["priest-kneel", "priest-idle"] }, randomLook(), 1.25, "#1d1b22");
+  const servers = [0, 1, 2].map((i) => actor(BYZ ? { idle: ["east-server-ripidion-idle"], walk: ["east-server-ripidion-walk"] }
+    : i === 0 ? { idle: ["server-cross-idle", "server-idle"], walk: ["server-cross-walk", "server-walk"] } : { idle: ["server-candle-idle", "server-idle"], walk: ["server-candle-walk", "server-walk"] }, randomLook(), 1.05, "#b02a2a"));
+  for (const a of [priest, ...servers]) a.g.visible = false;
+  if (night) { priest.g.visible = true; priest.place(0, FRONT_Z - 9, "kneel", Math.PI); priest.g.rotation.y = Math.PI; }
 
   // ── camera: the whole nave fits between the top bar and the speech bubble ──
-  const KEEP = [[-W, 0, backZ + 2], [W, 0, backZ + 2], [-W, 0, FRONT_Z - 2], [W, 0, FRONT_Z - 2], [0, 13, FRONT_Z - 16], [0, 0, DOORS_Z + 2]];
+  const KEEP = [[-W, 0, backZ], [W, 0, backZ], [-W, 0, FRONT_Z - 2], [W, 0, FRONT_Z - 2], [0, 13, FRONT_Z - 16], [0, 0, DOORS_Z + 1]];
   let pad = { top: 60, bottom: 80 };
   function resize(newPad) {
     if (newPad) pad = newPad;
@@ -150,9 +177,14 @@ export function createNave(canvas, { models = {} }) {
     R.setSize(w, h, false); cam.aspect = w / h; cam.clearViewOffset();
     const top = 1 - (2 * pad.top) / h, bottom = -1 + (2 * pad.bottom) / h, look = new THREE.Vector3(0, 0, -8), v = new THREE.Vector3();
     for (let d = 20; d < 260; d += 1) {
-      cam.position.set(0, d * 0.78, 6 + d * 0.62); cam.lookAt(look); cam.updateProjectionMatrix(); cam.updateMatrixWorld();
+      // looking down steeply: the rows spread out, easier to tell apart
+      cam.position.set(0, d * 0.9, 4 + d * 0.42); cam.lookAt(look); cam.updateProjectionMatrix(); cam.updateMatrixWorld();
       let ok = true, lo = Infinity, hi = -Infinity;
-      for (const p of KEEP) { v.set(...p).project(cam); if (Math.abs(v.x) > 0.97) ok = false; lo = Math.min(lo, v.y); hi = Math.max(hi, v.y); }
+      for (const p of KEEP) {
+        // a point behind the camera "projects" to nonsense: that view can't be the one
+        if (v.set(...p).applyMatrix4(cam.matrixWorldInverse).z > -1) { ok = false; break; }
+        v.set(...p).project(cam); if (Math.abs(v.x) > 0.97) ok = false; lo = Math.min(lo, v.y); hi = Math.max(hi, v.y);
+      }
       const shift = (top + bottom) / 2 - (hi + lo) / 2;
       if (ok && hi - lo <= top - bottom) { cam.setViewOffset(w, h, 0, (shift * h) / 2, w, h); cam.updateProjectionMatrix(); return; }
     }
@@ -196,6 +228,34 @@ export function createNave(canvas, { models = {} }) {
     usher.pose("point"); usher.g.rotation.y = end.x < 0 ? -Math.PI / 2 : Math.PI / 2;
     walking.forEach((a) => a?.pose("idle"));
   }
+  /** Someone finished praying (Adoration): they get up, walk down the aisle and out the doors. */
+  function personLeave(pid) {
+    const a = seated.get(pid);
+    if (!a) return;
+    seated.delete(pid);
+    const x = a.g.position.x, z = a.g.position.z;
+    a.goTo(x < 0 ? -1.4 : 1.4, z + 2.5, 10).then(() => a.goTo(x < 0 ? -1.4 : 1.4, DOORS_Z + 6, 12)).then(() => { scene.remove(a.g); actors.splice(actors.indexOf(a), 1); });
+  }
+  /** Mass begins: you step aside, and the priest and servers process up the aisle (or out of the royal doors). */
+  async function procession() {
+    walking.forEach((a) => a && (a.g.visible = false));
+    await usher.goTo(-5, HOME.z + 1, 20); usher.pose("idle"); usher.g.rotation.y = Math.PI / 2;
+    for (const a of [priest, ...servers]) a.g.visible = true;
+    const altar = FRONT_Z - 9;
+    if (BYZ) {
+      doorsOpen = true;
+      servers[0].g.visible = false;
+      servers[1].place(-6, FRONT_Z - 10, "walk", 0); servers[2].place(6, FRONT_Z - 10, "walk", 0); priest.place(0, FRONT_Z - 11, "walk", 0);
+      // the priest censes the whole church: out of the royal doors, down the aisle past every pew, and back
+      const back = FRONT_Z + ROWS * ROW_GAP;
+      await Promise.all([servers[1].goTo(-4, altar + 1, 4, "walk", "idle"), servers[2].goTo(4, altar + 1, 4, "walk", "idle"),
+        priest.goTo(0, back, 8, "walk", "walk").then(() => priest.goTo(0, altar + 1.5, 8, "walk", "walk"))]);
+    } else {
+      servers[0].place(0, DOORS_Z + 4, "walk"); servers[1].place(-2.2, DOORS_Z + 8, "walk"); servers[2].place(2.2, DOORS_Z + 8, "walk"); priest.place(0, DOORS_Z + 13, "walk");
+      await Promise.all([servers[0].goTo(0, altar + 0.5, 6, "walk", "idle"), servers[1].goTo(-4, altar + 1, 6, "walk", "idle"), servers[2].goTo(4, altar + 1, 6, "walk", "idle"), priest.goTo(0, altar + 3, 5.5, "walk", "idle")]);
+    }
+    for (const a of [priest, ...servers]) a.g.rotation.y = 0;
+  }
   async function walkHome() { await usher.goTo(0, usher.g.position.z, 20); await usher.goTo(HOME.x, HOME.z, 20); usher.pose("idle"); usher.g.rotation.y = Math.PI; }
 
   // ── each frame ──
@@ -211,6 +271,7 @@ export function createNave(canvas, { models = {} }) {
       const pm = a.poses[a.now]; if (pm) animate(pm, time);
     }
     pewGlow.forEach((m) => { m.material.opacity = m.userData.on ? 0.35 + 0.2 * Math.sin(time * 5) : 0; });
+    for (const d of royal) { d.open += ((doorsOpen ? 1 : 0) - d.open) * Math.min(1, dt * 2.5); d.pivot.rotation.y = d.side * d.open * 1.6; }
     R.render(scene, cam);
   }
   /** Which pew is under a point on the screen, or null. */
@@ -229,6 +290,8 @@ export function createNave(canvas, { models = {} }) {
   /** The people who won't scoot, and where their heads are on screen (for their 📌). */
   const stayers = () => [...seated.entries()].filter(([, a]) => a.stay).map(([pid, a]) => ({ pid, ...screenOf(a.g.position.x, 8 * a.g.scale.y, a.g.position.z) }));
 
-  return { update, resize, pick, sync, family, walkTo, walkHome, screenOf, stayers, usherAt: () => screenOf(usher.g.position.x, 11, usher.g.position.z),
+  /** Where each pew's button goes on screen: just beyond its wall end, at seat height. */
+  const pewButton = (pew) => { const s = seatSpot(pew, SEATS - 1); return screenOf(s.x + (s.x < 0 ? -3.6 : 3.6), 2.5, s.z); };
+  return { update, resize, pick, sync, family, walkTo, walkHome, personLeave, procession, pewButton, screenOf, stayers, usherAt: () => screenOf(usher.g.position.x, 11, usher.g.position.z),
     pewScreen: (pew) => { const s = seatSpot(pew, 2); return screenOf(s.x, 6, s.z); }, hasModels: () => Object.keys(models), dispose: () => { R.dispose(); R.forceContextLoss?.(); } };
 }

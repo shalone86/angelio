@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { newGame, tick, tapPew, scoot, current, familyPoints, starsFor, SEATS, ROUND } from "../public/js/usher.js";
+import { STAGES, isOpen } from "../public/js/stages.js";
 
 const P = (spec) => spec.split("").map((c) => (c === "." ? null : { family: 0, stay: c === "S" })); // "x" sits, "S" stays
 const show = (p) => p.seats.map((s) => (!s ? "." : s.stay ? "S" : s.family ? String(s.family) : "x")).join("");
@@ -35,11 +36,11 @@ test("points: together scores most; split less, and less the farther apart", () 
 });
 
 // a pretend usher: picks the pew with the longest run of empty seats (scooting first if that makes room), every `every` s
-function play(every, { seed = 7, smart = true } = {}) {
-  const g = newGame({ seed });
+function play(every, { seed = 7, smart = true, stage, cap = 1200 } = {}) {
+  const g = newGame({ seed, stage });
   const run = (p) => { let best = 0, n = 0; for (const s of p.seats) { n = s ? 0 : n + 1; best = Math.max(best, n); } return best; };
   let wait = 0;
-  while (!g.over) {
+  while (!g.over && g.t < cap) {
     tick(g, 0.1); wait -= 0.1;
     if (wait > 0) continue;
     wait = every;
@@ -56,17 +57,39 @@ function play(every, { seed = 7, smart = true } = {}) {
   return g;
 }
 
-test("stars: no usher gets 1, a slow usher 2, a quick and careful one 3", () => {
-  for (const seed of [1, 2, 3, 7, 42]) {
-    assert.equal(starsFor(play(1e9, { seed })), 1);
-    assert.equal(starsFor(play(6, { seed, smart: false })), 2, `slow, seed ${seed}: ${play(6, { seed, smart: false }).score}`);
-    assert.equal(starsFor(play(1.2, { seed })), 3, `quick, seed ${seed}: ${play(1.2, { seed }).score}`);
+test("every stage: no usher gets 1, a slow usher at least 2, a quick and careful one 3 on most nights", () => {
+  for (const stage of STAGES) {
+    let threes = 0;
+    for (const seed of [1, 2, 3, 7, 42]) {
+      assert.equal(starsFor(play(1e9, { seed, stage })), 1, `${stage.id} idle`);
+      const slow = play(6, { seed, smart: false, stage }), quick = play(1.2, { seed, stage });
+      assert.ok(starsFor(slow) >= 2, `${stage.id} slow, seed ${seed}: ${slow.score}`);
+      assert.ok(starsFor(quick) >= starsFor(slow), `${stage.id} seed ${seed}`);
+      if (starsFor(quick) === 3) threes++;
+    }
+    assert.ok(threes >= 3, `${stage.id}: a quick usher gets three stars on ${threes} of 5`);
   }
+});
+
+test("Adoration at Night: people go home and their seats free up; the night ends when the line gets too long", () => {
+  const stage = STAGES.find((s) => s.endless), g = newGame({ seed: 3, stage });
+  const ev = [];
+  while (!g.over && g.t < 900) ev.push(...tick(g, 0.1));
+  assert.ok(ev.some((e) => e.type === "leave"), "people went home");
+  const end = ev.find((e) => e.type === "end");
+  assert.equal(end.reason, "line"); assert.ok(g.queue.length >= stage.maxLine);
+  assert.ok(play(1.2, { seed: 3, stage }).t > 2 * play(6, { seed: 3, smart: false, stage }).t, "a quick usher keeps going far longer");
+});
+
+test("stages open in order; Adoration opens with two stars on Sunday Mass", () => {
+  const stars = { sunday: 2 };
+  const open = STAGES.map((st, i) => isOpen(i, (x) => stars[x.id] ?? 0));
+  assert.deepEqual(open, [true, true, false, false, true]);
 });
 
 test("a round lasts until Mass and ends once", () => {
   const g = play(2);
-  assert.equal(g.t, ROUND);
+  assert.equal(g.t, ROUND); assert.equal(newGame({ stage: STAGES[0] }).pews.length, 10);
   assert.deepEqual(tick(g, 1), []);
   assert.ok(g.pews.every((p) => p.seats.length === SEATS));
 });

@@ -137,12 +137,14 @@ export const CHECKLISTS = [
     id: "mass-usher-church", title: "Mass Usher: the church", game: "Mass Usher",
     note: "A nave seen from the back: rows of pews on each side of the aisle, the altar far away, the front doors close to you. The altar can be Candle Rack's.",
     items: [
-      { slug: "usher-pew", label: "Pew", size: [40, 16], note: "Five seats long, seen from behind (the backrest toward you). The game lines up seven rows on each side." },
+      { slug: "usher-pew", label: "Pew", size: [40, 16], note: "Five seats long, seen from behind (the backrest toward you). The game lines up five rows on each side." },
       { slug: "usher-pew-end", label: "Pew end", size: [8, 16], note: "The carved end by the aisle (optional: the plain pew works alone)." },
       { slug: "usher-front-doors", label: "Front doors", size: [32, 32], note: "Double doors to the narthex. Frame 1 shut, frame 2 open (a family comes in)." },
       { slug: "usher-holy-water", label: "Holy water font", size: [8, 16], note: "By the doors." },
       { slug: "usher-aisle-runner", label: "Aisle carpet", size: [8, 16], note: "Repeats up the aisle." },
       { slug: "usher-hymnal", label: "Hymnal", size: [8, 8], note: "In the pew racks; a nice touch." },
+      p("priest-kneel", "Priest, kneeling", "Adoration at Night: he kneels before the monstrance at the center of the altar (from behind). Until then he stands."),
+      p("monstrance", "Monstrance", "On the altar for Adoration at Night (Candle Rack's chapel can use it too)."),
     ],
   },
 ];

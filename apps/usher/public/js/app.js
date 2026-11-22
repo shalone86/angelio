@@ -1,9 +1,10 @@
 // Mass Usher: seat the families arriving before Mass (his notes: ROADMAP.md, "Mass Usher"). A demo: the church is
-// voxel (nave.js) with his models where they exist and stand-ins for the rest. The rules are in usher.js.
+// voxel (nave.js) with his models where they exist and stand-ins for the rest. The rules are in usher.js, the stages
+// (Sunday Mass, the Divine Liturgy, Christmas, Pascha, and the endless Adoration at Night) in stages.js.
 //
-// Tap a pew: you walk the family there. Swipe along the pew: the people sitting there scoot down and make room
-// (someone with a 📌 likes their spot and won't move). Tap the pew again: the family sits. Anyone left over: tap
-// another pew. Then you walk back to the doors for the next family.
+// Tap a pew's button: you walk the family there. Swipe anywhere: the people in that pew scoot down and make room
+// (someone with a 📌 likes their spot and won't move); a swipe never picks a pew. Tap the button again: the family
+// sits. Anyone left over: another pew's button. Then you walk back to the doors for the next family.
 import * as S from "./kit/store.js";
 import { jingleOnce } from "./kit/jingle.js";
 S.init("usher:v1", { best: 0 });
@@ -15,32 +16,51 @@ import * as FX from "./kit/fx.js";
 import { showLesson } from "./kit/lesson.js";
 import { vary } from "./kit/vary.js";
 import { esc, say, showFinish, stickerBook, viewGrownups, installClickSounds, wireVoiceToggle } from "./kit/ui.js";
-import { newGame, tick, tapPew, scoot, current, starsFor, STAR3 } from "./usher.js";
+import { newGame, tick, tapPew, scoot, current, starsFor, ROWS } from "./usher.js";
+import { STAGES, stageById, isOpen } from "./stages.js";
 import { createNave, loadModels, MODELS } from "./nave.js";
 
 const app = document.getElementById("app");
+const GAMES = "https://angelio.org/games/"; // all the Angelio games (angelio.org/games/)
 const route = createRouter([
   [/^$/, viewHome],
-  [/^play$/, viewPlay],
+  [/^play(?:\/([a-z]+))?$/, viewPlay],
   [/^grownups$/, () => viewGrownups(app, { about: `<p><b>Mass Usher</b> is a little game about seating families before Mass.
-    Tap a pew to walk a family there, swipe along the pew so people scoot down and make room, and tap again to seat them.
-    Families seated together score the most; splitting a family scores less, and less the farther apart. It practices
-    counting, planning and making room for others. This is an early demo with simple pictures; the real church comes later.
-    Nothing is collected; the best score stays on this device.</p>` })],
+    Tap the button by a pew to walk a family there, swipe so people scoot down and make room, and tap again to seat them.
+    Families seated together score the most; splitting a family scores less, and less the farther apart. Two stars open
+    the next church: the Divine Liturgy, Christmas Midnight Mass (packed) and Pascha (busiest); Adoration at Night is
+    endless, people come and go, and it ends when the line at the doors gets too long. It practices counting, planning and
+    making room for others. An early demo: some people and parts of the church are stand-ins until they're drawn.
+    Nothing is collected; the best scores stay on this device.</p>` })],
 ], { before() { stop(); FX.clearFx(); document.body.classList.remove("in-game", "usher-game"); } });
 
+// each stage's stars and best score (Sunday Mass keeps the ones from before there were stages)
+const progressId = (st) => st.progress ?? `usher-${st.id}`;
+const bestKey = (st) => (st.id === "sunday" ? "best" : `best-${st.id}`);
+const starsOf = (st) => S.progress(progressId(st)).stars;
+const gamesLink = `<p class="center games-link"><a class="btn" href="${GAMES}">🎮 All the Angelio games</a></p>`;
+
 function viewHome() {
-  const best = S.settings().best || 0, p = S.progress("usher");
   app.innerHTML = `
     <section class="hero">
       <h1 class="title">Mass Usher</h1>
       <p class="lede">Families are coming to Mass! Find each family a pew, help people scoot down to make room, and seat families together.</p>
       <p class="demo-chip">🧪 Demo: some stand-ins for now</p>
-      <a class="btn big primary play-btn" href="#/play">⛪ Play</a>
-      ${best ? `<p class="muted">Your best: <b>${best}</b>${p.stars ? ` · ${"★".repeat(p.stars)}` : ""}</p>` : ""}
     </section>
-    ${stickerBook()}`;
-  speak("Families are coming to Mass! Can you find everyone a seat?");
+    <section class="stages">
+      ${STAGES.map((st, i) => {
+        const open = isOpen(i, starsOf), p = S.progress(progressId(st)), best = S.settings()[bestKey(st)] || 0;
+        return open
+          ? `<a class="stage card" href="#/play/${st.id}"><span class="stage-icon">${st.icon}</span><b>${esc(st.name)}</b>
+              <span class="muted">${esc(st.blurb)}</span>
+              <span class="stage-stars">${"★".repeat(p.stars)}${"☆".repeat(3 - p.stars)}${best ? ` · best ${best}` : ""}</span></a>`
+          : `<div class="stage card locked" aria-disabled="true"><span class="stage-icon">🔒</span><b>${esc(st.name)}</b>
+              <span class="muted">Get two stars in ${esc((st.opensAfter ? stageById(st.opensAfter) : STAGES[i - 1]).name)} to open it.</span></div>`;
+      }).join("")}
+    </section>
+    ${stickerBook()}
+    ${gamesLink}`;
+  speak("Families are coming to Mass! Can you find everyone a seat? Pick a church.");
 }
 
 // what to say: most lines once a round, never too close together
@@ -61,14 +81,19 @@ function talker(bubble) {
 const NUM = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight"];
 const dots = (fam, n = fam.size - fam.seated) => `<span class="fam" style="--c:${fam.color}">${"<i></i>".repeat(n)}</span>`;
 
-function viewPlay() {
+function viewPlay(stageId) {
+  // "Play" in the top bar (#/play, no stage): the church played last
+  const stage = stageById(stageId ?? S.settings().lastStage), si = STAGES.indexOf(stage);
+  if (!isOpen(si, starsOf)) { location.hash = "#/"; return; }
+  S.setSetting("lastStage", stage.id);
   document.body.classList.add("in-game", "usher-game");
   app.innerHTML = `
-    <section class="ush-play">
-      <canvas class="nave" aria-label="The church: tap a pew to walk the family there, swipe along it to make room"></canvas>
+    <section class="ush-play${stage.endless ? " night" : ""}">
+      <canvas class="nave" aria-label="The church: tap the button by a pew to walk the family there, swipe to make room"></canvas>
+      <div class="pew-btns" data-pew-btns></div>
       <div class="hud">
         <a class="icon-btn" href="#/" aria-label="Stop and go home">✕</a>
-        <div class="clock" aria-label="Time until Mass"><span class="clock-label">Mass in</span> <b data-clock>2:00</b></div>
+        <div class="clock" aria-label="${stage.endless ? "How long you've been ushering" : "Time until Mass"}"><span class="clock-label">${stage.endless ? "🌙 Night" : "Mass in"}</span> <b data-clock>${stage.endless ? "0:00" : "2:00"}</b></div>
         <div class="score"><b data-score>0</b></div>
         <button class="icon-btn toggle" data-voice title="Read aloud">🔊</button>
       </div>
@@ -80,18 +105,23 @@ function viewPlay() {
     </section>`;
   wireVoiceToggle(app.querySelector("[data-voice]"));
   const $ = (s) => app.querySelector(s);
-  const bubble = $(".ush-bubble"), popsEl = $(".pops"), pinsEl = $(".pins"), canvas = $("canvas.nave");
+  const bubble = $(".ush-bubble"), popsEl = $(".pops"), pinsEl = $(".pins"), canvas = $("canvas.nave"), btns = $("[data-pew-btns]");
   const talk = talker(bubble);
   let alive = true, raf = 0, walking = false, nave = null;
 
   (async () => {
-    if (!S.progress("usher").plays) {
+    if (!S.progress(progressId(stage)).plays && (si === 0 || stage.endless)) {
       const card = $(".ush-lesson"); card.hidden = false;
-      await showLesson(card, {
+      await showLesson(card, stage.endless ? {
+        emoji: stage.icon, title: stage.name,
+        rule: "Late at night, people come to pray and <b>go home</b> again. Keep seating them! If the <b>line at the doors</b> gets too long, the night is over.",
+        exampleHtml: `<p class="center ush-example">🌙 🧍🧍 ➜ 🪑🪑</p>`,
+        voice: "It's late at night, and Jesus is on the altar for adoration. People come to pray, and after a while they go home again, so seats free up. Keep seating everyone! If the line at the doors gets too long, the night is over.",
+      } : {
         emoji: "⛪", title: "Seat the families",
-        rule: "Tap a <b>pew</b> to walk a family there. <b>Swipe</b> along the pew so people scoot down. Tap the pew <b>again</b> to seat the family. Seat each family <b>together</b>!",
+        rule: "Tap the <b>button</b> by a pew to walk a family there. <b>Swipe</b> so the people in that pew scoot down. Tap the button <b>again</b> to seat the family. Seat each family <b>together</b>!",
         exampleHtml: `<p class="center ush-example">👨‍👩‍👧 ➜ 🪑🪑🪑</p>`,
-        voice: "Families are coming to Mass! Tap a pew to walk a family there. Swipe along the pew so the people sitting there scoot down and make room. Then tap the pew again to seat the family. Families like to sit together!",
+        voice: "Families are coming to Mass! Tap the button by a pew to walk a family there. Swipe so the people in that pew scoot down and make room. Then tap the button again to seat the family. Families like to sit together!",
       });
       card.hidden = true;
       if (!alive) return;
@@ -99,40 +129,30 @@ function viewPlay() {
     say(bubble, "Opening the church doors…", { speakText: false });
     const models = await loadModels(MODELS);
     if (!alive) return;
-    nave = createNave(canvas, { models });
+    nave = createNave(canvas, { models, rite: stage.rite, night: !!stage.endless });
     const fitView = () => nave?.resize({ top: ($(".hud")?.offsetHeight ?? 56) + 6, bottom: (bubble.offsetHeight || 60) + ($(".line-up")?.offsetHeight ?? 40) + 20 });
     fitView(); addEventListener("resize", fitView);
-    const g = newGame({ seed: Math.floor(Math.random() * 1e9) });
+    const g = newGame({ seed: Math.floor(Math.random() * 1e9), stage });
     window.__usher = { game: g, nave }; // (for the browser tests)
     nave.sync(g); nave.family(current(g));
-    talk("Families are coming to Mass! Tap a pew to walk the first family there.", { urgent: true });
+    talk(stage.say, { urgent: true });
 
     const pop = (text, x, y, cls = "") => { const el = document.createElement("div"); el.className = "pop " + cls; el.textContent = text; el.style.left = x + "px"; el.style.top = y + "px"; popsEl.append(el); setTimeout(() => el.remove(), 1200); };
     const popAt = (id, text, cls) => { const p = nave.pewScreen(id); pop(text, p.x, p.y - 20, cls); };
 
-    // ── tapping and swiping a pew ──
-    let down = null, lastFront = current(g)?.id ?? null;
-    canvas.addEventListener("pointerdown", (e) => { const id = nave.pick(e.clientX, e.clientY); down = id === null ? null : { id, x: e.clientX }; });
-    canvas.addEventListener("pointerup", async (e) => {
-      if (!down || walking || g.over) { down = null; return; }
-      const { id, x } = down; down = null;
-      const dx = e.clientX - x;
-      if (Math.abs(dx) > 24) {
-        // a swipe toward the wall is +1 (left pews' wall is on the left of the screen, right pews' on the right)
-        const dir = (id % 2 === 0 ? -dx : dx) > 0 ? 1 : -1;
-        const r = scoot(g, id, dir);
-        if (r.type === "scooted") { sfx.whoosh(); nave.sync(g); talk.once("scooted", "Scoot over, please! Now tap the pew to seat the family."); }
-        else if (r.type === "none") { sfx.tap(); talk.once("swipe-here", "Walk the family to this pew first, then swipe to make room."); }
-        else sfx.tap();
-        return;
-      }
-      const r = tapPew(g, id);
+    // ── a big button by each pew (its empty seats on it): the only way to pick a pew, so taps land cleanly ──
+    btns.innerHTML = Array.from({ length: ROWS * 2 }, (_, id) => `<button type="button" class="pew-btn" data-pew="${id}" aria-label="Pew ${id + 1}"></button>`).join("");
+    const btnOf = (id) => btns.querySelector(`[data-pew="${id}"]`);
+    btns.addEventListener("click", async (e) => {
+      const b = e.target.closest("[data-pew]");
+      if (!b || walking || g.over) return;
+      const id = +b.dataset.pew, r = tapPew(g, id);
       if (r.type === "walk") {
         walking = true; sfx.tap(); nave.sync(g);
         await nave.walkTo(id); walking = false;
         const empty = g.pews[id].seats.filter((s) => !s).length;
         if (current(g) && empty === 0) talk("This pew is full. Tap a different pew!");
-        else talk.once("at-pew", "Swipe along the pew to make room, then tap it again to seat them!");
+        else talk.once("at-pew", "Swipe to make room, then tap the button again to seat them!");
         return;
       }
       if (r.type === "full") { sfx.tap(); talk("This pew is full. Tap a different pew!", { urgent: true }); return; }
@@ -147,26 +167,51 @@ function viewPlay() {
       }
     });
 
-    // ── the clock, arrivals, and what's on screen ──
-    let last = performance.now(), ended = false;
+    // ── a swipe anywhere scoots the pew you're at (it never picks a different pew) ──
+    let down = null;
+    canvas.addEventListener("pointerdown", (e) => { down = { x: e.clientX }; });
+    canvas.addEventListener("pointerup", (e) => {
+      if (!down || g.over) { down = null; return; }
+      const dx = e.clientX - down.x; down = null;
+      if (Math.abs(dx) < 24) { talk.once("use-buttons", "Tap the round button by a pew to pick it."); return; }
+      if (g.at === null || walking) { sfx.tap(); talk.once("swipe-first", "Pick a pew first, then swipe to make room."); return; }
+      // toward the wall is +1 (a left pew's wall is on the left of the screen, a right pew's on the right)
+      const dir = (g.at % 2 === 0 ? -dx : dx) > 0 ? 1 : -1;
+      const r = scoot(g, g.at, dir);
+      if (r.type === "scooted") { sfx.whoosh(); nave.sync(g); talk.once("scooted", "Scoot over, please! Now tap the button to seat the family."); }
+      else sfx.tap();
+    });
+
+    // ── the clock, arrivals, people going home, and what's on screen ──
+    let last = performance.now(), ended = false, endReason = null, lastFront = current(g)?.id ?? null;
     const pins = new Map();
     const frame = (now) => {
       if (!alive) return;
       const dt = document.hidden ? 0 : Math.min(0.1, (now - last) / 1000); last = now;
       if (!ended) {
         for (const ev of tick(g, dt)) {
-          if (ev.type === "arrive") { sfx.pop(); talk.once("arrive", "Another family just came in!"); }
-          else if (ev.type === "end") ended = true;
+          if (ev.type === "arrive") { sfx.pop(); talk.once("arrive", stage.endless ? "Someone else came to pray!" : "Another family just came in!"); if (stage.endless && g.queue.length >= stage.maxLine - 1) talk("The line at the doors is getting long!", { urgent: true }); }
+          else if (ev.type === "leave") { nave.personLeave(ev.pid); talk.once("leave", "Someone finished praying and went home. A seat is free!"); }
+          else if (ev.type === "end") { ended = true; endReason = ev.reason ?? "mass"; }
         }
         const fam = current(g);
         if (fam && fam.id !== lastFront && !walking && g.at === null) { lastFront = fam.id; nave.family(fam); }
-        if (fam && fam.id === lastFront && !walking && g.at === null && !fam.announced) { fam.announced = true; talk(`A family of ${NUM[fam.size] ?? fam.size}! Tap a pew for them.`); }
+        if (fam && fam.id === lastFront && !walking && g.at === null && !fam.announced) { fam.announced = true; talk(`${fam.size === 1 ? "One person" : `A family of ${NUM[fam.size] ?? fam.size}`}! Tap a pew for them.`); }
         if (!fam && lastFront !== null && !walking) { lastFront = null; nave.family(null); }
         $("[data-with]").innerHTML = fam ? `<b>Now:</b> ${dots(fam)}` : "";
         $("[data-queue]").innerHTML = g.queue.length > 1 ? `<b>Next:</b> ${g.queue.slice(1, 4).map((id) => dots(g.families[id])).join("")}${g.queue.length > 4 ? ` <b>+${g.queue.length - 4}</b>` : ""}` : "";
-        const left = Math.max(0, Math.ceil(g.length - g.t));
-        $("[data-clock]").textContent = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`;
+        const secs = stage.endless ? Math.floor(g.t) : Math.max(0, Math.ceil(g.length - g.t));
+        $("[data-clock]").textContent = `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, "0")}`;
         $("[data-score]").textContent = g.score;
+        // the pew buttons: where each pew is on screen, with its empty seats; the one you're at says "Sit!"
+        for (let id = 0; id < ROWS * 2; id++) {
+          const b = btnOf(id), at = nave.pewButton(id), empty = g.pews[id].seats.filter((s) => !s).length;
+          b.style.left = at.x + "px"; b.style.top = at.y + "px";
+          const here = g.at === id, label = here ? "Sit!" : String(empty);
+          if (b.textContent !== label) b.textContent = label;
+          b.classList.toggle("here", here); b.classList.toggle("full", !empty); b.disabled = walking;
+          b.setAttribute("aria-label", here ? `Seat them in this pew (${empty} empty seats)` : `Pew with ${empty} empty seat${empty === 1 ? "" : "s"}`);
+        }
         // the 📌 over anyone who won't scoot
         const seen = new Set();
         for (const st of nave.stayers()) {
@@ -183,16 +228,28 @@ function viewPlay() {
     raf = requestAnimationFrame(frame);
 
     async function finish() {
-      say(bubble, "Ding, dong! Mass is starting. Thank you for being such a kind usher!");
-      await new Promise((r) => setTimeout(r, 2500));
+      btns.hidden = true;
+      if (endReason === "line") {
+        const m = Math.floor(g.t / 60), sec = Math.floor(g.t % 60);
+        say(bubble, `The line at the doors got too long. Time to rest! You ushered for ${m} minute${m === 1 ? "" : "s"} and ${sec} seconds.`);
+        await new Promise((r) => setTimeout(r, 3500));
+      } else {
+        say(bubble, "Ding, dong! Mass is starting. Thank you for being such a kind usher!");
+        await nave.procession();
+        await new Promise((r) => setTimeout(r, 1200));
+      }
       if (!alive) return;
-      const old = S.settings().best || 0, stars = starsFor(g), newBest = g.score > old;
-      S.setSetting("best", Math.max(old, g.score));
+      const old = S.settings()[bestKey(stage)] || 0, stars = starsFor(g), newBest = g.score > old;
+      S.setSetting(bestKey(stage), Math.max(old, g.score));
       cancelAnimationFrame(raf); nave.dispose(); nave = null;
       document.body.classList.remove("usher-game");
-      showFinish(app, { id: "usher", stars, mistakes: 3 - stars, title: newBest ? "A new best!" : "Everyone's ready for Mass!", done: `You scored ${g.score}.`, again: "#/play", onAgain: route });
+      const nextStage = STAGES[si + 1], opens = nextStage && !nextStage.endless && Math.max(stars, starsOf(stage)) >= 2;
+      showFinish(app, { id: progressId(stage), stars, mistakes: 3 - stars, title: newBest ? "A new best!" : stage.endless ? "What a night!" : "Everyone's ready for Mass!",
+        done: `You scored ${g.score}.`, again: `#/play/${stage.id}`, onAgain: route, next: opens ? { href: `#/play/${nextStage.id}`, label: `${nextStage.icon} ${nextStage.name}` } : null });
       app.querySelector(".finish h1")?.insertAdjacentHTML("afterend", `<p class="final-score">You scored <b>${g.score}</b>${newBest ? " · a new best!" : ` · your best: ${Math.max(old, g.score)}`}</p>
-        <p class="muted">${g.together} families together · ${g.split} split up · ${g.seatedPeople} people seated${stars < 3 ? ` · ${STAR3} for three stars` : ""}</p>`);
+        <p class="muted">${stage.endless ? `ushered ${Math.floor(g.t / 60)}:${String(Math.floor(g.t % 60)).padStart(2, "0")} · ${g.left} went home · ` : ""}${g.together} families together · ${g.split} split up · ${g.seatedPeople} people seated${stars < 3 ? ` · ${stage.star3} for three stars` : ""}</p>`);
+      // the finish screen's "All Angelio games" goes to the games page here, not the home page
+      const all = app.querySelector(".finish .finish-links a[href=\"https://angelio.org/\"]"); if (all) all.href = "https://angelio.org/games/";
     }
   })();
 

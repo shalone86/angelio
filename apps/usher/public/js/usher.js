@@ -9,7 +9,8 @@
 
 export const ROUND = 120;          // seconds until Mass
 export const QUICK = 8;            // a family seated within 8 seconds of reaching the front of the line: +3 a person
-export const ROWS = 7, SEATS = 5;  // seven rows, a pew on each side of the aisle; seat 0 is by the aisle, 4 by the wall
+export const ROWS = 5, SEATS = 5;  // five rows, a pew on each side of the aisle; seat 0 is by the aisle, 4 by the wall
+export const RAMP = 240;           // an endless night gets busier over four minutes
 export const COLORS = ["#e0453f", "#2e5fa8", "#2f8a4c", "#e3b341", "#8a5cc2", "#e07a2e", "#2a9a9a", "#d65a9a"];
 
 /** A small seeded random (mulberry32), so a round can be replayed (tests, today's game). */
@@ -18,11 +19,19 @@ export function rng(seed) {
   return () => { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
 }
 
+// The rules of the first stage (stages.js has every stage; newGame takes any of them).
+export const SUNDAY = { regulars: 0.3, every: [10, 5], biggest: [3, 6], star2: 120, star3: 380 };
+
 /** How busy it is p of the way to Mass (0 → 1): how often families arrive and how big they are. */
-export function difficulty(p) {
-  const q = Math.max(0, Math.min(1, p));
-  return { every: 10 - q * 5, biggest: 3 + Math.round(q * 3) };
+export function difficulty(p, stage = SUNDAY) {
+  const q = Math.max(0, Math.min(1, p)), past = Math.max(0, p - 1), [e0, e1] = stage.every, [b0, b1] = stage.biggest;
+  // an endless night keeps getting busier past the ramp (p > 1): families come faster and a little bigger
+  return { every: Math.max(1.6, e0 + (e1 - e0) * q - past * 2), biggest: b0 + Math.round((b1 - b0) * q) + Math.min(2, Math.floor(past)) };
 }
+/** How far along it is: 0 → 1 to Mass; an endless night keeps counting past 1. */
+const progress = (g) => (g.stage.endless ? g.t / RAMP : g.t / g.length);
+/** How long someone stays at an endless night before going home (later in the night, longer). */
+const stayTime = (g) => { const [a, b] = g.stage.stayFor; return (a + g.r() * (b - a)) * (1 + Math.max(0, g.t / RAMP - 1) * 0.6); };
 
 // The kinds of people (his models <kind>-walk / <kind>-sit): who sits alone (the regulars) and who comes as a family.
 export const KINDS_ALONE = ["man", "woman", "grandfather", "grandmother"];
@@ -38,20 +47,24 @@ export function familyKinds(size, r) {
 /** pew id → {row, side}; side 0 = left of the aisle, 1 = right. */
 export const pewOf = (id) => ({ row: Math.floor(id / 2), side: id % 2 });
 
-export function newGame({ seed = 1, length = ROUND, regulars = 0.3 } = {}) {
+export function newGame({ seed = 1, length = ROUND, stage = SUNDAY, regulars } = {}) {
   const r = rng(seed);
+  stage = { ...SUNDAY, ...stage };
+  regulars ??= stage.regulars;
+  if (stage.endless) length = Infinity;
   // the pews, with some regulars already sitting here and there (some of them won't scoot: "stay")
   const pews = Array.from({ length: ROWS * 2 }, (_, id) => ({ id, ...pewOf(id), seats: Array(SEATS).fill(null) }));
   let pid = 1;
   for (const p of pews) for (let s = 0; s < SEATS; s++) if (r() < regulars) p.seats[s] = { family: 0, stay: r() < 0.3, pid: pid++, kind: pick(KINDS_ALONE, r) };
-  const g = { r, t: 0, length, pews, nextPid: pid, queue: [], nextFamily: 1, nextArrival: 0, families: {}, at: null, group: null,
+  const g = { r, t: 0, length, stage, pews, nextPid: pid, left: 0, queue: [], nextFamily: 1, nextArrival: 0, families: {}, at: null, group: null,
     score: 0, together: 0, split: 0, seatedPeople: 0, over: false };
+  if (stage.endless) for (const p of pews) for (const who of p.seats) if (who) who.until = stayTime(g) * (0.3 + r() * 0.7); // already praying a while
   arrive(g);
   return g;
 }
 
 function arrive(g) {
-  const d = difficulty(g.t / g.length), id = g.nextFamily++;
+  const d = difficulty(progress(g), g.stage), id = g.nextFamily++;
   const size = 1 + Math.floor(g.r() * d.biggest);
   const fam = { id, size, color: COLORS[(id - 1) % COLORS.length], parts: [], seated: 0, stay: Array.from({ length: size }, () => g.r() < 0.15),
     kinds: familyKinds(size, g.r), pids: Array.from({ length: size }, () => g.nextPid++) };
@@ -67,6 +80,15 @@ export function tick(g, dt) {
   if (g.over) return ev;
   g.t = Math.min(g.length, g.t + dt);
   if (g.t >= g.nextArrival && g.t < g.length - 5) { const f = arrive(g); ev.push({ type: "arrive", id: f.id, size: f.size }); }
+  if (g.stage.endless) {
+    // people finish praying and go home, one by one (their seat is free again)
+    for (const p of g.pews) p.seats.forEach((who, s) => {
+      if (who?.until != null && g.t >= who.until) { p.seats[s] = null; g.left++; ev.push({ type: "leave", pew: p.id, seat: s, pid: who.pid }); }
+    });
+    // the night is over when the line at the doors gets too long
+    if (g.queue.length >= g.stage.maxLine) { g.over = true; ev.push({ type: "end", reason: "line", time: g.t }); }
+    return ev;
+  }
   if (g.t >= g.length) {
     g.over = true;
     const waiting = g.queue.reduce((n, id) => n + g.families[id].size - g.families[id].seated, 0);
@@ -104,7 +126,7 @@ export function seat(g, id) {
       s = e;
     }
     const run = [];
-    for (let s = best[0]; s <= best[1] && left > 0; s++) { p.seats[s] = { family: fam.id, stay: fam.stay[fam.seated], pid: fam.pids[fam.seated], kind: fam.kinds[fam.seated] }; fam.seated++; left--; run.push(s); }
+    for (let s = best[0]; s <= best[1] && left > 0; s++) { p.seats[s] = { family: fam.id, stay: fam.stay[fam.seated], pid: fam.pids[fam.seated], kind: fam.kinds[fam.seated], ...(g.stage.endless ? { until: g.t + stayTime(g) } : {}) }; fam.seated++; left--; run.push(s); }
     fam.parts.push({ pew: id, seats: run });
     placed.push(...run);
   }
@@ -155,5 +177,5 @@ export function scoot(g, id, dir) {
 }
 
 /** Stars: two for seating families steadily, three for seating them quickly and together. Tuned in the tests. */
-export const STAR2 = 120, STAR3 = 400;
-export const starsFor = (g) => (g.score >= STAR3 ? 3 : g.score >= STAR2 ? 2 : 1);
+export const STAR2 = 120, STAR3 = 400; // Sunday Mass's; each stage has its own (stages.js)
+export const starsFor = (g) => (g.score >= g.stage.star3 ? 3 : g.score >= g.stage.star2 ? 2 : 1);

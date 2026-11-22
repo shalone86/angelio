@@ -82,3 +82,4 @@ a.stage:active { transform: translateY(3px); }
 .candle-play .taper i.on { background: radial-gradient(circle at 50% 70%, #fff3b0, #ffb02e 60%, #ff7a1a); box-shadow: 0 0 6px #ffb02e; }
 .candle-play .taper.out { animation: shake .3s linear 3; background: #ffd9d2; }
 @media (max-width: 420px) { .candle-play .taper { padding: 5px 7px; gap: 2px; } .candle-play .taper i { width: 7px; height: 11px; } .candle-play .clock-label { display: none; } }
+.games-link { margin: 18px 0 8px; }

@@ -40,3 +40,25 @@ body.usher-game .topbar { display: none; }
   .line-up { left: auto; right: 0; transform: none; top: auto; bottom: 10px; width: 256px; border-radius: 16px 0 0 16px; }
   .ush-play .clock, .ush-play .score { font-size: 1rem; padding: 3px 10px; }
 }
+
+/* Home: the stages, one card each (locked ones say how to open them) */
+.stages { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin: 8px 0 18px; }
+.stage { display: grid; gap: 4px; justify-items: center; text-align: center; text-decoration: none; color: var(--text); padding: 16px 14px; }
+.stage b { font: 800 1.2rem var(--font-display); }
+.stage-icon { font-size: 2.2rem; line-height: 1; }
+.stage-stars { color: #d9a400; font-weight: 800; letter-spacing: .05em; }
+.stage.locked { opacity: .6; }
+.games-link { margin: 18px 0 8px; }
+
+/* a big round button by each pew (its empty seats on it): picking a pew is always a clean tap */
+.pew-btns { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+.pew-btns[hidden] { display: none; }
+.pew-btn { position: absolute; transform: translate(-50%, -50%); pointer-events: auto; width: 44px; height: 44px; border-radius: 50%;
+  border: 3px solid #fff; background: #2a6db3; color: #fff; font: 900 1.05rem Nunito, sans-serif; box-shadow: 0 3px 0 #173f6e, 0 4px 10px rgb(0 0 0 / .3); cursor: pointer; touch-action: manipulation; }
+.pew-btn.full { background: #8a8f98; box-shadow: 0 3px 0 #5a5f66; }
+.pew-btn.here { background: #2fa866; box-shadow: 0 3px 0 #1f7a49, 0 0 0 5px rgb(255 215 94 / .8); width: 54px; height: 54px; font-size: .95rem; animation: herePulse 1s ease-in-out infinite; }
+.pew-btn:disabled { opacity: .55; }
+.pew-btn:active { transform: translate(-50%, -45%); }
+@keyframes herePulse { 50% { box-shadow: 0 3px 0 #1f7a49, 0 0 0 9px rgb(255 215 94 / .5); } }
+@media (prefers-reduced-motion: reduce) { .pew-btn.here { animation: none; } }
+@media (orientation: landscape) and (max-height: 520px) { .pew-btn { width: 38px; height: 38px; font-size: .95rem; } .pew-btn.here { width: 46px; height: 46px; } }
