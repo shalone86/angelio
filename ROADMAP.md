@@ -216,6 +216,8 @@ building (the church's candle rack and doors, the chapel at night, the choir lof
      you split the family, the fewer points you get.
    - **Ramp:** Families of different sizes, the clock until Mass starts, late arrivals, and packed Christmas and Easter
      Masses.
+7. **Coloring.** Tap to fill his drawings (no brushes or layers). The one game with no score; done is a set of pages plus
+   seasonal pages. The picture saves to the device only.
 8. **Monastery Porter** (idea, Nov 22, 2026, from another chat; not started). You keep the monastery door, like St.
    Benedict's porter (Rule ch. 66: he answers every knock "Thanks be to God") and the porter saints André Bessette and
    Conrad of Parzham. Same round as Candle Rack and Mass Usher (about two minutes, voxel, stages with the two-star unlock).
@@ -230,8 +232,6 @@ building (the church's candle rack and doors, the chapel at night, the choir lof
    - **Stages:** Sunday Mass (almost everyone comes in), Guest Day (only those expected, the rest to the guesthouse),
      Night / Great Silence (only the monks and someone who truly needs help; whisper voices). Maybe an endless one.
    - Art: the gate and porter's lodge, a porter monk, the guest types.
-7. **Coloring.** Tap to fill his drawings (no brushes or layers). The one game with no score; done is a set of pages plus
-   seasonal pages. The picture saves to the device only.
 
 Peters Pence (Balatro-style cards) is too hard for PreK: it moves to Pico Parish.
 
