@@ -78,8 +78,10 @@ function talker(bubble) {
 }
 
 function viewPlay(stageId) {
-  const stage = stageById(stageId), si = STAGES.indexOf(stage);
+  // "Play" in the top bar (#/play, no stage): the church played last
+  const stage = stageById(stageId ?? S.settings().lastStage), si = STAGES.indexOf(stage);
   if (!isOpen(si, starsOf)) { location.hash = "#/"; return; }
+  S.setSetting("lastStage", stage.id);
   // the feasts have their own color; otherwise the Church year's (a Byzantine church keeps its own calendar's colors)
   const hex = stage.color ? COLORS[stage.color] : stage.rite === "byzantine" ? byzantineSeasonOf(new Date()).hex : season.hex;
   document.body.classList.add("in-game", "candle-game");
