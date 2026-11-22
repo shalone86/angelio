@@ -26,3 +26,11 @@ test("only priests' vestments change: Roman chasuble and Byzantine phelonion; se
   assert.ok(isPriest("priest-mass-idle") && isPriest("east-priest-idle"));
   assert.ok(!isPriest("server-idle") && !isPriest("east-server-light"));
 });
+
+test("his Nov 22 palette (skin #cccc99, eyes #0066ff) and the clothes of people who pray", () => {
+  const look = randomLook(rng(3), { clothes: true });
+  assert.equal(recolor("#cccc99", look), look.skin);
+  assert.equal(recolor("#0066ff", look), look.eyes);
+  for (const [hex, part] of [["#ffcc99", "shirt"], ["#ff9966", "dress"], ["#ff9999", "belt"], ["#ffcccc", "shoes"]]) assert.equal(recolor(hex, look), look[part]);
+  assert.equal(recolor("#ffcc99", randomLook(rng(3))), "#ffcc99"); // priests' and servers' looks have no clothes: as painted
+});

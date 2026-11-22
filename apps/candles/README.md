@@ -43,12 +43,13 @@ Vigil), and "today's game" (the same round for everyone that day).
 ## Art (his decisions, Nov 2026)
 
 The game is a demo until the rest of the art and the music are in. Then:
-- **Random hair, skin and eyes for everyone** (done, `public/js/looks.js`): the priest and servers too; what makes
-  a character unique is the model, not its colors. His marker colors, used for nothing else: hair **#255359**, eyes
-  **#0b346e**, skin **#fad689**. Only priests' vestments follow the season: the Roman chasuble **#ff77a8** (the Roman
-  calendar's color, `seasonOf`) and the Byzantine phelonion **#ffcc66** (the Byzantine calendar's, `byzantineSeasonOf`: no
-  rose). Altar servers' robes never change. Each person in a round gets their own look;
-  grandparents get gray or white hair. (His older priest models are painted in other colors, so they keep theirs.)
-- Still to make: `man-`, `woman-`, `child-`, `grandparent-` × `kneel`, `idle`, `walk`; `east-priest-walk`,
-  `east-priest-vested-idle`, `east-server-candle-walk`, `east-server-candle-idle`.
+- **Random looks** (done, `public/js/looks.js`): what makes a character unique is the model, not its colors. His
+  marker colors, used for nothing else: hair **#255359**, eyes **#0066ff** (or #0b346e), skin **#cccc99** (or #fad689),
+  random for everyone (grandparents get gray or white hair); shirt **#ffcc99**, dress **#ff9966**, belt **#ff9999**,
+  shoes **#ffcccc**, random for the people who come to pray. Only priests' vestments follow the season: the Roman
+  chasuble **#ff77a8** (`seasonOf`) and the Byzantine phelonion **#ffcc66** (`byzantineSeasonOf`: no rose; his parish's
+  colors, confirmed). Altar servers' robes never change.
+- Made: the boy (`child-`) and girl (`child-girl-`) kneel and walk; the Byzantine priest in his cassock and phelonion
+  (`east-priest-idle/-walk`, `east-priest-phelonion-idle/-walk`, `east-priest-cense`). Still to make: `man-`, `woman-`,
+  `grandparent-` × `kneel`, `walk`; `east-server-candle-walk`, `east-server-candle-idle`.
 - Music.

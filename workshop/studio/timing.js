@@ -33,10 +33,15 @@
   const MOVES = [['stay', 'stays'], ['hop', 'hops'], ['across', 'walks across, left to right'], ['across-left', 'walks across, right to left']];
   // A voxel character's look: ready colors for each of his marker colors (the same people colors as Candle Rack's
   // looks.js; the liturgical colors for the chasuble), and the form's color box takes any other.
+  const CLOTHES = [['#c8262f', 'Red'], ['#2e5fa8', 'Blue'], ['#2f8a4c', 'Green'], ['#e3b341', 'Yellow'], ['#f4efe2', 'White'], ['#6b3fa0', 'Purple'],
+    ['#e07a2e', 'Orange'], ['#1f3a5f', 'Navy'], ['#2a8a8a', 'Teal'], ['#e58fb3', 'Pink'], ['#7a5a3a', 'Brown'], ['#3a3a40', 'Charcoal']];
   const LOOKS = {
     hair: ['Hair', [['#1b1410', 'Black'], ['#4a2c1a', 'Dark brown'], ['#6b4226', 'Brown'], ['#8a3b1e', 'Auburn'], ['#d9b25f', 'Blond'], ['#8f8f8f', 'Gray'], ['#ece9e2', 'White']]],
     skin: ['Skin', [['#f6d7b8', 'Light'], ['#e2b085', 'Light tan'], ['#cf9a6c', 'Tan'], ['#b97f55', 'Medium'], ['#9a6442', 'Brown'], ['#7a4c31', 'Dark brown'], ['#5a3622', 'Deep']]],
     eyes: ['Eyes', [['#3b2414', 'Brown'], ['#2a1a10', 'Dark brown'], ['#2f6db5', 'Blue'], ['#3f7a4a', 'Green'], ['#7a5a2a', 'Hazel'], ['#5f7180', 'Gray']]],
+    shirt: ['Shirt', CLOTHES], dress: ['Dress', CLOTHES],
+    belt: ['Belt', [['#4a2c1a', 'Brown'], ['#1b1410', 'Black'], ['#a8692f', 'Tan'], ['#f4efe2', 'White'], ['#c8262f', 'Red'], ['#2e5fa8', 'Blue']]],
+    shoes: ['Shoes', [['#1b1410', 'Black'], ['#4a2c1a', 'Brown'], ['#6b4226', 'Light brown'], ['#f4efe2', 'White'], ['#1f3a5f', 'Navy'], ['#c8262f', 'Red']]],
     chasuble: ['Vestment', [['#2f8a4c', 'Green'], ['#6b3fa0', 'Violet'], ['#e58fb3', 'Rose'], ['#f4efe2', 'White'], ['#e3b341', 'Gold'], ['#c8262f', 'Red'], ['#2e5fa8', 'Blue (Theotokos, Byzantine)'], ['#222222', 'Black']]],
   };
   // Which way a voxel character faces (video/voxel-draw.js VIEWS). Walking across with "Facing you", it turns
@@ -106,7 +111,7 @@
         return {type: 'battle', battle: v.battle, ...(f || t !== null ? {clip: [f, t ?? 9999]} : {}), ...(v.palette && v.palette !== 'pico' ? {palette: v.palette} : {})}; },
       read: (sc) => ({battle: typeof sc.battle === 'string' ? sc.battle : sc.battle?.name || '', from: sc.clip ? String(sc.clip[0]) : '0', to: sc.clip && sc.clip[1] < 9999 ? String(sc.clip[1]) : '', palette: sc.palette || 'pico'})},
     voxel: {label: 'Voxel character (your MagicaVoxel models)', fields: [['voxel', 'Who, and what they do', 'voxel'], ['view', 'Which way they face', 'select', VOXEL_VIEWS],
-      ['move', 'How it moves', 'select', MOVES], ['size', 'Size', 'select', ['medium', 'small', 'big', 'full']], ['look', 'Look (his marker colors: hair, skin, eyes, a priest\'s chasuble or phelonion)', 'look'], ['caption', 'Caption', 'text']],
+      ['move', 'How it moves', 'select', MOVES], ['size', 'Size', 'select', ['medium', 'small', 'big', 'full']], ['look', 'Look (his marker colors: hair, skin, eyes, clothes, a priest\'s chasuble or phelonion)', 'look'], ['caption', 'Caption', 'text']],
       make: (v) => { if (!v.voxel) throw new Error('Pick a model (upload them on angelio.org/studio/draw/)');
         const look = Object.fromEntries(Object.entries(v.look || {}).filter(([, c]) => c));
         return {type: 'voxel', voxel: v.voxel, ...(Object.keys(look).length ? {look} : {}), ...(v.view && v.view !== 'front' ? {view: v.view} : {}), ...(v.move && v.move !== 'stay' ? {move: v.move} : {}), ...(v.size && v.size !== 'medium' ? {size: v.size} : {}), ...(v.caption ? {caption: v.caption} : {})}; },

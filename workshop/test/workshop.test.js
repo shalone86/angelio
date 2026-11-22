@@ -46,4 +46,6 @@ test('a voxel picture\'s look swaps only his marker colors', () => {
   assert.equal(withLook(art, {hair: 'red'}).palette[1], '#255359'); // only real colors
   assert.equal(LOOK_MARK.hair, '#255359');
   assert.equal(withLook({...art, palette: [null, '#ffcc66']}, {chasuble: '#2e5fa8'}).palette[1], '#2e5fa8'); // a Byzantine phelonion
+  assert.deepEqual(withLook({...art, palette: [null, '#cccc99', '#0066ff', '#ffcc99', '#ffcccc']}, {skin: '#5a3622', eyes: '#3f7a4a', shirt: '#c8262f'}).palette,
+    [null, '#5a3622', '#3f7a4a', '#c8262f', '#ffcccc']); // his Nov 22 palette; shoes not picked
 });

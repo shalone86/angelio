@@ -75,8 +75,9 @@ export const MODELS = ["priest-idle", "priest-walk-fast", "priest-mass-walk", "p
   "server-idle", "server-walk", "server-light", "server-cross-walk", "server-cross-idle", "server-candle-walk", "server-candle-idle",
   // the Byzantine church (east-…): whichever of these he has made are used, the rest stand in
   ...["priest-idle", "priest-walk", "priest-walk-fast", "priest-walk-slow", "priest-vested-idle", "priest-bless", "server-idle", "server-walk", "server-light",
-    "server-cross-walk", "server-cross-idle", "server-candle-walk", "server-candle-idle", "server-ripidion-walk", "server-ripidion-idle"].map((n) => `east-${n}`),
-  ...["man", "woman", "child", "grandparent"].flatMap((k) => [`${k}-kneel`, `${k}-idle`, `${k}-walk`])];
+    "server-cross-walk", "server-cross-idle", "server-candle-walk", "server-candle-idle", "server-ripidion-walk", "server-ripidion-idle",
+    "priest-phelonion-idle", "priest-phelonion-walk", "priest-cense"].map((n) => `east-${n}`),
+  ...["child", "child-girl", "man", "woman", "grandparent"].flatMap((k) => [`${k}-kneel`, `${k}-idle`, `${k}-walk`])];
 
 export async function loadModels(names = MODELS) {
   const out = {};
@@ -301,7 +302,7 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
   const E = (n) => (BYZ ? [`east-${n}`] : [n]);
   const PH = SP.priestHome, SH = SP.serverHome;
   const priest = actor(BYZ
-    ? { idle: "east-priest-idle", walk: ["east-priest-walk-fast", "east-priest-walk"], slow: ["east-priest-walk-slow", "east-priest-walk"], vested: ["east-priest-vested-idle", "east-priest-bless", "east-priest-idle"] }
+    ? { idle: "east-priest-idle", walk: ["east-priest-walk-fast", "east-priest-walk"], slow: ["east-priest-phelonion-walk", "east-priest-walk"], vested: ["east-priest-phelonion-idle", "east-priest-idle"] }
     : { idle: "priest-idle", walk: "priest-walk-fast", slow: ["priest-mass-walk", "priest-walk-slow"], vested: ["priest-mass-idle", "priest-idle"] },
     "#1d1b22", { x: PH.x, z: PH.z, turn: PH.turn });
   // the priest and the server can be tapped to help: a big invisible tap area on each, and a gold ring at their feet
@@ -330,12 +331,16 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
   // people who come to pray: they walk up from the front, kneel in front of a rack (in the way of the candles behind
   // them), and later get up and walk off to a pew
   const people = new Map();
-  const PERSON = ["man", "woman", "child", "grandparent"];
-  const BODY = ["#4a6fa5", "#a5574a", "#5f8f4e", "#8a6aa8"];
+  // the kinds of people (child = the boy; his models <kind>-kneel/-walk/-idle): those he has made come to pray; until
+  // he has made any, stand-ins of every kind do
+  const KINDS = ["child", "child-girl", "man", "woman", "grandparent"];
+  const PERSON = KINDS.some((k) => models[`${k}-kneel`]) ? KINDS.filter((k) => models[`${k}-kneel`]) : KINDS;
+  const BODY = ["#4a6fa5", "#a5574a", "#5f8f4e", "#8a6aa8", "#9a7a3a"];
   const spotOf = (p) => { const r = LAYOUT.racks[p.rack]; return { x: r.x + (p.slot - 1) * LAYOUT.slotGap, z: r.z + LAYOUT.kneelZ + 2 }; };
   function personArrive(p, walkIn = 2) {
-    const k = p.id % 4, kind = PERSON[k];
-    const a = actor({ idle: `${kind}-idle`, walk: `${kind}-walk`, kneel: `${kind}-kneel` }, BODY[k], { x: 0, z: 20, turn: Math.PI }, randomLook(Math.random, { older: kind === "grandparent" }));
+    const k = Math.floor(Math.random() * PERSON.length), kind = PERSON[k];
+    const a = actor({ idle: `${kind}-idle`, walk: `${kind}-walk`, kneel: `${kind}-kneel` }, BODY[k], { x: 0, z: 20, turn: Math.PI },
+      randomLook(Math.random, { older: kind === "grandparent", clothes: true }));
     if (!a.poses.kneel) { const st = standIn(BODY[k], true); st.visible = false; a.poses.kneel = st; a.g.add(st); }
     const at = spotOf(p), from = { x: at.x + (at.x < 0 ? -4 : 4), z: 17 };
     a.place(from.x, from.z, Math.PI, "walk");
