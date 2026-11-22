@@ -167,7 +167,8 @@ is the content, so they never need new levels.
    style game: walk, auto-prayer, candles left behind, grace, pick one of three, 12 combos, a 5-minute day). Art: test page
    https://claude.ai/artifact/FFkp1FnQTM6aEeBn78PFqM (A: PICO-8 as is, B: crisp pixels + smooth light and words, C: voxels
    made automatically from his drawings).
-   - **Candle Rack** (first; he wants to play it). **v1 live Nov 21, 2026 at angelio.org/candles/** (apps/candles): the round
+   - **Candle Rack** (first; he wants to play it). **v1 live Nov 21, 2026 at angelio.org/candles/** (Nov 22: stages,
+     Byzantine church, taper, combos, family looks, censer smoke, the endless Adoration at Night; see apps/candles/README.md) (apps/candles): the round
      before Mass, lighting, just in time, chains, intentions, drafts, the lamp, the bells and procession, the season's color,
      his priest models, stand-in boxes for the rest. Next: pick-one-of-three upgrades, the Byzantine church, Church-year events,
      today's game. Decided Nov 19, 2026: **voxels only**, his own MagicaVoxel models
@@ -192,7 +193,10 @@ is the content, so they never need new levels.
 5. **Garden Givers.** Tap to plant, water and pick; fill the food bank's basket. Ramp: crops ripen at different speeds,
    rain helps, crows steal, the food bank asks for certain foods, picked food spoils if left. Pick-one-of-three upgrades
    (a bigger watering can, a helper). Score: meals given.
-6. **Mass Usher.** Seat arriving families in the church pews (a gentle Tetris). Notes, Nov 21, 2026:
+6. **Mass Usher.** Seat arriving families in the church pews (a gentle Tetris). **Demo live Nov 22, 2026 at
+   angelio.org/usher/** (apps/usher): a flat top-down church to try the game itself (tap a pew to walk the family there,
+   swipe to scoot, tap again to seat, split families, people who won't scoot 📌, a quick bonus, two minutes to Mass);
+   next: the other seating habits, late arrivals, packed Christmas and Easter, his voxel church. Notes, Nov 21, 2026:
    - **Screen & layout:** One screen filled with pews, the altar, and the front doors to the narthex. You stand at the
      front doors as people arrive in families of various sizes.
    - **Loop & controls:** Tap a pew (one with free spots, or one you want to clear space in) to walk over there with the

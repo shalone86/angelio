@@ -47,7 +47,11 @@ export const APP_LIST = [
   },
   {
     name: "Candle Rack", path: "candles", subject: "faith", grades: "All ages", emoji: "🕯️",
-    blurb: "A game: get the church ready before Mass. Light the candles, keep the sanctuary lamp burning, and light a candle for each prayer.",
+    blurb: "A game: get the church ready before Mass or the Divine Liturgy. Light the candles, keep the sanctuary lamp burning, and stay up late in the adoration chapel.",
+  },
+  {
+    name: "Mass Usher", path: "usher", subject: "faith", grades: "All ages", emoji: "🪑",
+    blurb: "A game (an early demo): seat the families coming to Mass. Help people scoot down to make room, and keep each family together.",
   },
   // Coming soon (see ROADMAP.md)
   { name: "Spelling", subject: "language", grades: "Grades 1–3", emoji: "🔤", blurb: "Hear a word, build it letter by letter, and learn the spelling patterns." },

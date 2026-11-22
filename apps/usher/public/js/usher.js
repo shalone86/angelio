@@ -1,0 +1,146 @@
+// Mass Usher's rules (his notes: ROADMAP.md, "Mass Usher"). Pure (no screen), tested in test/usher.test.js; the
+// screen (app.js) only draws what happens here.
+//
+// Families arrive at the front doors before Mass. Tap a pew: you walk the family there. At the pew, swipe along it so
+// the people already sitting scoot down (toward the wall or the aisle) and make room; tap the pew again to seat as
+// many of the family as fit. Anyone left over: tap another pew. When the whole family is seated you go back to the
+// doors for the next one. A family seated together scores the most; split it and it scores less, and less again the
+// farther apart the parts are. Some people won't scoot (they like their spot). When the clock reaches Mass, the round ends.
+
+export const ROUND = 120;          // seconds until Mass
+export const QUICK = 8;            // a family seated within 8 seconds of reaching the front of the line: +3 a person
+export const ROWS = 7, SEATS = 5;  // seven rows, a pew on each side of the aisle; seat 0 is by the aisle, 4 by the wall
+export const COLORS = ["#e0453f", "#2e5fa8", "#2f8a4c", "#e3b341", "#8a5cc2", "#e07a2e", "#2a9a9a", "#d65a9a"];
+
+/** A small seeded random (mulberry32), so a round can be replayed (tests, today's game). */
+export function rng(seed) {
+  let a = seed >>> 0;
+  return () => { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+}
+
+/** How busy it is p of the way to Mass (0 → 1): how often families arrive and how big they are. */
+export function difficulty(p) {
+  const q = Math.max(0, Math.min(1, p));
+  return { every: 10 - q * 5, biggest: 3 + Math.round(q * 3) };
+}
+
+/** pew id → {row, side}; side 0 = left of the aisle, 1 = right. */
+export const pewOf = (id) => ({ row: Math.floor(id / 2), side: id % 2 });
+
+export function newGame({ seed = 1, length = ROUND, regulars = 0.3 } = {}) {
+  const r = rng(seed);
+  // the pews, with some regulars already sitting here and there (some of them won't scoot: "stay")
+  const pews = Array.from({ length: ROWS * 2 }, (_, id) => ({ id, ...pewOf(id), seats: Array(SEATS).fill(null) }));
+  for (const p of pews) for (let s = 0; s < SEATS; s++) if (r() < regulars) p.seats[s] = { family: 0, stay: r() < 0.3 };
+  const g = { r, t: 0, length, pews, queue: [], nextFamily: 1, nextArrival: 0, families: {}, at: null, group: null,
+    score: 0, together: 0, split: 0, seatedPeople: 0, over: false };
+  arrive(g);
+  return g;
+}
+
+function arrive(g) {
+  const d = difficulty(g.t / g.length), id = g.nextFamily++;
+  const size = 1 + Math.floor(g.r() * d.biggest);
+  const fam = { id, size, color: COLORS[(id - 1) % COLORS.length], parts: [], seated: 0, stay: Array.from({ length: size }, () => g.r() < 0.15) };
+  g.families[id] = fam; g.queue.push(id);
+  if (g.queue.length === 1) fam.front = g.t; // first in line: the clock for "quick!" starts
+  g.nextArrival = g.t + d.every * (0.8 + g.r() * 0.4);
+  return fam;
+}
+
+/** Move time on. Returns what happened: [{type: 'arrive' | 'end', …}]. */
+export function tick(g, dt) {
+  const ev = [];
+  if (g.over) return ev;
+  g.t = Math.min(g.length, g.t + dt);
+  if (g.t >= g.nextArrival && g.t < g.length - 5) { const f = arrive(g); ev.push({ type: "arrive", id: f.id, size: f.size }); }
+  if (g.t >= g.length) {
+    g.over = true;
+    const waiting = g.queue.reduce((n, id) => n + g.families[id].size - g.families[id].seated, 0);
+    ev.push({ type: "end", waiting });
+  }
+  return ev;
+}
+
+/** The family being seated now (the first in line), or null. */
+export const current = (g) => (g.queue.length ? g.families[g.queue[0]] : null);
+const empties = (p) => p.seats.filter((s) => !s).length;
+
+/** Tap a pew. With a family to seat: walk them there ({type: 'walk'}); tapped again at that pew: seat them. */
+export function tapPew(g, id) {
+  const fam = current(g), p = g.pews[id];
+  if (g.over || !fam || !p) return { type: "none" };
+  if (g.at !== id) { g.at = id; return { type: "walk", pew: id }; }
+  return seat(g, id);
+}
+
+/** Seat as many of the family as fit in this pew, together where possible (the longest run of empty seats first). */
+export function seat(g, id) {
+  const fam = current(g), p = g.pews[id];
+  if (!fam || g.at !== id) return { type: "none" };
+  let left = fam.size - fam.seated;
+  if (!empties(p)) return { type: "full", pew: id };
+  const placed = [];
+  while (left > 0 && empties(p)) {
+    // the longest run of empty seats; the family fills it from the aisle end
+    let best = null;
+    for (let s = 0; s < SEATS; s++) {
+      if (p.seats[s]) continue;
+      let e = s; while (e + 1 < SEATS && !p.seats[e + 1]) e++;
+      if (!best || e - s > best[1] - best[0]) best = [s, e];
+      s = e;
+    }
+    const run = [];
+    for (let s = best[0]; s <= best[1] && left > 0; s++) { p.seats[s] = { family: fam.id, stay: fam.stay[fam.seated] }; fam.seated++; left--; run.push(s); }
+    fam.parts.push({ pew: id, seats: run });
+    placed.push(...run);
+  }
+  g.seatedPeople += placed.length;
+  if (fam.seated < fam.size) return { type: "some", pew: id, placed, left: fam.size - fam.seated };
+  // the whole family is seated: score it (a little more if quick), and back to the doors for the next one
+  const quick = g.t - (fam.front ?? g.t) <= QUICK;
+  const points = familyPoints(fam) + (quick ? 3 * fam.size : 0);
+  g.score += points;
+  if (fam.parts.length === 1) g.together++; else g.split++;
+  g.queue.shift(); g.at = null;
+  if (g.queue.length) g.families[g.queue[0]].front = g.t;
+  return { type: "seated", pew: id, placed, points, quick, together: fam.parts.length === 1, family: fam.id };
+}
+
+/** A family's points: 10 a person seated together; split, 8 less for each extra part and 3 less for each row (or
+ * the aisle) between the parts; never less than 2 a person. */
+export function familyPoints(fam) {
+  const base = fam.size * 10;
+  if (fam.parts.length <= 1) return base;
+  let apart = 0;
+  for (let i = 1; i < fam.parts.length; i++) {
+    const a = pewOf(fam.parts[i - 1].pew), b = pewOf(fam.parts[i].pew);
+    apart += Math.abs(a.row - b.row) + (a.side !== b.side ? 1 : 0);
+  }
+  return Math.max(fam.size * 2, base - 8 * (fam.parts.length - 1) - 3 * apart);
+}
+
+/** Swipe along a pew: everyone who'll scoot slides `dir` (+1 toward the wall, -1 toward the aisle) as far as they can,
+ * keeping their order; someone who won't scoot (stay) stays, and the others stop at them. Only at the pew you're at. */
+export function scoot(g, id, dir) {
+  const p = g.pews[id];
+  if (g.over || g.at !== id || !p) return { type: "none" };
+  const before = JSON.stringify(p.seats);
+  const order = dir > 0 ? [...Array(SEATS).keys()].reverse() : [...Array(SEATS).keys()];
+  const out = Array(SEATS).fill(null);
+  let to = order[0];
+  const next = (s) => s - dir; // the next seat away from the end they slide to
+  for (const s of order) {
+    const who = p.seats[s];
+    if (!who) continue;
+    if (who.stay) { out[s] = who; to = next(s); continue; }
+    while (out[to]) to = next(to);
+    out[to] = who; to = next(to);
+  }
+  p.seats = out;
+  return { type: JSON.stringify(out) === before ? "nothing" : "scooted", pew: id };
+}
+
+/** Stars: two for seating families steadily, three for seating them quickly and together. Tuned in the tests. */
+export const STAR2 = 120, STAR3 = 400;
+export const starsFor = (g) => (g.score >= STAR3 ? 3 : g.score >= STAR2 ? 2 : 1);

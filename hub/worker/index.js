@@ -19,6 +19,7 @@ export const APPS = {
   // Articulate also keeps its own address (articulate.shalonely.com): both work, no redirect.
   articulate: "ARTICULATE", // Articulate (articulation Worker)
   candles: "CANDLES", // Candle Rack (candles Worker): the game of getting the church ready before Mass
+  usher: "USHER", // Mass Usher (usher Worker): seating families before Mass (a demo)
 };
 
 import { normalizeCode, newCode, codeStatus, day, month } from "./codes.js";
