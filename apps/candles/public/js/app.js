@@ -88,7 +88,7 @@ function viewPlay(stageId) {
       <canvas class="church" aria-label="The church: tap the candles to light them"></canvas>
       <div class="hud">
         <a class="icon-btn" href="#/" aria-label="Stop and go home">✕</a>
-        <div class="clock" aria-label="Time until Mass"><span class="clock-label">Mass in</span> <b data-clock>1:30</b></div>
+        <div class="clock" aria-label="${stage.endless ? "How long you've kept watch" : "Time until Mass"}"><span class="clock-label">${stage.endless ? "🌙 Night" : "Mass in"}</span> <b data-clock>${stage.endless ? "0:00" : "1:30"}</b></div>
         <div class="taper" data-taper hidden aria-label="Your taper"></div>
         <div class="score"><b data-score>0</b><span data-combo class="streak"></span></div>
         <button class="icon-btn toggle" data-voice title="Read aloud">🔊</button>
@@ -109,7 +109,12 @@ function viewPlay(stageId) {
     // "How it works", the first time (and whenever asked again from the card)
     if (!S.progress(progressId(stage)).plays && (si === 0 || stage.taper)) {
       const card = $(".candle-lesson"); card.hidden = false;
-      await showLesson(card, si > 0 ? {
+      await showLesson(card, stage.endless ? {
+        emoji: stage.icon, title: stage.name,
+        rule: "It's late at night in the adoration chapel. Keep the candles burning near Jesus <b>as long as you can</b>. People still come to pray, but there's <b>nobody to help</b>. If the chapel stays <b>dark</b> too long, the night is over.",
+        exampleHtml: `<p class="center lesson-candles">🌙 🕯️ 🕯️ ✨ 🕯️ 🕯️</p>`,
+        voice: "It's late at night in the adoration chapel. Keep the candles burning near Jesus as long as you can. People still come to pray, but there's nobody to help. Your taper lights six candles, then light it again at the big candle. If the chapel stays dark too long, the night is over.",
+      } : si > 0 ? {
         emoji: stage.icon, title: stage.name,
         rule: `You carry a <b>taper</b> now. It lights <b>${stage.taper}</b> candles, then tap the <b>big candle</b> to light it again.${stage.dark ? " The church starts <b>dark</b>: bring the light to every candle!" : ""}`,
         exampleHtml: `<p class="center lesson-candles">${"🔥".repeat(Math.min(stage.taper, 6))} ➜ 🕯️</p>`,
@@ -126,7 +131,8 @@ function viewPlay(stageId) {
     say(bubble, "Getting the church ready…", { speakText: false });
     const [models, layout] = await Promise.all([loadModels(MODELS), loadLayout()]);
     if (!alive) return;
-    church = createChurch(canvas, { season, models, rite: stage.rite, hex, dark: stage.dark, taper: !!stage.taper, layout });
+    church = createChurch(canvas, { season, models, rite: stage.rite, hex, dark: stage.dark, taper: !!stage.taper, layout,
+      chapel: stage.layout === "chapel", withHelpers: stage.helpers !== false });
     // keep the racks clear of the clock (top) and the speech bubble (bottom)
     const fitView = () => church?.resize({ top: ($(".hud")?.offsetHeight ?? 60) + 6, bottom: (bubble.offsetHeight || 60) + 16 });
     fitView(); addEventListener("resize", fitView);
@@ -157,7 +163,7 @@ function viewPlay(stageId) {
         return true;
       }
       if (r.type === "no-taper") { sfx.tap(); pop("🕯️", x, y); talk("Your taper is out! Tap the big candle.", { urgent: true }); return false; }
-      if (r.type === "blocked") { sfx.tap(); pop("🙏", x, y); talk.once("blocked", "Someone is praying there. Tap the priest or the server, and he'll light those from behind!", { urgent: true }); }
+      if (r.type === "blocked") { sfx.tap(); pop("🙏", x, y); talk.once("blocked", stage.helpers === false ? "Someone is praying there. They'll finish soon!" : "Someone is praying there. Tap the priest or the server, and he'll light those from behind!", { urgent: true }); }
       return false;
     };
     // the priest or the server goes behind the rack where someone is praying and lights the candles there (the person
@@ -251,18 +257,19 @@ function viewPlay(stageId) {
           else if (ev.type === "person") {
             church.personArrive(ev, WALK_IN);
             const el = document.createElement("div"); el.className = "prayer"; el.textContent = "🙏"; prayersEl.append(el); prayers.set(ev.id, el);
-            setTimeout(() => { if (alive && !ended && g.people.some((p) => p.id === ev.id)) talk.once("person", "Someone came to pray. Tap the priest or the server to light the candles behind them.", { urgent: true }); }, WALK_IN * 1000);
+            if (stage.helpers !== false) setTimeout(() => { if (alive && !ended && g.people.some((p) => p.id === ev.id)) talk.once("person", "Someone came to pray. Tap the priest or the server to light the candles behind them.", { urgent: true }); }, WALK_IN * 1000);
           }
           else if (ev.type === "person-left") { prayers.get(ev.id)?.remove(); prayers.delete(ev.id); church.personLeave(ev.id); }
+          else if (ev.type === "dark") { sfx.oops(); talk(vary("dark", ["The chapel is getting dark! Light more candles!", "It's getting so dark! Quick, light the candles!"]), { urgent: true }); }
           else if (ev.type === "end") ended = true;
         }
-        const left = Math.max(0, Math.ceil(g.length - g.t));
+        const left = stage.endless ? Math.floor(g.t) : Math.max(0, Math.ceil(g.length - g.t)); // the night counts up
         $("[data-clock]").textContent = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`;
         $("[data-score]").textContent = g.score;
         $("[data-combo]").textContent = multFor(g.combo) > 1 ? ` ×${multFor(g.combo)}` : "";
         showCombo();
-        if (!said30 && left <= 30) { said30 = true; talk("Thirty seconds until Mass!", { urgent: true }); }
-        if (g.t >= helpAt) { helpAt = g.t + 22 + g.t / 6; help(); }
+        if (!stage.endless && !said30 && left <= 30) { said30 = true; talk("Thirty seconds until Mass!", { urgent: true }); }
+        if (stage.helpers !== false && g.t >= helpAt) { helpAt = g.t + 22 + g.t / 6; help(); }
         for (const [id, el] of prayers) { const at = church.personHead(id); if (at) { el.style.left = at.x + "px"; el.style.top = at.y + "px"; } }
         if (ended) finish();
       }
@@ -274,10 +281,14 @@ function viewPlay(stageId) {
     async function finish() {
       for (const [id, el] of prayers) { el.remove(); church.personLeave(id); }
       prayers.clear();
-      bells();
-      say(bubble, "Ding, dong! Mass is starting. Thank you for getting the church ready!");
-      await church.procession();
-      await new Promise((r) => setTimeout(r, 1200));
+      const watched = `${Math.floor(g.t / 60)} minute${Math.floor(g.t / 60) === 1 ? "" : "s"} and ${Math.floor(g.t % 60)} seconds`;
+      if (stage.endless) { say(bubble, `The chapel grew dark. Time to rest! You kept watch with Jesus for ${watched}.`); await new Promise((r) => setTimeout(r, 3500)); }
+      else {
+        bells();
+        say(bubble, "Ding, dong! Mass is starting. Thank you for getting the church ready!");
+        await church.procession();
+        await new Promise((r) => setTimeout(r, 1200));
+      }
       if (!alive) return;
       const old = S.settings()[bestKey(stage)] || 0;
       const stars = starsFor(g), best = Math.max(old, g.score), newBest = g.score > old;
@@ -286,13 +297,13 @@ function viewPlay(stageId) {
       document.body.classList.remove("candle-game"); // the finish screen scrolls like any page
       const nextStage = STAGES[si + 1], opens = nextStage && Math.max(stars, starsOf(stage)) >= 2;
       showFinish(app, {
-        id: progressId(stage), stars, mistakes: 3 - stars, title: newBest ? "A new best!" : "The church is ready!",
+        id: progressId(stage), stars, mistakes: 3 - stars, title: newBest ? "A new best!" : stage.endless ? "What a night!" : "The church is ready!",
         done: `You scored ${g.score}.`, again: `#/play/${stage.id}`, onAgain: route,
         next: opens ? { href: `#/play/${nextStage.id}`, label: `${nextStage.icon} ${nextStage.name}` } : null,
       });
       const fin = app.querySelector(".finish h1");
       fin?.insertAdjacentHTML("afterend", `<p class="final-score">You scored <b>${g.score}</b>${newBest ? " · a new best!" : ` · your best: ${best}`}</p>
-        <p class="muted">${g.lit + g.justInTime} candles lit · ${g.justInTime} just in time · best combo ${g.bestCombo} · ${g.ready} burning when Mass began${g.helperLit ? ` · ${g.helperLit} lit by the priest and server` : ""}${stars < 3 ? ` · ${stage.star3} for three stars` : ""}${g.tapers ? ` · taper lit ${g.tapers} times` : ""}</p>`);
+        <p class="muted">${stage.endless ? `kept watch ${Math.floor(g.t / 60)}:${String(Math.floor(g.t % 60)).padStart(2, "0")} · ` : ""}${g.lit + g.justInTime} candles lit · ${g.justInTime} just in time · best combo ${g.bestCombo}${stage.endless ? "" : ` · ${g.ready} burning when Mass began`}${g.helperLit ? ` · ${g.helperLit} lit by the priest and server` : ""}${stars < 3 ? ` · ${stage.star3} for three stars` : ""}${g.tapers ? ` · taper lit ${g.tapers} times` : ""}</p>`);
     }
   })();
 

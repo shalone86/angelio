@@ -63,7 +63,7 @@ test("the taper lights so many candles, then the big candle lights it again", ()
 });
 
 test("busier feasts bring more people, never in the same spot; Pascha starts dark", () => {
-  const busiest = STAGES[STAGES.length - 1];
+  const busiest = STAGES.find((s) => s.id === "pascha");
   let most = 0;
   const g = newGame({ seed: 9, stage: busiest });
   assert.ok(g.candles.every((c) => !c.lit), "all dark at the start");
@@ -165,4 +165,29 @@ test("it gets harder: more candles, faster burning, drafts only after the start"
 
 test("the same seed plays the same round (today's game)", () => {
   assert.equal(play(focused, { seed: 11, every: 0.6 }).g.score, play(focused, { seed: 11, every: 0.6 }).g.score);
+});
+
+test("Adoration at Night: endless, four racks, nobody to help; the night ends when the chapel stays dark (a warning first)", () => {
+  const stage = STAGES.find((s) => s.endless);
+  const g = newGame({ seed: 4, stage });
+  assert.equal(g.candles.length, 32);
+  assert.equal(g.length, Infinity);
+  const ev = [];
+  while (!g.over && g.t < 600) ev.push(...tick(g, 0.1));
+  const dark = ev.findIndex((e) => e.type === "dark"), end = ev.findIndex((e) => e.type === "end");
+  assert.ok(dark >= 0 && end > dark, "warned before the end");
+  assert.equal(ev[end].reason, "dark");
+  assert.ok(g.t < 60, `an untended chapel goes dark soon (${g.t} s)`);
+  // people still come; the priest and server don't
+  const h = newGame({ seed: 4, stage });
+  while (!h.people.some((p) => h.t >= p.at)) tick(h, 0.1);
+  for (const c of h.candles) c.lit = false;
+  assert.deepEqual(helperLight(h, h.people[0].id), []);
+  assert.ok(new Set(h.people.map((p) => p.rack)).size >= 1 && h.people.every((p) => p.rack < 4));
+});
+
+test("a busy player keeps the chapel lit far longer than a slow one", () => {
+  const stage = STAGES.find((s) => s.endless);
+  const last = (policy, every) => { const g = newGame({ seed: 2, stage }); let w = 0; while (!g.over && g.t < 900) { tick(g, 0.1); w -= 0.1; if (w <= 0) { policy(g); w = every; } } return g.t; };
+  assert.ok(last(focused, 0.6) > 2 * last(slowKid, 2));
 });

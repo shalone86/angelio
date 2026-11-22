@@ -53,6 +53,10 @@ export function spotsFor(rite, layout = {}) {
   return out;
 }
 
+// The Adoration chapel (the endless night): the monstrance in the middle, two racks in front and one on each side,
+// turned to face the middle (rot: how far each rack is turned).
+export const CHAPEL_RACKS = [{ x: -7.5, z: 0 }, { x: 7.5, z: 0 }, { x: -21, z: -7.5, rot: Math.PI / 2 }, { x: 21, z: -7.5, rot: -Math.PI / 2 }];
+
 // the racks' footprint (with a little room around them): nobody walks through it
 const inRacks = (x, z) => z > -4.6 && z < 2.8 && Math.abs(x) > 5.2 && Math.abs(x) < 20.8;
 /** The way from (ax, az) to (bx, bz) without walking through a rack: straight if it's clear, else to the nearest lane,
@@ -98,16 +102,17 @@ export async function loadLayout() {
 }
 
 /** The church, drawn into `canvas`. */
-export function createChurch(canvas, { season, models = {}, rite = "roman", hex = season.hex, dark = false, taper = false, layout = {} }) {
+export function createChurch(canvas, { season, models = {}, rite = "roman", hex = season.hex, dark = false, taper = false, layout = {}, chapel = false, withHelpers = true }) {
   const THREE = T();
   const BYZ = rite === "byzantine";
   const SP = spotsFor(BYZ ? "byzantine" : "roman", layout);
+  const RACKSET = chapel ? CHAPEL_RACKS : LAYOUT.racks;
   // the floor is at 0; the sanctuary step (x within 11, z behind -7.5) is 1 higher
   const groundY = (x, z) => (z < -7.5 && Math.abs(x) < 11 ? 1 : 0);
   const R = new THREE.WebGLRenderer({ canvas, antialias: true });
   R.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color("#1a1430");
+  scene.background = new THREE.Color(chapel ? "#0b0a1a" : "#1a1430"); // the chapel: late at night
   const cam = new THREE.PerspectiveCamera(38, 1, 0.5, 300);
   const box = new THREE.BoxGeometry(1, 1, 1);
   let time = 0; // seconds since the church appeared (the actors and flames use it)
@@ -129,25 +134,39 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
 
   // ── light ──
   // (at Pascha the church starts dark and brightens as the candles are lit)
-  const hemi = new THREE.HemisphereLight("#8c86c8", "#2a1d18", 0.55); scene.add(hemi);
-  const sun = new THREE.DirectionalLight("#ffd9a8", 0.35); sun.position.set(-20, 30, 10); scene.add(sun);
+  const hemi = new THREE.HemisphereLight("#8c86c8", "#2a1d18", chapel ? 0.3 : 0.55); scene.add(hemi);
+  const sun = new THREE.DirectionalLight("#ffd9a8", chapel ? 0.1 : 0.35); sun.position.set(-20, 30, 10); scene.add(sun);
   // the sanctuary lamp: over the altar in a Roman church; in a Byzantine church, the lampada before the icon of Christ
   const L = SP.lamp;
-  const rackLights = LAYOUT.racks.map((r) => { const l = new THREE.PointLight("#ffb347", 0.6, 30, 1.6); l.position.set(r.x, 7, r.z + 3); scene.add(l); return l; });
+  const rackLights = RACKSET.map((r) => { const l = new THREE.PointLight("#ffb347", 0.6, 30, 1.6); l.position.set(r.x + 3 * Math.sin(r.rot ?? 0), 7, r.z + 3 * Math.cos(r.rot ?? 0)); scene.add(l); return l; });
   const lampLight = new THREE.PointLight("#ff3b30", 0.8, 18, 1.8); lampLight.position.set(L.x, L.y, L.z); scene.add(lampLight);
 
   // ── the room (stand-in) ──
   for (let x = -24; x < 24; x += 4) for (let z = -16; z < 16; z += 4) block(4, 0.5, 4, x + 2, -0.5, z + 2, mat(((x + z) / 4) % 2 ? "#cfc4b0" : "#b7aa94"));
   block(48, 24, 1, 0, 0, -16.5, mat("#d9cfbd"));                 // back wall
   block(1, 24, 32, -24.5, 0, 0, mat("#d3c8b5")); block(1, 24, 32, 24.5, 0, 0, mat("#d3c8b5"));
-  const windowGlass = ["#3f7fd1", "#d13f4f", "#e8c24a", "#4fa36b"];
+  const windowGlass = chapel ? ["#1c2a55", "#3a1f3f", "#4a4220", "#203a2c"] : ["#3f7fd1", "#d13f4f", "#e8c24a", "#4fa36b"]; // night: dark glass
   for (const wx of [-17, -6, 6, 17]) for (let i = 0; i < 6; i++) block(1.2, 1.6, 0.3, wx - 1.8 + (i % 3) * 1.8, 11 + Math.floor(i / 3) * 2, -15.9, glow(windowGlass[(i + wx) & 3]));
   block(22, 1, 9, 0, 0, -12, mat(BYZ ? "#9c8a6c" : "#a99a82"));   // sanctuary step
   const altar = block(11, 5, 4, 0, 1, -12.5, mat("#efe7d6"));     // altar (stand-in)
   const frontal = block(8, 3, 0.3, 0, 2, -10.4, mat(hex));  // its front cloth: the season's color
-  block(3, 3, 2, 0, 6, -13.2, mat("#d6a93a"));                   // tabernacle (stand-in)
-  const veil = block(3.2, 2.2, 0.3, 0, 6.3, -12.15, mat(hex));
-  block(0.4, 5, 0.4, 0, 9, -13.2, mat("#d6a93a")); block(2, 0.4, 0.4, 0, 12.3, -13.2, mat("#d6a93a")); // cross (stand-in)
+  if (!chapel) {
+    block(3, 3, 2, 0, 6, -13.2, mat("#d6a93a"));                   // tabernacle (stand-in)
+    block(3.2, 2.2, 0.3, 0, 6.3, -12.15, mat(hex));                // its veil
+    block(0.4, 5, 0.4, 0, 9, -13.2, mat("#d6a93a")); block(2, 0.4, 0.4, 0, 12.3, -13.2, mat("#d6a93a")); // cross (stand-in)
+  } else {
+    // the monstrance (stand-in) on the altar: a gold stand and sunburst, the Host in the middle, glowing softly
+    const gold = mat("#e0b33e"), M = new THREE.Group(); M.position.set(0, 6, -12.3); scene.add(M);
+    block(2.6, 0.5, 1.6, 0, 0, 0, gold, M); block(0.5, 2.6, 0.5, 0, 0.5, 0, gold, M); block(1, 0.6, 1, 0, 1.8, 0, gold, M);
+    for (let i = 0; i < 16; i++) {
+      const ray = new THREE.Mesh(box, gold), a = (i / 16) * Math.PI * 2, len = i % 2 ? 1.3 : 2;
+      ray.scale.set(0.28, len, 0.25); ray.position.set(Math.sin(a) * (1.25 + len / 2), 4.7 + Math.cos(a) * (1.25 + len / 2), 0); ray.rotation.z = -a; M.add(ray);
+    }
+    const lunette = new THREE.Mesh(new THREE.TorusGeometry(1.05, 0.2, 8, 24), gold); lunette.position.set(0, 4.7, 0.05); M.add(lunette);
+    const host = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 0.85, 0.12, 24), glow("#fffaf0")); host.rotation.x = Math.PI / 2; host.position.set(0, 4.7, 0.1); M.add(host);
+    const shine = new THREE.Sprite(haloMat()); shine.scale.set(9, 9, 1); shine.position.set(0, 4.7, 0.4); shine.material.opacity = 0.7; M.add(shine);
+    const l = new THREE.PointLight("#ffe6a8", 0.9, 26, 1.6); l.position.set(0, 4.7, 2.5); M.add(l);
+  }
 
   // the iconostasis (Byzantine, stand-in): the icon screen across the sanctuary, with the royal doors in the middle
   // (they open when the Liturgy begins) and a deacon door on each side
@@ -197,14 +216,18 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
   const hits = [lampHit], candles = [];
   const GLASS_HEX = ["#e0453f", "#3d7fe0", "#f2f2f2"]; // red, blue and clear glass, just for looks
   // Roman: votive candles in colored glass on wooden racks. Byzantine: thin beeswax tapers standing in sand trays.
-  LAYOUT.racks.forEach((r, ri) => {
-    block(LAYOUT.rackW, LAYOUT.rowY[0], 2.4, r.x, 0, r.z + LAYOUT.rowZ[0], mat(BYZ ? "#8a6a2e" : "#5a3a24"));
-    block(LAYOUT.rackW, LAYOUT.rowY[1], 2.4, r.x, 0, r.z + LAYOUT.rowZ[1], mat(BYZ ? "#7a5c26" : "#4d311f"));
-    if (BYZ) for (let row = 0; row < 2; row++) block(LAYOUT.rackW - 0.4, 0.25, 2.1, r.x, LAYOUT.rowY[row], r.z + LAYOUT.rowZ[row], mat("#d9c79a")); // sand
+  // Each rack is a group at its place, turned by `rot` (the chapel's side racks face the middle): its candles, wind and
+  // the people kneeling in front of it are placed in the rack's own frame.
+  const rackGroups = RACKSET.map((r) => { const rg = new THREE.Group(); rg.position.set(r.x, 0, r.z); rg.rotation.y = r.rot ?? 0; scene.add(rg); return rg; });
+  RACKSET.forEach((r, ri) => {
+    const rg = rackGroups[ri];
+    block(LAYOUT.rackW, LAYOUT.rowY[0], 2.4, 0, 0, LAYOUT.rowZ[0], mat(BYZ ? "#8a6a2e" : "#5a3a24"), rg);
+    block(LAYOUT.rackW, LAYOUT.rowY[1], 2.4, 0, 0, LAYOUT.rowZ[1], mat(BYZ ? "#7a5c26" : "#4d311f"), rg);
+    if (BYZ) for (let row = 0; row < 2; row++) block(LAYOUT.rackW - 0.4, 0.25, 2.1, 0, LAYOUT.rowY[row], LAYOUT.rowZ[row], mat("#d9c79a"), rg); // sand
     for (let row = 0; row < 2; row++) for (let s = 0; s < 4; s++) {
       const id = ri * 8 + row * 4 + s;
-      const x = r.x + (s - 1.5) * LAYOUT.slotGap, y = LAYOUT.rowY[row], z = r.z + LAYOUT.rowZ[row];
-      const g = new THREE.Group(); g.position.set(x, y, z); scene.add(g);
+      const x = (s - 1.5) * LAYOUT.slotGap, y = LAYOUT.rowY[row], z = LAYOUT.rowZ[row];
+      const g = new THREE.Group(); g.position.set(x, y, z); rg.add(g);
       const glass = new THREE.Mesh(box, new THREE.MeshLambertMaterial({ color: GLASS_HEX[(id + row) % 3], transparent: true, opacity: 0.55 }));
       glass.scale.set(1.9, 2.2, 1.9); glass.position.y = 1.1; g.add(glass); glass.visible = !BYZ;
       const wax = new THREE.Mesh(box, mat(BYZ ? "#e6c065" : "#f6f0e2")); wax.scale.set(BYZ ? 0.45 : 1.2, 1.6, BYZ ? 0.45 : 1.2); wax.position.y = 0.8; g.add(wax);
@@ -219,6 +242,9 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
       hits.push(hit); candles.push({ g, glass, wax, flame, core, ring, phase: Math.random() * 6 });
     }
   });
+  scene.updateMatrixWorld(true);
+  /** Where a candle is in the church (its rack may be turned). */
+  const candleWorld = (id) => candles[id].g.getWorldPosition(new THREE.Vector3());
 
   // the big candle (stages with a taper): the player lights the taper again here. Roman: a tall candle by the altar;
   // Byzantine: a big candle in a stand before the icons (at Pascha, the Paschal candle)
@@ -255,6 +281,9 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
       const top = held.length ? Math.max(...held.map((c) => c[1])) : Infinity;
       const tips = held.filter((c) => c[1] === top), body = cells.filter((c) => !tips.includes(c));
       const fr = new THREE.Group();
+      // a censer (his #ccffff voxel in a censing pose): smoke rises from it (see `smoke` below)
+      const censer = /cense/.test(name) ? cells.find((c) => c[3] === "#ccffff") : null;
+      if (censer) fr.userData.censer = new THREE.Vector3(censer[0], censer[1] + 0.6, censer[2]);
       const im = new THREE.InstancedMesh(box, new THREE.MeshLambertMaterial(), body.length);
       const o = new THREE.Object3D(), col = new THREE.Color();
       body.forEach(([x, y, z, c], i) => { o.position.set(x, y, z); o.updateMatrix(); im.setMatrixAt(i, o.matrix); im.setColorAt(i, col.set(priest && isPink(c) ? hex : recolor(c, look, priest ? hex : null))); });
@@ -268,6 +297,20 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
     g.userData.fps = m.fps;
     return g;
   };
+  // incense smoke: soft gray-white puffs from a censer
+  const smoke = [];
+  let smokeTex = null;
+  function puff(at) {
+    if (!smokeTex) {
+      const c = document.createElement("canvas"); c.width = c.height = 64; const x = c.getContext("2d");
+      const gr = x.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, "rgba(245,245,250,.9)"); gr.addColorStop(0.5, "rgba(225,225,235,.45)"); gr.addColorStop(1, "rgba(220,220,230,0)");
+      x.fillStyle = gr; x.fillRect(0, 0, 64, 64); smokeTex = new THREE.CanvasTexture(c);
+    }
+    if (smoke.length > 60) return;
+    const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: smokeTex, transparent: true, depthWrite: false, opacity: 0.55 }));
+    s.position.copy(at); scene.add(s); smoke.push({ s, life: 0, seed: Math.random() * 6 });
+  }
+
   // a stand-in person: plain boxes, a body color and a head, kneeling or standing (until his models exist)
   const standIn = (bodyHex, kneel) => {
     const g = new THREE.Group();
@@ -319,6 +362,7 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
     candle: CANDLE, candleIdle: CANDLE_IDLE }, "#b02a2a", { x: SH.x, z: SH.z, turn: SH.turn });
   // a second server only for the procession (two candle bearers walk beside each other), hidden until then
   helperRing(priest, "priest"); helperRing(server, "server");
+  if (!withHelpers) priest.g.visible = server.g.visible = false; // the chapel at night: nobody to help (hidden, so not tappable)
   const server2 = actor({ idle: CANDLE_IDLE, candle: CANDLE, candleIdle: CANDLE_IDLE }, "#b02a2a", { x: 0, z: 30, turn: 0 });
   server2.g.visible = false;
   // a third server (Roman: the second candle bearer), hidden until the procession
@@ -337,16 +381,20 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
   const KINDS = ["child", "child-girl", "man", "woman", "grandparent"];
   const PERSON = KINDS.some((k) => models[`${k}-kneel`]) ? KINDS.filter((k) => models[`${k}-kneel`]) : KINDS;
   const BODY = ["#4a6fa5", "#a5574a", "#5f8f4e", "#8a6aa8", "#9a7a3a"];
-  const spotOf = (p) => { const r = LAYOUT.racks[p.rack]; return { x: r.x + (p.slot - 1) * LAYOUT.slotGap, z: r.z + LAYOUT.kneelZ + 2 }; };
+  /** Where someone kneels in front of a rack (two spots across, in the rack's own frame), and which way they face. */
+  const spotOf = (p) => {
+    const v = rackGroups[p.rack].localToWorld(new THREE.Vector3((p.slot - 1) * LAYOUT.slotGap, 0, LAYOUT.kneelZ + 2));
+    return { x: v.x, z: v.z, face: (RACKSET[p.rack].rot ?? 0) + Math.PI };
+  };
   function personArrive(p, walkIn = 2) {
     const k = Math.floor(Math.random() * PERSON.length), kind = PERSON[k];
     const a = actor({ idle: `${kind}-idle`, walk: `${kind}-walk`, kneel: `${kind}-kneel` }, BODY[k], { x: 0, z: 20, turn: Math.PI },
       randomLook(Math.random, { older: kind === "grandparent", clothes: true }));
     if (!a.poses.kneel) { const st = standIn(BODY[k], true); st.visible = false; a.poses.kneel = st; a.g.add(st); }
-    const at = spotOf(p), from = { x: at.x + (at.x < 0 ? -4 : 4), z: 17 };
+    const at = spotOf(p), from = { x: at.x + (at.x < 0 ? -3 : 3), z: 17 };
     a.place(from.x, from.z, Math.PI, "walk");
     const speed = Math.hypot(at.x - from.x, at.z - from.z) / walkIn;
-    a.walkTo(at.x, at.z, "walk", speed).then(() => { if (people.has(p.id)) { a.pose("kneel"); a.g.rotation.y = Math.PI; } });
+    a.walkTo(at.x, at.z, "walk", speed).then(() => { if (people.has(p.id)) { a.pose("kneel"); a.g.rotation.y = at.face; } });
     people.set(p.id, { a, rack: p.rack });
   }
   /** They get up and walk off to the pews (toward the front, out of sight), then they're gone. */
@@ -361,7 +409,11 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
   // ── camera: the whole church fits, whatever the screen's shape ──
   // The camera comes as close as it can while the racks, the altar and the lamp all fit between the clock at the top
   // and the speech bubble at the bottom (pad: pixels kept clear), whatever the screen's shape.
-  const KEEP = [[-20, 0, 2.5], [20, 0, 2.5], [-20, 9, -3], [20, 9, -3], [0, 13, -13], [L.x, L.y + 2, L.z], [-20, 0, 7], [20, 0, 7], [0, 14, -16]];
+  // the racks' corners and the people's kneeling space in front of each, wherever the racks stand; the altar, the lamp
+  const KEEP = [[0, 13, -13], [L.x, L.y + 2, L.z], [0, 14, -16]];
+  for (const rg of rackGroups) for (const [x, y, z] of [[-7.5, 0, 1.5], [7.5, 0, 1.5], [-7.5, 6, -1.5], [7.5, 6, -1.5], [-5, 0, 8], [5, 0, 8]]) {
+    const v = rg.localToWorld(new THREE.Vector3(x, y, z)); KEEP.push([v.x, v.y, v.z]);
+  }
   let pad = { top: 70, bottom: 90 };
   function resize(newPad) {
     if (newPad) pad = newPad;
@@ -402,7 +454,7 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
       v.wax.scale.y = BYZ ? 0.6 + 2.2 * wax : 0.4 + 1.2 * wax; v.wax.position.y = v.wax.scale.y / 2;
       v.flame.position.y = v.wax.scale.y + 0.6; v.core.position.y = v.wax.scale.y + 0.45;
     });
-    LAYOUT.racks.forEach((r, ri) => { const n = g.candles.filter((c) => c.rack === ri && c.lit).length; rackLights[ri].intensity = 0.15 + n * 0.12; });
+    RACKSET.forEach((r, ri) => { const n = g.candles.filter((c) => c.rack === ri && c.lit).length; rackLights[ri].intensity = 0.15 + n * 0.12; });
     // at Pascha the church is dark until the candles are lit
     if (dark) { const k = g.candles.filter((c) => c.active && c.lit).length / 16; hemi.intensity = 0.12 + 0.45 * k; sun.intensity = 0.05 + 0.3 * k; }
     // the big candle glows "tap me" when the taper is out or nearly
@@ -431,14 +483,23 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
       }
       const m = a.poses[a.now];
       if (m) animate(m, time - (a.t0 ?? 0));
+      if (m?.visible && a.g.visible) { const fr = m.userData.frames?.find((f) => f.visible); if (fr?.userData.censer && time >= (a.nextPuff ?? 0)) { a.nextPuff = time + 0.13; puff(fr.localToWorld(fr.userData.censer.clone())); } }
       if (m?.visible) m.traverse((o) => { if (o.userData.halo) { const k = 2.4 + 0.5 * Math.sin(time * 11 + o.id); o.scale.set(k, k, 1); } });
+    }
+    // incense smoke rises, spreads and fades
+    for (const sp of [...smoke]) {
+      sp.life += dt;
+      sp.s.position.y += dt * 2.3; sp.s.position.x += Math.sin(sp.life * 2 + sp.seed) * dt * 0.6;
+      const k = 0.55 + sp.life * 0.8; sp.s.scale.set(k, k, 1); // small wisps that spread a little as they rise
+      sp.s.material.opacity = 0.65 * Math.max(0, 1 - sp.life / 2.6);
+      if (sp.life >= 2.6) { scene.remove(sp.s); sp.s.material.dispose(); smoke.splice(smoke.indexOf(sp), 1); }
     }
     // wind streaks fly across, fading in and out
     for (const w of [...winds]) {
       w.delay -= dt; if (w.delay > 0) continue;
       w.life += dt; w.m.position.x += w.speed * dt;
       w.m.material.opacity = 0.75 * Math.sin(Math.min(1, w.life / 0.8) * Math.PI);
-      if (w.life >= 0.8) { scene.remove(w.m); w.m.material.dispose(); winds.splice(winds.indexOf(w), 1); }
+      if (w.life >= 0.8) { w.m.parent?.remove(w.m); w.m.material.dispose(); winds.splice(winds.indexOf(w), 1); }
     }
     // the helpers' rings: gold and pulsing while someone is in the way and they're free
     const waiting = !g.over && g.people.some((p) => g.t >= p.at && blockedNeedy(g, p.id).length);
@@ -468,12 +529,12 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
 
   return {
     update, pick, resize, screenOf, personHead, personArrive, personLeave,
-    candleSpot: (id) => { const v = candles[id].g.position; return { x: v.x, z: v.z }; },
+    candleSpot: (id) => { const v = candleWorld(id); return { x: v.x, z: v.z }; },
     /** The server walks to a candle, lights it (his lighting pose), and goes back. `light` is called at the moment it's lit. */
     /** The priest or the server walks round behind the rack to a candle, lights it (his lighting pose), and goes back.
      * `light` is called at the moment it's lit. */
     helpCandle: async (who, id, light) => {
-      const a = helpers[who], v = candles[id].g.position;
+      const a = helpers[who], v = candleWorld(id);
       if (!a || a.busy) return false;
       a.busy = true;
       // from behind the rack, so he never stands between the player and the candles
@@ -555,16 +616,16 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
     studioPeople: (on) => {
       for (const id of [...people.keys()]) { const p = people.get(id); scene.remove(p.a.g); actors.splice(actors.indexOf(p.a), 1); people.delete(id); }
       if (!on) return;
-      for (const p of [{ id: 1, rack: 0, slot: 0 }, { id: 2, rack: 1, slot: 2 }]) { personArrive(p, 0.01); const a = people.get(p.id).a; const at = spotOf(p); a.place(at.x, at.z, Math.PI, "kneel"); }
+      for (const p of [{ id: 1, rack: 0, slot: 0 }, { id: 2, rack: 1, slot: 2 }]) { personArrive(p, 0.01); const a = people.get(p.id).a; const at = spotOf(p); a.place(at.x, at.z, at.face, "kneel"); }
     },
     /** Wind: streaks blowing across one row of a rack (the draft from the door). */
     gust: (rack, row) => {
-      const r = LAYOUT.racks[rack], y = LAYOUT.rowY[row] + 2, z = r.z + LAYOUT.rowZ[row];
+      const rg = rackGroups[rack], y = LAYOUT.rowY[row] + 2, z = LAYOUT.rowZ[row];
       for (let i = 0; i < 9; i++) {
         const m = new THREE.Mesh(box, new THREE.MeshBasicMaterial({ color: "#eef6ff", transparent: true, opacity: 0, depthWrite: false }));
         m.scale.set(3 + Math.random() * 3, 0.14, 0.14);
-        m.position.set(r.x - 11 - Math.random() * 6, y + (Math.random() - 0.5) * 2.4, z + (Math.random() - 0.5) * 2.5);
-        scene.add(m); winds.push({ m, life: 0, speed: 26 + Math.random() * 12, delay: i * 0.05 });
+        m.position.set(-11 - Math.random() * 6, y + (Math.random() - 0.5) * 2.4, z + (Math.random() - 0.5) * 2.5); // in the rack's frame
+        rg.add(m); winds.push({ m, life: 0, speed: 26 + Math.random() * 12, delay: i * 0.05 });
       }
     },
     door: (open) => { doorTarget = open ? 1 : 0; },

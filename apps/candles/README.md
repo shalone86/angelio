@@ -15,6 +15,12 @@ the player carries a **taper** that lights 5–6 candles before it must be lit a
 more people to pray, up to two at a rack side by side. The Byzantine church uses his `east-…` models where they exist.
 The tips of whatever a server holds (the lighter, a candle) glow.
 
+**Adoration at Night** (endless; opens with two stars on Sunday Mass): late at night in the adoration chapel, the
+monstrance glowing on the altar, two racks in front and one on each side turned toward it (32 candles), people still come
+to pray but nobody helps. No clock to Mass: it gets harder for four minutes, then keeps burning a little faster; the
+night ends when fewer than a third of the candles stay lit for eight seconds (a warning first). The clock counts how long
+you kept watch. **Censer smoke**: a priest's censing pose (his #ccffff censer voxel) puffs incense that rises and fades.
+
 **Where everyone stands** (SPOTS in `public/js/church.js`: where the priest and server wait, the big candle, the lamp,
 where everyone ends up at the start of Mass) can be moved on the Studio's Candle Rack page (angelio.org/studio/candles/),
 which draws this same church; it's saved online and the game reads it at `/api/candles/layout`.
