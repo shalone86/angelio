@@ -25,7 +25,7 @@ export const STAGES = [
     taper: 6, maxPeople: 3, peopleRate: 1.6, burn: 1.1, dark: false, star2: 30, star3: 340,
   },
   {
-    id: "pascha", name: "Pascha", rite: "byzantine", color: "white", icon: "🌅",
+    id: "pascha", name: "Pascha", rite: "byzantine", color: "red", icon: "🌅",
     blurb: "Pascha: the church starts in the dark. Bring the light from the Paschal candle!",
     say: "Christ is risen! The church is dark. Light your taper at the Paschal candle and bring the light to every candle!",
     taper: 5, maxPeople: 4, peopleRate: 2, burn: 1.15, dark: true, star2: 30, star3: 325,

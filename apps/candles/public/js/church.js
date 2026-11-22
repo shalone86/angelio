@@ -5,11 +5,12 @@
 // people who come to pray (man-kneel, woman-kneel, child-kneel, grandparent-kneel) and the church pieces on the
 // Candle Rack checklists. Until a piece is made, a plain STAND-IN of boxes takes its place (marked "stand-in"
 // below). The stand-ins are not art: they only hold the place and are replaced, piece by piece, by his models.
-// His marker colors (looks.js): the chasuble pink (#FF77A8) becomes the season's color (season.js); the hair, skin
-// and eyes become each person's own, picked at random, so every round has its own people.
+// His marker colors (looks.js): a priest's vestments (Roman chasuble #FF77A8, Byzantine phelonion #FFCC66) take the
+// season's color (season.js; the servers' robes never change); the hair, skin and eyes become each person's own,
+// picked at random, so every round has its own people.
 import { readVox, toScene } from "./vox.js";
 import { blockedNeedy } from "./game.js";
-import { randomLook, recolor } from "./looks.js";
+import { randomLook, recolor, isPriest } from "./looks.js";
 
 const T = () => window.THREE;
 const ART = /(^|\.)angelio\.org$/.test(location.hostname) ? "" : "https://angelio.org";
@@ -236,6 +237,7 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
 
   // ── his voxel models ──
   const meshFor = (name, look = null) => {
+    const priest = isPriest(name); // only a priest's vestments take the season's color
     const m = models[name];
     if (!m) return null;
     const g = new THREE.Group();
@@ -254,7 +256,7 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
       const fr = new THREE.Group();
       const im = new THREE.InstancedMesh(box, new THREE.MeshLambertMaterial(), body.length);
       const o = new THREE.Object3D(), col = new THREE.Color();
-      body.forEach(([x, y, z, c], i) => { o.position.set(x, y, z); o.updateMatrix(); im.setMatrixAt(i, o.matrix); im.setColorAt(i, col.set(isPink(c) ? hex : recolor(c, look, hex))); });
+      body.forEach(([x, y, z, c], i) => { o.position.set(x, y, z); o.updateMatrix(); im.setMatrixAt(i, o.matrix); im.setColorAt(i, col.set(priest && isPink(c) ? hex : recolor(c, look, priest ? hex : null))); });
       fr.add(im);
       for (const [x, y, z, c] of tips) {
         const t = new THREE.Mesh(box, glow("#" + new THREE.Color(c).lerp(new THREE.Color("#ffc94a"), 0.75).getHexString())); t.position.set(x, y, z); fr.add(t);

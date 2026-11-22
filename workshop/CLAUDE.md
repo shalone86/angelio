@@ -187,7 +187,7 @@ If it's already running, `npm start` just opens the page.
   The studio copies new and changed ones into `voxels/` (`<slug>.vox` + `index.json`) when the Timing tab asks
   (`/api/voxels`, at most every 20 s) or with `npm run voxels`, and backs them up; renders use that copy, so they work
   offline. Timing tab → + Add a picture here → Voxel character: pick from pictures of every model (search box), then
-  `look` (his marker colors, picked per picture: hair #255359, eyes #0b346e, skin #fad689, chasuble #ff77a8; `withLook` in
+  `look` (his marker colors, picked per picture: hair #255359, eyes #0b346e, skin #fad689, a priest's chasuble #ff77a8 or Byzantine phelonion #ffcc66 (the form's Vestment); `withLook` in
   video/voxel-draw.js, applied by prepare.mjs; ready colors or any color in the form), `view` (front, front-right, right, back-right, back, back-left, left, front-left), `move` (stay, hop, across,
   across-left: walking across with no view picked turns them three-quarters the way they go), `size`, `caption`.
   `voxel-draw.js` paints the blocks on a 2D canvas at any angle (no 3D library); the video, the Timing tab and the

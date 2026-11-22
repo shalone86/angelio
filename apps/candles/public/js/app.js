@@ -14,7 +14,7 @@ import { showLesson } from "./kit/lesson.js";
 import { vary } from "./kit/vary.js";
 import { esc, say, showFinish, stickerBook, viewGrownups, installClickSounds, wireVoiceToggle } from "./kit/ui.js";
 import { newGame, tick, tapCandle, tapLamp, tapBigCandle, chainBonus, lightFree, helperLight, blockedNeedy, blockerOf, COMBO_GAP, starsFor, needy, multFor, WALK_IN } from "./game.js";
-import { seasonOf, COLORS } from "./season.js";
+import { seasonOf, byzantineSeasonOf, COLORS } from "./season.js";
 import { STAGES, stageById, isOpen } from "./stages.js";
 import { createChurch, loadModels, loadLayout, MODELS } from "./church.js";
 
@@ -80,8 +80,8 @@ function talker(bubble) {
 function viewPlay(stageId) {
   const stage = stageById(stageId), si = STAGES.indexOf(stage);
   if (!isOpen(si, starsOf)) { location.hash = "#/"; return; }
-  // the feasts have their own color; otherwise the Church year's
-  const hex = stage.color ? COLORS[stage.color] : season.hex;
+  // the feasts have their own color; otherwise the Church year's (a Byzantine church keeps its own calendar's colors)
+  const hex = stage.color ? COLORS[stage.color] : stage.rite === "byzantine" ? byzantineSeasonOf(new Date()).hex : season.hex;
   document.body.classList.add("in-game", "candle-game");
   app.innerHTML = `
     <section class="candle-play">

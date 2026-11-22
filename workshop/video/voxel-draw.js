@@ -7,12 +7,15 @@
 // (MagicaVoxel's numbers: z is up and the model's front looks toward -y, at the viewer.)
 
 // His marker colors (Nov 2026, the same as Candle Rack's looks.js): he paints every character's hair, eyes and skin, and a
-// priest's chasuble, in these, and picks the real colors per picture (a voxel scene's `look`, the Timing tab form).
+// priest's chasuble (Byzantine: phelonion, #ffcc66), in these, and picks the real colors per picture (a voxel scene's `look`, the Timing tab form).
 export const LOOK_MARK = {hair: '#255359', eyes: '#0b346e', skin: '#fad689', chasuble: '#ff77a8'};
+// A Byzantine priest's phelonion is painted #ffcc66; the form's one vestment color picks it too.
+const PHELONION = '#ffcc66';
 /** The model with his marker colors swapped for this picture's `look` ({hair, eyes, skin, chasuble}; missing ones stay as painted). */
 export function withLook(art, look) {
   if (!art || !look || !Object.values(look).some(Boolean)) return art;
   const swap = Object.fromEntries(Object.entries(LOOK_MARK).filter(([k]) => /^#[0-9a-f]{6}$/i.test(look[k] ?? '')).map(([k, m]) => [m, look[k].toLowerCase()]));
+  if (swap[LOOK_MARK.chasuble]) swap[PHELONION] = swap[LOOK_MARK.chasuble];
   return {...art, palette: art.palette.map((c) => (c && swap[c.toLowerCase()]) || c)};
 }
 

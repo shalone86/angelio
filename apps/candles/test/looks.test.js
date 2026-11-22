@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { MARK, randomLook, recolor, GRAY_HAIR, HAIR } from "../public/js/looks.js";
+import { MARK, randomLook, recolor, GRAY_HAIR, HAIR, isPriest } from "../public/js/looks.js";
 import { rng } from "../public/js/game.js";
 
 test("his marker colors become each person's own; everything else stays", () => {
@@ -18,4 +18,11 @@ test("looks vary; grandparents get gray or white hair", () => {
   assert.ok(new Set(looks.map((l) => l.hair + l.skin)).size > 20);
   assert.ok(looks.every((l) => HAIR.includes(l.hair)));
   assert.ok(Array.from({ length: 10 }, () => randomLook(r, { older: true })).every((l) => GRAY_HAIR.includes(l.hair)));
+});
+
+test("only priests' vestments change: Roman chasuble and Byzantine phelonion; servers' robes never", () => {
+  assert.equal(recolor("#ffcc66", null, "#2e5fa8"), "#2e5fa8"); // a Byzantine priest on a feast of the Theotokos
+  assert.equal(recolor("#ff77a8", null, null), "#ff77a8");       // not a priest: as painted
+  assert.ok(isPriest("priest-mass-idle") && isPriest("east-priest-idle"));
+  assert.ok(!isPriest("server-idle") && !isPriest("east-server-light"));
 });

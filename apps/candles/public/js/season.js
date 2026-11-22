@@ -25,7 +25,7 @@ export function adventStart(year) {
 }
 
 // The colors, as the game paints them.
-export const COLORS = { violet: "#6b3fa0", rose: "#e58fb3", white: "#f4efe2", gold: "#e3b341", red: "#c8262f", green: "#2f8a4c" };
+export const COLORS = { violet: "#6b3fa0", rose: "#e58fb3", white: "#f4efe2", gold: "#e3b341", red: "#c8262f", green: "#2f8a4c", blue: "#2e5fa8", black: "#26232b" };
 
 /**
  * What the Church is celebrating on this date: {id, name, color, hex, say}.
@@ -61,3 +61,26 @@ export function seasonOf(date = new Date()) {
 }
 
 export { days as _days };
+
+/**
+ * The Byzantine phelonion's color on this date (no rose: their calendar has none): {id, name, color, hex}. Customs vary
+ * from parish to parish; this follows common Ukrainian Greek Catholic practice, on the Gregorian calendar with the
+ * Western date of Easter (as most Byzantine Catholic parishes in the U.S. keep it):
+ *   gold most of the year · white from the Nativity to Theophany and on the Transfiguration · blue on the great feasts
+ *   of the Theotokos · violet in the Great Fast and on the feasts of the Cross · black on Holy Friday · green on Palm
+ *   Sunday and Pentecost · red from Pascha to the Ascension.
+ */
+export function byzantineSeasonOf(date = new Date()) {
+  const d = at(date.getFullYear(), date.getMonth(), date.getDate());
+  const y = d.getFullYear(), md = (m, day) => same(d, at(y, m, day));
+  const s = (id, name, color) => ({ id, name, color, hex: COLORS[color] });
+  const e = easter(y);
+  if (same(d, plus(e, -2))) return s("holy-friday", "Holy Friday", "black");
+  if (same(d, plus(e, -7)) || same(d, plus(e, 49))) return s("green", same(d, plus(e, 49)) ? "Pentecost" : "Palm Sunday", "green");
+  if (d >= e && d <= plus(e, 39)) return s("pascha", "Pascha", "red");
+  if (d >= plus(e, -48) && d < e) return s("great-fast", "The Great Fast", "violet");
+  if (d >= at(y, 11, 25) || d <= at(y, 0, 6) || md(7, 6)) return s("nativity", md(7, 6) ? "Transfiguration" : "Nativity and Theophany", "white");
+  if (md(2, 25) || md(7, 15) || md(8, 8) || md(10, 21)) return s("theotokos", "A feast of the Theotokos", "blue");
+  if (md(8, 14) || md(7, 1)) return s("cross", "A feast of the Cross", "violet");
+  return s("ordinary", "The ordinary Sundays", "gold");
+}
