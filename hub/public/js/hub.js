@@ -18,7 +18,7 @@ const tile = (a) => `
     <button type="button" class="tile-say" data-say="${esc(`${a.name}. ${a.blurb}`)}" aria-label="Hear about ${esc(a.name)}">🔊</button>
   </div>`;
 
-document.getElementById("apps").innerHTML = SUBJECTS.map((s) => {
+document.getElementById("apps").innerHTML = SUBJECTS.filter((s) => !s.page).map((s) => {
   const live = APP_LIST.filter((a) => a.subject === s.id && a.path);
   return live.length ? `<section class="subject" id="${s.id}" style="--c:${s.color}"><h2><span aria-hidden="true">${s.emoji}</span> ${esc(s.title)}</h2><div class="tiles">${live.map(tile).join("")}</div></section>` : "";
 }).join("");
@@ -49,7 +49,7 @@ if (faithTiles) fetch("/watch/data/library.json").then((r) => r.json()).then((li
     + (song ? dayTile(`/watch/#/song/${song.id}`, "Song of the day", song.title, song.poster) : ""));
 }).catch(() => {});
 
-const soon = APP_LIST.filter((a) => !a.path);
+const soon = APP_LIST.filter((a) => !a.path && a.subject !== "games"); // the games page has its own coming-soon tiles
 document.getElementById("soon").innerHTML = soon.length ? `<section class="soon-row" aria-label="Coming soon"><h3>Coming soon</h3>
   <div>${soon.map((a) => `<span class="chip" title="${esc(a.blurb)}"><span aria-hidden="true">${a.emoji}</span> ${esc(a.name)}</span>`).join("")}</div></section>` : "";
 

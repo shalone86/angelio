@@ -6,6 +6,8 @@ export const SUBJECTS = [
   { id: "language", title: "Reading & Writing", emoji: "📖", color: "#14a37f" },
   { id: "faith", title: "Watch & Sing", emoji: "🎵", color: "#ff7a59" },
   { id: "history", title: "History", emoji: "🗺️", color: "#7c5cff" },
+  // the games have their own page (angelio.org/games/); the home page has a banner to it, not tiles
+  { id: "games", title: "Games", emoji: "🎮", color: "#e0453f", page: "/games/" },
 ];
 
 export const APP_LIST = [
@@ -46,14 +48,17 @@ export const APP_LIST = [
     blurb: "Catholic video lessons with little quizzes, and songs to sing along with.",
   },
   {
-    name: "Candle Rack", path: "candles", subject: "faith", grades: "All ages", emoji: "🕯️",
+    name: "Candle Rack", path: "candles", subject: "games", grades: "All ages", emoji: "🕯️",
     blurb: "A game: get the church ready before Mass or the Divine Liturgy. Light the candles, keep the sanctuary lamp burning, and stay up late in the adoration chapel.",
   },
   {
-    name: "Mass Usher", path: "usher", subject: "faith", grades: "All ages", emoji: "🪑",
+    name: "Mass Usher", path: "usher", subject: "games", grades: "All ages", emoji: "🪑",
     blurb: "A game (an early demo): seat the families coming to Mass. Help people scoot down to make room, and keep each family together.",
   },
   // Coming soon (see ROADMAP.md)
+  { name: "Choir", subject: "games", grades: "All ages", emoji: "🎶", blurb: "Tap along with the music in the choir loft: the beat gets faster, then two lanes, then three." },
+  { name: "Saints Match", subject: "games", grades: "All ages", emoji: "😇", blurb: "Memory cards with the saints: find the pairs, then match each saint to their sign." },
+  { name: "Garden Givers", subject: "games", grades: "All ages", emoji: "🥕", blurb: "Plant, water and pick, and fill the food bank's basket for families who need it." },
   { name: "Spelling", subject: "language", grades: "Grades 1–3", emoji: "🔤", blurb: "Hear a word, build it letter by letter, and learn the spelling patterns." },
   { name: "Writing Skills", subject: "language", grades: "Grades 1–4", emoji: "📝", blurb: "From sentences to paragraphs: build, fix and grow your writing." },
   { name: "Catholic History", subject: "history", grades: "All ages", emoji: "⛪", blurb: "Saints, the early Church and the great moments, on drag-and-drop timelines." },

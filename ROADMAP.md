@@ -193,6 +193,11 @@ is the content, so they never need new levels.
 5. **Garden Givers.** Tap to plant, water and pick; fill the food bank's basket. Ramp: crops ripen at different speeds,
    rain helps, crows steal, the food bank asks for certain foods, picked food spoils if left. Pick-one-of-three upgrades
    (a bigger watering can, a helper). Score: meals given.
+**Games page (Nov 22, 2026): angelio.org/games/** ("🎮 Games" in the top menu; a banner on the home page). Every
+app in the "games" group of hub/public/js/apps.js, with your best score and stars, and the coming-soon games; it can be
+added to a phone's home screen as "Angelio Games". Later (his choice): a map of a little parish where each game is a
+building (the church's candle rack and doors, the chapel at night, the choir loft, the garden), drawn in his voxels.
+
 6. **Mass Usher.** Seat arriving families in the church pews (a gentle Tetris). **Demo live Nov 22, 2026 at
    angelio.org/usher/** (apps/usher): a flat top-down church to try the game itself (tap a pew to walk the family there,
    swipe to scoot, tap again to seat, split families, people who won't scoot 📌, a quick bonus, two minutes to Mass);
