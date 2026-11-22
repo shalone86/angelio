@@ -118,6 +118,33 @@ export const CHECKLISTS = [
       { slug: "church-byz-lampada", label: "Lampada", size: [8, 16], note: "Hanging oil lamp. Paint the glass pink: the game colors it for each prayer and season." },
     ],
   },
+  {
+    id: "mass-usher-people", title: "Mass Usher: people", game: "Mass Usher",
+    note: "You're the usher, seating families before Mass. The walking poses are Candle Rack's (man-walk, woman-walk, child-walk, child-girl-walk, grandfather-walk, grandmother-walk): make those once for both games. Sitting faces the altar (away from you): the back of the head matters most. Hair, skin, eyes, shirt, dress, belt and shoes in your marker colors (the game picks each person's own, and gives a family the same shirt or dress color). Until a pose is made, the game uses the boy and girl as stand-ins.",
+    items: [
+      p("usher-idle", "Usher, standing at the doors", "That's you: a jacket, maybe a name badge."),
+      p("usher-walk", "Usher, walking", "Leading a family up the aisle."),
+      p("usher-point", "Usher, pointing to a pew", "\"Right this way!\" when you reach the pew."),
+      p("man-sit", "Man, sitting in a pew"), p("woman-sit", "Woman, sitting in a pew"),
+      p("child-sit", "Child (boy), sitting in a pew"), p("child-girl-sit", "Child (girl), sitting in a pew"),
+      p("grandfather-sit", "Grandfather, sitting in a pew"), p("grandmother-sit", "Grandmother, sitting in a pew"),
+      p("baby-held", "A parent holding a baby, walking", "Families with a baby (counts as one seat)."),
+      p("baby-held-sit", "A parent holding a baby, sitting"),
+      p("person-stay-sit", "Someone who won't scoot, sitting", "Arms crossed, a big hat or a purse on the pew: they like their spot."),
+    ],
+  },
+  {
+    id: "mass-usher-church", title: "Mass Usher: the church", game: "Mass Usher",
+    note: "A nave seen from the back: rows of pews on each side of the aisle, the altar far away, the front doors close to you. The altar can be Candle Rack's.",
+    items: [
+      { slug: "usher-pew", label: "Pew", size: [40, 16], note: "Five seats long, seen from behind (the backrest toward you). The game lines up seven rows on each side." },
+      { slug: "usher-pew-end", label: "Pew end", size: [8, 16], note: "The carved end by the aisle (optional: the plain pew works alone)." },
+      { slug: "usher-front-doors", label: "Front doors", size: [32, 32], note: "Double doors to the narthex. Frame 1 shut, frame 2 open (a family comes in)." },
+      { slug: "usher-holy-water", label: "Holy water font", size: [8, 16], note: "By the doors." },
+      { slug: "usher-aisle-runner", label: "Aisle carpet", size: [8, 16], note: "Repeats up the aisle." },
+      { slug: "usher-hymnal", label: "Hymnal", size: [8, 8], note: "In the pew racks; a nice touch." },
+    ],
+  },
 ];
 
 /** Every slug a checklist names (for the page). */

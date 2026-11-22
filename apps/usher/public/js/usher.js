@@ -24,6 +24,17 @@ export function difficulty(p) {
   return { every: 10 - q * 5, biggest: 3 + Math.round(q * 3) };
 }
 
+// The kinds of people (his models <kind>-walk / <kind>-sit): who sits alone (the regulars) and who comes as a family.
+export const KINDS_ALONE = ["man", "woman", "grandfather", "grandmother"];
+const pick = (list, r) => list[Math.floor(r() * list.length) % list.length];
+/** A family of `size`: one or two grown-ups (sometimes a grandparent), then children. */
+export function familyKinds(size, r) {
+  if (size === 1) return [pick(KINDS_ALONE, r)];
+  const out = r() < 0.75 ? ["man", "woman"] : [pick(["man", "woman"], r), pick(["grandfather", "grandmother"], r)];
+  while (out.length < size) out.push(pick(["child", "child-girl"], r));
+  return out.slice(0, size);
+}
+
 /** pew id → {row, side}; side 0 = left of the aisle, 1 = right. */
 export const pewOf = (id) => ({ row: Math.floor(id / 2), side: id % 2 });
 
@@ -31,8 +42,9 @@ export function newGame({ seed = 1, length = ROUND, regulars = 0.3 } = {}) {
   const r = rng(seed);
   // the pews, with some regulars already sitting here and there (some of them won't scoot: "stay")
   const pews = Array.from({ length: ROWS * 2 }, (_, id) => ({ id, ...pewOf(id), seats: Array(SEATS).fill(null) }));
-  for (const p of pews) for (let s = 0; s < SEATS; s++) if (r() < regulars) p.seats[s] = { family: 0, stay: r() < 0.3 };
-  const g = { r, t: 0, length, pews, queue: [], nextFamily: 1, nextArrival: 0, families: {}, at: null, group: null,
+  let pid = 1;
+  for (const p of pews) for (let s = 0; s < SEATS; s++) if (r() < regulars) p.seats[s] = { family: 0, stay: r() < 0.3, pid: pid++, kind: pick(KINDS_ALONE, r) };
+  const g = { r, t: 0, length, pews, nextPid: pid, queue: [], nextFamily: 1, nextArrival: 0, families: {}, at: null, group: null,
     score: 0, together: 0, split: 0, seatedPeople: 0, over: false };
   arrive(g);
   return g;
@@ -41,7 +53,8 @@ export function newGame({ seed = 1, length = ROUND, regulars = 0.3 } = {}) {
 function arrive(g) {
   const d = difficulty(g.t / g.length), id = g.nextFamily++;
   const size = 1 + Math.floor(g.r() * d.biggest);
-  const fam = { id, size, color: COLORS[(id - 1) % COLORS.length], parts: [], seated: 0, stay: Array.from({ length: size }, () => g.r() < 0.15) };
+  const fam = { id, size, color: COLORS[(id - 1) % COLORS.length], parts: [], seated: 0, stay: Array.from({ length: size }, () => g.r() < 0.15),
+    kinds: familyKinds(size, g.r), pids: Array.from({ length: size }, () => g.nextPid++) };
   g.families[id] = fam; g.queue.push(id);
   if (g.queue.length === 1) fam.front = g.t; // first in line: the clock for "quick!" starts
   g.nextArrival = g.t + d.every * (0.8 + g.r() * 0.4);
@@ -91,7 +104,7 @@ export function seat(g, id) {
       s = e;
     }
     const run = [];
-    for (let s = best[0]; s <= best[1] && left > 0; s++) { p.seats[s] = { family: fam.id, stay: fam.stay[fam.seated] }; fam.seated++; left--; run.push(s); }
+    for (let s = best[0]; s <= best[1] && left > 0; s++) { p.seats[s] = { family: fam.id, stay: fam.stay[fam.seated], pid: fam.pids[fam.seated], kind: fam.kinds[fam.seated] }; fam.seated++; left--; run.push(s); }
     fam.parts.push({ pew: id, seats: run });
     placed.push(...run);
   }

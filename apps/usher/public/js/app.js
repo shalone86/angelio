@@ -1,5 +1,5 @@
-// Mass Usher: seat the families arriving before Mass (his notes: ROADMAP.md, "Mass Usher"). A DEMO: a flat
-// top-down church to try the game itself; his voxel church and people come later. The rules are in usher.js.
+// Mass Usher: seat the families arriving before Mass (his notes: ROADMAP.md, "Mass Usher"). A demo: the church is
+// voxel (nave.js) with his models where they exist and stand-ins for the rest. The rules are in usher.js.
 //
 // Tap a pew: you walk the family there. Swipe along the pew: the people sitting there scoot down and make room
 // (someone with a 📌 likes their spot and won't move). Tap the pew again: the family sits. Anyone left over: tap
@@ -15,7 +15,8 @@ import * as FX from "./kit/fx.js";
 import { showLesson } from "./kit/lesson.js";
 import { vary } from "./kit/vary.js";
 import { esc, say, showFinish, stickerBook, viewGrownups, installClickSounds, wireVoiceToggle } from "./kit/ui.js";
-import { newGame, tick, tapPew, scoot, current, starsFor, ROWS, SEATS, STAR3 } from "./usher.js";
+import { newGame, tick, tapPew, scoot, current, starsFor, STAR3 } from "./usher.js";
+import { createNave, loadModels, MODELS } from "./nave.js";
 
 const app = document.getElementById("app");
 const route = createRouter([
@@ -34,7 +35,7 @@ function viewHome() {
     <section class="hero">
       <h1 class="title">Mass Usher</h1>
       <p class="lede">Families are coming to Mass! Find each family a pew, help people scoot down to make room, and seat families together.</p>
-      <p class="demo-chip">🧪 Demo: simple pictures for now</p>
+      <p class="demo-chip">🧪 Demo: some stand-ins for now</p>
       <a class="btn big primary play-btn" href="#/play">⛪ Play</a>
       ${best ? `<p class="muted">Your best: <b>${best}</b>${p.stars ? ` · ${"★".repeat(p.stars)}` : ""}</p>` : ""}
     </section>
@@ -64,27 +65,24 @@ function viewPlay() {
   document.body.classList.add("in-game", "usher-game");
   app.innerHTML = `
     <section class="ush-play">
+      <canvas class="nave" aria-label="The church: tap a pew to walk the family there, swipe along it to make room"></canvas>
       <div class="hud">
         <a class="icon-btn" href="#/" aria-label="Stop and go home">✕</a>
         <div class="clock" aria-label="Time until Mass"><span class="clock-label">Mass in</span> <b data-clock>2:00</b></div>
         <div class="score"><b data-score>0</b></div>
         <button class="icon-btn toggle" data-voice title="Read aloud">🔊</button>
       </div>
-      <div class="church" data-church>
-        <div class="altar" aria-hidden="true"><span class="cross">✝</span></div>
-        <div class="rows" data-rows></div>
-        <div class="doors"><span class="door-sign">🚪 Doors</span><span class="queue" data-queue></span></div>
-        <div class="usher" data-usher aria-hidden="true"><span class="me">🧑‍💼</span><span class="with" data-with></span></div>
-      </div>
+      <div class="line-up" aria-label="Families waiting"><span data-with></span><span class="queue" data-queue></span></div>
+      <div class="pins" aria-hidden="true"></div>
       <div class="bubble ush-bubble" aria-live="polite"><span class="mascot" aria-hidden="true">⛪</span><p class="say"></p></div>
       <div class="pops" aria-hidden="true"></div>
       <div class="card ush-lesson" hidden></div>
     </section>`;
   wireVoiceToggle(app.querySelector("[data-voice]"));
   const $ = (s) => app.querySelector(s);
-  const bubble = $(".ush-bubble"), popsEl = $(".pops"), church = $("[data-church]"), usherEl = $("[data-usher]");
+  const bubble = $(".ush-bubble"), popsEl = $(".pops"), pinsEl = $(".pins"), canvas = $("canvas.nave");
   const talk = talker(bubble);
-  let alive = true, raf = 0, walking = false, lastFront = null;
+  let alive = true, raf = 0, walking = false, nave = null;
 
   (async () => {
     if (!S.progress("usher").plays) {
@@ -98,85 +96,60 @@ function viewPlay() {
       card.hidden = true;
       if (!alive) return;
     }
+    say(bubble, "Opening the church doors…", { speakText: false });
+    const models = await loadModels(MODELS);
+    if (!alive) return;
+    nave = createNave(canvas, { models });
+    const fitView = () => nave?.resize({ top: ($(".hud")?.offsetHeight ?? 56) + 6, bottom: (bubble.offsetHeight || 60) + ($(".line-up")?.offsetHeight ?? 40) + 20 });
+    fitView(); addEventListener("resize", fitView);
     const g = newGame({ seed: Math.floor(Math.random() * 1e9) });
-    window.__usher = { game: g }; // (for the browser tests)
+    window.__usher = { game: g, nave }; // (for the browser tests)
+    nave.sync(g); nave.family(current(g));
     talk("Families are coming to Mass! Tap a pew to walk the first family there.", { urgent: true });
 
-    // ── the church: rows of pews, a pew on each side of the aisle ──
-    const rows = $("[data-rows]");
-    rows.innerHTML = Array.from({ length: ROWS }, (_, r) => `<div class="row">
-      <div class="pew left" data-pew="${r * 2}"></div><div class="aisle"></div><div class="pew right" data-pew="${r * 2 + 1}"></div></div>`).join("");
-    const pewEl = (id) => rows.querySelector(`[data-pew="${id}"]`);
-    function drawPew(id) {
-      const p = g.pews[id], el = pewEl(id);
-      // seat 0 is by the aisle: on a left pew it's drawn last (rightmost)
-      const order = id % 2 === 0 ? [...Array(SEATS).keys()].reverse() : [...Array(SEATS).keys()];
-      el.innerHTML = order.map((s) => { const who = p.seats[s]; const fam = who?.family ? g.families[who.family] : null;
-        return `<span class="seat${who ? " full" : ""}${who?.stay ? " stay" : ""}" style="${who ? `--c:${fam ? fam.color : "#9aa3ad"}` : ""}">${who?.stay ? "📌" : ""}</span>`; }).join("");
-      el.classList.toggle("here", g.at === id);
-    }
-    const drawAll = () => { for (let i = 0; i < ROWS * 2; i++) drawPew(i); };
-    drawAll();
-
-    // ── the usher: walks between the doors and the aisle end of a pew; the family walks with him ──
-    function place(x, y, instant) {
-      const from = usherEl._at ?? [x, y], d = Math.hypot(x - from[0], y - from[1]);
-      const ms = instant ? 0 : Math.max(250, Math.min(1400, d * 2.2));
-      usherEl.style.transition = `left ${ms}ms ease-in-out, top ${ms}ms ease-in-out`;
-      usherEl.style.left = `${x}px`; usherEl.style.top = `${y}px`; usherEl._at = [x, y];
-      return new Promise((r) => setTimeout(r, ms));
-    }
-    const at = (el, side) => { const c = church.getBoundingClientRect(), b = el.getBoundingClientRect(); return [side === "left" ? b.right - c.left : side === "right" ? b.left - c.left : b.left - c.left + b.width / 2, b.top - c.top + b.height / 2]; };
-    const toDoors = (instant) => place(...at($(".doors"), "mid"), instant);
-    const toPew = (id) => place(...at(pewEl(id), id % 2 === 0 ? "left" : "right"));
-    toDoors(true);
-    addEventListener("resize", () => { if (g.at === null) toDoors(true); else toPew(g.at); });
-
     const pop = (text, x, y, cls = "") => { const el = document.createElement("div"); el.className = "pop " + cls; el.textContent = text; el.style.left = x + "px"; el.style.top = y + "px"; popsEl.append(el); setTimeout(() => el.remove(), 1200); };
-    const popAt = (id, text, cls) => { const b = pewEl(id).getBoundingClientRect(); pop(text, b.left + b.width / 2, b.top, cls); };
+    const popAt = (id, text, cls) => { const p = nave.pewScreen(id); pop(text, p.x, p.y - 20, cls); };
 
     // ── tapping and swiping a pew ──
-    let down = null;
-    rows.addEventListener("pointerdown", (e) => { const el = e.target.closest("[data-pew]"); if (el) down = { id: +el.dataset.pew, x: e.clientX }; });
-    rows.addEventListener("pointerup", async (e) => {
+    let down = null, lastFront = current(g)?.id ?? null;
+    canvas.addEventListener("pointerdown", (e) => { const id = nave.pick(e.clientX, e.clientY); down = id === null ? null : { id, x: e.clientX }; });
+    canvas.addEventListener("pointerup", async (e) => {
       if (!down || walking || g.over) { down = null; return; }
       const { id, x } = down; down = null;
       const dx = e.clientX - x;
       if (Math.abs(dx) > 24) {
-        // a swipe toward the wall is +1 (left pews' wall is on the left, right pews' on the right)
+        // a swipe toward the wall is +1 (left pews' wall is on the left of the screen, right pews' on the right)
         const dir = (id % 2 === 0 ? -dx : dx) > 0 ? 1 : -1;
         const r = scoot(g, id, dir);
-        if (r.type === "scooted") { sfx.whoosh(); drawPew(id); talk.once("scooted", "Scoot over, please! Now tap the pew to seat the family."); }
+        if (r.type === "scooted") { sfx.whoosh(); nave.sync(g); talk.once("scooted", "Scoot over, please! Now tap the pew to seat the family."); }
         else if (r.type === "none") { sfx.tap(); talk.once("swipe-here", "Walk the family to this pew first, then swipe to make room."); }
         else sfx.tap();
         return;
       }
       const r = tapPew(g, id);
       if (r.type === "walk") {
-        walking = true; sfx.tap(); drawAll();
-        await toPew(id); walking = false;
-        const fam = current(g), p = g.pews[id], empty = p.seats.filter((s) => !s).length;
-        if (fam && empty === 0) talk("This pew is full. Tap a different pew!");
+        walking = true; sfx.tap(); nave.sync(g);
+        await nave.walkTo(id); walking = false;
+        const empty = g.pews[id].seats.filter((s) => !s).length;
+        if (current(g) && empty === 0) talk("This pew is full. Tap a different pew!");
         else talk.once("at-pew", "Swipe along the pew to make room, then tap it again to seat them!");
         return;
       }
       if (r.type === "full") { sfx.tap(); talk("This pew is full. Tap a different pew!", { urgent: true }); return; }
-      if (r.type === "some") {
-        sfx.chime(); drawPew(id);
-        talk(`${NUM[r.left] ?? r.left} more to seat. Tap another pew!`, { urgent: true });
-        return;
-      }
+      if (r.type === "some") { sfx.chime(); nave.sync(g); talk(`${NUM[r.left] ?? r.left} more to seat. Tap another pew!`, { urgent: true }); return; }
       if (r.type === "seated") {
-        drawAll();
+        nave.sync(g);
         if (r.together) { sfx.win(); popAt(id, `Together! +${r.points}`, "good"); talk(vary("together", ["Together! Wonderful!", "The whole family, side by side!", "Perfect, all together!"])); }
         else { sfx.chime(); popAt(id, `+${r.points}`); talk.once("split", "Seated! Families like to sit together, so try to keep them in one pew."); }
         if (r.quick) setTimeout(() => popAt(id, "Quick! ⚡", "quick"), 350);
-        walking = true; await toDoors(); walking = false;
+        walking = true; await nave.walkHome(); walking = false;
+        nave.family(current(g));
       }
     });
 
     // ── the clock, arrivals, and what's on screen ──
     let last = performance.now(), ended = false;
+    const pins = new Map();
     const frame = (now) => {
       if (!alive) return;
       const dt = document.hidden ? 0 : Math.min(0.1, (now - last) / 1000); last = now;
@@ -186,17 +159,25 @@ function viewPlay() {
           else if (ev.type === "end") ended = true;
         }
         const fam = current(g);
-        if (fam && fam.id !== lastFront && !walking && g.at === null) {
-          lastFront = fam.id;
-          talk(`A family of ${NUM[fam.size] ?? fam.size}! Tap a pew for them.`);
-        }
-        $("[data-with]").innerHTML = fam ? dots(fam) : "";
-        $("[data-queue]").innerHTML = g.queue.slice(1, 5).map((id) => dots(g.families[id])).join("") + (g.queue.length > 5 ? `<b>+${g.queue.length - 5}</b>` : "");
+        if (fam && fam.id !== lastFront && !walking && g.at === null) { lastFront = fam.id; nave.family(fam); }
+        if (fam && fam.id === lastFront && !walking && g.at === null && !fam.announced) { fam.announced = true; talk(`A family of ${NUM[fam.size] ?? fam.size}! Tap a pew for them.`); }
+        if (!fam && lastFront !== null && !walking) { lastFront = null; nave.family(null); }
+        $("[data-with]").innerHTML = fam ? `<b>Now:</b> ${dots(fam)}` : "";
+        $("[data-queue]").innerHTML = g.queue.length > 1 ? `<b>Next:</b> ${g.queue.slice(1, 4).map((id) => dots(g.families[id])).join("")}${g.queue.length > 4 ? ` <b>+${g.queue.length - 4}</b>` : ""}` : "";
         const left = Math.max(0, Math.ceil(g.length - g.t));
         $("[data-clock]").textContent = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`;
         $("[data-score]").textContent = g.score;
+        // the 📌 over anyone who won't scoot
+        const seen = new Set();
+        for (const st of nave.stayers()) {
+          seen.add(st.pid);
+          let el = pins.get(st.pid); if (!el) { el = document.createElement("span"); el.className = "pin"; el.textContent = "📌"; pinsEl.append(el); pins.set(st.pid, el); }
+          el.style.left = st.x + "px"; el.style.top = st.y + "px";
+        }
+        for (const [pid, el] of pins) if (!seen.has(pid)) { el.remove(); pins.delete(pid); }
         if (ended) finish();
       }
+      nave.update(dt);
       raf = requestAnimationFrame(frame);
     };
     raf = requestAnimationFrame(frame);
@@ -207,7 +188,7 @@ function viewPlay() {
       if (!alive) return;
       const old = S.settings().best || 0, stars = starsFor(g), newBest = g.score > old;
       S.setSetting("best", Math.max(old, g.score));
-      cancelAnimationFrame(raf);
+      cancelAnimationFrame(raf); nave.dispose(); nave = null;
       document.body.classList.remove("usher-game");
       showFinish(app, { id: "usher", stars, mistakes: 3 - stars, title: newBest ? "A new best!" : "Everyone's ready for Mass!", done: `You scored ${g.score}.`, again: "#/play", onAgain: route });
       app.querySelector(".finish h1")?.insertAdjacentHTML("afterend", `<p class="final-score">You scored <b>${g.score}</b>${newBest ? " · a new best!" : ` · your best: ${Math.max(old, g.score)}`}</p>
@@ -215,7 +196,7 @@ function viewPlay() {
     }
   })();
 
-  return () => { alive = false; cancelAnimationFrame(raf); };
+  return () => { alive = false; cancelAnimationFrame(raf); nave?.dispose(); nave = null; };
 }
 
 installClickSounds();
