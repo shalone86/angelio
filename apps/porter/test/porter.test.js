@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { newGame, tick, toggleDoor, greet, sendAway, waiting, starsFor, pool, multOf, GRACE, FREE_OPEN } from "../public/js/porter.js";
+import { newGame, tick, toggleDoor, greet, sendAway, waiting, starsFor, pool, multOf, GRACE, FREE_OPEN, drafty } from "../public/js/porter.js";
 import { STAGES, isOpen } from "../public/js/stages.js";
 import { VISITORS, ANIMALS, hintFor, WELCOMES } from "../public/js/visitors.js";
 
@@ -266,4 +266,18 @@ test("you can answer as soon as a visitor appears, even while they're still step
   while (!g.front) tick(g, 0.1);
   assert.equal(g.front.state, "arriving"); assert.ok(waiting(g), "the buttons are live");
   assert.ok(sendAway(g)[0].correct);
+});
+
+test("drafty follows the porter's own free time (the Old Brother waits longer)", () => {
+  const u = at(porterById("porter"), MIX.in), o = at(porterById("old"), MIX.in);
+  for (const g of [u, o]) { g.door = true; g.doorOpenFor = FREE_OPEN + 0.5; }
+  assert.ok(drafty(u), "the usual porter: draft after 2 s");
+  assert.ok(!drafty(o), "the Old Brother: not yet");
+  o.doorOpenFor = 6; assert.ok(drafty(o));
+  u.door = false; assert.ok(!drafty(u));
+});
+
+test("special guests carry a short name for the reminder", () => {
+  for (const v of VISITORS) if (Object.values(v.answers).includes("greet")) assert.ok(v.who, v.id);
+  const g = at(porterById("porter"), MIX.greet); assert.ok(g.front.who);
 });

@@ -38,17 +38,17 @@ export const VISITORS = [
   { id: "heater", emoji: "🔧", kind: "man", vip: true, line: "The heater is broken, and it's freezing! I'm the repairman. Hurry!", answers: { night: "in" }, why: { default: "The brothers asked for the repairman: the heater is broken." } },
 
   // ── special guests who hope for a proper greeting: tap Welcome ──
-  { id: "bishop", emoji: "✝️", kind: "grandfather", vip: true, line: "I am the bishop. I'm visiting the brothers today.", answers: ALL("greet"),
+  { id: "bishop", who: "The bishop", emoji: "✝️", kind: "grandfather", vip: true, line: "I am the bishop. I'm visiting the brothers today.", answers: ALL("greet"),
     reply: "Welcome, Your Excellency! Thanks be to God for your visit!", why: { default: "A bishop deserves a proper greeting. Tap Welcome!" } },
-  { id: "abbot", emoji: "🎩", kind: "grandfather", vip: true, line: "I'm the visiting abbot. The brothers are expecting me!", answers: S("greet", "greet", null),
+  { id: "abbot", who: "The visiting abbot", emoji: "🎩", kind: "grandfather", vip: true, line: "I'm the visiting abbot. The brothers are expecting me!", answers: S("greet", "greet", null),
     reply: "Peace, Father Abbot! Welcome, welcome!", why: { default: "A visiting abbot deserves a proper greeting. Tap Welcome!" } },
-  { id: "mayor", emoji: "🎖️", kind: "man", line: "I'm the mayor. I came to thank the brothers.", answers: S("greet", "greet", null),
+  { id: "mayor", who: "The mayor", emoji: "🎖️", kind: "man", line: "I'm the mayor. I came to thank the brothers.", answers: S("greet", "greet", null),
     reply: "Welcome, Mr. Mayor! The brothers are honored.", why: { default: "The mayor deserves a proper greeting. Tap Welcome!" } },
-  { id: "mother", emoji: "🕊️", kind: "grandmother", line: "I'm Mother Abbess, from the sisters' convent. Peace to you!", answers: S("greet", "greet", null),
+  { id: "mother", who: "Mother Abbess", emoji: "🕊️", kind: "grandmother", line: "I'm Mother Abbess, from the sisters' convent. Peace to you!", answers: S("greet", "greet", null),
     reply: "Welcome, Mother! Peace to you and the sisters!", why: { default: "Mother Abbess deserves a proper greeting. Tap Welcome!" } },
-  { id: "glory", emoji: "🙏", kind: "man", line: "Glory to Jesus Christ!", answers: ALL("greet"),
+  { id: "glory", who: "Someone who says Glory to Jesus Christ", emoji: "🙏", kind: "man", line: "Glory to Jesus Christ!", answers: ALL("greet"),
     reply: "Glory forever!", why: { default: "When someone says \"Glory to Jesus Christ!\", we answer \"Glory forever!\" Tap Welcome!" } },
-  { id: "praised", emoji: "🙌", kind: "woman", line: "Praised be Jesus Christ!", answers: ALL("greet"),
+  { id: "praised", who: "Someone who says Praised be Jesus Christ", emoji: "🙌", kind: "woman", line: "Praised be Jesus Christ!", answers: ALL("greet"),
     reply: "Now and forever. Amen!", why: { default: "When someone says \"Praised be Jesus Christ!\", we answer \"Now and forever. Amen!\" Tap Welcome!" } },
 
   // ── people who aren't coming to pray today: kindly send them on ──

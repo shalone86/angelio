@@ -16,7 +16,7 @@ import * as FX from "./kit/fx.js";
 import { showLesson } from "./kit/lesson.js";
 import { vary } from "./kit/vary.js";
 import { esc, say, showFinish, stickerBook, viewGrownups, installClickSounds, wireVoiceToggle } from "./kit/ui.js";
-import { newGame, tick, toggleDoor, greet, sendAway, ringBell, waiting, starsFor, multOf, FREE_OPEN } from "./porter.js";
+import { newGame, tick, toggleDoor, greet, sendAway, ringBell, waiting, starsFor, multOf, drafty } from "./porter.js";
 import { PORTERS, porterById, porterOpen } from "./porters.js";
 import { WELCOMES } from "./visitors.js";
 import { STAGES, stageById, isOpen } from "./stages.js";
@@ -112,7 +112,7 @@ function viewPlay(stageId) {
         <button class="icon-btn toggle" data-voice title="Read aloud">🔊</button>
       </div>
       ${stage.endless ? `<div class="line-meter" data-line aria-label="People waiting at the gate (when the row fills, the day is over)"></div>` : ""}
-      <div class="draft-chip" data-draft hidden>🍃 Draft! Close the door!</div>
+      <div class="draft-chip" data-draft hidden>🥶 Brr! Close the door!</div>
       <div class="answers" data-answers>
         <button type="button" class="answer door" data-act="door" aria-pressed="false"><span aria-hidden="true">🚪</span> <b data-door-label>Open door</b></button>
         <button type="button" class="answer in" data-act="greet"><span aria-hidden="true">👋</span> Welcome</button>
@@ -157,13 +157,22 @@ function viewPlay(stageId) {
     const popAt = (id, text, cls) => { const p = gate.headOf(id); if (p) pop(text, p.x, p.y - 30, cls); };
     const popDoor = (text, cls) => { const p = gate.screenOf(0, 14, 0); pop(text, p.x, p.y, cls); };
     const doorBtn = $('[data-act="door"]'), doorLabel = $("[data-door-label]");
-    let lastSpoken = 0;
+    // a button that WOULD have been right shakes, so a mistake always points at it
+    const BTN = { in: "door", greet: "greet", away: "away" }, rumbleTimers = new Map();
+    const rumble = (act) => {
+      const b = $(`[data-act="${BTN[act] ?? act}"]`); if (!b) return;
+      b.classList.remove("rumble"); void b.offsetWidth; b.classList.add("rumble");
+      clearTimeout(rumbleTimers.get(b)); rumbleTimers.set(b, setTimeout(() => b.classList.remove("rumble"), 1600));
+    };
+    let hintGiven = false, hintId = 0, draftTold = false, draftRemindAt = 0;
+    const clearHint = () => { hintId = 0; $('[data-act="greet"]').classList.remove("hint"); };
 
     // ── what happened: the rules say, the screen shows it. Nothing here waits for the voice: the next line cuts the last one off ──
     const handle = (events) => {
       for (const ev of events) {
         if (ev.type === "step-up") {
           talk(ev.v.line, { urgent: true, mascot: ev.v.emoji }); // the voice starts while they walk up
+          if (ev.v.answer === "greet" && !hintGiven) { hintGiven = true; hintId = ev.v.id; $('[data-act="greet"]').classList.add("hint"); } // the first special guest: a soft glow on Welcome
         } else if (ev.type === "knock") {
           sfx.tap(); setTimeout(() => alive && sfx.tap(), 200);
         } else if (ev.type === "door") {
@@ -171,6 +180,7 @@ function viewPlay(stageId) {
           doorBtn.setAttribute("aria-pressed", String(ev.open)); doorBtn.classList.toggle("open", ev.open); doorLabel.textContent = ev.open ? "Close door" : "Open door";
         } else if (ev.type === "decided") {
           const v = ev.v, crowded = !!(g.front || g.queue.length);
+          if (v.id === hintId) clearHint();
           if (ev.dog) { gate.dogChase(); sfx.chime(); popAt(v.id, `+${ev.points} 🐕`, "quick"); gate.sendOn(v.id); say(bubble, "Good dog! Woof!", { speakText: false }); continue; }
           if (ev.how === "away") gate.sendOn(v.id); else gate.enter(v.id);
           if (ev.forgiven) { popAt(v.id, "Forgiven! 💛", "good"); stop(); talk(`That's all right! ${v.why}`, { urgent: true, mascot: "💛" }); continue; }
@@ -185,10 +195,20 @@ function viewPlay(stageId) {
             popAt(v.id, "Just the door was enough!", "oops"); stop();
           } else {
             sfx.oops(); popAt(v.id, `${ev.points}`, "oops"); stop();
-            talk(`${vary("oops", ["Oh dear! Not quite.", "Hmm, not this time.", "Oops, that wasn't it."])} ${v.why}`, { urgent: true, mascot: "⛪" });
+            rumble(v.answer); // the button that would have been right
+            if (ev.how === "door" && v.answer === "greet") { // an important guest let in with no greeting
+              popAt(v.id, "👋?", "good");
+              const who = v.who ?? "This visitor";
+              talk(`Oh! ${who} is an important guest. Always tap Welcome for important people! ${v.why}`, { urgent: true, mascot: "👋" });
+            } else {
+              if (ev.how === "door" && v.answer === "away") { gate.alarm(1.5); popDoor("✗", "bad"); } // someone who doesn't belong walked in
+              talk(`${vary("oops", ["Oh dear! Not quite.", "Hmm, not this time.", "Oops, that wasn't it."])} ${v.why}`, { urgent: true, mascot: "⛪" });
+            }
           }
         } else if (ev.type === "leave") {
           gate.giveUp(ev.v.id); sfx.oops(); popAt(ev.v.id, "Gave up", "oops");
+          if (ev.v.id === hintId) clearHint();
+          if (ev.v.answer !== "away") rumble(ev.v.answer); // they should have come in: show the button
           talk(vary("gaveup", ["They got tired of waiting and went home. That's okay!", "Oh, they went home. Try to answer a little faster!"]), { urgent: true, mascot: "⛪" });
         } else if (ev.type === "bell") {
           sfx.win(); popDoor("🔔 Ding, dong!", "good"); stop(); talk("Ding, dong! Everyone is patient again.", { urgent: true, mascot: "🔔" });
@@ -226,8 +246,14 @@ function viewPlay(stageId) {
         }
         const bb = answers.querySelector('[data-act="bell"]'); if (bb) bb.disabled = g.bellUsed;
         answers.classList.toggle("ready", !!at);
-        const drafty = g.door && g.doorOpenFor > FREE_OPEN;
-        $("[data-draft]").hidden = !drafty; gate.setDraft(drafty);
+        const cold = drafty(g); // the door has been open too long (this porter's own free time)
+        $("[data-draft]").hidden = !cold; gate.setDraft(cold); doorBtn.classList.toggle("alarm", cold);
+        const label = cold ? "Close door!" : g.door ? "Close door" : "Open door";
+        if (doorLabel.textContent !== label) doorLabel.textContent = label;
+        if (cold) {
+          if (!draftTold) { draftTold = true; draftRemindAt = now + 8000; talk("Brr! The door is open and a cold draft is blowing in. Tap Close door!", { urgent: true, mascot: "🥶" }); }
+          else if (now >= draftRemindAt && talk(vary("draft", ["Close the door, it's cold!", "Brr! Shut the door!", "The draft is costing points! Close the door!"]), { mascot: "🥶" })) draftRemindAt = now + 8000; // not over a visitor who just spoke
+        }
         const lm = $("[data-line]");
         if (lm) { const n = Math.min(g.queue.length, stage.maxLine), html = `<span>🚪</span>${"<i class=on></i>".repeat(n)}${"<i></i>".repeat(stage.maxLine - n)}`; if (lm.innerHTML !== html) lm.innerHTML = html; lm.classList.toggle("danger", n >= stage.maxLine - 2); }
         // the picture over each visitor's head, and (the one at the door) how long they'll wait

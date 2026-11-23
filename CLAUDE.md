@@ -20,6 +20,7 @@
   them doesn't change what people see once he has saved in the Studio. To change content, change it in the Studio (or ask
   him to), or update R2 and say so. Backup commits ("Studio backup: …") land on main: pull before working.
 
+- **Workflow (owner's wish, Nov 2026):** plan with the big model, then hand the coding to a Sonnet subagent whenever that saves tokens.
 - This is part of **Angelio** (angelio.org), the owner's brand of free kids' learning apps. The
   hub is shalone86/angelio; shared building blocks come from shalone86/app-template.
 - **Reminder for the owner:** after finishing any new feature or app, remind the owner about the

@@ -50,6 +50,8 @@ const progress = (g) => Math.min(1, g.t / g.length);
 /** The multiplier for the next right answer. */
 export const multOf = (g) => Math.min(MAX_MULT, 1 + Math.floor(g.streak / (g.porter.comboEvery ?? COMBO)));
 const graceOf = (g) => g.porter.grace ?? GRACE, freeOpenOf = (g) => g.porter.freeOpen ?? FREE_OPEN, stepGapOf = (g) => g.porter.stepGap ?? 0;
+/** Is the draft on (the door has been open longer than this porter's free time)? The screen glows red and reminds. */
+export const drafty = (g) => !!g.door && g.doorOpenFor > freeOpenOf(g);
 export const DOG_DELAY = 0.6;  // the dog gets to an animal at the door before the open door lets it in
 export const DOG_POINTS = 5;   // for an animal the dog chased off (no combo)
 export const DOG_BARK = 1.5;   // seconds Send away waits after the dog barks
@@ -62,7 +64,7 @@ function arrive(g) {
   const def = list[Math.floor(g.r() * list.length) % list.length];
   g.last = def.id;
   const max = st.patience * (g.porter.patience ?? 1) * (def.vip ? VIP_PATIENCE : 1), rules = st.rules ?? st.id;
-  const v = { id: g.nextId++, def: def.id, emoji: def.emoji, kind: def.kind, robe: def.robe, vip: !!def.vip, line: def.line, reply: def.reply ?? "", later: def.later ?? "", why: hintFor(def, rules), answer: def.answers[rules],
+  const v = { id: g.nextId++, def: def.id, emoji: def.emoji, kind: def.kind, robe: def.robe, vip: !!def.vip, who: def.who, line: def.line, reply: def.reply ?? "", later: def.later ?? "", why: hintFor(def, rules), answer: def.answers[rules],
     patience: max, max, waited: 0, state: "line" };
   g.queue.push(v);
   // a timed stage: a little busier toward the bell. The feast day: every minute, the gaps between people shrink by a third (`perMinute`), down to `floor`

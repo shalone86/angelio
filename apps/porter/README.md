@@ -17,6 +17,7 @@ of boxes) and the gate is built from plain blocks. `vox.js`, `looks.js` and thre
   "Glory to Jesus Christ!" → "Glory forever!"): the big points. **🙋 Send away** kindly sends the others on their way
   (never "go away"). Nothing waits for the voice: the next visitor's line cuts the last one off, and a fast player just
   keeps going. Keys: space/D door, W welcome, S send away.
+- **Every mistake is obvious** (screen only, the rules don't change): a draft makes the door glow and shake red (the 🚪 button turns red, "Close door!", shakes; a big red chip; the voice warns, then reminds every 8 s); a wrong answer shakes the button that would have been right (gold ring); someone who doesn't belong let in gets a red door and a big ✗; a special guest let in without Welcome gets "Always tap Welcome for important people!" (visitors' `who` in `visitors.js`); the first special guest each round makes Welcome glow softly.
 - Right answers in a row build a combo (×2 after 5, up to ×5); a wrong answer costs 8 and breaks it, and the gentle reason is
   read out ("A goat in the chapel would eat the flowers!"). Only wrong answers count as mistakes (no mistakes: a giant sticker).
   A visitor made to wait too long gives up; the abbot and the repairman are in a hurry.

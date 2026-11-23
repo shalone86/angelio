@@ -62,6 +62,16 @@ export function createGate(canvas, { models = {}, night = false, porter: who = {
     }
     return new THREE.SpriteMaterial({ map: haloTex, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true });
   };
+  // the same glow in red: the door's alarm (a draft, or someone let in who doesn't belong)
+  let redTex = null;
+  const redHaloMat = () => {
+    if (!redTex) {
+      const c = document.createElement("canvas"); c.width = c.height = 64; const x = c.getContext("2d");
+      const gr = x.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, "rgba(255,120,110,1)"); gr.addColorStop(0.4, "rgba(224,69,63,.6)"); gr.addColorStop(1, "rgba(224,69,63,0)");
+      x.fillStyle = gr; x.fillRect(0, 0, 64, 64); redTex = new THREE.CanvasTexture(c);
+    }
+    return new THREE.SpriteMaterial({ map: redTex, depthWrite: false, depthTest: false, transparent: true, opacity: 0 }); // normal blending: additive red turns white on the pale ground
+  };
 
   // ── light and the world (stand-ins until his own pieces) ──
   scene.add(new THREE.HemisphereLight(night ? "#8fa0d0" : "#fff4e0", night ? "#1a1a2a" : "#6a5a3a", night ? 0.85 : 0.95));
@@ -75,14 +85,16 @@ export function createGate(canvas, { models = {}, night = false, porter: who = {
   block(21, 2.6, 4.4, 0, 9.4, 0, mat(STONE)); block(21, 1, 5, 0, 12, 0, mat(STONE_DK)); // the lintel over the door
   block(1, 5, 1, 0, 13, 0, mat("#c9971f")); block(4, 1, 1, 0, 16, 0, mat("#c9971f")); // a cross on top
   // the door: two leaves hinged on the gateposts, swinging inward (toward you) when it opens
+  const doorWood = new THREE.MeshLambertMaterial({ color: "#7a4c24" }), WOOD = new THREE.Color("#7a4c24"), ALARM_RED = new THREE.Color("#e0453f");
   const leaves = [-1, 1].map((s) => {
     const pivot = new THREE.Group(); pivot.position.set(s * 6, 0, 0); scene.add(pivot);
-    block(6, 9.4, 0.9, -s * 3, 0, 0, mat("#7a4c24"), pivot);
+    block(6, 9.4, 0.9, -s * 3, 0, 0, doorWood, pivot);
     block(5, 0.6, 1.1, -s * 3, 2, 0, mat("#4a3018"), pivot); block(5, 0.6, 1.1, -s * 3, 6.6, 0, mat("#4a3018"), pivot); // iron bands
     block(0.7, 1.4, 1.2, -s * 0.8, 4.2, 0, mat("#c9971f"), pivot);                                                    // a handle
     return { pivot, s };
   });
-  let doorTarget = 0, doorOpen = 0, draft = false;
+  const alarmGlow = new THREE.Sprite(redHaloMat()); alarmGlow.position.set(0, 5, 2); alarmGlow.scale.set(26, 20, 1); alarmGlow.renderOrder = 5; scene.add(alarmGlow);
+  let doorTarget = 0, doorOpen = 0, draft = false, alarmUntil = 0, alarmLevel = 0;
   // lanterns on the gateposts
   const lanterns = [];
   for (const sx of [-1, 1]) {
@@ -248,6 +260,8 @@ export function createGate(canvas, { models = {}, night = false, porter: who = {
   const setDoor = (open) => { wanted = open; };
   /** The door swings open for a moment (a greeting at a closed door). */
   const flash = (seconds = 1.3) => { flashUntil = time + seconds; };
+  /** The door glows red for a moment (someone who doesn't belong walked in). */
+  const alarm = (seconds = 1.5) => { alarmUntil = time + seconds; };
   /** They walk in through the door and across the courtyard to the chapel. */
   async function enter(id) {
     const f = folk.get(id); if (!f) return; f.mode = "in"; const a = f.a;
@@ -284,6 +298,13 @@ export function createGate(canvas, { models = {}, night = false, porter: who = {
     doorOpen += (doorTarget - doorOpen) * Math.min(1, dt * 7);
     for (const l of leaves) l.pivot.rotation.y = -l.s * doorOpen * 1.45;
     lanterns.forEach((l, i) => { const k = 1 + (draft ? 0.4 : 0.12) * Math.sin(time * (draft ? 22 : 9) + i * 2); l.halo.scale.setScalar((night ? 9 : 5) * k); });
+    // the alarm: the door pulses red (a draft, or alarm())
+    const alarmOn = draft || time < alarmUntil;
+    alarmLevel += ((alarmOn ? 1 : 0) - alarmLevel) * Math.min(1, dt * 10);
+    const pulse = 0.65 + 0.35 * Math.sin(time * 9);
+    doorWood.color.copy(WOOD).lerp(ALARM_RED, alarmLevel * (0.55 + 0.45 * pulse));
+    alarmGlow.material.opacity = alarmLevel * (0.5 + 0.35 * pulse);
+    for (const l of lanterns) l.flame.material.color.set(alarmLevel > 0.5 ? "#ff5a4f" : "#ffd27a");
     R.render(scene, cam);
   }
   const screenOf = (x, y, z) => { const v = new THREE.Vector3(x, y, z).project(cam), rect = canvas.getBoundingClientRect(); return { x: rect.left + ((v.x + 1) / 2) * rect.width, y: rect.top + ((1 - v.y) / 2) * rect.height }; };
@@ -291,6 +312,6 @@ export function createGate(canvas, { models = {}, night = false, porter: who = {
   const headOf = (id) => { const f = folk.get(id); if (!f) return null; const p = f.a.g.position; return screenOf(p.x, 10.5 * f.a.g.scale.y, p.z); };
   /** The draft: the lanterns flicker while the door has been open too long. */
   const setDraft = (on) => { draft = on; };
-  return { update, resize, sync, enter, setDoor, flash, setDraft, sendOn, giveUp, dogChase, headOf, positions: () => actors.map((a) => ({ x: a.agent.x, z: a.agent.z, r: a.agent.r, moving: !!a.agent.goal })), screenOf, hasModels: () => Object.keys(models),
+  return { update, resize, sync, enter, setDoor, flash, alarm, setDraft, sendOn, giveUp, dogChase, headOf, positions: () => actors.map((a) => ({ x: a.agent.x, z: a.agent.z, r: a.agent.r, moving: !!a.agent.goal })), screenOf, hasModels: () => Object.keys(models),
     dispose: () => { disposed = true; R.dispose(); R.forceContextLoss?.(); } };
 }
