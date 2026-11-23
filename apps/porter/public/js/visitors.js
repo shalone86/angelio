@@ -1,12 +1,13 @@
-// Who comes knocking at the monastery door. Each visitor says who they are (read aloud, with a picture over their head),
+// Who comes knocking at the monastery gate. Each visitor says who they are (read aloud, with a picture over their head),
 // and what the porter should do depends on the stage: `answers` is
-//   "in"    one of the people who belong (or someone in trouble): open the door and they walk in,
-//   "greet" a special guest who hopes for a proper greeting (a bishop, the mayor, "Glory to Jesus Christ!"): tap Welcome,
-//   "away"  not coming to pray today (a peddler, a goat): kindly send them on their way, never "go away".
+//   "in"    one of the people who belong (or someone in trouble): welcome them in (swipe up, tap the gate, or Welcome),
+//   "greet" an important guest who gets a warm welcome and bonus points (a bishop, the mayor, "Glory to Jesus Christ!"),
+//   "away"  not coming to pray today (a peddler, a goat): kindly send them on (swipe sideways or tap Send away).
 // A visitor missing from a stage doesn't come to it. `vip` ones are in a hurry. `reply` is what the porter says when
-// greeting them, `later` what he says when sending them on, `why` the gentle hint when the answer was wrong (one for the
-// stage, else `default`, else a plain one). kind: which of his people models to use, or an animal (animals.js in gate.js
-// draws a stand-in of boxes until he draws it); `robe` colors a monk. Pure data, tested in test/porter.test.js.
+// greeting an important guest, `later` what he says when sending someone on, `why` the gentle hint when the answer was
+// wrong (one for the stage, else `default`, else a plain one). kind: which of his people models to use, or an animal
+// (critter in gate.js draws a stand-in of boxes until he draws it); `robe` colors a monk. Also lists outgoing brothers
+// heading through the gate to the garden, bakery or bell tower. Pure data, tested in test/porter.test.js.
 
 const S = (sunday, guests = sunday, night = guests) => ({ sunday, guests, night }); // answers for the three days
 const ALL = (a) => S(a);
@@ -37,19 +38,19 @@ export const VISITORS = [
     later: "How beautiful! Please bring them in the morning.", why: { night: "It's the Great Silence. Flowers can wait for morning." } },
   { id: "heater", emoji: "🔧", kind: "man", vip: true, line: "The heater is broken, and it's freezing! I'm the repairman. Hurry!", answers: { night: "in" }, why: { default: "The brothers asked for the repairman: the heater is broken." } },
 
-  // ── special guests who hope for a proper greeting: tap Welcome ──
+  // ── special guests who bring a warm greeting and bonus points: welcome them in ──
   { id: "bishop", who: "The bishop", emoji: "✝️", kind: "grandfather", vip: true, line: "I am the bishop. I'm visiting the brothers today.", answers: ALL("greet"),
-    reply: "Welcome, Your Excellency! Thanks be to God for your visit!", why: { default: "A bishop deserves a proper greeting. Tap Welcome!" } },
+    reply: "Welcome, Your Excellency! Thanks be to God for your visit!", why: { default: "The bishop is visiting the brothers — welcome him in!" } },
   { id: "abbot", who: "The visiting abbot", emoji: "🎩", kind: "grandfather", vip: true, line: "I'm the visiting abbot. The brothers are expecting me!", answers: S("greet", "greet", null),
-    reply: "Peace, Father Abbot! Welcome, welcome!", why: { default: "A visiting abbot deserves a proper greeting. Tap Welcome!" } },
+    reply: "Peace, Father Abbot! Welcome, welcome!", why: { default: "The visiting abbot is expected — welcome him in!" } },
   { id: "mayor", who: "The mayor", emoji: "🎖️", kind: "man", line: "I'm the mayor. I came to thank the brothers.", answers: S("greet", "greet", null),
-    reply: "Welcome, Mr. Mayor! The brothers are honored.", why: { default: "The mayor deserves a proper greeting. Tap Welcome!" } },
+    reply: "Welcome, Mr. Mayor! The brothers are honored.", why: { default: "The mayor came to thank the brothers — welcome him in!" } },
   { id: "mother", who: "Mother Abbess", emoji: "🕊️", kind: "grandmother", line: "I'm Mother Abbess, from the sisters' convent. Peace to you!", answers: S("greet", "greet", null),
-    reply: "Welcome, Mother! Peace to you and the sisters!", why: { default: "Mother Abbess deserves a proper greeting. Tap Welcome!" } },
+    reply: "Welcome, Mother! Peace to you and the sisters!", why: { default: "Mother Abbess is visiting from the convent — welcome her in!" } },
   { id: "glory", who: "Someone who says Glory to Jesus Christ", emoji: "🙏", kind: "man", line: "Glory to Jesus Christ!", answers: ALL("greet"),
-    reply: "Glory forever!", why: { default: "When someone says \"Glory to Jesus Christ!\", we answer \"Glory forever!\" Tap Welcome!" } },
+    reply: "Glory forever!", why: { default: "When someone says \"Glory to Jesus Christ!\", welcome them in with \"Glory forever!\"" } },
   { id: "praised", who: "Someone who says Praised be Jesus Christ", emoji: "🙌", kind: "woman", line: "Praised be Jesus Christ!", answers: ALL("greet"),
-    reply: "Now and forever. Amen!", why: { default: "When someone says \"Praised be Jesus Christ!\", we answer \"Now and forever. Amen!\" Tap Welcome!" } },
+    reply: "Now and forever. Amen!", why: { default: "When someone says \"Praised be Jesus Christ!\", welcome them in with \"Now and forever. Amen!\"" } },
 
   // ── people who aren't coming to pray today: kindly send them on ──
   { id: "peddler", emoji: "🏺", kind: "man", line: "Buy my pots! Very good pots, very cheap!", answers: ALL("away"), later: "No, thank you! Please try the village market.", why: { default: "He's selling pots, not coming to pray." } },
@@ -83,9 +84,23 @@ export const isAnimal = (kind) => ANIMALS.includes(kind);
 /** The gentle reason shown after a wrong answer (the stage's own, else the visitor's, else a plain one). */
 export function hintFor(v, rules) {
   const a = v.answers[rules];
-  return v.why?.[rules] ?? v.why?.default ?? (a === "in" ? "They belong here: open the door!" : a === "greet" ? "A special guest deserves a proper greeting. Tap Welcome!" : "They're not coming to pray today.");
+  return v.why?.[rules] ?? v.why?.default ?? (a === "in" ? "They belong here — welcome them in!" : a === "greet" ? "An important guest — welcome them in!" : "They're not coming to pray today.");
 }
 
 /** Different words for letting someone in (said now and then, not every time). */
 export const WELCOMES = ["Come in, come in! Peace to you!", "God bless you! Welcome!", "Right this way, friend!", "The brothers are glad you're here!", "Peace be with you!", "Welcome, welcome! Mind the step!",
   "Thanks be to God! Come on in!", "What a blessing to see you!", "Please, come in out of the cold!", "Welcome to our home!", "Pax tecum! Come in!", "So nice of you to come!"];
+
+/** Brothers walking out through the gate on monastery errands. */
+export const OUTGOING = [
+  { id: "garden", place: "the garden", emoji: "🥕", robe: "#5a4030", line: "Off to the garden!" },
+  { id: "bakery", place: "the bakery", emoji: "🥖", robe: "#2b2830", line: "Off to the bakery!" },
+  { id: "tower", place: "the bell tower", emoji: "🔔", robe: "#4a4a50", line: "Off to the bell tower!" },
+];
+
+export const BUMP_LINES = [
+  "Oops, excuse me! Wait for the brother to walk through the gate first!",
+  "Whoa, pardon me! Let the brother come out before welcoming the next visitor.",
+  "Excuse me, brother! Give him a second to get through the gate!",
+  "Oops, bumped elbows! Wait for the brother to pass through first.",
+];

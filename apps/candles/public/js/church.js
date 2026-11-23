@@ -2,7 +2,7 @@
 //
 // ART. His MagicaVoxel models come from angelio.org (/api/art, uploaded on the Studio's Drawings page) and are used
 // as soon as they exist: the priest (priest-idle, priest-walk-fast, priest-mass-walk / priest-walk-slow), the
-// people who come to pray (man-kneel, woman-kneel, child-kneel, grandparent-kneel) and the church pieces on the
+// people who come to pray (man-kneel, woman-kneel, child-kneel, grandfather-idle, grandmother-idle, man-beard-kneel) and the church pieces on the
 // Candle Rack checklists. Until a piece is made, a plain STAND-IN of boxes takes its place (marked "stand-in"
 // below). The stand-ins are not art: they only hold the place and are replaced, piece by piece, by his models.
 // His marker colors (looks.js): a priest's vestments (Roman chasuble #FF77A8, Byzantine phelonion #FFCC66) take the
@@ -82,7 +82,7 @@ export const MODELS = ["priest-idle", "priest-walk-fast", "priest-mass-walk", "p
   ...["priest-idle", "priest-walk", "priest-walk-fast", "priest-walk-slow", "priest-vested-idle", "priest-bless", "server-idle", "server-walk", "server-light",
     "server-cross-walk", "server-cross-idle", "server-candle-walk", "server-candle-idle", "server-ripidion-walk", "server-ripidion-idle",
     "priest-phelonion-idle", "priest-phelonion-walk", "priest-cense"].map((n) => `east-${n}`),
-  ...["child", "child-girl", "man", "woman", "grandparent"].flatMap((k) => [`${k}-kneel`, `${k}-idle`, `${k}-walk`])];
+  ...["child", "child-girl", "man", "man-beard", "woman", "grandfather", "grandmother"].flatMap((k) => [`${k}-kneel`, `${k}-idle`, `${k}-walk`])];
 
 export async function loadModels(names = MODELS) {
   const out = {};
@@ -381,9 +381,10 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
   const people = new Map();
   // the kinds of people (child = the boy; his models <kind>-kneel/-walk/-idle): those he has made come to pray; until
   // he has made any, stand-ins of every kind do
-  const KINDS = ["child", "child-girl", "man", "woman", "grandparent"];
-  const PERSON = KINDS.some((k) => models[`${k}-kneel`]) ? KINDS.filter((k) => models[`${k}-kneel`]) : KINDS;
-  const BODY = ["#4a6fa5", "#a5574a", "#5f8f4e", "#8a6aa8", "#9a7a3a"];
+  const KINDS = ["child", "child-girl", "man", "woman", "grandfather", "grandmother"];
+  const hasPose = (k) => !!(models[`${k}-kneel`] || models[`${k}-idle`] || models[`${k}-walk`]);
+  const PERSON = KINDS.some(hasPose) ? KINDS.filter(hasPose) : KINDS;
+  const BODY = ["#4a6fa5", "#a5574a", "#5f8f4e", "#8a6aa8", "#9a7a3a", "#6e5a7a"];
   /** Where someone kneels in front of a rack (two spots across, in the rack's own frame), and which way they face. */
   const spotOf = (p) => {
     const v = rackGroups[p.rack].localToWorld(new THREE.Vector3((p.slot - 1) * LAYOUT.slotGap, 0, LAYOUT.kneelZ + 2));
@@ -391,9 +392,15 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
   };
   function personArrive(p, walkIn = 2) {
     const k = Math.floor(Math.random() * PERSON.length), kind = PERSON[k];
-    const a = actor({ idle: `${kind}-idle`, walk: `${kind}-walk`, kneel: `${kind}-kneel` }, BODY[k], { x: 0, z: 20, turn: Math.PI },
-      randomLook(Math.random, { older: kind === "grandparent", clothes: true }));
-    if (!a.poses.kneel) { const st = standIn(BODY[k], true); st.visible = false; a.poses.kneel = st; a.g.add(st); }
+    const bearded = kind === "man" && hasPose("man-beard") && Math.random() < 0.5;
+    const mk = bearded ? "man-beard" : kind, fb = bearded ? ["man"] : [];
+    const a = actor({
+      idle: [`${mk}-idle`, `${mk}-walk`, ...fb.flatMap((f) => [`${f}-idle`, `${f}-walk`])],
+      walk: [`${mk}-walk`, ...fb.map((f) => `${f}-walk`)],
+      kneel: [`${mk}-kneel`, `${mk}-idle`, ...fb.flatMap((f) => [`${f}-kneel`, `${f}-idle`])],
+    }, BODY[k % BODY.length], { x: 0, z: 20, turn: Math.PI },
+      randomLook(Math.random, { older: /^grand/.test(kind), clothes: true }));
+    if (!a.poses.kneel) { const st = standIn(BODY[k % BODY.length], true); st.visible = false; a.poses.kneel = st; a.g.add(st); }
     const at = spotOf(p), from = { x: at.x + (at.x < 0 ? -3 : 3), z: 17 };
     a.place(from.x, from.z, Math.PI, "walk");
     const speed = Math.hypot(at.x - from.x, at.z - from.z) / walkIn;

@@ -58,8 +58,8 @@ The game is a demo until the rest of the art and the music are in. Then:
   chasuble **#ff77a8** (`seasonOf`) and the Byzantine phelonion **#ffcc66** (`byzantineSeasonOf`: no rose; his parish's
   colors, confirmed). Altar servers' robes never change.
 - Made: the boy (`child-`) and girl (`child-girl-`) kneel and walk; the Byzantine priest in his cassock and phelonion
-  (`east-priest-idle/-walk`, `east-priest-phelonion-idle/-walk`, `east-priest-cense`). Still to make: `man-`, `woman-`,
-  `grandparent-` × `kneel`, `walk`; `east-server-candle-walk`, `east-server-candle-idle`.
+  (`east-priest-idle/-walk`, `east-priest-phelonion-idle/-walk`, `east-priest-cense`). Added: `man-`, `woman-`,
+  `grandfather-`, `grandmother-`; optional `man-beard-` (`walk`, `kneel`); `east-server-candle-walk`, `east-server-candle-idle`.
 - Music.
 
 **People walk around each other** (`public/js/steer.js`, a copy of `hub/public/js/steer.js`; tested in `hub/test/steer.test.js`): people coming

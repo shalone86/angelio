@@ -1,10 +1,11 @@
-// Monastery Porter: keep the monastery door (his idea: ROADMAP.md, "Monastery Porter"). A demo: the gate is voxel
+// Monastery Porter: keep the monastery gate (his idea: ROADMAP.md, "Monastery Porter"). A demo: the gate is voxel
 // (gate.js) with his people where he has made them and stand-ins for the rest; the rules are in porter.js, the stages
 // (Sunday Mass, Guest Day, the Great Silence and the endless Feast Day Crowd) in stages.js and the visitors in visitors.js.
 //
-// A visitor knocks and says who they are (read aloud, with a picture over their head). 🚪 Door opens or closes the door
-// (people who belong walk in; a draft costs points if it's open too long), 👋 Welcome greets special guests, 🙋 Send away
-// kindly sends the others on their way. Someone in trouble always comes in. Right answers in a row build a combo.
+// A visitor knocks and says who they are (read aloud, with a picture over their head). One quick move per person:
+// swipe up or tap the gate (or Welcome) to let people who belong in (the door opens by itself; important guests bring
+// bonus points), or swipe sideways (or Send away) to kindly push the others off the path. Brothers also walk out through
+// the gate to the garden, bakery or bell tower — wait for a brother to pass before welcoming the next visitor in!
 import * as S from "./kit/store.js";
 import { jingleOnce } from "./kit/jingle.js";
 S.init("porter:v1", { best: 0 });
@@ -16,9 +17,9 @@ import * as FX from "./kit/fx.js";
 import { showLesson } from "./kit/lesson.js";
 import { vary } from "./kit/vary.js";
 import { esc, say, showFinish, stickerBook, viewGrownups, installClickSounds, wireVoiceToggle } from "./kit/ui.js";
-import { newGame, tick, toggleDoor, greet, sendAway, ringBell, waiting, starsFor, multOf, drafty } from "./porter.js";
+import { newGame, tick, welcome, sendAway, ringBell, waiting, brotherInGate, speedOf, starsFor, multOf } from "./porter.js";
 import { PORTERS, porterById, porterOpen } from "./porters.js";
-import { WELCOMES } from "./visitors.js";
+import { WELCOMES, BUMP_LINES } from "./visitors.js";
 import { STAGES, stageById, isOpen } from "./stages.js";
 import { createGate, loadModels, MODELS } from "./gate.js";
 
@@ -27,11 +28,12 @@ const GAMES = "https://angelio.org/games/"; // all the Angelio games (angelio.or
 const route = createRouter([
   [/^$/, viewHome],
   [/^play(?:\/([a-z]+))?$/, viewPlay],
-  [/^grownups$/, () => viewGrownups(app, { about: `<p><b>Monastery Porter</b> is a little game about keeping the door of a monastery, the way St. Benedict's
-    porter did: he answered every knock with "Thanks be to God." Visitors knock and tell you who they are. Open the door for people who belong, greet special
-    guests, or kindly send the others on their way. Each stage has its own rule (who the brothers are expecting), and someone in trouble always comes in.
-    It practices listening, thinking about rules, and being kind even when the answer is "not now". An early demo: the people
-    and the gate are partly stand-ins until they're drawn. Nothing is collected; the best scores stay on this device.</p>` })],
+  [/^grownups$/, () => viewGrownups(app, { about: `<p><b>Monastery Porter</b> is a little game about keeping the gate of a monastery, the way St. Benedict's
+    porter did: he answered every knock with "Thanks be to God." Visitors knock and tell you who they are. Swipe up or tap the gate (or tap Welcome) to let
+    people who belong in — important guests earn extra points — or swipe sideways (or tap Send away) to kindly send the others on their way. The door opens by
+    itself, and brothers sometimes walk out through the gate, so you have to wait a moment before sending the next visitor in. Each stage has its own rule, and
+    someone in trouble always comes in. It practices listening, thinking about rules, timing, and being kind even when the answer is "not now". An early demo:
+    the people and the gate are partly stand-ins until they're drawn. Nothing is collected; the best scores stay on this device.</p>` })],
 ], { before() { stop(); FX.clearFx(); document.body.classList.remove("in-game", "porter-game"); } });
 
 // each stage's stars and best score
@@ -44,7 +46,7 @@ function viewHome() {
   app.innerHTML = `
     <section class="hero">
       <h1 class="title">Monastery Porter</h1>
-      <p class="lede">Someone is knocking at the monastery door! Listen to who they are, then open the door, give special guests a proper welcome, or kindly send people on their way.</p>
+      <p class="lede">Someone is knocking at the monastery gate! Listen to who they are, then swipe up or tap the gate to welcome them in, or swipe sideways to kindly send them on their way. Wait when a brother walks out!</p>
       <p class="demo-chip">🧪 Demo: some stand-ins for now</p>
     </section>
     <section class="stages">
@@ -70,7 +72,7 @@ function viewHome() {
     ${stickerBook()}
     ${gamesLink}`;
   app.querySelectorAll("[data-porter]").forEach((b) => b.addEventListener("click", () => { const p = porterById(b.dataset.porter); S.setSetting("porter", p.id); viewHome(); speak(p.say); }));
-  speak("Someone is knocking at the monastery door! Can you keep the door? Pick a day.");
+  speak("Someone is knocking at the monastery gate! Can you keep the gate? Pick a day.");
 }
 /** The stars on a stage, by its id (for who is open). */
 const starsFor2 = (id) => starsOf(stageById(id));
@@ -103,19 +105,18 @@ function viewPlay(stageId) {
   const clock0 = stage.endless ? "0:00" : `${Math.floor(stage.length / 60)}:${String(stage.length % 60).padStart(2, "0")}`;
   app.innerHTML = `
     <section class="porter-play${stage.night ? " night" : ""}">
-      <canvas class="gate" aria-label="The monastery gate: visitors line up on the path outside"></canvas>
+      <canvas class="gate" aria-label="The monastery gate: swipe up or tap the gate to welcome, swipe sideways to send away"></canvas>
       <div class="pins" aria-hidden="true"></div>
       <div class="hud">
         <a class="icon-btn" href="#/" aria-label="Stop and go home">✕</a>
-        <div class="clock" aria-label="${stage.endless ? "How long you've kept the door" : "Time left"}"><span class="clock-label">${stage.endless ? "🎉 Feast" : esc(stage.name)}</span> <b data-clock>${clock0}</b></div>
+        <div class="clock" aria-label="${stage.endless ? "How long you've kept the gate" : "Time left"}"><span class="clock-label">${stage.endless ? "🎉 Feast" : esc(stage.name)}</span> <b data-clock>${clock0}</b></div>
         <div class="score"><b data-score>0</b><span data-combo class="streak"></span></div>
         <button class="icon-btn toggle" data-voice title="Read aloud">🔊</button>
       </div>
       ${stage.endless ? `<div class="line-meter" data-line aria-label="People waiting at the gate (when the row fills, the day is over)"></div>` : ""}
-      <div class="draft-chip" data-draft hidden>🥶 Brr! Close the door!</div>
+      <div class="brother-chip" data-brother hidden></div>
       <div class="answers" data-answers>
-        <button type="button" class="answer door" data-act="door" aria-pressed="false"><span aria-hidden="true">🚪</span> <b data-door-label>Open door</b></button>
-        <button type="button" class="answer in" data-act="greet"><span aria-hidden="true">👋</span> Welcome</button>
+        <button type="button" class="answer in" data-act="welcome"><span aria-hidden="true">👋</span> Welcome</button>
         <button type="button" class="answer later" data-act="away"><span aria-hidden="true">🙋</span> Send away</button>
         ${who.bell ? `<button type="button" class="answer bell" data-act="bell"><span aria-hidden="true">🔔</span> Bell</button>` : ""}
       </div>
@@ -127,16 +128,16 @@ function viewPlay(stageId) {
   const $ = (s) => app.querySelector(s);
   const bubble = $(".porter-bubble"), popsEl = $(".pops"), pinsEl = $(".pins"), canvas = $("canvas.gate"), answers = $("[data-answers]");
   const talk = talker(bubble);
-  let alive = true, raf = 0, gate = null, stopKeys = () => {};
+  let alive = true, raf = 0, gate = null, stopListeners = () => {};
 
   (async () => {
     if (!S.progress(progressId(stage)).plays) {
       const card = $(".porter-lesson"); card.hidden = false;
       await showLesson(card, {
         emoji: stage.icon, title: stage.name,
-        rule: `Visitors knock at the gate. <b>🚪 Door</b> opens it, and people who belong walk in (leave it open too long and a draft costs points!). <b>👋 Welcome</b> is for special guests, like a bishop. <b>🙋 Send away</b> kindly sends the others on their way. ${esc(stage.rule)} Someone in <b>trouble</b> always comes in!`,
-        exampleHtml: `<p class="center porter-example">🥕 ➜ 🚪 &nbsp; 🎩 ➜ 👋 &nbsp; 🐐 ➜ 🙋</p>`,
-        voice: `Visitors knock at the gate! The Door button opens the door, and people who belong walk in. But if you leave it open too long, a draft costs you points. Welcome is for special guests, like a bishop. Send away kindly sends everyone else on their way. ${stage.rule} Someone in trouble always comes in!`,
+        rule: `Visitors knock at the gate, and the door opens by itself! <b>Swipe up</b> or <b>tap the gate</b> (or <b>👋 Welcome</b>) for people who belong — special guests earn extra points. <b>Swipe sideways</b> (or <b>🙋 Send away</b>) to kindly send everyone else on their way. Watch for <b>brothers walking out</b> through the gate and wait for them first! ${esc(stage.rule)} Someone in <b>trouble</b> always comes in!`,
+        exampleHtml: `<p class="center porter-example">🥕 🎩 ➜ ⬆️👋 &nbsp; 🐐 🏺 ➜ ⬅️➡️🙋</p>`,
+        voice: `Visitors knock at the gate, and the door opens by itself! Swipe up or tap the gate, or tap Welcome, for people who belong. Special guests earn extra points. Swipe sideways, or tap Send away, to kindly send everyone else on their way. Wait when a brother walks out through the gate so nobody bumps! ${stage.rule} Someone in trouble always comes in!`,
       });
       card.hidden = true;
       if (!alive) return;
@@ -150,95 +151,118 @@ function viewPlay(stageId) {
     fitView(); addEventListener("resize", fitView);
     const g = newGame({ seed: Math.floor(Math.random() * 1e9), stage, porter: who });
     window.__porter = { game: g, gate }; // (for the browser tests)
-    gate.sync(g);
+    gate.sync(g, speedOf(g));
     talk(stage.rule, { urgent: true, mascot: stage.icon });
 
     const pop = (text, x, y, cls = "") => { const el = document.createElement("div"); el.className = "pop " + cls; el.textContent = text; el.style.left = x + "px"; el.style.top = y + "px"; popsEl.append(el); setTimeout(() => el.remove(), 1300); };
     const popAt = (id, text, cls) => { const p = gate.headOf(id); if (p) pop(text, p.x, p.y - 30, cls); };
     const popDoor = (text, cls) => { const p = gate.screenOf(0, 14, 0); pop(text, p.x, p.y, cls); };
-    const doorBtn = $('[data-act="door"]'), doorLabel = $("[data-door-label]");
-    // a button that WOULD have been right shakes, so a mistake always points at it
-    const BTN = { in: "door", greet: "greet", away: "away" }, rumbleTimers = new Map();
+    // the button that WOULD have been right shakes, so a mistake always points at it
+    const rumbleTimers = new Map();
     const rumble = (act) => {
-      const b = $(`[data-act="${BTN[act] ?? act}"]`); if (!b) return;
+      const b = $(`[data-act="${act}"]`); if (!b) return;
       b.classList.remove("rumble"); void b.offsetWidth; b.classList.add("rumble");
       clearTimeout(rumbleTimers.get(b)); rumbleTimers.set(b, setTimeout(() => b.classList.remove("rumble"), 1600));
     };
-    let hintGiven = false, hintId = 0, draftTold = false, draftRemindAt = 0;
-    const clearHint = () => { hintId = 0; $('[data-act="greet"]').classList.remove("hint"); };
 
     // ── what happened: the rules say, the screen shows it. Nothing here waits for the voice: the next line cuts the last one off ──
-    const handle = (events) => {
+    const handle = (events, dir = 1) => {
       for (const ev of events) {
         if (ev.type === "step-up") {
           talk(ev.v.line, { urgent: true, mascot: ev.v.emoji }); // the voice starts while they walk up
-          if (ev.v.answer === "greet" && !hintGiven) { hintGiven = true; hintId = ev.v.id; $('[data-act="greet"]').classList.add("hint"); } // the first special guest: a soft glow on Welcome
         } else if (ev.type === "knock") {
           sfx.tap(); setTimeout(() => alive && sfx.tap(), 200);
-        } else if (ev.type === "door") {
-          gate.setDoor(ev.open); (sfx.whoosh ?? sfx.tap)();
-          doorBtn.setAttribute("aria-pressed", String(ev.open)); doorBtn.classList.toggle("open", ev.open); doorLabel.textContent = ev.open ? "Close door" : "Open door";
+        } else if (ev.type === "brother-start") {
+          gate.brotherOut(ev.b);
+          if (!waiting(g)) talk.once("brother-out", `Brother is heading out to ${ev.b.place}. Wait for him to pass the gate!`, { mascot: ev.b.emoji });
+        } else if (ev.type === "brother-cross") {
+          gate.flash(ev.b.crossDur);
         } else if (ev.type === "decided") {
           const v = ev.v, crowded = !!(g.front || g.queue.length);
-          if (v.id === hintId) clearHint();
-          if (ev.dog) { gate.dogChase(); sfx.chime(); popAt(v.id, `+${ev.points} 🐕`, "quick"); gate.sendOn(v.id); say(bubble, "Good dog! Woof!", { speakText: false }); continue; }
-          if (ev.how === "away") gate.sendOn(v.id); else gate.enter(v.id);
+          if (ev.dog) { gate.dogChase(); sfx.chime(); popAt(v.id, `+${ev.points} 🐕`, "quick"); gate.sendOn(v.id, 1); say(bubble, "Good dog! Woof!", { speakText: false }); continue; }
+          if (ev.how === "away") { sfx.whoosh(); gate.sendOn(v.id, dir); } else gate.enter(v.id, speedOf(g));
+          if (ev.bumped && ev.brother) gate.bump(v.id, ev.brother.id);
           if (ev.forgiven) { popAt(v.id, "Forgiven! 💛", "good"); stop(); talk(`That's all right! ${v.why}`, { urgent: true, mascot: "💛" }); continue; }
-          if (ev.how === "greet" && !ev.neutral && ev.correct) gate.flash(1.2);
-          if (ev.correct && !ev.neutral) {
+          if (ev.correct && ev.bumped) {
+            sfx.bonk(); popDoor("Oops! Bump! 💫", "bump"); stop();
+            talk(vary("bump", BUMP_LINES), { urgent: true, mascot: "💫" });
+          } else if (ev.correct) {
             ev.how === "away" ? sfx.chime() : sfx.win();
-            popAt(v.id, `+${ev.points}${ev.mult > 1 ? ` ×${ev.mult}` : ""}${ev.quick ? " ⚡" : ""}`, ev.mult > 1 || ev.how === "greet" ? "good" : ev.quick ? "quick" : "");
-            if (ev.how === "greet") talk(v.reply, { urgent: true, mascot: v.emoji });
+            if (ev.special) gate.flash(1.2);
+            popAt(v.id, `+${ev.points}${ev.mult > 1 ? ` ×${ev.mult}` : ""}${ev.quick ? " ⚡" : ""}`, ev.mult > 1 || ev.special ? "good" : ev.quick ? "quick" : "");
+            if (ev.special) talk(v.reply, { urgent: true, mascot: v.emoji });
             else if (!crowded) talk(ev.how === "away" ? v.later : vary("welcome", WELCOMES), { urgent: true, mascot: "⛪" });
             else { stop(); say(bubble, ev.how === "away" ? v.later : vary("welcome", WELCOMES), { speakText: false }); } // busy: show it, don't wait for it
-          } else if (ev.neutral) {
-            popAt(v.id, "Just the door was enough!", "oops"); stop();
           } else {
             sfx.oops(); popAt(v.id, `${ev.points}`, "oops"); stop();
-            rumble(v.answer); // the button that would have been right
-            if (ev.how === "door" && v.answer === "greet") { // an important guest let in with no greeting
-              popAt(v.id, "👋?", "good");
-              const who = v.who ?? "This visitor";
-              talk(`Oh! ${who} is an important guest. Always tap Welcome for important people! ${v.why}`, { urgent: true, mascot: "👋" });
-            } else {
-              if (ev.how === "door" && v.answer === "away") { gate.alarm(1.5); popDoor("✗", "bad"); } // someone who doesn't belong walked in
-              talk(`${vary("oops", ["Oh dear! Not quite.", "Hmm, not this time.", "Oops, that wasn't it."])} ${v.why}`, { urgent: true, mascot: "⛪" });
-            }
+            rumble(v.answer === "away" ? "away" : "welcome"); // the button that would have been right
+            if (ev.how === "welcome" && v.answer === "away") { gate.alarm(1.5); popDoor("✗", "bad"); } // someone who doesn't belong walked in
+            talk(`${vary("oops", ["Oh dear! Not quite.", "Hmm, not this time.", "Oops, that wasn't it."])} ${v.why}`, { urgent: true, mascot: "⛪" });
           }
         } else if (ev.type === "leave") {
           gate.giveUp(ev.v.id); sfx.oops(); popAt(ev.v.id, "Gave up", "oops");
-          if (ev.v.id === hintId) clearHint();
-          if (ev.v.answer !== "away") rumble(ev.v.answer); // they should have come in: show the button
+          if (ev.v.answer !== "away") rumble("welcome"); // they should have come in: show the button
           talk(vary("gaveup", ["They got tired of waiting and went home. That's okay!", "Oh, they went home. Try to answer a little faster!"]), { urgent: true, mascot: "⛪" });
         } else if (ev.type === "bell") {
           sfx.win(); popDoor("🔔 Ding, dong!", "good"); stop(); talk("Ding, dong! Everyone is patient again.", { urgent: true, mascot: "🔔" });
-        } else if (ev.type === "draft") {
-          popDoor(`−${ev.points} 🍃`, "oops"); sfx.oops();
         } else if (ev.type === "end") ended = true;
       }
     };
-    // ── your three buttons ──
-    const act = (what) => { if (ended) return; handle(what === "door" ? toggleDoor(g) : what === "greet" ? greet(g) : what === "bell" ? ringBell(g) : sendAway(g)); };
+    // ── one quick move per person: tap Welcome / Send away, swipe up / tap gate, swipe sideways ──
+    const act = (what, dir = 1) => {
+      if (ended || g.over) return;
+      handle(what === "welcome" ? welcome(g) : what === "bell" ? ringBell(g) : sendAway(g), dir);
+    };
     answers.addEventListener("click", (e) => { const b = e.target.closest("[data-act]"); if (b && !b.disabled) act(b.dataset.act); });
-    const keys = (e) => { if (e.repeat) return; const k = e.key.toLowerCase(); if (k === " " || k === "d" || k === "arrowleft") act("door"); else if (k === "w" || k === "g" || k === "arrowdown") act("greet"); else if (k === "s" || k === "arrowright") act("away"); else if (k === "b") act("bell"); };
+    const keys = (e) => {
+      if (e.repeat) return;
+      const k = e.key.toLowerCase();
+      if ((k === " " || k === "enter") && e.target.closest("button, a")) return;
+      if (k === "w" || k === "arrowup" || k === " " || k === "enter") { if (k === " ") e.preventDefault(); act("welcome"); }
+      else if (k === "s" || k === "arrowleft") act("away", -1);
+      else if (k === "arrowright") act("away", 1);
+      else if (k === "b") act("bell");
+    };
     addEventListener("keydown", keys);
-    stopKeys = () => removeEventListener("keydown", keys);
+    let down = null;
+    canvas.addEventListener("pointerdown", (e) => { if (!ended && !g.over) down = { x: e.clientX, y: e.clientY }; });
+    canvas.addEventListener("pointercancel", () => { down = null; });
+    canvas.addEventListener("pointerup", (e) => {
+      if (!down || ended || g.over) { down = null; return; }
+      const down0 = down, dx = e.clientX - down0.x, dy = e.clientY - down0.y;
+      down = null;
+      const at = waiting(g);
+      if (!at) return;
+      if (Math.abs(dx) < 24 && Math.abs(dy) < 24) {
+        if (gate.isGate(e.clientX, e.clientY)) act("welcome");
+        return;
+      }
+      if (Math.abs(dx) >= 28 && Math.abs(dx) >= Math.abs(dy)) {
+        if (who.dog && g.t < g.dogUntil) { sfx.tap(); popAt(at.id, "Woof! 🐕", ""); return; }
+        act("away", dx < 0 ? -1 : 1);
+        return;
+      }
+      if (dy <= -28 && Math.abs(dy) > Math.abs(dx)) { act("welcome"); return; }
+      if (dy >= 28 && Math.abs(dy) > Math.abs(dx) && (gate.isGate(down0.x, down0.y) || gate.isGate(e.clientX, e.clientY))) act("welcome");
+    });
+    stopListeners = () => { removeEventListener("keydown", keys); removeEventListener("resize", fitView); };
 
     // ── the clock and what's on screen ──
     let last = performance.now(), ended = false;
-    const pins = new Map(); // visitor id → {el, pic, bar}
+    const pins = new Map(); // actor id → {el, pic, bar}
     const frame = (now) => {
       if (!alive) return;
       const dt = document.hidden ? 0 : Math.min(0.1, (now - last) / 1000); last = now;
       if (!ended) {
+        const spd = speedOf(g);
         handle(tick(g, dt));
-        gate.sync(g);
+        gate.sync(g, spd);
         const secs = stage.endless ? Math.floor(g.t) : Math.max(0, Math.ceil(g.length - g.t));
         $("[data-clock]").textContent = `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, "0")}`;
         $("[data-score]").textContent = Math.round(g.score);
         const m = multOf(g); $("[data-combo]").textContent = m > 1 ? `×${m}` : "";
         const at = waiting(g);
-        for (const b of answers.querySelectorAll('[data-act="greet"], [data-act="away"]')) b.disabled = !at;
+        for (const b of answers.querySelectorAll('[data-act="welcome"], [data-act="away"]')) b.disabled = !at;
         if (who.dog) { // the dog is barking: Send away says so (not just grayed out) for a moment
           const barking = g.t < g.dogUntil, aw = answers.querySelector('[data-act="away"]');
           if (barking) aw.disabled = true;
@@ -246,28 +270,42 @@ function viewPlay(stageId) {
         }
         const bb = answers.querySelector('[data-act="bell"]'); if (bb) bb.disabled = g.bellUsed;
         answers.classList.toggle("ready", !!at);
-        const cold = drafty(g); // the door has been open too long (this porter's own free time)
-        $("[data-draft]").hidden = !cold; gate.setDraft(cold); doorBtn.classList.toggle("alarm", cold);
-        const label = cold ? "Close door!" : g.door ? "Close door" : "Open door";
-        if (doorLabel.textContent !== label) doorLabel.textContent = label;
-        if (cold) {
-          if (!draftTold) { draftTold = true; draftRemindAt = now + 8000; talk("Brr! The door is open and a cold draft is blowing in. Tap Close door!", { urgent: true, mascot: "🥶" }); }
-          else if (now >= draftRemindAt && talk(vary("draft", ["Close the door, it's cold!", "Brr! Shut the door!", "The draft is costing points! Close the door!"]), { mascot: "🥶" })) draftRemindAt = now + 8000; // not over a visitor who just spoke
-        }
+        const crossing = brotherInGate(g);
+        $('[data-act="welcome"]').classList.toggle("wait-out", !!(crossing && !who.noBump));
+        const bc = $("[data-brother]");
+        bc.hidden = !crossing;
+        if (crossing) bc.textContent = `${crossing.emoji} Brother heading to ${crossing.place}…`;
         const lm = $("[data-line]");
         if (lm) { const n = Math.min(g.queue.length, stage.maxLine), html = `<span>🚪</span>${"<i class=on></i>".repeat(n)}${"<i></i>".repeat(stage.maxLine - n)}`; if (lm.innerHTML !== html) lm.innerHTML = html; lm.classList.toggle("danger", n >= stage.maxLine - 2); }
-        // the picture over each visitor's head, and (the one at the door) how long they'll wait
+        // the picture over each visitor's head, each outgoing brother, and (the one at the gate) how long they'll wait
         const seen = new Set();
+        const getPin = (id) => {
+          let p = pins.get(id);
+          if (!p) { const el = document.createElement("div"); el.className = "pin"; el.innerHTML = `<span class="pin-pic"></span><span class="patience"><i></i></span>`; pinsEl.append(el); p = { el, pic: el.firstChild, bar: el.querySelector("i") }; pins.set(id, p); }
+          return p;
+        };
         for (const v of [...g.queue, g.front]) {
           if (!v || !["line", "arriving", "waiting"].includes(v.state)) continue;
           const at2 = gate.headOf(v.id); if (!at2) continue;
           seen.add(v.id);
-          let p = pins.get(v.id);
-          if (!p) { const el = document.createElement("div"); el.className = "pin"; el.innerHTML = `<span class="pin-pic"></span><span class="patience"><i></i></span>`; pinsEl.append(el); p = { el, pic: el.firstChild, bar: el.querySelector("i") }; p.pic.textContent = v.emoji; pins.set(v.id, p); }
+          const p = getPin(v.id);
+          if (p.pic.textContent !== v.emoji) p.pic.textContent = v.emoji;
           p.el.style.left = at2.x + "px"; p.el.style.top = at2.y + "px";
           const front = v === g.front && v.state === "waiting", f = v.patience / v.max;
+          p.el.classList.remove("out", "crossing");
           p.el.classList.toggle("front", front);
           if (front) { p.bar.style.width = `${Math.max(0, f * 100)}%`; p.bar.style.background = f > 0.55 ? "#2fa866" : f > 0.28 ? "#e3b341" : "#e0453f"; }
+        }
+        for (const b of g.outgoing) {
+          const at2 = gate.headOf(b.id); if (!at2) continue;
+          seen.add(b.id);
+          const p = getPin(b.id);
+          const label = `${b.emoji} ↗`;
+          if (p.pic.textContent !== label) p.pic.textContent = label;
+          p.el.style.left = at2.x + "px"; p.el.style.top = at2.y + "px";
+          p.el.classList.remove("front");
+          p.el.classList.add("out");
+          p.el.classList.toggle("crossing", b.state === "crossing");
         }
         for (const [id, p] of pins) if (!seen.has(id)) { p.el.remove(); pins.delete(id); }
         if (ended) finish();
@@ -278,27 +316,27 @@ function viewPlay(stageId) {
     raf = requestAnimationFrame(frame);
 
     async function finish() {
-      answers.hidden = true; pinsEl.replaceChildren(); $("[data-draft]").hidden = true; gate.setDoor(false);
+      answers.hidden = true; pinsEl.replaceChildren(); $("[data-brother]").hidden = true;
       say(bubble, stage.bell);
       sfx.chime();
       await new Promise((r) => setTimeout(r, 3800));
       if (!alive) return;
       const old = S.settings()[bestKey(stage)] || 0, score = Math.round(g.score), stars = starsFor(g), newBest = score > old;
       S.setSetting(bestKey(stage), Math.max(old, score));
-      cancelAnimationFrame(raf); gate.dispose(); gate = null; stopKeys();
+      cancelAnimationFrame(raf); gate.dispose(); gate = null; stopListeners();
       document.body.classList.remove("porter-game");
       const next = STAGES[si + 1], opens = next && !next.endless && Math.max(stars, starsOf(stage)) >= 2;
-      showFinish(app, { id: progressId(stage), stars, mistakes: g.wrong, title: newBest ? "A new best!" : stage.endless ? "What a feast day!" : "The door is kept!",
+      showFinish(app, { id: progressId(stage), stars, mistakes: g.wrong, title: newBest ? "A new best!" : stage.endless ? "What a feast day!" : "The gate is kept!",
         done: `You scored ${score}.`, again: `#/play/${stage.id}`, onAgain: route, next: opens ? { href: `#/play/${next.id}`, label: `${next.icon} ${next.name}` } : null });
       const fresh = PORTERS.filter((p) => porterOpen(p, starsFor2) && !unlockedBefore.has(p.id));
       if (fresh.length) app.querySelector(".finish h1")?.insertAdjacentHTML("afterend", `<p class="final-score">🎉 You can play as ${fresh.map((p) => `<b>${esc(p.name)}</b>`).join(" and ")} now!</p>`);
       app.querySelector(".finish h1")?.insertAdjacentHTML("afterend", `<p class="final-score">You scored <b>${score}</b>${newBest ? " · a new best!" : ` · your best: ${Math.max(old, score)}`}</p>
-        <p class="muted">${stage.endless ? `kept the door ${Math.floor(g.t / 60)}:${String(Math.floor(g.t % 60)).padStart(2, "0")} · ` : ""}${g.welcomed} came in · ${g.greeted} greeted · ${g.sentOn} sent on their way · best combo ${g.bestStreak} · ${g.wrong} not quite right${g.missed ? ` · ${g.missed} gave up waiting` : ""}${stars < 3 ? ` · ${stage.star3} for three stars` : ""}</p>`);
+        <p class="muted">${stage.endless ? `kept the gate ${Math.floor(g.t / 60)}:${String(Math.floor(g.t % 60)).padStart(2, "0")} · ` : ""}${g.welcomed + g.greeted} welcomed · ${g.sentOn} sent on their way · best combo ${g.bestStreak} · ${g.wrong} not quite right${g.bumps ? ` · ${g.bumps} ${g.bumps === 1 ? "bump" : "bumps"}` : ""}${g.missed ? ` · ${g.missed} gave up waiting` : ""}${stars < 3 ? ` · ${stage.star3} for three stars` : ""}</p>`);
       // the finish screen's "All Angelio games" goes to the games page here, not the home page
       const all = app.querySelector(".finish .finish-links a[href=\"https://angelio.org/\"]"); if (all) all.href = GAMES;
     }
   })();
-  return () => { alive = false; cancelAnimationFrame(raf); gate?.dispose(); gate = null; stopKeys(); };
+  return () => { alive = false; cancelAnimationFrame(raf); gate?.dispose(); gate = null; stopListeners(); };
 }
 
 installClickSounds();

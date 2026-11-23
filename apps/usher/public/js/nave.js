@@ -23,7 +23,7 @@ const SIZE = { man: 1.12, woman: 1.1, grandfather: 1.08, grandmother: 1.06, chil
 export const MODELS = ["usher-idle", "usher-walk", "usher-point", ...["usher-young", "usher-old", "usher-respected"].flatMap((u) => [`${u}-idle`, `${u}-walk`, `${u}-point`]), "server-idle", "server-walk", "priest-idle", "priest-mass-idle", "priest-mass-walk", "priest-kneel",
   "server-cross-walk", "server-cross-idle", "server-candle-walk", "server-candle-idle",
   "east-priest-cense", "east-priest-phelonion-idle", "east-priest-phelonion-walk", "east-server-ripidion-walk", "east-server-ripidion-idle", "east-server-candle-walk", "east-server-candle-idle", "east-server-idle",
-  ...KINDS.flatMap((k) => [`${k}-walk`, `${k}-sit`, `${k}-kneel`, `${k}-idle`])];
+  ...["man-beard", ...KINDS].flatMap((k) => [`${k}-walk`, `${k}-sit`, `${k}-kneel`, `${k}-idle`])];
 
 export async function loadModels(names = MODELS) {
   const out = {};
@@ -190,7 +190,13 @@ export function createNave(canvas, { models = {}, rite = "roman", night = false,
   }
   const personPoses = (kind) => {
     const kid = GIRLISH.has(kind) ? "child-girl" : "child";
-    return { walk: [`${kind}-walk`, `${kid}-walk`], sit: [`${kind}-sit`, `${kid}-sit`, `${kind}-kneel`, `${kid}-kneel`], idle: [`${kind}-idle`, `${kind}-walk`, `${kid}-idle`, `${kid}-walk`] };
+    const bearded = kind === "man" && (models["man-beard-walk"] || models["man-beard-kneel"] || models["man-beard-sit"]) && Math.random() < 0.5;
+    const k = bearded ? "man-beard" : kind, fb = bearded ? ["man"] : [];
+    return {
+      walk: [`${k}-walk`, ...fb.map((f) => `${f}-walk`), `${kid}-walk`],
+      sit: [`${k}-sit`, ...fb.map((f) => `${f}-sit`), `${k}-kneel`, ...fb.map((f) => `${f}-kneel`), `${k}-idle`, ...fb.map((f) => `${f}-idle`), `${kid}-sit`, `${kid}-kneel`],
+      idle: [`${k}-idle`, `${k}-walk`, ...fb.map((f) => `${f}-idle`), ...fb.map((f) => `${f}-walk`), `${kid}-idle`, `${kid}-walk`],
+    };
   };
   const person = (kind, color, older) => {
     const look = randomLook(Math.random, { older, clothes: true });

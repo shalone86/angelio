@@ -24,7 +24,7 @@ const ROBES = { monk: "#5a4030" };
 
 /** Every model the game asks for (whichever exist are used; his boy and girl stand in for the rest). */
 export const MODELS = ["porter-idle", "porter-walk", "monk-idle", "monk-walk", ...ANIMALS.flatMap((a) => [`${a}-idle`, `${a}-walk`]),
-  ...KINDS.flatMap((k) => [`${k}-walk`, `${k}-idle`]),
+  ...["man-beard", ...KINDS].flatMap((k) => [`${k}-walk`, `${k}-idle`]),
   ...VISITORS.filter((v) => !ANIMALS.includes(v.kind)).flatMap((v) => [`${v.id}-idle`, `${v.id}-walk`])]; // (any visitor can have a character of their own: bishop-walk…)
 
 export async function loadModels(names = MODELS) {
@@ -62,7 +62,7 @@ export function createGate(canvas, { models = {}, night = false, porter: who = {
     }
     return new THREE.SpriteMaterial({ map: haloTex, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true });
   };
-  // the same glow in red: the door's alarm (a draft, or someone let in who doesn't belong)
+  // the same glow in red: the door's alarm (someone let in who doesn't belong)
   let redTex = null;
   const redHaloMat = () => {
     if (!redTex) {
@@ -94,7 +94,18 @@ export function createGate(canvas, { models = {}, night = false, porter: who = {
     return { pivot, s };
   });
   const alarmGlow = new THREE.Sprite(redHaloMat()); alarmGlow.position.set(0, 5, 2); alarmGlow.scale.set(26, 20, 1); alarmGlow.renderOrder = 5; scene.add(alarmGlow);
-  let doorTarget = 0, doorOpen = 0, draft = false, alarmUntil = 0, alarmLevel = 0;
+  // invisible hit-box over the gatehouse & doorstep so tapping the gate welcomes the visitor
+  const gateHit = new THREE.Mesh(box, new THREE.MeshBasicMaterial({ visible: false }));
+  gateHit.scale.set(22, 16, 18); gateHit.position.set(0, 7, -3); scene.add(gateHit); gateHit.updateMatrixWorld(true);
+  const raycaster = new THREE.Raycaster(), ndc = new THREE.Vector2();
+  const isGate = (clientX, clientY) => {
+    const rect = canvas.getBoundingClientRect();
+    if (!rect.width || !rect.height) return false;
+    ndc.set(((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1);
+    raycaster.setFromCamera(ndc, cam);
+    return raycaster.intersectObject(gateHit, false).length > 0;
+  };
+  let doorTarget = 0, doorOpen = 0, alarmUntil = 0, alarmLevel = 0;
   // lanterns on the gateposts
   const lanterns = [];
   for (const sx of [-1, 1]) {
@@ -192,13 +203,17 @@ export function createGate(canvas, { models = {}, night = false, porter: who = {
   }
   const remove = (a) => { scene.remove(a.g); const i = actors.indexOf(a); if (i >= 0) actors.splice(i, 1); };
   const kidOf = (kind) => (GIRLISH.has(kind) ? "child-girl" : "child");
-  const peoplePoses = (kind, extra = []) => ({ walk: [...extra.map((n) => `${n}-walk`), `${kind}-walk`, `${kidOf(kind)}-walk`], idle: [...extra.map((n) => `${n}-idle`), `${kind}-idle`, `${kind}-walk`, `${kidOf(kind)}-idle`, `${kidOf(kind)}-walk`] });
+  const peoplePoses = (kind, extra = []) => ({
+    walk: [...extra.map((n) => `${n}-walk`), `${kind}-walk`, `${kidOf(kind)}-walk`],
+    idle: [...extra.flatMap((n) => [`${n}-idle`, `${n}-walk`]), `${kind}-idle`, `${kind}-walk`, `${kidOf(kind)}-idle`, `${kidOf(kind)}-walk`],
+  });
+  const hasBeard = () => !!(models["man-beard-walk"] || models["man-beard-idle"]);
   const robed = (robe) => ({ ...randomLook(Math.random, { older: Math.random() < 0.3 }), shirt: robe, dress: robe, belt: "#e8dcc0", shoes: "#2a1a10" });
 
   // you: the porter, just inside the gate, watching the door
   // (the six unlockable porters, porters.js: a nun is a woman in a habit and veil of her color; the old brother has gray hair)
   const nun = /^(sister|bell|respected)$/.test(who.id);
-  const porter = actor(peoplePoses(nun ? "woman" : "man", [who.model ?? "porter"]), { ...robed(who.robe), hair: nun ? who.robe : who.id === "old" ? "#d8d4cc" : "#2e1d12" }, 1.2, who.robe);
+  const porter = actor(peoplePoses(nun ? "woman" : who.id === "old" ? "grandfather" : "man", [who.model ?? "porter"]), { ...robed(who.robe), hair: nun ? who.robe : who.id === "old" ? "#d8d4cc" : "#2e1d12" }, 1.2, who.robe);
   porter.place(PORTER_AT.x, PORTER_AT.z, "idle", Math.PI);
   // Brother with the Dog: his big dog sits beside him, and runs to the gate when an animal comes
   const dogHome = { x: PORTER_AT.x + 5, z: PORTER_AT.z + 3 };
@@ -233,50 +248,75 @@ export function createGate(canvas, { models = {}, night = false, porter: who = {
   }
   resize();
 
-  // ── the visitors: each has a person on the path, who walks where the rules say ──
-  const folk = new Map(); // visitor id → {a, at (where they were last sent), mode}
+  // ── the visitors and outgoing brothers: each walks where the rules say ──
+  const folk = new Map();     // visitor id → {a, at (where they were last sent), mode}
+  const brothers = new Map(); // outgoing brother id → {a, b}
+  const OUT_EXIT = { garden: { x: -28, z: -38 }, bakery: { x: 14, z: -72 }, tower: { x: 28, z: -30 } };
   function makeVisitor(v) {
     const animal = ANIMALS.includes(v.kind);
     const a = animal ? actor({ walk: [`${v.kind}-walk`], idle: [`${v.kind}-idle`, `${v.kind}-walk`] }, randomLook(), 1.05, "#f1ece0", () => critter(v.kind))
-      : actor(peoplePoses(v.kind, [v.def, ...(v.robe ? ["monk"] : [])]), v.robe ? robed(v.robe) : randomLook(Math.random, { older: /grand/.test(v.kind), clothes: true }), SIZE[v.kind] ?? 1, "#7d8a96");
+      : actor(peoplePoses(v.kind, [v.def, ...(v.robe ? ["monk"] : []), ...(v.kind === "man" && hasBeard() && Math.random() < 0.5 ? ["man-beard"] : [])]), v.robe ? robed(v.robe) : randomLook(Math.random, { older: /grand/.test(v.kind), clothes: true }), SIZE[v.kind] ?? 1, "#7d8a96");
     if (animal) a.g.scale.setScalar(1.05 * (a.poses.walk.userData.scale ?? 1));
-    if (who.glow && v.answer === "greet") { const halo = new THREE.Sprite(haloMat()); halo.position.set(0, 6, 0); halo.scale.set(9, 9, 1); halo.userData.glow = true; a.g.add(halo); } // Sister Portress sees who is special
+    if (who.glow && (v.answer === "in" || v.answer === "greet")) { const halo = new THREE.Sprite(haloMat()); halo.position.set(0, 6, 0); halo.scale.set(9, 9, 1); halo.userData.glow = true; a.g.add(halo); } // Sister Portress sees who belongs
     a.place(-1.8 - Math.random() * 1.5, SPAWN_Z, "walk", 0);
     const f = { a, at: null, mode: "line" }; folk.set(v.id, f); return f;
   }
   /** Bring the screen up to date with the rules: new visitors appear far down the path, and everyone in line steps forward. */
-  function sync(g) {
+  function sync(g, speedScale = 1) {
     const here = [...g.queue, g.front].filter((v) => v && (v.state === "line" || v.state === "arriving" || v.state === "waiting"));
     here.forEach((v) => {
       const f = folk.get(v.id) ?? makeVisitor(v);
       if (f.mode !== "line") return;
       const spot = v === g.front ? DOOR : spotInLine(g.queue.indexOf(v)), key = `${spot.x},${spot.z}`;
-      if (f.at !== key) { f.at = key; f.a.goTo(spot.x, spot.z, v === g.front ? 20 : 24, "walk", "idle").then(() => { if (f.mode === "line") f.a.g.rotation.y = 0; }); }
+      if (f.at !== key) { f.at = key; f.a.goTo(spot.x, spot.z, (v === g.front ? 20 : 24) * speedScale, "walk", "idle").then(() => { if (f.mode === "line") f.a.g.rotation.y = 0; }); }
     });
   }
-  const later = (s) => new Promise((r) => setTimeout(r, s * 1000));
-  let wanted = false, flashUntil = 0;
-  /** The door the player holds open (🚪) or shut. */
-  const setDoor = (open) => { wanted = open; };
-  /** The door swings open for a moment (a greeting at a closed door). */
-  const flash = (seconds = 1.3) => { flashUntil = time + seconds; };
+  let flashUntil = 0;
+  /** The door swings open briefly (as someone walks through or gets a welcome). */
+  const flash = (seconds = 1.3) => { flashUntil = Math.max(flashUntil, time + seconds); };
   /** The door glows red for a moment (someone who doesn't belong walked in). */
   const alarm = (seconds = 1.5) => { alarmUntil = time + seconds; };
-  /** They walk in through the door and across the courtyard to the chapel. */
-  async function enter(id) {
+  /** They walk in through the gate and across the courtyard to the chapel. */
+  async function enter(id, speedScale = 1) {
     const f = folk.get(id); if (!f) return; f.mode = "in"; const a = f.a;
-    if (!wanted) flash(1.1);
-    await a.goTo(0, 4, 22); if (disposed) return;
-    await a.goTo(CHAPEL_DOOR.x - 4, CHAPEL_DOOR.z, 18); await a.goTo(CHAPEL_DOOR.x, CHAPEL_DOOR.z, 14);
+    flash(1.1);
+    await a.goTo(0, 4, 22 * speedScale); if (disposed) return;
+    await a.goTo(CHAPEL_DOOR.x - 4, CHAPEL_DOOR.z, 18 * speedScale); if (disposed) return;
+    await a.goTo(CHAPEL_DOOR.x, CHAPEL_DOOR.z, 14 * speedScale);
     if (disposed) return; remove(a); folk.delete(id);
   }
-  /** Come back later: they turn and walk back down the path. */
-  async function sendOn(id) {
+  /** Gently push them off the path (left or right) and send them on their way. */
+  async function sendOn(id, dir = 1) {
     const f = folk.get(id); if (!f) return; f.mode = "away";
-    await f.a.goTo(LEAVE_X, f.a.g.position.z - 4, 18); if (disposed) return;       // step out to the right, then down the path past the line
+    const side = dir < 0 ? -1 : 1, curZ = f.a.g.position.z;
+    f.a.nudge = { t: 0, dur: 0.3, dir: side };
+    await f.a.goTo(side * 12, curZ - 3, 28); if (disposed) return;
+    await f.a.goTo(side * 28, curZ - 36, 18); if (disposed) return;
+    remove(f.a); folk.delete(id);
+  }
+  /** Tired of waiting: they turn and walk back down the right side of the path. */
+  async function giveUp(id) {
+    const f = folk.get(id); if (!f) return; f.mode = "away";
+    await f.a.goTo(LEAVE_X, f.a.g.position.z - 4, 18); if (disposed) return;
     await f.a.goTo(LEAVE_X, SPAWN_Z, 18); if (disposed) return; remove(f.a); folk.delete(id);
   }
-  const giveUp = sendOn;
+  /** A brother walks out from the chapel, through the gate, and off toward the garden, bakery or bell tower. */
+  async function brotherOut(b) {
+    const a = actor(peoplePoses("man", ["monk", ...(hasBeard() && Math.random() < 0.5 ? ["man-beard"] : [])]), robed(b.robe ?? "#5a4030"), 1.14, b.robe ?? "#5a4030");
+    a.place(CHAPEL_DOOR.x - 1, CHAPEL_DOOR.z - 1, "walk", -Math.PI * 0.75);
+    brothers.set(b.id, { a, b });
+    const appSpeed = 14.7 / Math.max(0.3, b.approachDur ?? 1.0);
+    const crossSpeed = 17.1 / Math.max(0.4, b.crossDur ?? 1.45);
+    await a.goTo(0.8, 5, appSpeed, "walk", "walk"); if (disposed) return;
+    await a.goTo(2.2, -12, crossSpeed, "walk", "walk"); if (disposed) return;
+    const dest = OUT_EXIT[b.dest] ?? OUT_EXIT.bakery;
+    await a.goTo(dest.x, dest.z, Math.max(16, crossSpeed), "walk", "idle"); if (disposed) return;
+    remove(a); brothers.delete(b.id);
+  }
+  /** Funny little stumble when a visitor and an outgoing brother bump at the gate. */
+  function bump(visitorId, brotherId) {
+    for (const a of [folk.get(visitorId)?.a, brothers.get(brotherId)?.a]) if (a) a.stumble = { t: 0, dur: 0.55 };
+  }
 
   // ── each frame ──
   function update(dt) {
@@ -291,15 +331,40 @@ export function createGate(canvas, { models = {}, night = false, porter: who = {
         const want = Math.atan2(ag.vx, ag.vz); let d = want - a.g.rotation.y; d = Math.atan2(Math.sin(d), Math.cos(d)); a.g.rotation.y += d * Math.min(1, dt * 14);
       }
       if (arrived.includes(ag) && a.nav) { const n = a.nav; a.nav = null; a.pose(n.end); n.done(); }
+      if (a.stumble) {
+        a.stumble.t += dt;
+        const u = Math.min(1, a.stumble.t / a.stumble.dur);
+        a.g.position.y = Math.sin(u * Math.PI) * 1.8;
+        a.g.rotation.z = Math.sin(u * Math.PI * 4) * 0.25 * (1 - u);
+        if (u >= 1) { a.g.position.y = 0; a.g.rotation.z = 0; a.stumble = null; }
+      } else if (a.nudge) {
+        a.nudge.t += dt;
+        const u = Math.min(1, a.nudge.t / a.nudge.dur);
+        a.g.position.y = Math.sin(u * Math.PI) * 1.2;
+        a.g.rotation.z = -a.nudge.dir * Math.sin(u * Math.PI) * 0.28;
+        if (u >= 1) { a.g.position.y = 0; a.g.rotation.z = 0; a.nudge = null; }
+      }
       const pm = a.poses[a.now]; if (pm) animate(pm, time);
       for (const c of a.g.children) if (c.userData.glow) { const k = 8 + 2 * Math.sin(time * 6); c.scale.set(k, k, 1); }
     }
-    doorTarget = wanted || time < flashUntil ? 1 : 0;
-    doorOpen += (doorTarget - doorOpen) * Math.min(1, dt * 7);
+    // automatic door: opens by itself whenever someone is walking through the gate
+    let doorBusy = time < flashUntil;
+    if (!doorBusy) {
+      for (const f of folk.values()) {
+        if (f.mode === "in" && Math.abs(f.a.g.position.x) < 10 && f.a.g.position.z > -12 && f.a.g.position.z < 10) { doorBusy = true; break; }
+      }
+    }
+    if (!doorBusy) {
+      for (const b of brothers.values()) {
+        if (Math.abs(b.a.g.position.x) < 10 && b.a.g.position.z > -12 && b.a.g.position.z < 10) { doorBusy = true; break; }
+      }
+    }
+    doorTarget = doorBusy ? 1 : 0;
+    doorOpen += (doorTarget - doorOpen) * Math.min(1, dt * 8);
     for (const l of leaves) l.pivot.rotation.y = -l.s * doorOpen * 1.45;
-    lanterns.forEach((l, i) => { const k = 1 + (draft ? 0.4 : 0.12) * Math.sin(time * (draft ? 22 : 9) + i * 2); l.halo.scale.setScalar((night ? 9 : 5) * k); });
-    // the alarm: the door pulses red (a draft, or alarm())
-    const alarmOn = draft || time < alarmUntil;
+    lanterns.forEach((l, i) => { const k = 1 + 0.12 * Math.sin(time * 9 + i * 2); l.halo.scale.setScalar((night ? 9 : 5) * k); });
+    // the alarm: the door pulses red (alarm())
+    const alarmOn = time < alarmUntil;
     alarmLevel += ((alarmOn ? 1 : 0) - alarmLevel) * Math.min(1, dt * 10);
     const pulse = 0.65 + 0.35 * Math.sin(time * 9);
     doorWood.color.copy(WOOD).lerp(ALARM_RED, alarmLevel * (0.55 + 0.45 * pulse));
@@ -308,10 +373,8 @@ export function createGate(canvas, { models = {}, night = false, porter: who = {
     R.render(scene, cam);
   }
   const screenOf = (x, y, z) => { const v = new THREE.Vector3(x, y, z).project(cam), rect = canvas.getBoundingClientRect(); return { x: rect.left + ((v.x + 1) / 2) * rect.width, y: rect.top + ((1 - v.y) / 2) * rect.height }; };
-  /** Where a visitor's head is on screen (for the picture over it and its patience bar), or null. */
-  const headOf = (id) => { const f = folk.get(id); if (!f) return null; const p = f.a.g.position; return screenOf(p.x, 10.5 * f.a.g.scale.y, p.z); };
-  /** The draft: the lanterns flicker while the door has been open too long. */
-  const setDraft = (on) => { draft = on; };
-  return { update, resize, sync, enter, setDoor, flash, alarm, setDraft, sendOn, giveUp, dogChase, headOf, positions: () => actors.map((a) => ({ x: a.agent.x, z: a.agent.z, r: a.agent.r, moving: !!a.agent.goal })), screenOf, hasModels: () => Object.keys(models),
+  /** Where a visitor's or brother's head is on screen (for the picture over it and its patience bar), or null. */
+  const headOf = (id) => { const f = folk.get(id) ?? brothers.get(id); if (!f) return null; const p = f.a.g.position; return screenOf(p.x, 10.5 * f.a.g.scale.y, p.z); };
+  return { update, resize, sync, enter, brotherOut, bump, flash, alarm, sendOn, giveUp, dogChase, isGate, headOf, positions: () => actors.map((a) => ({ x: a.agent.x, z: a.agent.z, r: a.agent.r, moving: !!a.agent.goal })), screenOf, hasModels: () => Object.keys(models),
     dispose: () => { disposed = true; R.dispose(); R.forceContextLoss?.(); } };
 }

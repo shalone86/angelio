@@ -37,6 +37,7 @@ test("every checklist item has a good name, a size the editor allows, and no rep
     assert.equal(artSlug(i.slug), i.slug);
     assert.ok(i.size.every((n) => Number.isInteger(n) && n >= 8 && n <= 64), i.slug);
   }
+  assert.ok(all.some((i) => i.slug === "man-beard-walk") && all.some((i) => i.slug === "man-beard-kneel"));
 });
 
 test("save, keep the old version, favorite, tick, delete to the trash; anyone can read them", async () => {

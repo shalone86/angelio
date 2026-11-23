@@ -236,6 +236,11 @@ building (the church's candle rack and doors, the chapel at night, the choir lof
    **collisions**: a shared steering module (`hub/public/js/steer.js`, tested) so people walk around each other, with lanes on
    the path. Nov 23: steer.js is in Mass Usher and Candle Rack too. Answers work as soon as a visitor appears (Send away was grayed
    out for the half second while they stepped up).
+   Round 4 (Nov 23, 2026): one quick move per person — swipe up or tap the gate (or Welcome) to welcome them in (important
+   guests earn bonus points with no separate button or hold), swipe sideways (or Send away) to gently push them off the path,
+   and an automatic door that opens and closes by itself. Brothers walk out through the gate to the garden, bakery or bell
+   tower (steering around oncoming visitors); sending someone in too soon causes a funny little stumble that breaks your combo.
+   The six porters' skills are updated for the new controls (Old Brother's visitors wait longer; Respected Sister prevents bumps).
 
 Peters Pence (Balatro-style cards) is too hard for PreK: it moves to Pico Parish.
 

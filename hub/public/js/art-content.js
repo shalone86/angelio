@@ -70,6 +70,8 @@ export const CHECKLISTS = [
       p("server-candle-idle", "Altar server with candle, standing"), p("server-candle-walk", "Altar server with candle, walking"),
       p("server-cross-idle", "Altar server with cross, standing"), p("server-cross-walk", "Altar server with cross, walking"),
       p("man-walk", "Man, walking"), p("man-kneel", "Man, kneeling to pray"),
+      p("man-beard-walk", "Bearded man, walking", "Gives men a mix of bearded and clean-shaven. Paint the beard in your hair color (#255359) so it matches his hair."),
+      p("man-beard-kneel", "Bearded man, kneeling to pray"),
       p("woman-walk", "Woman, walking"), p("woman-kneel", "Woman, kneeling to pray"),
       p("child-walk", "Child, walking"), p("child-kneel", "Child, kneeling to pray"),
       p("child-girl-walk", "Child (girl), walking"), p("child-girl-kneel", "Child (girl), kneeling to pray"),
@@ -120,7 +122,7 @@ export const CHECKLISTS = [
   },
   {
     id: "mass-usher-people", title: "Mass Usher: people", game: "Mass Usher",
-    note: "You're the usher, seating families before Mass. The walking poses are Candle Rack's (man-walk, woman-walk, child-walk, child-girl-walk, grandfather-walk, grandmother-walk): make those once for both games. Sitting faces the altar (away from you): the back of the head matters most. Hair, skin, eyes, shirt, dress, belt and shoes in your marker colors (the game picks each person's own, and gives a family the same shirt or dress color). Until a pose is made, the game uses the boy and girl as stand-ins.",
+    note: "You're the usher, seating families before Mass. The walking poses are Candle Rack's (man-walk, man-beard-walk for bearded men, woman-walk, child-walk, child-girl-walk, grandfather-walk, grandmother-walk): make those once for both games. Sitting faces the altar (away from you): the back of the head matters most. Hair, skin, eyes, shirt, dress, belt and shoes in your marker colors (the game picks each person's own, and gives a family the same shirt or dress color). Until a pose is made, the game uses the boy and girl as stand-ins.",
     items: [
       p("usher-idle", "Usher, standing at the doors", "That's you: a jacket, maybe a name badge."),
       p("usher-walk", "Usher, walking", "Leading a family up the aisle."),
@@ -155,7 +157,7 @@ export const CHECKLISTS = [
   },
   {
     id: "monastery-porter-people", title: "Monastery Porter: people", game: "Monastery Porter",
-    note: "You're the porter, keeping the monastery door. Visitors come up the path and knock. The porter and Brother Francis wear robes in your marker colors (shirt and dress = the robe, belt = the rope); the visitors are your usual people (man, woman, grandfather, grandmother, child, child-girl), each walking and standing, in their own colors. Visitors use the same people as Candle Rack's and Mass Usher's lists (the -walk and -idle poses): the peddler, the repairman, the visiting abbot, the lost child. Until a pose is made, the boy and girl stand in.",
+    note: "You're the porter, keeping the monastery gate. Visitors come up the path and knock. The porter and Brother Francis wear robes in your marker colors (shirt and dress = the robe, belt = the rope); the visitors are your usual people (man, man-beard for bearded men, woman, grandfather, grandmother, child, child-girl), each walking and standing, in their own colors. Visitors use the same people as Candle Rack's and Mass Usher's lists (the -walk and -idle poses): the peddler, the repairman, the visiting abbot, the lost child. Until a pose is made, the boy and girl stand in.",
     items: [
       p("porter-idle", "Porter, standing", "Watching the door from just inside the gate (seen from above and behind). Until made: the boy in a black robe."),
       p("porter-walk", "Porter, walking"),

@@ -14,7 +14,7 @@ body.porter-game .topbar { display: none; }
 .porter-play .clock, .porter-play .score { background: rgb(255 248 235 / .95); color: #3b2a12; border-radius: 16px; padding: 6px 14px; font-weight: 800; font-size: 1.2rem; box-shadow: 0 2px 0 rgb(0 0 0 / .2); }
 .porter-play .clock { margin: 0 auto; }
 .porter-play .clock-label { font-size: .85rem; font-weight: 700; opacity: .7; }
-/* the picture over each visitor, and (the one at the door) how long they'll wait */
+/* the picture over each visitor, each outgoing brother, and (the one at the door) how long they'll wait */
 .pins { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
 .pin { position: absolute; transform: translate(-50%, -100%); display: grid; justify-items: center; gap: 2px; filter: drop-shadow(0 1px 2px rgb(0 0 0 / .45)); }
 .pin-pic { font-size: 1.5rem; line-height: 1; }
@@ -22,6 +22,8 @@ body.porter-game .topbar { display: none; }
 .pin .patience i { display: block; height: 100%; width: 100%; border-radius: 99px; }
 .pin.front .pin-pic { font-size: 2.4rem; animation: knock .5s ease-in-out 3; }
 .pin.front .patience { display: block; }
+.pin.out .pin-pic { font-size: 1.2rem; font-weight: 800; padding: 2px 8px; border-radius: 99px; background: rgb(255 248 235 / .92); color: #5a3a1a; }
+.pin.out.crossing .pin-pic { font-size: 1.4rem; background: #ffd75e; color: #3b2a12; box-shadow: 0 0 0 3px rgb(255 255 255 / .9); }
 @keyframes knock { 50% { transform: translateY(-6px) rotate(-8deg); } }
 /* the two answers */
 .answers { position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(104px + env(safe-area-inset-bottom)); display: flex; gap: 12px; width: min(94vw, 560px); z-index: 4; }
@@ -29,26 +31,24 @@ body.porter-game .topbar { display: none; }
 .answer { flex: 1; min-height: 72px; border-radius: 20px; border: 3px solid #fff; color: #fff; font: 800 .95rem/1.1 var(--font-display, Nunito, sans-serif); padding: 6px 4px; cursor: pointer; touch-action: manipulation;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; box-shadow: 0 4px 0 rgb(0 0 0 / .3), 0 6px 14px rgb(0 0 0 / .3); }
 .answer.in { background: #2fa866; box-shadow: 0 4px 0 #1f7a49, 0 6px 14px rgb(0 0 0 / .3); }
+.answer.in.wait-out { box-shadow: 0 4px 0 #1f7a49, 0 0 0 4px #ffd75e, 0 6px 14px rgb(0 0 0 / .3); }
 .answer.later { background: #2a6db3; box-shadow: 0 4px 0 #173f6e, 0 6px 14px rgb(0 0 0 / .3); }
-.answer.door { background: #8a5a2e; box-shadow: 0 4px 0 #5a3a1a, 0 6px 14px rgb(0 0 0 / .3); }
-.answer.door.open { background: #d98a1f; box-shadow: 0 4px 0 #8a5510, 0 0 0 4px rgb(255 215 94 / .8), 0 6px 14px rgb(0 0 0 / .3); }
 .answer span { font-size: 1.6rem; line-height: 1; }
 .answer:disabled { opacity: .45; }
 .answer:not(:disabled):active { transform: translateY(2px); }
 .answers.ready .answer { animation: ready 1.2s ease-in-out infinite; }
 @keyframes ready { 50% { filter: brightness(1.12); } }
-.answers.ready .answer.door { animation: none; }
 .porter-play .score .streak { margin-left: 6px; color: #c9971f; font-weight: 900; }
-/* the draft, and (the feast day) how many are waiting at the gate: when the row fills, the day is over */
-.draft-chip { position: absolute; left: 50%; transform: translateX(-50%); top: calc(64px + env(safe-area-inset-top)); white-space: nowrap; font-size: 1.25rem; background: #d6342d; color: #fff; border: 3px solid #fff; font-weight: 900; padding: 6px 18px; border-radius: 99px; box-shadow: 0 3px 0 rgb(0 0 0 / .3); z-index: 3; pointer-events: none; animation: outPulse .6s ease-in-out infinite; }
-.draft-chip[hidden] { display: none; }
+/* a brother walking out through the gate, and (the feast day) how many are waiting at the gate */
+.brother-chip { position: absolute; left: 50%; transform: translateX(-50%); top: calc(64px + env(safe-area-inset-top)); white-space: nowrap; font-size: 1.05rem; background: #e69d24; color: #2b1d07; border: 3px solid #fff; font-weight: 900; padding: 6px 16px; border-radius: 99px; box-shadow: 0 3px 0 rgb(0 0 0 / .25); z-index: 3; pointer-events: none; animation: outPulse .8s ease-in-out infinite; }
+.brother-chip[hidden] { display: none; }
 .line-meter { position: absolute; left: 50%; transform: translateX(-50%); top: calc(58px + env(safe-area-inset-top)); display: flex; align-items: center; gap: 3px; padding: 4px 10px; border-radius: 99px; background: rgb(255 248 235 / .92); box-shadow: 0 2px 0 rgb(0 0 0 / .2); pointer-events: none; z-index: 3; }
 .line-meter span { font-size: .95rem; margin-right: 3px; }
 .line-meter i { width: 12px; height: 16px; border-radius: 4px; background: rgb(0 0 0 / .12); }
 .line-meter i.on { background: #e3b341; }
 .line-meter.danger i.on { background: #e0453f; animation: outPulse .8s ease-in-out infinite; }
 @keyframes outPulse { 50% { opacity: .55; } }
-.line-meter ~ .draft-chip { top: calc(96px + env(safe-area-inset-top)); }
+.line-meter ~ .brother-chip { top: calc(96px + env(safe-area-inset-top)); }
 .porter-play .porter-bubble { position: absolute; left: 0; right: 0; margin: 0 auto; bottom: calc(10px + env(safe-area-inset-bottom)); width: min(94vw, 560px); z-index: 5; }
 .porter-play .porter-lesson { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(94vw, 560px); max-height: 88vh; overflow: auto; z-index: 40; }
 .porter-example { font-size: 2.2rem; }
@@ -56,11 +56,12 @@ body.porter-game .topbar { display: none; }
 .pop { position: absolute; transform: translate(-50%, -50%); font-weight: 900; font-size: 1.3rem; color: #fff; text-shadow: 0 2px 0 #2a4a7a, 0 0 6px #2a6db3; animation: popup 1.3s ease-out forwards; white-space: nowrap; }
 .pop.good { color: #fff3b0; text-shadow: 0 2px 0 #7a4a00, 0 0 8px #ffb02e; font-size: 1.5rem; }
 .pop.quick { color: #c9f5ff; font-size: 1.5rem; }
+.pop.bump { color: #ffe394; text-shadow: 0 2px 0 #8a5300, 0 0 8px #ffaa2b; font-size: 1.55rem; }
 .pop.oops { color: #ffd9d6; text-shadow: 0 2px 0 #7a1f1a, 0 0 6px #e0453f; }
 @keyframes popup { to { transform: translate(-50%, -170%); opacity: 0; } }
 .final-score { font-size: 1.4rem; margin: 0 0 4px; }
 @media (prefers-color-scheme: dark) { body.porter-game { background: #2a2230; } }
-@media (prefers-reduced-motion: reduce) { .pop { animation: none; } .pin.front .pin-pic, .answers.ready .answer { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .pop { animation: none; } .pin.front .pin-pic, .answers.ready .answer, .brother-chip { animation: none; } }
 /* a phone held sideways: like every Angelio game, the speech bubble in the right column (base.css) */
 @media (orientation: landscape) and (max-height: 520px) {
   .porter-play canvas.gate { right: auto; width: calc(100% - 256px); }
@@ -68,7 +69,7 @@ body.porter-game .topbar { display: none; }
   .answers { left: auto; right: 0; transform: none; bottom: 10px; width: 256px; flex-direction: column; gap: 8px; }
   .answer { min-height: 46px; flex-direction: row; font-size: 1rem; gap: 8px; }
   .answer span { font-size: 1.3rem; }
-  .line-meter, .draft-chip { left: calc(50% - 128px); }
+  .line-meter, .brother-chip { left: calc(50% - 128px); }
   .porter-play .clock, .porter-play .score { font-size: 1rem; padding: 3px 10px; }
 }
 
@@ -93,13 +94,8 @@ body.porter-game .topbar { display: none; }
 .answer.bell { flex: .7; background: #c9971f; box-shadow: 0 4px 0 #7a5a10, 0 6px 14px rgb(0 0 0 / .3); }
 .answer.barking { background: #8a8f98; box-shadow: 0 4px 0 #5a5f66; }
 
-/* mistakes you can't miss: a draft (the door button shakes red), and the button that WOULD have been right shakes with a gold ring */
-.answer.door.alarm { background: #d6342d; box-shadow: 0 4px 0 #8a1f1a, 0 0 0 4px rgb(255 255 255 / .9), 0 6px 14px rgb(0 0 0 / .3); animation: rumble .5s ease-in-out infinite !important; }
+/* mistakes you can't miss: the button that WOULD have been right shakes with a gold ring */
 .answer.rumble { animation: rumble .5s ease-in-out 3 !important; box-shadow: 0 4px 0 rgb(0 0 0 / .3), 0 0 0 5px #ffd75e, 0 0 22px 8px rgb(255 200 60 / .9); z-index: 1; }
-.answer.door.alarm.rumble { animation: rumble .5s ease-in-out infinite !important; }
 @keyframes rumble { 0%, 100% { transform: translateX(0) rotate(0); } 20% { transform: translateX(-5px) rotate(-3deg); } 40% { transform: translateX(5px) rotate(3deg); } 60% { transform: translateX(-4px) rotate(-2deg); } 80% { transform: translateX(4px) rotate(2deg); } }
-/* the first special guest of the round: a soft gold glow on Welcome (no shake) */
-.answer.hint, .answers.ready .answer.hint { animation: hintGlow 1.1s ease-in-out infinite !important; }
-@keyframes hintGlow { 50% { box-shadow: 0 4px 0 #1f7a49, 0 0 0 5px rgb(255 215 94 / .85), 0 0 20px 6px rgb(255 200 60 / .7); } }
 .pop.bad { color: #e0231b; font-size: 5rem; line-height: 1; text-shadow: 0 0 0 #fff, 3px 3px 0 #fff, -3px -3px 0 #fff, 3px -3px 0 #fff, -3px 3px 0 #fff, 0 4px 10px rgb(0 0 0 / .4); animation-duration: 1.5s; }
-@media (prefers-reduced-motion: reduce) { .answer.door.alarm, .answer.rumble, .answer.door.alarm.rumble { animation: none !important; } .answer.hint, .answers.ready .answer.hint { animation: none; box-shadow: 0 4px 0 #1f7a49, 0 0 0 5px rgb(255 215 94 / .85), 0 0 18px 5px rgb(255 200 60 / .6); animation: none !important; } .draft-chip { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .answer.rumble { animation: none !important; } }
