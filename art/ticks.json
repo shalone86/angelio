@@ -29,6 +29,9 @@
   "child-girl-kneel": true,
   "child-kneel": true,
   "child-girl-walk": true,
-  "child-walk": true
+  "child-walk": true,
+  "man-kneel": true,
+  "woman-kneel": true,
+  "woman-walk": true
  }
 }
