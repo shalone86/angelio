@@ -22,7 +22,7 @@ const route = createRouter([
   [/^$/, viewHome],
   [/^play(?:\/([a-z]+))?$/, viewPlay],
   [/^grownups$/, () => viewGrownups(app, { about: `<p><b>Garden Givers</b> is a monastery garden and harvest game with
-    four 90-second stages (no endless mode): veggie beds, the fruit orchard, herbs, and Night Vigil. Tap critters to shoo them off
+    four one-minute stages (no endless mode): veggie beds, the fruit orchard, herbs, and Night Vigil. Tap critters to shoo them off
     before they nibble crops, pick ripe produce matching the Food Bank orders before points decay below zero, and watch the courier
     monk carry baskets to the Food Bank wagon. Start as Brother or Sister Gardener and unlock four specialist helpers! Nothing is
     collected; best scores stay on this device.</p>` })],
@@ -81,6 +81,8 @@ function viewPlay(stageId) {
   document.body.classList.add("in-game", "garden-game");
   const who = myGardener();
   const unlockedBefore = new Set(GARDENERS.filter((gd) => gardenerOpen(gd, starsById)).map((gd) => gd.id));
+  const initSec = stage.length ?? 60;
+  const clock0 = `${Math.floor(initSec / 60)}:${String(initSec % 60).padStart(2, "0")}`;
 
   app.innerHTML = `
     <section class="garden-play${stage.night ? " night" : ""}">
@@ -88,7 +90,7 @@ function viewPlay(stageId) {
       <div class="pins" data-pins></div>
       <div class="hud">
         <a class="icon-btn" href="#/" aria-label="Stop and go home">✕</a>
-        <div class="clock" aria-label="Time left"><span class="clock-label">${stage.icon} ${esc(stage.name)}</span> <b data-clock>1:30</b></div>
+        <div class="clock" aria-label="Time left"><span class="clock-label">${stage.icon} ${esc(stage.name)}</span> <b data-clock>${clock0}</b></div>
         <div class="score"><b data-score>0</b><span data-combo class="streak"></span></div>
         <button class="icon-btn toggle" data-voice title="Read aloud">🔊</button>
       </div>

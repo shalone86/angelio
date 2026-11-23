@@ -62,7 +62,7 @@ export function newGame({ seed = 1, stage = stageById("garden"), gardener = gard
     gardener,
     r: rng(seed),
     t: 0,
-    length: stage.length ?? 90,
+    length: stage.length ?? 60,
     over: false,
     score: 0,
     spots,

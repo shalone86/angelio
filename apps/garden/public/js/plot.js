@@ -152,8 +152,11 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
   player.g.position.set(HOME_AT.x, 0, HOME_AT.z);
   let playerTarget = null, playerReturnAt = 0;
 
-  // Walking courier monks (carry baskets from center to Food Bank wagon and return)
+  // Walking courier monks: capped at MAX_COURIERS (2) on screen so the garden stays readable
+  const MAX_COURIERS = 2;
+  const LANES = [-1.3, 0.2];
   const couriers = [];
+  const pendingDeliveries = [];
   function makeBasket(crops) {
     const b = new THREE.Group();
     block(2.4, 1.3, 1.8, 0, 0, 0, mat("#c99449"), b);
@@ -162,19 +165,19 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
     });
     return b;
   }
-  function deliver(crops) {
+  function launchCourier(crops) {
+    const lane = LANES.find((z) => !couriers.some((c) => c.lane === z)) ?? LANES[0];
     const actor = makePerson({ nun: false, robe: "#5a4030" }, 1.0);
     const basket = makeBasket(crops);
     basket.position.set(0, 2.7, 1.5);
     actor.g.add(basket);
-    actor.g.position.set(2, 0, -0.8);
+    actor.g.position.set(2, 0, lane);
     actor.setWalk(true);
-    couriers.push({ actor, basket, state: "to-bank", t: 0 });
-    // Leave a colorful little box inside the food bank cart!
-    if (deliverPile.children.length < 18) {
-      const n = deliverPile.children.length;
-      block(0.9, 0.9, 0.9, (n % 4) * 1.1, Math.floor(n / 4) * 0.9, ((n >> 1) % 2) * 0.9, mat(cropById(crops[0]).color), deliverPile);
-    }
+    couriers.push({ actor, basket, crops, lane, state: "to-bank", t: 0 });
+  }
+  function deliver(crops) {
+    if (couriers.length < MAX_COURIERS) launchCourier(crops);
+    else if (pendingDeliveries.length < 4) pendingDeliveries.push(crops);
   }
 
   // Garden beds, fruit trees, & herb planters
@@ -386,12 +389,12 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
     }
     player.tick(dt);
 
-    // Walking courier monks
+    // Walking courier monks (max 2 on screen, queued in pendingDeliveries)
     for (let i = couriers.length - 1; i >= 0; i--) {
       const c = couriers[i];
       c.t += dt;
       c.actor.tick(dt);
-      const goal = c.state === "to-bank" ? { x: BANK_POS.x - 4.2, z: BANK_POS.z } : { x: 2, z: -0.8 };
+      const goal = c.state === "to-bank" ? { x: BANK_POS.x - 4.2, z: BANK_POS.z + c.lane * 0.5 } : { x: 2, z: c.lane };
       const cdx = goal.x - c.actor.g.position.x, cdz = goal.z - c.actor.g.position.z;
       const cdist = Math.hypot(cdx, cdz);
       if (cdist > 0.4) {
@@ -402,10 +405,17 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
       } else if (c.state === "to-bank") {
         c.state = "back";
         c.basket.visible = false;
+        if (deliverPile.children.length < 18 && c.crops?.length) {
+          const n = deliverPile.children.length;
+          block(0.9, 0.9, 0.9, (n % 4) * 1.1, Math.floor(n / 4) * 0.9, ((n >> 1) % 2) * 0.9, mat(cropById(c.crops[0]).color), deliverPile);
+        }
       } else {
         scene.remove(c.actor.g);
         couriers.splice(i, 1);
       }
+    }
+    while (couriers.length < MAX_COURIERS && pendingDeliveries.length > 0) {
+      launchCourier(pendingDeliveries.shift());
     }
 
     // Active pests bounce slightly on crops; shooed pests fly away

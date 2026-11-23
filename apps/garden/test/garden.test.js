@@ -6,10 +6,10 @@ import { STAGES, stageById, isOpen } from "../public/js/stages.js";
 import { GARDENERS, gardenerById, gardenerOpen } from "../public/js/gardeners.js";
 import { newGame, tick, tapSpot, tapPest, orderReward, starsFor, timeLeft } from "../public/js/garden.js";
 
-test("four 90s stages with no endless mode, plus Brother/Sister starters and 2-monk / 2-nun unlocks", () => {
+test("four 60s stages with no endless mode, plus Brother/Sister starters and 2-monk / 2-nun unlocks", () => {
   assert.equal(STAGES.length, 4);
   for (const st of STAGES) {
-    assert.equal(st.length, 90);
+    assert.equal(st.length, 60);
     assert.ok(!st.endless);
   }
   assert.equal(GARDENERS.length, 6);
@@ -92,7 +92,7 @@ test("orders fill when matching ripe produce is tapped, auto-deliver, decay to 0
   assert.ok(g.score < 100);
 });
 
-test("night vigil: zero orders, no picking, guard bonuses, ends cleanly at 90s", () => {
+test("night vigil: zero orders, no picking, guard bonuses, ends cleanly at 60s", () => {
   const g = newGame({ seed: 7, stage: stageById("vigil"), gardener: gardenerById("sister") });
   assert.equal(g.orders.length, 0);
   const spotEv = tapSpot(g, g.spots[0].id);
@@ -100,7 +100,7 @@ test("night vigil: zero orders, no picking, guard bonuses, ends cleanly at 90s",
   const bonuses = [];
   while (!g.over) bonuses.push(...tick(g, 0.25).filter((e) => e.type === "guard-bonus"));
   assert.equal(timeLeft(g), 0);
-  assert.ok(bonuses.length >= 8);
+  assert.ok(bonuses.length >= 5);
 });
 
 test("all four unlockable gardeners apply their distinct abilities", () => {
@@ -165,7 +165,7 @@ test("pretend players: every stage separates idle (<=1★), slow (>=2★), and q
   }
 });
 
-test("app.js finish() scope, picker wiring, and valid crops/pests", () => {
+test("app.js finish() scope, picker wiring, 2-helper cap, and valid crops/pests", () => {
   assert.ok(CROPS.length >= 7 && PESTS.length >= 4);
   const src = fs.readFileSync(new URL("../public/js/app.js", import.meta.url), "utf8");
   const finishPos = src.indexOf("function finish()");
@@ -173,4 +173,7 @@ test("app.js finish() scope, picker wiring, and valid crops/pests", () => {
   const asyncPos = src.indexOf("(async () => {");
   assert.ok(finishPos > 0 && handlePos > finishPos && asyncPos > handlePos);
   assert.ok(src.slice(finishPos, handlePos).includes("finish-pick"));
+
+  const plotSrc = fs.readFileSync(new URL("../public/js/plot.js", import.meta.url), "utf8");
+  assert.match(plotSrc, /MAX_COURIERS\s*=\s*2\b/);
 });
