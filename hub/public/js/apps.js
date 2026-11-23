@@ -63,9 +63,12 @@ export const APP_LIST = [
     name: "Saints Match", path: "match", subject: "games", grades: "All ages", emoji: "😇",
     blurb: "A game (an early demo): fast memory cards with Catholic saints and their signs, combos, wind swaps, and All Saints Rush.",
   },
+  {
+    name: "Garden Givers", path: "garden", subject: "games", grades: "All ages", emoji: "🥕",
+    blurb: "A game (an early demo): shoo critters off the monastery garden and orchard, pick ripe produce, and deliver orders to the food bank.",
+  },
   // Coming soon (see ROADMAP.md)
   { name: "Choir", subject: "games", grades: "All ages", emoji: "🎶", blurb: "Tap along with the music in the choir loft: the beat gets faster, then two lanes, then three." },
-  { name: "Garden Givers", subject: "games", grades: "All ages", emoji: "🥕", blurb: "Protect the garden and trees from critters, pick ripe produce, and deliver orders to the food bank." },
   { name: "Spelling", subject: "language", grades: "Grades 1–3", emoji: "🔤", blurb: "Hear a word, build it letter by letter, and learn the spelling patterns." },
   { name: "Writing Skills", subject: "language", grades: "Grades 1–4", emoji: "📝", blurb: "From sentences to paragraphs: build, fix and grow your writing." },
   { name: "Catholic History", subject: "history", grades: "All ages", emoji: "⛪", blurb: "Saints, the early Church and the great moments, on drag-and-drop timelines." },

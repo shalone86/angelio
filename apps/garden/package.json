@@ -1,0 +1,16 @@
+{
+  "name": "garden",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "icons": "node scripts/make-icons.cjs"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  },
+  "license": "MIT",
+  "description": "Garden Givers: protect the monastery garden, orchard, and herbs from critters, pick ripe produce, and deliver orders to the food bank."
+}

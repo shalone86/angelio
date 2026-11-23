@@ -293,6 +293,31 @@ export const CHECKLISTS = [
       p("saint-kateri-idle", "St. Kateri Tekakwitha", "Warm tan deerskin dress with green sash and small cross."),
     ],
   },
+  {
+    id: "garden-givers-critters", title: "Garden Givers: critters", game: "Garden Givers",
+    note: "Garden pests to shoo away before they eat the crops. Until made, the game builds little voxel critters.",
+    items: [
+      p("bug-idle", "Garden beetle, resting"), p("bug-walk", "Garden beetle, crawling"),
+      p("bird-idle", "Crow, perched"), p("bird-walk", "Crow, flapping"),
+      p("squirrel-idle", "Squirrel, sitting"), p("squirrel-walk", "Squirrel, scampering"),
+      p("raccoon-idle", "Night critter, standing"), p("raccoon-walk", "Night critter, prowling", "Visits during Night Vigil."),
+    ],
+  },
+  {
+    id: "garden-givers-crops", title: "Garden Givers: plants & food bank", game: "Garden Givers",
+    note: "Garden beds, trees, herbs, and the food bank wagon. Gardeners reuse Monk and Nun (monk-idle/walk, nun-idle/walk).",
+    items: [
+      { slug: "garden-carrot", label: "Carrot plant", size: [8, 8] },
+      { slug: "garden-tomato", label: "Tomato bush", size: [8, 8] },
+      { slug: "garden-celery", label: "Celery bunch", size: [8, 8] },
+      { slug: "garden-apple-tree", label: "Apple tree", size: [16, 24] },
+      { slug: "garden-pear-tree", label: "Pear tree", size: [16, 24] },
+      { slug: "garden-herb-basil", label: "Basil planter", size: [8, 8] },
+      { slug: "garden-herb-mint", label: "Mint planter", size: [8, 8] },
+      { slug: "garden-basket", label: "Harvest basket", size: [8, 8], note: "Carried by the courier monk." },
+      { slug: "garden-foodbank", label: "Food bank cart", size: [24, 16], note: "Striped awning wagon on the right side of the path." },
+    ],
+  },
 ];
 
 /** Every slug a checklist names (for the page). */

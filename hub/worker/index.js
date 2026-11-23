@@ -22,6 +22,7 @@ export const APPS = {
   usher: "USHER", // Mass Usher (usher Worker): seating families before Mass (a demo)
   porter: "PORTER", // Monastery Porter (porter Worker): keeping the monastery door (a demo)
   match: "MATCH", // Saints Match (match Worker): arcade memory cards with the saints (a demo)
+  garden: "GARDEN", // Garden Givers (garden Worker): protect crops & deliver to the food bank (a demo)
 };
 
 import { normalizeCode, newCode, codeStatus, day, month } from "./codes.js";
