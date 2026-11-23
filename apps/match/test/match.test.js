@@ -1,9 +1,10 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import { SAINTS, saintById, saintsForStage } from "../public/js/saints.js";
 import { STAGES, stageById, isOpen, waveConfig } from "../public/js/stages.js";
 import { HELPERS, helperById, helperOpen } from "../public/js/helpers.js";
-import { newGame, tick, flip, useHint, multOf, starsFor, cardById, MISMATCH_TIME, CLEAR_DELAY } from "../public/js/match.js";
+import { newGame, tick, flip, useHint, multOf, starsFor, timeLeft, cardById, MISMATCH_TIME, CLEAR_DELAY } from "../public/js/match.js";
 
 test("saints catalog: 6 per stage, unique slugs and symbols, M/F parity outside Apostles", () => {
   assert.equal(SAINTS.length, 36);
@@ -220,3 +221,22 @@ test("pretend players balance: every stage finishes cleanly and separates 1 / 2 
   assert.equal(carloRush.over, true);
   assert.ok(carloRush.wavesCleared >= 8);
 });
+
+test("round end transition: clock hits 0 and app.js finish() is in viewPlay scope above handle()", () => {
+  const g = newGame({ seed: 1, stage: stageById("apostles"), helper: helperById("starter") });
+  tick(g, 89.95);
+  assert.equal(g.over, false);
+  assert.equal(Math.ceil(timeLeft(g)), 1);
+  const endEvs = tick(g, 0.1);
+  assert.ok(endEvs.some((e) => e.type === "end"));
+  assert.equal(g.over, true);
+  assert.equal(timeLeft(g), 0);
+
+  const src = fs.readFileSync(new URL("../public/js/app.js", import.meta.url), "utf8");
+  const finishPos = src.indexOf("function finish()");
+  const handlePos = src.indexOf("function handle(");
+  const asyncPos = src.indexOf("(async () => {");
+  assert.ok(finishPos > 0 && handlePos > finishPos && asyncPos > handlePos,
+    "finish() and handle() must share viewPlay scope before the async game loop starts");
+});
+

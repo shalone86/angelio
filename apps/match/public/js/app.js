@@ -108,7 +108,44 @@ function viewPlay(stageId) {
   const $ = (s) => app.querySelector(s);
   const bubble = $(".match-bubble"), boardEl = $("[data-board]"), popsEl = $(".pops"), statusEl = $("[data-status]");
   const hintBtn = $("[data-hint]");
-  let alive = true, raf = 0, cardEls = new Map(), g = null, stopListeners = () => {};
+  let alive = true, ended = false, raf = 0, cardEls = new Map(), g = null, stopListeners = () => {};
+
+  function finish() {
+    if (ended || !alive) return;
+    ended = true;
+    cancelAnimationFrame(raf);
+    stopListeners();
+    const cl = $("[data-clock]");
+    if (cl) cl.textContent = "0:00";
+    document.body.classList.remove("match-game");
+    const old = S.settings()[bestKey(stage)] || 0;
+    const score = Math.round(g.score);
+    const stars = starsFor(g);
+    const newBest = score > old;
+    S.setSetting(bestKey(stage), Math.max(old, score));
+    const next = STAGES[si + 1];
+    const opens = next && Math.max(stars, starsOf(stage)) >= 2;
+    showFinish(app, {
+      id: progressId(stage),
+      stars,
+      mistakes: g.wrong,
+      title: newBest ? "A new best!" : stage.endless ? "What a rush!" : "Well matched!",
+      done: `You scored ${score}.`,
+      again: `#/play/${stage.id}`,
+      onAgain: route,
+      next: opens ? { href: `#/play/${next.id}`, label: `${next.icon} ${next.name}` } : null,
+    });
+    const fresh = HELPERS.filter((h) => helperOpen(h, starsById) && !unlockedBefore.has(h.id));
+    if (fresh.length) {
+      app.querySelector(".finish h1")?.insertAdjacentHTML("afterend",
+        `<p class="final-score">🎉 ${fresh.map((h) => `<b>${esc(h.name)}</b>`).join(" and ")} can help you play now!</p>`);
+    }
+    app.querySelector(".finish h1")?.insertAdjacentHTML("afterend",
+      `<p class="final-score">You scored <b>${score}</b>${newBest ? " · a new best!" : ` · best: ${Math.max(old, score)}`}</p>
+       <p class="muted">${g.wavesCleared} waves cleared · ${g.matches} matches · best streak ${g.bestStreak}${g.sharpEyes ? ` · ${g.sharpEyes} Sharp Eye` : ""}${stars < 3 ? ` · ${stage.star3} for three stars` : ""}</p>`);
+    const all = app.querySelector('.finish .finish-links a[href="https://angelio.org/"]');
+    if (all) all.href = GAMES;
+  }
 
   const pop = (text, targetEl, cls = "") => {
     const r = targetEl ? targetEl.getBoundingClientRect() : boardEl.getBoundingClientRect();
@@ -316,7 +353,7 @@ function viewPlay(stageId) {
       clearTimeout(swapTimer);
     };
 
-    let last = performance.now(), ended = false;
+    let last = performance.now();
     const frame = (now) => {
       if (!alive || ended) return;
       const dt = document.hidden ? 0 : Math.min(0.1, (now - last) / 1000);
@@ -346,41 +383,6 @@ function viewPlay(stageId) {
       raf = requestAnimationFrame(frame);
     };
     raf = requestAnimationFrame(frame);
-
-    function finish() {
-      if (ended) return;
-      ended = true;
-      cancelAnimationFrame(raf);
-      stopListeners();
-      document.body.classList.remove("match-game");
-      const old = S.settings()[bestKey(stage)] || 0;
-      const score = Math.round(g.score);
-      const stars = starsFor(g);
-      const newBest = score > old;
-      S.setSetting(bestKey(stage), Math.max(old, score));
-      const next = STAGES[si + 1];
-      const opens = next && Math.max(stars, starsOf(stage)) >= 2;
-      showFinish(app, {
-        id: progressId(stage),
-        stars,
-        mistakes: g.wrong,
-        title: newBest ? "A new best!" : stage.endless ? "What a rush!" : "Well matched!",
-        done: `You scored ${score}.`,
-        again: `#/play/${stage.id}`,
-        onAgain: route,
-        next: opens ? { href: `#/play/${next.id}`, label: `${next.icon} ${next.name}` } : null,
-      });
-      const fresh = HELPERS.filter((h) => helperOpen(h, starsById) && !unlockedBefore.has(h.id));
-      if (fresh.length) {
-        app.querySelector(".finish h1")?.insertAdjacentHTML("afterend",
-          `<p class="final-score">🎉 ${fresh.map((h) => `<b>${esc(h.name)}</b>`).join(" and ")} can help you play now!</p>`);
-      }
-      app.querySelector(".finish h1")?.insertAdjacentHTML("afterend",
-        `<p class="final-score">You scored <b>${score}</b>${newBest ? " · a new best!" : ` · best: ${Math.max(old, score)}`}</p>
-         <p class="muted">${g.wavesCleared} waves cleared · ${g.matches} matches · best streak ${g.bestStreak}${g.sharpEyes ? ` · ${g.sharpEyes} Sharp Eye` : ""}${stars < 3 ? ` · ${stage.star3} for three stars` : ""}</p>`);
-      const all = app.querySelector('.finish .finish-links a[href="https://angelio.org/"]');
-      if (all) all.href = GAMES;
-    }
   })();
 
   return () => { alive = false; cancelAnimationFrame(raf); stopListeners(); };
