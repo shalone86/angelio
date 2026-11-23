@@ -26,16 +26,30 @@ body.porter-game .topbar { display: none; }
 /* the two answers */
 .answers { position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(104px + env(safe-area-inset-bottom)); display: flex; gap: 12px; width: min(94vw, 560px); z-index: 4; }
 .answers[hidden] { display: none; }
-.answer { flex: 1; min-height: 64px; border-radius: 20px; border: 3px solid #fff; color: #fff; font: 800 1.05rem/1.1 var(--font-display, Nunito, sans-serif); padding: 6px 8px; cursor: pointer; touch-action: manipulation;
-  box-shadow: 0 4px 0 rgb(0 0 0 / .3), 0 6px 14px rgb(0 0 0 / .3); }
+.answer { flex: 1; min-height: 72px; border-radius: 20px; border: 3px solid #fff; color: #fff; font: 800 .95rem/1.1 var(--font-display, Nunito, sans-serif); padding: 6px 4px; cursor: pointer; touch-action: manipulation;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; box-shadow: 0 4px 0 rgb(0 0 0 / .3), 0 6px 14px rgb(0 0 0 / .3); }
 .answer.in { background: #2fa866; box-shadow: 0 4px 0 #1f7a49, 0 6px 14px rgb(0 0 0 / .3); }
 .answer.later { background: #2a6db3; box-shadow: 0 4px 0 #173f6e, 0 6px 14px rgb(0 0 0 / .3); }
-.answer span { font-size: 1.4rem; margin-right: 2px; }
+.answer.door { background: #8a5a2e; box-shadow: 0 4px 0 #5a3a1a, 0 6px 14px rgb(0 0 0 / .3); }
+.answer.door.open { background: #d98a1f; box-shadow: 0 4px 0 #8a5510, 0 0 0 4px rgb(255 215 94 / .8), 0 6px 14px rgb(0 0 0 / .3); }
+.answer span { font-size: 1.6rem; line-height: 1; }
 .answer:disabled { opacity: .45; }
 .answer:not(:disabled):active { transform: translateY(2px); }
 .answers.ready .answer { animation: ready 1.2s ease-in-out infinite; }
 @keyframes ready { 50% { filter: brightness(1.12); } }
-.porter-play .porter-bubble { position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(10px + env(safe-area-inset-bottom)); width: min(94vw, 560px); margin: 0; z-index: 5; }
+.answers.ready .answer.door { animation: none; }
+.porter-play .score .streak { margin-left: 6px; color: #c9971f; font-weight: 900; }
+/* the draft, and (the feast day) how many are waiting at the gate: when the row fills, the day is over */
+.draft-chip { position: absolute; left: 50%; transform: translateX(-50%); top: calc(64px + env(safe-area-inset-top)); white-space: nowrap; font-size: .9rem; background: #fff3b0; color: #7a4a00; font-weight: 800; padding: 3px 12px; border-radius: 99px; box-shadow: 0 2px 0 rgb(0 0 0 / .2); z-index: 3; pointer-events: none; animation: outPulse .6s ease-in-out infinite; }
+.draft-chip[hidden] { display: none; }
+.line-meter { position: absolute; left: 50%; transform: translateX(-50%); top: calc(58px + env(safe-area-inset-top)); display: flex; align-items: center; gap: 3px; padding: 4px 10px; border-radius: 99px; background: rgb(255 248 235 / .92); box-shadow: 0 2px 0 rgb(0 0 0 / .2); pointer-events: none; z-index: 3; }
+.line-meter span { font-size: .95rem; margin-right: 3px; }
+.line-meter i { width: 12px; height: 16px; border-radius: 4px; background: rgb(0 0 0 / .12); }
+.line-meter i.on { background: #e3b341; }
+.line-meter.danger i.on { background: #e0453f; animation: outPulse .8s ease-in-out infinite; }
+@keyframes outPulse { 50% { opacity: .55; } }
+.line-meter ~ .draft-chip { top: calc(96px + env(safe-area-inset-top)); }
+.porter-play .porter-bubble { position: absolute; left: 0; right: 0; margin: 0 auto; bottom: calc(10px + env(safe-area-inset-bottom)); width: min(94vw, 560px); z-index: 5; }
 .porter-play .porter-lesson { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(94vw, 560px); max-height: 88vh; overflow: auto; z-index: 40; }
 .porter-example { font-size: 2.2rem; }
 .pops { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 6; }
@@ -50,9 +64,11 @@ body.porter-game .topbar { display: none; }
 /* a phone held sideways: like every Angelio game, the speech bubble in the right column (base.css) */
 @media (orientation: landscape) and (max-height: 520px) {
   .porter-play canvas.gate { right: auto; width: calc(100% - 256px); }
-  .porter-play .porter-bubble { position: fixed; left: auto; right: 0; top: 50px; bottom: auto; transform: none; width: 256px; }
+  .porter-play .porter-bubble { position: fixed; left: auto; right: 0; margin: 0; top: 50px; bottom: auto; width: 256px; }
   .answers { left: auto; right: 0; transform: none; bottom: 10px; width: 256px; flex-direction: column; gap: 8px; }
-  .answer { min-height: 52px; font-size: 1.05rem; }
+  .answer { min-height: 46px; flex-direction: row; font-size: 1rem; gap: 8px; }
+  .answer span { font-size: 1.3rem; }
+  .line-meter, .draft-chip { left: calc(50% - 128px); }
   .porter-play .clock, .porter-play .score { font-size: 1rem; padding: 3px 10px; }
 }
 

@@ -17,8 +17,8 @@ body.candle-game main { max-width: none; padding: 0 !important; }
 .candle-play .clock-label { font-size: .85rem; font-weight: 700; opacity: .7; }
 .candle-play .score b { font-variant-numeric: tabular-nums; }
 .candle-play .streak { color: #c25b00; margin-left: 4px; }
-.candle-play .candle-bubble { position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(10px + env(safe-area-inset-bottom)); top: auto; right: auto;
-  width: min(92vw, 560px); margin: 0; z-index: 5; }
+.candle-play .candle-bubble { position: absolute; left: 0; right: 0; margin: 0 auto; bottom: calc(10px + env(safe-area-inset-bottom)); top: auto;
+  width: min(92vw, 560px); z-index: 5; } /* centered with margins: the kit's pop animation replaces any transform for a moment */
 .candle-play .candle-lesson { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(94vw, 560px); max-height: 88vh; overflow: auto; z-index: 10; }
 .lesson-candles { font-size: 2.6rem; letter-spacing: .3em; }
 .prayers, .pops { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }

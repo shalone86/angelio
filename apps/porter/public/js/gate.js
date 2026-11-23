@@ -5,13 +5,14 @@
 // for the ones not made yet), a robe painted on for the monk and the porter, a goat of boxes until he makes one.
 import { readVox, toScene } from "./vox.js";
 import { randomLook, recolor } from "./looks.js";
+import { ANIMALS, VISITORS } from "./visitors.js";
 
 const ART = /(^|\.)angelio\.org$/.test(location.hostname) ? "" : "https://angelio.org";
 
 // Where things stand (1 unit = one voxel; his people are 8 tall). The gate is at z = 0, outside is -z, you look toward -z.
 export const DOOR = { x: 0, z: -10 };       // where the visitor at the door stands (just outside)
-const SPAWN_Z = -66;                        // far down the path, off the top of the screen
-const spotInLine = (i) => ({ x: ((i * 7) % 3) - 1, z: DOOR.z - 9 * (i + 1) }); // the path, one behind the other
+const SPAWN_Z = -75;                        // far down the path, off the top of the screen
+const spotInLine = (i) => ({ x: ((i * 7) % 3) - 1, z: DOOR.z - 7 * (i + 1) }); // the path, one behind the other
 const PORTER_AT = { x: -8, z: 6 };
 const CHAPEL_DOOR = { x: 11.5, z: 17 };
 const KINDS = ["man", "woman", "grandfather", "grandmother", "child", "child-girl"];
@@ -20,8 +21,9 @@ const SIZE = { man: 1.12, woman: 1.1, grandfather: 1.08, grandmother: 1.06, chil
 const ROBES = { porter: "#2b2830", monk: "#5a4030" };
 
 /** Every model the game asks for (whichever exist are used; his boy and girl stand in for the rest). */
-export const MODELS = ["porter-idle", "porter-walk", "monk-idle", "monk-walk", "goat-idle", "goat-walk", "priest-idle", "priest-walk-slow", "server-idle", "server-walk",
-  ...KINDS.flatMap((k) => [`${k}-walk`, `${k}-idle`])];
+export const MODELS = ["porter-idle", "porter-walk", "monk-idle", "monk-walk", ...ANIMALS.flatMap((a) => [`${a}-idle`, `${a}-walk`]),
+  ...KINDS.flatMap((k) => [`${k}-walk`, `${k}-idle`]),
+  ...VISITORS.filter((v) => !ANIMALS.includes(v.kind)).flatMap((v) => [`${v.id}-idle`, `${v.id}-walk`])]; // (any visitor can have a character of their own: bishop-walk…)
 
 export async function loadModels(names = MODELS) {
   const out = {};
@@ -78,7 +80,7 @@ export function createGate(canvas, { models = {}, night = false }) {
     block(0.7, 1.4, 1.2, -s * 0.8, 4.2, 0, mat("#c9971f"), pivot);                                                    // a handle
     return { pivot, s };
   });
-  let doorTarget = 0, doorOpen = 0;
+  let doorTarget = 0, doorOpen = 0, draft = false;
   // lanterns on the gateposts
   const lanterns = [];
   for (const sx of [-1, 1]) {
@@ -119,14 +121,40 @@ export function createGate(canvas, { models = {}, night = false }) {
     return g;
   };
   const standIn = (hex) => { const g = new THREE.Group(); block(3, 5, 2, 0, 0, 0, mat(hex), g); block(2.4, 2.4, 2.2, 0, 5, 0, mat("#e9c4a0"), g); g.userData.frames = []; return g; };
-  // a goat of boxes (faces +z) until he draws one
-  const goatBox = () => {
-    const g = new THREE.Group(), white = mat("#f1ece0"), gray = mat("#8a8478");
-    block(3, 3, 5.5, 0, 2.2, 0, white, g); block(2.2, 2.4, 2.2, 0, 4.2, 3.2, white, g);
-    block(0.5, 1.4, 0.5, -0.8, 6.4, 3, gray, g); block(0.5, 1.4, 0.5, 0.8, 6.4, 3, gray, g);          // horns
-    block(0.6, 1.4, 0.6, 0, 2.6, 4.7, gray, g);                                                       // beard
-    for (const [x, z] of [[-1, -2], [1, -2], [-1, 2], [1, 2]]) block(0.7, 2.4, 0.7, x, 0, z, gray, g); // legs
-    g.userData.frames = []; return g;
+  // an animal of boxes (faces +z) until he draws it: a table of how each one is put together
+  const CRITTERS = {
+    goat: { body: [3, 3, 5.5], color: "#f1ece0", legs: "#8a8478", horns: "#8a8478", beard: true },
+    sheep: { body: [4.2, 3.6, 5.5], color: "#f4f1ea", legs: "#3a3a3a", head: "#3a3a3a", ears: "#3a3a3a" },
+    cow: { body: [4.6, 4.6, 8], color: "#f4f4f4", spots: "#232323", legs: "#d9d2c4", horns: "#e8e0d0", ears: "#232323", leg: 2.4, scale: 1.15 },
+    pig: { body: [3.8, 3.2, 5.5], color: "#f2a8b8", legs: "#e58fa3", snout: "#e58fa3", ears: "#e58fa3", leg: 1.2 },
+    dog: { body: [2.4, 2.8, 5], color: "#a8692f", legs: "#8a5522", ears: "#6b4226", tail: "#a8692f" },
+    cat: { body: [2, 2.2, 4], color: "#e07a2e", legs: "#c9651e", pointEars: "#e07a2e", tail: "#e07a2e", leg: 1.2 },
+    chicken: { body: [2.4, 2.6, 3], color: "#f4efe2", legs: "#e3b341", comb: "#c8262f", beak: "#e3b341", leg: 1.4 },
+    duck: { body: [2.4, 2, 3.6], color: "#f4efe2", legs: "#e07a2e", head: "#2f8a4c", beak: "#e3b341", leg: 1.0 },
+    rabbit: { body: [2.4, 2.4, 3.6], color: "#cfc7b8", legs: "#b3ab9c", longEars: "#cfc7b8", tail: "#ffffff", leg: 1.0 },
+    horse: { body: [3.4, 4.6, 8.5], color: "#8a5a2e", legs: "#6a4020", neck: true, mane: "#2e1d12", ears: "#6a4020", tail: "#2e1d12", leg: 3.4, scale: 1.2 },
+  };
+  const critter = (kind) => {
+    const c = CRITTERS[kind] ?? CRITTERS.goat, g = new THREE.Group(), [w, h, l] = c.body, lh = c.leg ?? 1.8, col = mat(c.color), head = mat(c.head ?? c.color);
+    block(w, h, l, 0, lh, 0, col, g);
+    if (c.spots) { block(w + 0.1, h * 0.5, l * 0.3, 0, lh + h * 0.3, -l * 0.15, mat(c.spots), g); block(w + 0.1, h * 0.35, l * 0.2, 0, lh + h * 0.4, l * 0.2, mat(c.spots), g); }
+    for (const [x, z] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) block(0.7, lh, 0.7, x * (w / 2 - 0.5), 0, z * (l / 2 - 0.7), mat(c.legs), g);
+    const hy = lh + h * 0.55 + (c.neck ? h * 0.7 : 0), hz = l / 2 + 0.6;
+    if (c.neck) block(1.5, h * 0.9, 1.5, 0, lh + h * 0.55, l / 2 - 0.3, col, g);
+    if (c.mane) block(0.5, h * 0.9, 1.8, 0, lh + h * 0.7, l / 2 - 0.9, mat(c.mane), g);
+    block(Math.max(1.4, w * 0.7), h * 0.7, 2, 0, hy, hz, head, g);                 // head
+    for (const sx of [-1, 1]) {
+      if (c.horns) block(0.5, 1.4, 0.5, sx * 0.8, hy + h * 0.7, hz, mat(c.horns), g);
+      if (c.ears) block(0.4, 1.1, 1, sx * (w * 0.4), hy + h * 0.3, hz - 0.6, mat(c.ears), g);
+      if (c.pointEars) block(0.5, 1, 0.5, sx * 0.7, hy + h * 0.7, hz - 0.3, mat(c.pointEars), g);
+      if (c.longEars) block(0.5, 2.4, 0.6, sx * 0.6, hy + h * 0.7, hz - 0.4, mat(c.longEars), g);
+    }
+    if (c.snout) block(1.4, 0.9, 0.8, 0, hy + 0.1, hz + 1.2, mat(c.snout), g);
+    if (c.beard) block(0.6, 1.4, 0.6, 0, hy - 1.2, hz + 0.8, mat("#8a8478"), g);
+    if (c.comb) block(0.5, 0.9, 1.2, 0, hy + h * 0.7, hz - 0.2, mat(c.comb), g);
+    if (c.beak) block(0.9, 0.5, 0.9, 0, hy + 0.2, hz + 1.1, mat(c.beak), g);
+    if (c.tail) block(0.7, 0.9, 1.4, 0, lh + h * 0.8, -l / 2 - 0.6, mat(c.tail), g);
+    g.userData.frames = []; g.userData.scale = c.scale ?? 1; return g;
   };
   const animate = (g, t) => { const fr = g.userData.frames; if (fr?.length > 1) { const k = Math.floor(t * g.userData.fps) % fr.length; fr.forEach((m, i) => { m.visible = i === k; }); } };
 
@@ -181,9 +209,10 @@ export function createGate(canvas, { models = {}, night = false }) {
   // ── the visitors: each has a person on the path, who walks where the rules say ──
   const folk = new Map(); // visitor id → {a, at (where they were last sent), mode}
   function makeVisitor(v) {
-    const goat = v.kind === "goat";
-    const a = goat ? actor({ walk: ["goat-walk"], idle: ["goat-idle", "goat-walk"] }, randomLook(), 1.1, "#f1ece0", goatBox)
-      : actor(peoplePoses(v.kind, v.robe ? ["monk"] : []), v.robe ? robed(v.robe) : randomLook(Math.random, { older: /grand/.test(v.kind), clothes: true }), SIZE[v.kind] ?? 1, "#7d8a96");
+    const animal = ANIMALS.includes(v.kind);
+    const a = animal ? actor({ walk: [`${v.kind}-walk`], idle: [`${v.kind}-idle`, `${v.kind}-walk`] }, randomLook(), 1.05, "#f1ece0", () => critter(v.kind))
+      : actor(peoplePoses(v.kind, [v.def, ...(v.robe ? ["monk"] : [])]), v.robe ? robed(v.robe) : randomLook(Math.random, { older: /grand/.test(v.kind), clothes: true }), SIZE[v.kind] ?? 1, "#7d8a96");
+    if (animal) a.g.scale.setScalar(1.05 * (a.poses.walk.userData.scale ?? 1));
     a.place((Math.random() - 0.5) * 3, SPAWN_Z, "walk", 0);
     const f = { a, at: null, mode: "line" }; folk.set(v.id, f); return f;
   }
@@ -194,22 +223,27 @@ export function createGate(canvas, { models = {}, night = false }) {
       const f = folk.get(v.id) ?? makeVisitor(v);
       if (f.mode !== "line") return;
       const spot = v === g.front ? DOOR : spotInLine(g.queue.indexOf(v)), key = `${spot.x},${spot.z}`;
-      if (f.at !== key) { f.at = key; f.a.goTo(spot.x, spot.z, v === g.front ? 12 : 15, "walk", "idle").then(() => { if (f.mode === "line") f.a.g.rotation.y = 0; }); }
+      if (f.at !== key) { f.at = key; f.a.goTo(spot.x, spot.z, v === g.front ? 20 : 24, "walk", "idle").then(() => { if (f.mode === "line") f.a.g.rotation.y = 0; }); }
     });
   }
   const later = (s) => new Promise((r) => setTimeout(r, s * 1000));
-  /** Welcome: the door opens, they walk in and across the courtyard to the chapel. */
-  async function welcome(id) {
+  let wanted = false, flashUntil = 0;
+  /** The door the player holds open (🚪) or shut. */
+  const setDoor = (open) => { wanted = open; };
+  /** The door swings open for a moment (a greeting at a closed door). */
+  const flash = (seconds = 1.3) => { flashUntil = time + seconds; };
+  /** They walk in through the door and across the courtyard to the chapel. */
+  async function enter(id) {
     const f = folk.get(id); if (!f) return; f.mode = "in"; const a = f.a;
-    doorTarget = 1; await later(0.35); if (disposed) return;
-    await a.goTo(0, 4, 14); if (disposed) return; doorTarget = 0;
-    await a.goTo(CHAPEL_DOOR.x - 4, CHAPEL_DOOR.z, 13); await a.goTo(CHAPEL_DOOR.x, CHAPEL_DOOR.z, 10);
+    if (!wanted) flash(1.1);
+    await a.goTo(0, 4, 22); if (disposed) return;
+    await a.goTo(CHAPEL_DOOR.x - 4, CHAPEL_DOOR.z, 18); await a.goTo(CHAPEL_DOOR.x, CHAPEL_DOOR.z, 14);
     if (disposed) return; remove(a); folk.delete(id);
   }
   /** Come back later: they turn and walk back down the path. */
   async function sendOn(id) {
     const f = folk.get(id); if (!f) return; f.mode = "away";
-    await f.a.goTo(f.a.g.position.x * 0.5, SPAWN_Z, 11); if (disposed) return; remove(f.a); folk.delete(id);
+    await f.a.goTo(f.a.g.position.x * 0.5, SPAWN_Z, 18); if (disposed) return; remove(f.a); folk.delete(id);
   }
   const giveUp = sendOn;
 
@@ -224,14 +258,17 @@ export function createGate(canvas, { models = {}, night = false }) {
       }
       const pm = a.poses[a.now]; if (pm) animate(pm, time);
     }
-    doorOpen += (doorTarget - doorOpen) * Math.min(1, dt * 5);
+    doorTarget = wanted || time < flashUntil ? 1 : 0;
+    doorOpen += (doorTarget - doorOpen) * Math.min(1, dt * 7);
     for (const l of leaves) l.pivot.rotation.y = -l.s * doorOpen * 1.45;
-    lanterns.forEach((l, i) => { const k = 1 + 0.12 * Math.sin(time * 9 + i * 2); l.halo.scale.setScalar((night ? 9 : 5) * k); });
+    lanterns.forEach((l, i) => { const k = 1 + (draft ? 0.4 : 0.12) * Math.sin(time * (draft ? 22 : 9) + i * 2); l.halo.scale.setScalar((night ? 9 : 5) * k); });
     R.render(scene, cam);
   }
   const screenOf = (x, y, z) => { const v = new THREE.Vector3(x, y, z).project(cam), rect = canvas.getBoundingClientRect(); return { x: rect.left + ((v.x + 1) / 2) * rect.width, y: rect.top + ((1 - v.y) / 2) * rect.height }; };
   /** Where a visitor's head is on screen (for the picture over it and its patience bar), or null. */
   const headOf = (id) => { const f = folk.get(id); if (!f) return null; const p = f.a.g.position; return screenOf(p.x, 10.5 * f.a.g.scale.y, p.z); };
-  return { update, resize, sync, welcome, sendOn, giveUp, headOf, screenOf, hasModels: () => Object.keys(models),
+  /** The draft: the lanterns flicker while the door has been open too long. */
+  const setDraft = (on) => { draft = on; };
+  return { update, resize, sync, enter, setDoor, flash, setDraft, sendOn, giveUp, headOf, screenOf, hasModels: () => Object.keys(models),
     dispose: () => { disposed = true; R.dispose(); R.forceContextLoss?.(); } };
 }

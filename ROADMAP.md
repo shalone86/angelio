@@ -225,8 +225,12 @@ building (the church's candle rack and doors, the chapel at night, the choir lof
    tap-twice-to-dismiss, since little kids double-tap). Stages: Sunday Mass, Guest Day (only the expected), the Great
    Silence (only those who live there and people in trouble); someone in trouble always comes in. Visitors who wait too long
    go home; the gentle reason is read out after a wrong answer. Not villains: a goat, a peddler with too many pots, a lost
-   tourist, a child who wants to ring the bell. Next: the door as the tension (a draft while it's open), monks going out,
-   regulars' own greetings, more stages, his porter and gate drawings.
+   tourist, a child who wants to ring the bell. Next: weather, monks going out, more stages, his porter and gate drawings.
+   Round 2 (Nov 23, 2026, his playtest): faster (visitors every 4 s down to 2, no waiting for the voice), three buttons
+   (🚪 Door held open costs points after 2 s; 👋 Welcome for special guests: a bishop, the abbot, the mayor, Mother Abbess,
+   "Glory to Jesus Christ!"; 🙋 Send away), a combo multiplier for higher scores, many more people who don't belong on Sunday
+   and ten kinds of animals (his drawings on the Drawings page), varied welcomes, and an endless Feast Day Crowd that ends
+   when six are waiting at the gate.
 
 Peters Pence (Balatro-style cards) is too hard for PreK: it moves to Pico Parish.
 

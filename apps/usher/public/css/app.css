@@ -28,7 +28,7 @@ body.usher-game .topbar { display: none; }
 .fam i { width: 12px; height: 12px; border-radius: 50%; background: var(--c); box-shadow: inset 0 -2px 0 rgb(0 0 0 / .2); }
 .pins { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
 .pin { position: absolute; transform: translate(-50%, -100%); font-size: 1rem; filter: drop-shadow(0 1px 1px rgb(0 0 0 / .4)); }
-.ush-play .ush-bubble { position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(10px + env(safe-area-inset-bottom)); width: min(94vw, 560px); margin: 0; z-index: 5; }
+.ush-play .ush-bubble { position: absolute; left: 0; right: 0; margin: 0 auto; bottom: calc(10px + env(safe-area-inset-bottom)); width: min(94vw, 560px); z-index: 5; }
 .ush-play .ush-lesson { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(94vw, 560px); max-height: 88vh; overflow: auto; z-index: 40; } /* above the bubble (sideways it sits in a fixed column) */
 .ush-example { font-size: 2.2rem; }
 .pops { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 6; }
@@ -41,7 +41,7 @@ body.usher-game .topbar { display: none; }
 @media (prefers-reduced-motion: reduce) { .pop { animation: none; } .usher { transition: none !important; } }
 /* a phone held sideways: like every Angelio game, the speech bubble in the right column (base.css) */
 @media (orientation: landscape) and (max-height: 520px) {
-  .ush-play .ush-bubble { position: fixed; left: auto; right: 0; top: 50px; bottom: auto; transform: none; width: 256px; }
+  .ush-play .ush-bubble { position: fixed; left: auto; right: 0; margin: 0; top: 50px; bottom: auto; width: 256px; }
   .line-up { left: auto; right: 0; transform: none; top: auto; bottom: 10px; width: 256px; border-radius: 16px 0 0 16px; }
   .ush-play .clock, .ush-play .score { font-size: 1rem; padding: 3px 10px; }
 }

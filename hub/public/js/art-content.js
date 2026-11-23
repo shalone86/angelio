@@ -161,9 +161,35 @@ export const CHECKLISTS = [
       p("porter-walk", "Porter, walking"),
       p("monk-idle", "Brother Francis (a monk), standing", "A brother coming back from the garden: a brown robe."),
       p("monk-walk", "Brother Francis, walking"),
-      p("goat-idle", "Goat, standing", "The goat that wanders up to the gate. Four legs, horns and a little beard. Until made: a goat of white boxes."),
-      p("goat-walk", "Goat, walking"),
 
+    ],
+  },
+  {
+    id: "monastery-porter-animals", title: "Monastery Porter: animals", game: "Monastery Porter",
+    note: "The animals that wander up to the monastery gate (all of them get sent kindly on their way). Each one stands and walks, facing the front like your people. Make them any size you like: a cow can be bigger than a person, a cat smaller. Until you draw one, the game uses a little animal of colored boxes. Tell me if you want more animals!",
+    items: [
+      p("goat-idle", "Goat, standing", "horns and a little beard. Faces the front."), p("goat-walk", "Goat, walking"),
+      p("sheep-idle", "Sheep, standing", "a woolly coat. Faces the front."), p("sheep-walk", "Sheep, walking"),
+      p("cow-idle", "Cow, standing", "big, with spots; the biggest of them. Faces the front."), p("cow-walk", "Cow, walking"),
+      p("pig-idle", "Pig, standing", "a curly tail and a snout. Faces the front."), p("pig-walk", "Pig, walking"),
+      p("dog-idle", "Dog, standing", "a wagging tail. Faces the front."), p("dog-walk", "Dog, walking"),
+      p("cat-idle", "Cat, standing", "pointy ears; the smallest. Faces the front."), p("cat-walk", "Cat, walking"),
+      p("chicken-idle", "Chicken, standing", "a comb on its head. Faces the front."), p("chicken-walk", "Chicken, walking"),
+      p("duck-idle", "Duck, standing", "a flat beak. Faces the front."), p("duck-walk", "Duck, walking"),
+      p("rabbit-idle", "Rabbit, standing", "long ears. Faces the front."), p("rabbit-walk", "Rabbit, walking"),
+      p("horse-idle", "Horse, standing", "tall, with a mane; too big for the door. Faces the front."), p("horse-walk", "Horse, walking"),
+    ],
+  },
+  {
+    id: "monastery-porter-special", title: "Monastery Porter: special visitors", game: "Monastery Porter",
+    note: "Any visitor can have a character of their own: name the files after them (bishop-idle, bishop-walk) and the game uses yours instead of the usual man or woman. These are the ones who deserve it most: the people who need a special greeting, and a few funny ones.",
+    items: [
+      p("bishop-idle", "The bishop, standing", "Purple, with a cross and a mitre."), p("bishop-walk", "The bishop, walking"),
+      p("abbot-idle", "The visiting abbot, standing"), p("abbot-walk", "The visiting abbot, walking"),
+      p("mayor-idle", "The mayor, standing", "A sash across the chest."), p("mayor-walk", "The mayor, walking"),
+      p("mother-idle", "Mother Abbess, standing", "A habit and a veil."), p("mother-walk", "Mother Abbess, walking"),
+      p("peddler-idle", "The peddler, standing", "Pots hanging all over him."), p("peddler-walk", "The peddler, walking"),
+      p("clown-idle", "The clown, standing"), p("clown-walk", "The clown, walking"),
     ],
   },
   {

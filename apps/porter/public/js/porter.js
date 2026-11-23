@@ -2,97 +2,144 @@
 // test/porter.test.js; app.js and gate.js only draw what happens here.
 //
 // Visitors walk up the path and line up at the monastery gate. The first in line knocks and says who they are (read
-// aloud). You choose: 👋 Welcome (the door opens and they come in) or 🙋 Come back later (kindly sent on their way).
-// Each stage has its own rule (who is expected), and someone in trouble always comes in. A visitor who is made to
-// wait too long gives up and goes home. The round lasts until the bell for Mass (or the Liturgy, or morning).
-import { VISITORS } from "./visitors.js";
+// aloud, with a picture over their head). You have three buttons:
+//   🚪 Door     opens (or closes) the door. While it's open, whoever stands at it walks straight in after a moment, so a
+//               line of people who belong can stream in without a tap. But an open door costs points after a few seconds
+//               (a draft!), and animals and special guests who walk in that way are a mistake.
+//   👋 Welcome  a proper greeting, for special guests (a bishop, the mayor, "Glory to Jesus Christ!"): the big points. (For
+//               someone who only needed the door it's harmless but earns nothing.)
+//   🙋 Send away kindly sends them on their way (animals, peddlers, people who aren't coming to pray).
+// Each stage has its own rule about who comes in; someone in trouble always does. A visitor who waits too long gives up.
+// Quick right answers in a row build a combo that multiplies the points. Timed stages end at the bell; the endless one
+// ends when too many people are waiting.
+import { VISITORS, hintFor } from "./visitors.js";
 import { STAGES } from "./stages.js";
 
-export const ARRIVE = 1.4;      // seconds for the next visitor to step up to the door
-export const BUSY_IN = 3.0;     // the door opens, they walk in, it closes
-export const BUSY_LATER = 2.2;  // they're sent on their way
-export const LEAVE = 1.6;       // someone who waited too long walks off
-export const WRONG = 8;          // points lost for a wrong answer (never below 0)
+export const ARRIVE = 0.5;      // seconds for the next visitor to step up to the door
+export const GRACE = 0.8;       // an open door: a visitor walks in this long after reaching it (time to catch the wrong ones)
+export const FREE_OPEN = 2.0;   // seconds the door can stay open before the draft starts costing points
+export const DRAIN = 2.5;       // points a second lost to the draft after that
+export const WRONG = 8;         // points lost for a wrong answer (never below 0)
 export const QUICK = 0.55;      // answered with more than this much of their patience left: a quick-answer bonus
 export const VIP_PATIENCE = 0.55; // an important guest (or the repairman) is in a hurry
+export const COMBO = 5;         // every 5 right answers in a row, the multiplier goes up by one
+export const MAX_MULT = 5;
+export const START_DELAY = 4;  // seconds before the first visitor (time to hear the rule)
 
 export function rng(seed) {
   let a = seed >>> 0;
   return () => { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
 }
 
-/** The visitors who can come to a stage, as {in: […], later: […]}. */
+/** The visitors who can come to a stage, as {in: […], greet: […], away: […]}. */
 export function pool(stage) {
-  const out = { in: [], later: [] };
-  for (const v of VISITORS) { const a = v.answers[stage.id]; if (a) out[a].push(v); }
+  const out = { in: [], greet: [], away: [] };
+  for (const v of VISITORS) { const a = v.answers[stage.rules ?? stage.id]; if (a) out[a].push(v); }
   return out;
 }
 
 export function newGame({ seed = 1, stage = STAGES[0], length } = {}) {
-  const g = { r: rng(seed), t: 0, length: length ?? stage.length, stage, queue: [], front: null, busyUntil: 0, nextArrival: 0, nextId: 1, last: null,
-    score: 0, welcomed: 0, sentOn: 0, wrong: 0, missed: 0, right: 0, over: false, pool: pool(stage) };
-  arrive(g);
+  const g = { r: rng(seed), t: 0, length: length ?? stage.length, stage, queue: [], front: null, door: false, doorOpenFor: 0, drainAcc: 0, drained: 0, nextArrival: 0, nextId: 1, last: null,
+    score: 0, welcomed: 0, greeted: 0, sentOn: 0, wrong: 0, missed: 0, right: 0, streak: 0, bestStreak: 0, over: false, endReason: null, pool: pool(stage) };
+  g.nextArrival = START_DELAY;
   return g;
 }
 
+/** How far along it is, 0 → 1 (a timed stage: to the bell; the endless one: up the ramp). */
+const progress = (g) => Math.min(1, g.stage.endless ? g.t / g.stage.ramp : g.t / g.length);
+/** The multiplier for the next right answer. */
+export const multOf = (g) => Math.min(MAX_MULT, 1 + Math.floor(g.streak / COMBO));
+
 function arrive(g) {
-  const st = g.stage, p = Math.min(1, g.t / g.length), [e0, e1] = st.every;
-  const side = g.r() < st.inShare ? "in" : "later";
+  const st = g.stage, [e0, e1] = st.every, mix = st.mix, x = g.r();
+  const side = x < mix.in ? "in" : x < mix.in + mix.greet ? "greet" : "away";
   let list = g.pool[side].filter((v) => v.id !== g.last);
-  if (!list.length) list = g.pool[side].length ? g.pool[side] : [...g.pool.in, ...g.pool.later];
+  if (!list.length) list = g.pool[side].length ? g.pool[side] : [...g.pool.in, ...g.pool.greet, ...g.pool.away];
   const def = list[Math.floor(g.r() * list.length) % list.length];
   g.last = def.id;
-  const max = st.patience * (def.vip ? VIP_PATIENCE : 1);
-  const v = { id: g.nextId++, def: def.id, emoji: def.emoji, kind: def.kind, robe: def.robe, vip: !!def.vip, line: def.line, later: def.later, why: def.why[st.id] ?? "", answer: def.answers[st.id],
-    patience: max, max, state: "line" };
+  const max = st.patience * (def.vip ? VIP_PATIENCE : 1), rules = st.rules ?? st.id;
+  const v = { id: g.nextId++, def: def.id, emoji: def.emoji, kind: def.kind, robe: def.robe, vip: !!def.vip, line: def.line, reply: def.reply ?? "", later: def.later ?? "", why: hintFor(def, rules), answer: def.answers[rules],
+    patience: max, max, waited: 0, state: "line" };
   g.queue.push(v);
-  g.nextArrival = g.t + (e0 + (e1 - e0) * p) * (0.8 + g.r() * 0.4);
+  g.nextArrival = g.t + (e0 + (e1 - e0) * progress(g)) * (0.8 + g.r() * 0.4) * (st.endless ? Math.max(0.6, 1 - Math.max(0, g.t - st.ramp) / 400) : 1);
   return v;
 }
 
-/** Move time on. Returns what happened: [{type: 'arrive' | 'step-up' | 'knock' | 'leave' | 'end', v?}]. */
+/** Move time on. Returns what happened: [{type: 'arrive' | 'step-up' | 'knock' | 'leave' | 'decided' | 'draft' | 'end', …}]. */
 export function tick(g, dt) {
   const ev = [];
   if (g.over) return ev;
   g.t = Math.min(g.length, g.t + dt);
   if (g.t >= g.nextArrival) {
     if (g.queue.length < g.stage.maxQueue) ev.push({ type: "arrive", v: arrive(g) });
-    else g.nextArrival = g.t + 0.5; // the path is full: try again in a moment
+    else g.nextArrival = g.t + 0.4; // the path is full: try again in a moment
   }
-  if (!g.front && g.t >= g.busyUntil && g.queue.length) {
+  if (!g.front && g.queue.length) {
     const v = g.front = g.queue.shift(); v.state = "arriving"; v.arrivesAt = g.t + ARRIVE;
     ev.push({ type: "step-up", v });
   }
   const f = g.front;
   if (f?.state === "arriving" && g.t >= f.arrivesAt) { f.state = "waiting"; ev.push({ type: "knock", v: f }); }
   else if (f?.state === "waiting") {
-    f.patience -= dt;
-    if (f.patience <= 0) {
-      f.patience = 0; f.state = "left"; g.front = null; g.busyUntil = g.t + LEAVE;
-      g.missed++; g.score = Math.max(0, g.score - 2); if (f.answer === "in") g.wrong++;
+    f.patience -= dt; f.waited += dt;
+    if (g.door && f.waited >= GRACE) ev.push(...resolve(g, "door", true)); // an open door: in they walk
+    else if (f.patience <= 0) {
+      f.patience = 0; f.state = "left"; g.front = null;
+      g.missed++; g.streak = 0; g.score = Math.max(0, g.score - 2); if (f.answer !== "away") g.wrong++;
       ev.push({ type: "leave", v: f });
     }
   }
-  if (g.t >= g.length) { g.over = true; ev.push({ type: "end" }); }
+  // the draft: a door left open too long costs points
+  if (g.door) {
+    g.doorOpenFor += dt;
+    if (g.doorOpenFor > FREE_OPEN && g.score > 0) {
+      const lose = Math.min(g.score, DRAIN * dt); g.score -= lose; g.drained += lose; g.drainAcc += lose;
+      if (g.drainAcc >= 2) { ev.push({ type: "draft", points: Math.floor(g.drainAcc) }); g.drainAcc -= Math.floor(g.drainAcc); }
+    }
+  }
+  if (g.stage.endless && g.queue.length >= g.stage.maxLine) { g.over = true; g.endReason = "line"; ev.push({ type: "end", reason: "line", time: g.t }); }
+  else if (g.t >= g.length) { g.over = true; g.endReason = "bell"; ev.push({ type: "end", reason: "bell" }); }
   return ev;
 }
 
 /** The visitor at the door, if they're waiting for your answer. */
 export const waiting = (g) => (g.front?.state === "waiting" ? g.front : null);
 
-/** Your answer for the visitor at the door: "in" (welcome) or "later". */
-export function decide(g, choice) {
+/** Answer the visitor at the door: how = "door" (they walk in), "greet" (a proper welcome) or "away" (sent on their way). */
+function resolve(g, how, auto = false) {
   const v = waiting(g);
-  if (g.over || !v || (choice !== "in" && choice !== "later")) return { type: "none" };
-  const correct = choice === v.answer, quick = v.patience / v.max > QUICK;
-  let points;
-  if (correct) { points = (choice === "in" ? (v.vip ? 15 : 10) : 8) + (quick ? (choice === "in" ? 3 : 2) : 0); g.right++; }
-  else { points = -WRONG; g.wrong++; }
+  if (g.over || !v) return [];
+  const a = v.answer;
+  // right: a person who belongs through the open door, a special guest greeted (anyone who belongs may be greeted too,
+  // just for fewer points), or someone sent away who should be
+  const correct = how === "door" ? a === "in" : how === "greet" ? a === "greet" : a === "away";
+  // greeting someone who only needed the door opened is harmless, but earns nothing and breaks the combo
+  const neutral = how === "greet" && a === "in";
+  const quick = auto || v.patience / v.max > QUICK;
+  let points = 0;
+  const mult = multOf(g);
+  if (correct) {
+    const base = how === "greet" ? (v.vip ? 25 : 20) : how === "door" ? (v.vip ? 15 : 10) : 8;
+    points = (base + (quick ? 3 : 0)) * mult;
+    g.right++; g.streak++; g.bestStreak = Math.max(g.bestStreak, g.streak);
+  } else if (neutral) { g.streak = 0; }
+  else { points = -WRONG; g.wrong++; g.streak = 0; }
   g.score = Math.max(0, g.score + points);
-  if (choice === "in") g.welcomed++; else g.sentOn++;
-  v.state = choice === "in" ? "welcomed" : "sent"; g.front = null; g.busyUntil = g.t + (choice === "in" ? BUSY_IN : BUSY_LATER);
-  return { type: "decided", v, choice, correct, quick, points };
+  if (how === "away") g.sentOn++; else if (how === "greet") g.greeted++; else g.welcomed++;
+  v.state = how === "away" ? "sent" : "welcomed"; v.how = how; g.front = null;
+  return [{ type: "decided", v, how, correct: correct || neutral, neutral, quick, points, mult: correct ? mult : 1, streak: g.streak, auto }];
 }
 
-/** Stars: two for steady good answers, three for quick and right. Tuned in the tests. */
+/** Open or close the door. Opening it lets the visitor at the door walk in right away. Returns the events. */
+export function toggleDoor(g) {
+  if (g.over) return [];
+  g.door = !g.door; g.doorOpenFor = 0; g.drainAcc = 0;
+  const ev = [{ type: "door", open: g.door }];
+  if (g.door) ev.push(...resolve(g, "door"));
+  return ev;
+}
+export const greet = (g) => resolve(g, "greet");
+export const sendAway = (g) => resolve(g, "away");
+
+/** Stars: two for steady good answers, three for quick, right and in a row. Tuned in the tests. */
 export const starsFor = (g) => (g.score >= g.stage.star3 ? 3 : g.score >= g.stage.star2 ? 2 : 1);
