@@ -59,10 +59,13 @@ export const APP_LIST = [
     name: "Monastery Porter", path: "porter", subject: "games", grades: "All ages", emoji: "🚪",
     blurb: "A game (an early demo): keep the monastery door. Listen to who knocks, welcome them in, or kindly ask them to come back later.",
   },
+  {
+    name: "Saints Match", path: "match", subject: "games", grades: "All ages", emoji: "😇",
+    blurb: "A game (an early demo): fast memory cards with Catholic saints and their signs, combos, wind swaps, and All Saints Rush.",
+  },
   // Coming soon (see ROADMAP.md)
   { name: "Choir", subject: "games", grades: "All ages", emoji: "🎶", blurb: "Tap along with the music in the choir loft: the beat gets faster, then two lanes, then three." },
-  { name: "Saints Match", subject: "games", grades: "All ages", emoji: "😇", blurb: "Memory cards with the saints: find the pairs, then match each saint to their sign." },
-  { name: "Garden Givers", subject: "games", grades: "All ages", emoji: "🥕", blurb: "Plant, water and pick, and fill the food bank's basket for families who need it." },
+  { name: "Garden Givers", subject: "games", grades: "All ages", emoji: "🥕", blurb: "Protect the garden and trees from critters, pick ripe produce, and deliver orders to the food bank." },
   { name: "Spelling", subject: "language", grades: "Grades 1–3", emoji: "🔤", blurb: "Hear a word, build it letter by letter, and learn the spelling patterns." },
   { name: "Writing Skills", subject: "language", grades: "Grades 1–4", emoji: "📝", blurb: "From sentences to paragraphs: build, fix and grow your writing." },
   { name: "Catholic History", subject: "history", grades: "All ages", emoji: "⛪", blurb: "Saints, the early Church and the great moments, on drag-and-drop timelines." },

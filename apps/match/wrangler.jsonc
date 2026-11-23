@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "match",
+  "main": "worker/index.js",
+  "compatibility_date": "2025-09-01",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"]
+  },
+  "ai": { "binding": "AI" },
+  // Shared Angelio store: daily safety cap on new voice clips (worker/codes.js).
+  "kv_namespaces": [{ "binding": "CODES", "id": "a39d9bda676b420394c3eaba35975dec" }],
+  "observability": { "enabled": true },
+  "workers_dev": true
+}

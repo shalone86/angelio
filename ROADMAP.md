@@ -186,13 +186,17 @@ is the content, so they never need new levels.
      upgrades, combos, events and orders stay.
    - **Lamplighter** (Crossy Road style): tap to hop up the streets at dusk, swipe sideways, light lamps and windows;
      wind, processions and carts cross. Endless; the voxel look fits it best.
-3. **Saints Match.** Memory cards with the saint drawings; the voice names each one. Ramp: bigger grids, a clock, a
-   flawless streak multiplier, then matching a saint to their sign (Peter and the keys), cards that shuffle on hard.
+3. **Saints Match.** **Demo live Nov 23, 2026 at angelio.org/match/** (`apps/match`): arcade memory cards with Catholic saints (fun first, learning tangential), using voxel `-idle.vox` portraits (existing voxel stand-ins until his saint models are drawn; Drawings checklists per stage).
+   - **Arcade loop:** 2-second starting flash on every board (cards start face-up so fast players can chain right away); wave-after-wave 1:30 stages (clearing a board deals the next); decaying combo multiplier (×2–×5, ×6 with St. Carlo); **Saint ↔ Symbol** pairs (St. Peter ↔ keys, St. Paul ↔ sword, read aloud on every flip so non-readers can play); a **✨ Golden Halo pair** per board triggering **Feast Rush** (2× points); and visible **🌬️ Wind Swaps** where two face-down cards glide across to swap places (matching one earns a **Sharp Eye ⚡** bonus).
+   - **6 stages + Endless (male/female parity on every stage except The Apostles):** (1) *The Apostles* (6 male), (2) *Early Church* (3M + 3F), (3) *Eastern Church* (3M + 3F), (4) *Western Church* (3M + 3F), (5) *Modern Saints* (3M + 3F), (6) *Patron Saints* (3M + 3F), plus **All Saints Rush** (endless, opens with 2★ on Apostles: 45 s clock, +time per match & board clear, ramping 4→6→8 pairs mixing all 36 saints).
+   - **6 unlockable Patron Helpers** (3M + 3F, each with an upside and trade-off): St. Anthony (🔍 find a pair), St. Lucy (🕯️ longer peek & Feast Rush, faster wind swaps), St. John Chrysostom (🐝 symbol bonus, shorter peek), St. Clare (☀️ first mistake each wave forgiven, lower max combo), St. Carlo Acutis (💻 fast ×6 combo & +rush time, short peek), St. Cecilia (🎵 long combo timer, stops wind swaps).
 4. **Choir.** Tap on the beat (built from Boba Beats). Ramp: the tempo rises, 1 lane then 2 then 3, held notes, perfect vs
-   good timing, a combo meter; easy mode counts loose taps. Cantor sheet music becomes its harder levels, not a new game.
-5. **Garden Givers.** Tap to plant, water and pick; fill the food bank's basket. Ramp: crops ripen at different speeds,
-   rain helps, crows steal, the food bank asks for certain foods, picked food spoils if left. Pick-one-of-three upgrades
-   (a bigger watering can, a helper). Score: meals given.
+   good timing, a combo meter; easy mode counts loose taps. Cantor sheet music becomes its harder levels, not a new game. Needs recordings of people's voices, so down the list.
+5. **Garden Givers.** *(Settled design, Nov 23, 2026; build after Saints Match)*
+   - **Core loop:** Keep bugs, birds, squirrels, etc. off the fruit and veggies growing in the garden beds and on fruit trees. Tap ripe produce to pick and auto-deliver to the food bank when requested (showing a monk walking the basket over to the food bank; e.g., apples only, or apples + pears + celery). Pick the right produce; the longer the food bank waits, the order reward decays down to 0 and then ticks negative points. Higher points for protecting more fruit and delivering faster.
+   - **4 stages (1:30 each, NO endless mode):** (1) *The Garden* (vegetable beds only), (2) *The Orchard* (adds fruit trees), (3) *The Herb Garden* (adds herbs to pick & protect), (4) *Night Vigil* (protects all food types at night; no picking or delivery).
+   - **4 unlockable gardeners (2 monks, 2 nuns):** **Auto-shoo bugs**, **Double harvest** (1 tap = 2 items instead of 1), **Patient food bank** (orders wait much longer before losing points), and **Green thumb** (crops ripen and regrow faster).
+   - **Open idea (Porter & Garden Givers):** Consider letting players choose whether the starter character is a Brother or a Sister right on the home screen.
 **Games page (Nov 22, 2026): angelio.org/games/** ("🎮 Games" in the top menu; a banner on the home page). Every
 app in the "games" group of hub/public/js/apps.js, with your best score and stars, and the coming-soon games; it can be
 added to a phone's home screen as "Angelio Games". Later (his choice): a map of a little parish where each game is a

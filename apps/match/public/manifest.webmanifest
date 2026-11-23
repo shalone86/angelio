@@ -1,0 +1,21 @@
+{
+  "id": "./",
+  "name": "Saints Match",
+  "short_name": "Saints Match",
+  "description": "Fast memory cards with Catholic saints and their signs, combos, wind swaps, and All Saints Rush.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f7f1e3",
+  "theme_color": "#2b4278",
+  "categories": ["education", "kids"],
+  "lang": "en-US",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

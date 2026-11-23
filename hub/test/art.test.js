@@ -39,6 +39,9 @@ test("every checklist item has a good name, a size the editor allows, and no rep
   }
   assert.ok(all.some((i) => i.slug === "man-beard-walk") && all.some((i) => i.slug === "man-beard-kneel"));
   for (const s of ["monk-idle", "monk-walk", "nun-idle", "nun-walk", "bishop-idle", "bishop-walk"]) assert.ok(all.some((i) => i.slug === s), s);
+  const matchItems = CHECKLISTS.filter((c) => c.game === "Saints Match").flatMap((c) => c.items);
+  assert.equal(matchItems.length, 36);
+  for (const i of matchItems) assert.match(i.slug, /^saint-[a-z0-9-]+-idle$/);
 });
 
 test("save, keep the old version, favorite, tick, delete to the trash; anyone can read them", async () => {

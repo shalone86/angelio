@@ -220,6 +220,78 @@ export const CHECKLISTS = [
       { slug: "porter-chapel", label: "Chapel", size: [30, 24], note: "Where welcomed visitors go: a small stone chapel with a door facing the gate." },
     ],
   },
+  {
+    id: "saints-match-apostles", title: "Saints Match: the Apostles", game: "Saints Match",
+    note: "Standing front-facing saint cards (idle only — no walk poses needed!). Until each saint is drawn, the game puts a halo behind recolored voxel people.",
+    items: [
+      p("saint-peter-idle", "St. Peter", "Yellow and blue cloak, white hair/beard, holding golden keys."),
+      p("saint-paul-idle", "St. Paul", "Red cloak, dark beard, holding a small sword and book."),
+      p("saint-andrew-idle", "St. Andrew", "Blue fisherman robe, X-shaped cross."),
+      p("saint-john-idle", "St. John", "Youthful face, green tunic, red cloak, holding a scroll."),
+      p("saint-james-idle", "St. James", "Brown pilgrim cloak/hat with a white scallop shell."),
+      p("saint-thomas-idle", "St. Thomas", "Purple tunic, holding a carpenter's L-square."),
+    ],
+  },
+  {
+    id: "saints-match-early", title: "Saints Match: Early Church", game: "Saints Match",
+    note: "Early Church saints (3 men, 3 women), idle only, facing front.",
+    items: [
+      p("saint-augustine-idle", "St. Augustine", "Bishop's hat (mitre), holding a bright flaming red heart."),
+      p("saint-clement-idle", "St. Clement", "White and gold papal bishop robes with an anchor."),
+      p("saint-ignatius-idle", "St. Ignatius of Antioch", "Red Eastern bishop vestments."),
+      p("saint-perpetua-idle", "St. Perpetua", "Purple and gold North African tunic and veil."),
+      p("saint-agnes-idle", "St. Agnes", "Young girl in a white tunic holding a tiny white lamb."),
+      p("saint-helena-idle", "St. Helena", "Gold crown, royal purple dress, tall cross."),
+    ],
+  },
+  {
+    id: "saints-match-eastern", title: "Saints Match: Eastern Church", game: "Saints Match",
+    note: "Eastern / Byzantine Catholic saints (3 men, 3 women), idle only.",
+    items: [
+      p("saint-chrysostom-idle", "St. John Chrysostom", "Gold Byzantine bishop phelonion and beard."),
+      p("saint-nicholas-idle", "St. Nicholas", "Red bishop vestments, white beard, three gift bags."),
+      p("saint-vladimir-idle", "St. Vladimir", "Royal fur-trimmed cap, blue cloak, beard."),
+      p("saint-olga-idle", "St. Olga of Kyiv", "Royal veil and embroidered blue mantle."),
+      p("saint-macrina-idle", "St. Macrina", "Dark monastic habit and veil, holding a Gospel book."),
+      p("saint-paraskevi-idle", "St. Paraskevi", "Bright red shawl over white tunic, holding a lamp."),
+    ],
+  },
+  {
+    id: "saints-match-western", title: "Saints Match: Western Church", game: "Saints Match",
+    note: "Western Church saints (3 men, 3 women), idle only.",
+    items: [
+      p("saint-francis-idle", "St. Francis of Assisi", "Brown habit with white cord and a little bluebird."),
+      p("saint-benedict-idle", "St. Benedict", "Black habit, white beard, little rule book."),
+      p("saint-patrick-idle", "St. Patrick", "Green bishop robes and mitre with a shamrock."),
+      p("saint-clare-idle", "St. Clare", "Brown habit, dark veil, holding a golden monstrance."),
+      p("saint-joan-idle", "St. Joan of Arc", "Silver armor tunic and short brown hair."),
+      p("saint-catherine-idle", "St. Catherine of Siena", "White Dominican habit with black veil and cloak."),
+    ],
+  },
+  {
+    id: "saints-match-modern", title: "Saints Match: Modern Saints", game: "Saints Match",
+    note: "Modern saints (3 men, 3 women), idle only.",
+    items: [
+      p("saint-john-paul-ii-idle", "St. John Paul II", "White papal cassock and skullcap, smiling elder."),
+      p("saint-kolbe-idle", "St. Maximilian Kolbe", "Black Franciscan habit and round glasses."),
+      p("saint-carlo-idle", "St. Carlo Acutis", "Red polo shirt, blue jeans, dark curly hair, backpack."),
+      p("saint-therese-idle", "St. Thérèse of Lisieux", "Brown Carmelite habit, white cloak, pink roses."),
+      p("saint-teresa-calcutta-idle", "St. Teresa of Calcutta", "White sari trimmed with blue stripes."),
+      p("saint-bakhita-idle", "St. Josephine Bakhita", "Dark Canossian habit, warm smile."),
+    ],
+  },
+  {
+    id: "saints-match-patrons", title: "Saints Match: Patron Saints", game: "Saints Match",
+    note: "Patron saints (3 men, 3 women), idle only.",
+    items: [
+      p("saint-george-idle", "St. George", "White knight tunic with red cross."),
+      p("saint-lawrence-idle", "St. Lawrence", "Red deacon dalmatic tunic."),
+      p("saint-anthony-idle", "St. Anthony of Padua", "Brown habit with white lily or book."),
+      p("saint-cecilia-idle", "St. Cecilia", "Rose and gold gown with a little harp."),
+      p("saint-lucy-idle", "St. Lucy", "White dress, red sash, bright candle wreath crown."),
+      p("saint-kateri-idle", "St. Kateri Tekakwitha", "Warm tan deerskin dress with green sash and small cross."),
+    ],
+  },
 ];
 
 /** Every slug a checklist names (for the page). */
