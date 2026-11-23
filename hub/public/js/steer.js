@@ -2,8 +2,9 @@
 // Porter now; Candle Rack and Mass Usher can use it too). Pure math on a flat floor (x, z): no THREE, tested in
 // hub/test/steer.test.js. The master copy is here; the games keep identical copies (their test/copies.test.js).
 //
-// Each agent is {x, z, r?, goal: {x, z} | null, speed, fixed?, tol?}: someone with no goal (or fixed) is standing still
-// but is still something to walk around. Each step, every walker heads for its goal and:
+// Each agent is {x, z, r?, goal: {x, z} | null, speed, fixed?, tol?, ignore?}: someone with no goal (or fixed) is standing still
+// but is still something to walk around. (`ignore`: a walker who never steers around others, like a server on his way
+// to a candle; the others still walk around him.) Each step, every walker heads for its goal and:
 //  - steers around whoever is in front of it (keeping to its right when it's head-on, like a road),
 //  - slows when someone is right in its way, and is pushed apart if two overlap,
 //  - and if it makes no progress for a moment ("stuck"), ignores the others for a moment so it always gets there.
@@ -19,7 +20,7 @@ export function stepAgents(agents, dt) {
     if (dist <= (a.tol ?? 0.5)) { a.x = a.goal.x; a.z = a.goal.z; a.goal = null; a.vx = a.vz = 0; a.bestDist = null; arrived.push(a); continue; }
     const dx = gx / dist, dz = gz / dist, speed = a.speed ?? 14, ra = a.r ?? RADIUS;
     let sx = 0, sz = 0, slow = 1;
-    if (!a.ghost) {
+    if (!a.ghost && !a.ignore) {
       for (const b of agents) {
         if (b === a) continue;
         const rx = b.x - a.x, rz = b.z - a.z, d = Math.hypot(rx, rz), rr = ra + (b.r ?? RADIUS);

@@ -61,3 +61,7 @@ The game is a demo until the rest of the art and the music are in. Then:
   (`east-priest-idle/-walk`, `east-priest-phelonion-idle/-walk`, `east-priest-cense`). Still to make: `man-`, `woman-`,
   `grandparent-` × `kneel`, `walk`; `east-server-candle-walk`, `east-server-candle-idle`.
 - Music.
+
+**People walk around each other** (`public/js/steer.js`, a copy of `hub/public/js/steer.js`; tested in `hub/test/steer.test.js`): people coming
+to pray and leaving steer around each other and the kneelers; the priest and servers walk straight to what they're doing and everyone else
+walks around them.

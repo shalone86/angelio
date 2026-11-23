@@ -219,7 +219,11 @@ function viewPlay(stageId) {
         const m = multOf(g); $("[data-combo]").textContent = m > 1 ? `×${m}` : "";
         const at = waiting(g);
         for (const b of answers.querySelectorAll('[data-act="greet"], [data-act="away"]')) b.disabled = !at;
-        if (who.dog) { const barking = g.t < g.dogUntil; const aw = answers.querySelector('[data-act="away"]'); if (barking) aw.disabled = true; aw.classList.toggle("barking", barking); }
+        if (who.dog) { // the dog is barking: Send away says so (not just grayed out) for a moment
+          const barking = g.t < g.dogUntil, aw = answers.querySelector('[data-act="away"]');
+          if (barking) aw.disabled = true;
+          if (aw.classList.contains("barking") !== barking) { aw.classList.toggle("barking", barking); aw.innerHTML = barking ? `<span aria-hidden="true">🐕</span> Woof!` : `<span aria-hidden="true">🙋</span> Send away`; }
+        }
         const bb = answers.querySelector('[data-act="bell"]'); if (bb) bb.disabled = g.bellUsed;
         answers.classList.toggle("ready", !!at);
         const drafty = g.door && g.doorOpenFor > FREE_OPEN;

@@ -62,3 +62,11 @@ test("a person with no goal stays put, and arriving snaps to the goal", () => {
   assert.deepEqual([s.x, s.z], [5, 5]);
   assert.ok(got.includes(w) && w.z === 10 && w.goal === null);
 });
+
+test("someone who ignores the others walks straight, and the others still walk around them", () => {
+  const server = agent(1, 0, -20, 0, 20, 10, { ignore: true }), p = agent(2, 0, 20, 0, -20, 10);
+  const { min } = run([server, p]);
+  assert.ok(!server.goal && !p.goal);
+  assert.ok(Math.abs(server.x) < 0.01 || server.x === 0, "he went straight");
+  assert.ok(min > RADIUS * 1.2, `and the other went around (${min.toFixed(2)} apart)`);
+});

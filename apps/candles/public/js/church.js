@@ -11,6 +11,7 @@
 import { readVox, toScene } from "./vox.js";
 import { blockedNeedy } from "./game.js";
 import { randomLook, recolor, isPriest } from "./looks.js";
+import { stepAgents } from "./steer.js";
 
 const T = () => window.THREE;
 const ART = /(^|\.)angelio\.org$/.test(location.hostname) ? "" : "https://angelio.org";
@@ -325,16 +326,18 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
   // The priest waits by the sacristy; the altar server lights candles that went out and carries the cross or a candle
   // in the procession when the bells ring.
   const actors = [];
-  function actor(poses, standInHex, home, look = randomLook()) {
-    const a = { g: new THREE.Group(), poses: {}, walk: null, home, look };
+  let agentIds = 0;
+  function actor(poses, standInHex, home, look = randomLook(), { staff = false } = {}) {
+    // (the priest and servers walk straight to what they're doing, and people walk around them: `staff` ignores the others)
+    const a = { g: new THREE.Group(), poses: {}, walk: null, home, look, agent: { id: ++agentIds, x: 0, z: 0, r: 1.1, goal: null, speed: 8, tol: 0.3, ignore: staff } };
     for (const [k, names] of Object.entries(poses)) { const m = [].concat(names).map((n) => meshFor(n, look)).find(Boolean); if (m) { a.poses[k] = m; m.visible = false; a.g.add(m); } }
     if (!a.poses.idle) { const st = standIn(standInHex, false); a.poses.idle = st; a.g.add(st); }
     a.pose = (k) => { const show = a.poses[k] ? k : a.poses.walk && /walk|hurry|slow/.test(k) ? "walk" : "idle"; for (const [n, m] of Object.entries(a.poses)) m.visible = n === show; a.now = show; a.t0 = time; };
-    a.walkTo = (x, z, pose = "walk", speed = 8) => new Promise((done) => { a.pose(pose); a.walk = { x, z, speed, done }; });
+    a.walkTo = (x, z, pose = "walk", speed = 8) => new Promise((done) => { a.pose(pose); a.walk = { done }; Object.assign(a.agent, { goal: { x, z }, speed, bestDist: null, stuckT: 0, ghost: 0 }); });
     // walk there the long way round if a rack is in the way (one leg at a time)
     a.go = async (x, z, pose = "walk", speed = 8) => { for (const [px, pz] of route(a.g.position.x, a.g.position.z, x, z)) await a.walkTo(px, pz, pose, speed); };
     a.timeTo = (x, z, speed = 8) => pathLength(a.g.position.x, a.g.position.z, route(a.g.position.x, a.g.position.z, x, z)) / speed;
-    a.place = (x, z, turn = 0, pose = "idle") => { a.g.position.set(x, groundY(x, z), z); a.g.rotation.y = turn; a.pose(pose); };
+    a.place = (x, z, turn = 0, pose = "idle") => { a.g.position.set(x, groundY(x, z), z); a.g.rotation.y = turn; a.pose(pose); a.agent.x = x; a.agent.z = z; a.agent.goal = null; a.walk = null; };
     a.goHome = () => a.go(a.home.x, a.home.z, "walk").then(() => { a.pose("idle"); a.g.rotation.y = a.home.turn; });
     a.place(home.x, home.z, home.turn);
     scene.add(a.g); actors.push(a);
@@ -348,7 +351,7 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
     ? { idle: "east-priest-idle", walk: ["east-priest-walk-fast", "east-priest-walk"], slow: ["east-priest-phelonion-walk", "east-priest-walk"], vested: ["east-priest-phelonion-idle", "east-priest-idle"],
         cense: ["east-priest-cense", "east-priest-phelonion-walk"] }
     : { idle: "priest-idle", walk: "priest-walk-fast", slow: ["priest-mass-walk", "priest-walk-slow"], vested: ["priest-mass-idle", "priest-idle"] },
-    "#1d1b22", { x: PH.x, z: PH.z, turn: PH.turn });
+    "#1d1b22", { x: PH.x, z: PH.z, turn: PH.turn }, undefined, { staff: true });
   // the priest and the server can be tapped to help: a big invisible tap area on each, and a gold ring at their feet
   // that pulses when someone is in the way and they're free to go
   const helperRing = (a, who) => {
@@ -359,14 +362,14 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
   const CANDLE = BYZ ? ["east-server-candle-walk", "east-server-ripidion-walk"] : ["server-candle-walk"];
   const CANDLE_IDLE = BYZ ? ["east-server-candle-idle", "east-server-ripidion-idle"] : ["server-candle-idle"];
   const server = actor({ idle: E("server-idle"), walk: E("server-walk"), light: E("server-light"), cross: E("server-cross-walk"), crossIdle: E("server-cross-idle"),
-    candle: CANDLE, candleIdle: CANDLE_IDLE }, "#b02a2a", { x: SH.x, z: SH.z, turn: SH.turn });
+    candle: CANDLE, candleIdle: CANDLE_IDLE }, "#b02a2a", { x: SH.x, z: SH.z, turn: SH.turn }, undefined, { staff: true });
   // a second server only for the procession (two candle bearers walk beside each other), hidden until then
   helperRing(priest, "priest"); helperRing(server, "server");
   if (!withHelpers) priest.g.visible = server.g.visible = false; // the chapel at night: nobody to help (hidden, so not tappable)
-  const server2 = actor({ idle: CANDLE_IDLE, candle: CANDLE, candleIdle: CANDLE_IDLE }, "#b02a2a", { x: 0, z: 30, turn: 0 });
+  const server2 = actor({ idle: CANDLE_IDLE, candle: CANDLE, candleIdle: CANDLE_IDLE }, "#b02a2a", { x: 0, z: 30, turn: 0 }, undefined, { staff: true });
   server2.g.visible = false;
   // a third server (Roman: the second candle bearer), hidden until the procession
-  const server3 = actor({ idle: CANDLE_IDLE, candle: CANDLE, candleIdle: CANDLE_IDLE }, "#b02a2a", { x: 0, z: 30, turn: 0 });
+  const server3 = actor({ idle: CANDLE_IDLE, candle: CANDLE, candleIdle: CANDLE_IDLE }, "#b02a2a", { x: 0, z: 30, turn: 0 }, undefined, { staff: true });
   server3.g.visible = false;
   // the Studio's marker: a ring under the spot being moved
   const marker = new THREE.Mesh(new THREE.RingGeometry(2.2, 3, 32), new THREE.MeshBasicMaterial({ color: "#3ad1ff", transparent: true, opacity: 0.85, depthWrite: false, side: THREE.DoubleSide }));
@@ -474,12 +477,15 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
     if (renew) { lampHalo.material.opacity = 0.45 + 0.45 * pulse; const k = 5 + 2 * pulse; lampHalo.scale.set(k, k, 1); lampRing.material.opacity = 0.2 + 0.25 * pulse; }
     doorOpen += (doorTarget - doorOpen) * Math.min(1, dt * 4); doorPivot.rotation.y = -doorOpen * 1.1;
     // everyone walking
+    // everyone walks toward where they're going, around each other (steer.js), and turns the way they go
+    for (const a of actors) { a.agent.x = a.g.position.x; a.agent.z = a.g.position.z; a.agent.fixed = !a.agent.goal; }
+    const arrived = stepAgents(actors.map((a) => a.agent), dt);
     for (const a of actors) {
+      const ag = a.agent;
       if (a.walk) {
-        const dx = a.walk.x - a.g.position.x, dz = a.walk.z - a.g.position.z, d = Math.hypot(dx, dz);
-        a.g.rotation.y = Math.atan2(dx, dz);
-        if (d < 0.3) { const done = a.walk.done; a.walk = null; done(); }
-        else { const st = Math.min(d, a.walk.speed * dt); a.g.position.x += (dx / d) * st; a.g.position.z += (dz / d) * st; a.g.position.y = groundY(a.g.position.x, a.g.position.z); }
+        if (ag.goal || arrived.includes(ag)) { a.g.position.x = ag.x; a.g.position.z = ag.z; a.g.position.y = groundY(ag.x, ag.z); }
+        if (Math.hypot(ag.vx ?? 0, ag.vz ?? 0) > 0.3) { const want = Math.atan2(ag.vx, ag.vz); let d = want - a.g.rotation.y; d = Math.atan2(Math.sin(d), Math.cos(d)); a.g.rotation.y += d * Math.min(1, dt * 12); }
+        if (arrived.includes(ag)) { const done = a.walk.done; a.walk = null; done(); }
       }
       const m = a.poses[a.now];
       if (m) animate(m, time - (a.t0 ?? 0));

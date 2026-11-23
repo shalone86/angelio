@@ -28,9 +28,9 @@ of boxes) and the gate is built from plain blocks. `vox.js`, `looks.js` and thre
 - **Porters** (`public/js/porters.js`, picked on the home page, saved on the device): Brother Porter, then three monks and three
   nuns, each good at something and not at something else. **Brother André** (two stars on Sunday Mass): the first mistake each
   minute is forgiven, but combos grow slower. **Old Brother Porter** (two stars on Guest Day): the door can stay open 5 s
-  before the draft and visitors wait longer before walking in, but the next visitor steps up slowly. **Brother with the Dog**
+  before the draft and visitors wait longer before walking in, but he is slow to call the next visitor. **Brother with the Dog**
   (two stars on the Great Silence): his dog chases animals off by itself (a few points, no combo), then barks and Send away
-  waits 2.5 s. **Sister Portress** (three stars on Sunday Mass): special guests glow, but everyone is in more of a hurry.
+  waits 1.5 s. **Sister Portress** (three stars on Sunday Mass): special guests glow, but everyone is in more of a hurry.
   **Sister with the Bell** (three stars on Guest Day): a 🔔 button, once a round, gives everyone waiting their patience back and
   holds off new visitors for 5 s. **Respected Sister** (three stars on the Great Silence): a special guest who just walks in is
   fine, but her greetings are worth less. Models: `porter-andre-walk`… on the Drawings page ("Monastery Porter: the porters").

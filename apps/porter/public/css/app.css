@@ -92,4 +92,3 @@ body.porter-game .topbar { display: none; }
 /* the bell (Sister with the Bell), and the dog barking (Send away waits) */
 .answer.bell { flex: .7; background: #c9971f; box-shadow: 0 4px 0 #7a5a10, 0 6px 14px rgb(0 0 0 / .3); }
 .answer.barking { background: #8a8f98; box-shadow: 0 4px 0 #5a5f66; }
-.answer.barking span::after { content: "🐕"; font-size: 1rem; }

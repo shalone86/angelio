@@ -203,8 +203,14 @@ test("the Old Brother Porter: the door can stay open longer, people take their t
   for (let i = 0; i < 45; i++) tick(g, 0.1);   // 4.5 s open: an ordinary porter would be paying for the draft by now
   assert.equal(Math.round(g.score), 50);
   for (let i = 0; i < 40; i++) tick(g, 0.1); assert.ok(g.score < 50, "but not forever");
-  const h = newGame({ seed: 3, porter: porterById("old") }); h.nextArrival = 0; tick(h, 0.1);
-  const arriving = h.front; assert.ok(arriving.arrivesAt - h.t > 1, "slower to call the next visitor");
+  const h = newGame({ seed: 3, porter: porterById("old"), stage: { ...STAGES[0], mix: MIX.away, every: [0.2, 0.2] } }); h.nextArrival = 0;
+  while (!waiting(h)) tick(h, 0.1);
+  sendAway(h); const t0 = h.t; while (!waiting(h)) tick(h, 0.05);
+  assert.ok(h.t - t0 >= 0.85, `slow to call the next visitor (${(h.t - t0).toFixed(2)} s)`);
+  const u = newGame({ seed: 3, stage: { ...STAGES[0], mix: MIX.away, every: [0.2, 0.2] } }); u.nextArrival = 0;
+  while (!waiting(u)) tick(u, 0.1);
+  sendAway(u); const t1 = u.t; while (!waiting(u)) tick(u, 0.05);
+  assert.ok(u.t - t1 < 0.5, "an ordinary porter's next visitor is right there");
 });
 
 test("Brother with the Dog: the dog chases animals off by itself, then barks and nobody can be sent away for a moment", () => {
@@ -253,4 +259,11 @@ test("every porter can play every stage and beat an idle one", () => {
     }
     assert.ok(g.score > 200, `${p.id} on ${stage.id}: ${Math.round(g.score)}`);
   }
+});
+
+test("you can answer as soon as a visitor appears, even while they're still stepping up to the door", () => {
+  const g = newGame({ seed: 3, stage: { ...STAGES[0], mix: MIX.away } }); g.nextArrival = 0;
+  while (!g.front) tick(g, 0.1);
+  assert.equal(g.front.state, "arriving"); assert.ok(waiting(g), "the buttons are live");
+  assert.ok(sendAway(g)[0].correct);
 });

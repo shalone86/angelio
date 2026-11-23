@@ -6,7 +6,7 @@
 //   comboEvery  right answers in a row for each step up of the combo (default 5)
 //   freeOpen    seconds the door can be open before the draft costs points (default 2)
 //   grace       seconds before someone walks in through an open door (default 0.8)
-//   arrive      seconds for the next visitor to step up to the door (default 0.5)
+//   stepGap     seconds of waiting after each visitor before the next steps up (default 0)
 //   dog         a big dog chases animals off by itself (a little points), then barks: Send away waits a moment
 //   glow        special guests glow
 //   patience    how long visitors wait (1 = usual)
@@ -17,8 +17,8 @@ export const PORTERS = [
     blurb: "Keeps the door, just like St. Benedict's porter.", say: "Brother Porter keeps the door, just like St. Benedict's porter." },
   { id: "andre", name: "Brother André", icon: "💛", robe: "#7a5a3a", model: "porter-andre", forgiving: true, comboEvery: 7, opens: { stage: "sunday", stars: 2 },
     blurb: "So kind that the first mistake each minute is forgiven, but combos grow slowly.", say: "Brother André is so kind that the first mistake each minute is forgiven. But his combos grow slowly." },
-  { id: "old", name: "Old Brother Porter", icon: "👴", robe: "#4a4a50", model: "porter-old", freeOpen: 5, grace: 1.3, arrive: 1.2, opens: { stage: "guests", stars: 2 },
-    blurb: "Knows the old door well: it can stay open longer, but visitors take longer to step up.", say: "The old porter knows the door well. It can stay open longer, and people take their time walking in. But he's slow to call the next visitor." },
+  { id: "old", name: "Old Brother Porter", icon: "👴", robe: "#4a4a50", model: "porter-old", freeOpen: 5, grace: 1.3, stepGap: 0.9, opens: { stage: "guests", stars: 2 },
+    blurb: "Knows the old door well: it can stay open longer, but he's slow to call the next visitor.", say: "The old porter knows the door well. It can stay open longer, and people take their time walking in. But he's slow to call the next visitor." },
   { id: "dog", name: "Brother with the Dog", icon: "🐕", robe: "#2b2830", model: "porter-dog", dog: true, opens: { stage: "night", stars: 2 },
     blurb: "His big dog chases animals off by itself, then barks so loudly nobody can be sent away for a moment.", say: "Brother's big dog chases the animals off all by itself! But then it barks, and nobody can be sent away for a moment." },
   { id: "sister", name: "Sister Portress", icon: "🌟", robe: "#e8e4dc", model: "porter-sister", glow: true, patience: 0.8, opens: { stage: "sunday", stars: 3 },

@@ -6,6 +6,7 @@
 // family wears the family's color.
 import { readVox, toScene } from "./vox.js";
 import { randomLook, recolor } from "./looks.js";
+import { stepAgents } from "./steer.js";
 import { ROWS, SEATS, pewOf } from "./usher.js";
 
 const ART = /(^|\.)angelio\.org$/.test(location.hostname) ? "" : "https://angelio.org";
@@ -170,18 +171,19 @@ export function createNave(canvas, { models = {}, rite = "roman", night = false,
 
   // An actor: a person with a few poses (each the first of his models that exists), who walks, sits and scoots.
   const actors = [];
+  let agentIds = 0;
   function actor(poses, look, scale = 1, hex = "#5f7f9e") {
-    const a = { g: new THREE.Group(), poses: {}, move: null, look };
+    const a = { g: new THREE.Group(), poses: {}, nav: null, look, agent: { id: ++agentIds, x: 0, z: 0, r: 1.1 * scale, goal: null, speed: 16, tol: 0.4 } };
     for (const [k, names] of Object.entries(poses)) { const m = names.map((n) => meshFor(n, look)).find(Boolean); if (m) { m.visible = false; a.poses[k] = m; a.g.add(m); } }
     for (const k of Object.keys(poses)) if (!a.poses[k]) { const st = standIn(hex, k === "sit"); st.visible = false; a.poses[k] = st; a.g.add(st); }
-    a.g.scale.setScalar(scale);
+    a.g.scale.setScalar(scale); a.agent.r = 1.1 * scale;
     a.pose = (k) => { for (const [n, m] of Object.entries(a.poses)) m.visible = n === k; a.now = k; };
-    a.place = (x, z, pose, turn = Math.PI) => { a.g.position.set(x, pose === "sit" ? 1.2 : 0, z); a.g.rotation.y = turn; a.pose(pose === "stand" ? "idle" : pose); };
+    a.place = (x, z, pose, turn = Math.PI) => { a.g.position.set(x, pose === "sit" ? 1.2 : 0, z); a.g.rotation.y = turn; a.pose(pose === "stand" ? "idle" : pose); a.agent.x = x; a.agent.z = z; a.agent.goal = null; a.nav = null; };
     /** Walk (or slide, when seated) to x, z; resolves on arrival. */
+    // (walking is steered around other people: steer.js. Sliding along a pew, or settling into a seat, goes straight: `ignore`)
     a.goTo = (x, z, speed = 16, pose = "walk", end = pose) => new Promise((done) => {
-      const from = a.g.position.clone(), to = new THREE.Vector3(x, end === "sit" ? 1.2 : 0, z), dur = Math.max(0.12, from.distanceTo(to) / speed);
-      a.pose(pose); a.move = { from, to, t: 0, dur, done, end };
-      if (pose === "walk") { const dx = x - from.x, dz = z - from.z; if (Math.hypot(dx, dz) > 0.1) a.g.rotation.y = Math.atan2(dx, dz); }
+      a.pose(pose); a.nav = { end, pose, done };
+      Object.assign(a.agent, { goal: { x, z }, speed, bestDist: null, stuckT: 0, ghost: 0, ignore: end === "sit" || end === "stand" });
     });
     scene.add(a.g); actors.push(a);
     return a;
@@ -259,7 +261,7 @@ export function createNave(canvas, { models = {}, rite = "roman", night = false,
           a.goTo(ax, a.g.position.z, 16).then(() => a.goTo(ax, lane, 14)).then(() => a.goTo(spot.x, lane, 12)).then(() => a.goTo(spot.x, spot.z, 10, "walk", rest)).then(() => { a.entering = false; }); }
         else a.place(spot.x, spot.z, rest);
         a.stay = who.stay; seated.set(who.pid, a);
-      } else if (Math.abs(a.g.position.x - spot.x) > 0.1 && !a.move && !a.entering) a.goTo(spot.x, spot.z, 18, p.standing ? "idle" : "sit", p.standing ? "stand" : "sit"); // scooted
+      } else if (Math.abs(a.g.position.x - spot.x) > 0.1 && !a.nav && !a.entering) a.goTo(spot.x, spot.z, 18, p.standing ? "idle" : "sit", p.standing ? "stand" : "sit"); // scooted
     });
     pewGlow.forEach((m, id) => { m.userData.on = g.at === id; });
   }
@@ -317,11 +319,18 @@ export function createNave(canvas, { models = {}, rite = "roman", night = false,
   const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
   function update(dt) {
     time += dt;
+    // everyone walks toward where they're going, around each other (steer.js), and turns the way they go
+    const here = actors.filter((a) => a.g.visible); // (the priest and servers hidden during the round aren't in anyone's way)
+    for (const a of here) { a.agent.x = a.g.position.x; a.agent.z = a.g.position.z; a.agent.fixed = !a.agent.goal; }
+    const arrived = stepAgents(here.map((a) => a.agent), dt);
     for (const a of actors) {
-      if (a.move) {
-        const m = a.move; m.t = Math.min(1, m.t + dt / m.dur);
-        a.g.position.lerpVectors(m.from, m.to, m.t);
-        if (m.t >= 1) { a.move = null; a.pose(m.end === "stand" ? "idle" : m.end); if (m.end === "sit" || m.end === "stand") a.g.rotation.y = Math.PI; m.done(); }
+      const ag = a.agent, n = a.nav;
+      if (n && a.g.visible) {
+        a.g.position.x = ag.x; a.g.position.z = ag.z;
+        const left = ag.goal ? Math.hypot(ag.goal.x - ag.x, ag.goal.z - ag.z) : 0;
+        a.g.position.y = n.pose === "sit" ? 1.2 : n.end === "sit" ? 1.2 * (1 - Math.min(1, left / 3)) : 0; // sitting down: they settle onto the seat
+        if (n.pose === "walk" && Math.hypot(ag.vx ?? 0, ag.vz ?? 0) > 0.8) { const want = Math.atan2(ag.vx, ag.vz); let d = want - a.g.rotation.y; d = Math.atan2(Math.sin(d), Math.cos(d)); a.g.rotation.y += d * Math.min(1, dt * 14); }
+        if (arrived.includes(ag)) { a.nav = null; a.g.position.y = n.end === "sit" ? 1.2 : 0; a.pose(n.end === "stand" ? "idle" : n.end); if (n.end === "sit" || n.end === "stand") a.g.rotation.y = Math.PI; n.done(); }
       }
       const pm = a.poses[a.now]; if (pm) animate(pm, time);
       if (pm && a.g.visible) {

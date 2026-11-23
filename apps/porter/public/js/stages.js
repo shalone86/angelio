@@ -10,7 +10,7 @@ export const STAGES = [
     say: "It's Sunday, and Mass is soon! Open the door for people who belong. Greet special guests with Welcome. And kindly send on everyone else!",
     rule: "Open the door for people who belong. Tap Welcome for special guests. Send on everyone else, even animals.",
     bell: "Ding, dong! Mass is starting. Thank you, kind porter!",
-    length: 100, every: [4.2, 2.3], maxQueue: 4, patience: 9, mix: { in: 0.42, greet: 0.2, away: 0.38 }, star2: 300, star3: 1000,
+    length: 100, every: [4.2, 2.3], maxQueue: 4, patience: 9, mix: { in: 0.42, greet: 0.2, away: 0.38 }, star2: 250, star3: 1000,
   },
   {
     id: "guests", name: "Guest Day", icon: "📜", night: false, rules: "guests",
@@ -18,7 +18,7 @@ export const STAGES = [
     say: "It's Guest Day! Only people the brothers are expecting come in: an appointment, a delivery, or someone who lives here. Greet the special guests. And anyone in trouble always comes in.",
     rule: "Only expected guests come in. Greet the special guests. Anyone in trouble always comes in.",
     bell: "The day is done. The brothers thank you for keeping the door!",
-    length: 100, every: [4.0, 2.3], maxQueue: 4, patience: 9, mix: { in: 0.38, greet: 0.22, away: 0.4 }, star2: 300, star3: 1000,
+    length: 100, every: [4.0, 2.3], maxQueue: 4, patience: 9, mix: { in: 0.38, greet: 0.22, away: 0.4 }, star2: 250, star3: 1000,
   },
   {
     id: "night", name: "The Great Silence", icon: "🌙", night: true, rules: "night",
@@ -26,7 +26,7 @@ export const STAGES = [
     say: "Shh. It's the Great Silence, and the brothers are sleeping. Only people who live here, and people in trouble, may come in. Greet any special guest. Everyone else, please come back in the morning.",
     rule: "Only people who live here and people in trouble come in. Greet special guests. Everyone else, come back in the morning.",
     bell: "The sun is coming up, and the Great Silence is over. Good morning, kind porter!",
-    length: 100, every: [4.0, 2.3], maxQueue: 4, patience: 9, mix: { in: 0.3, greet: 0.12, away: 0.58 }, star2: 300, star3: 1000,
+    length: 100, every: [4.0, 2.3], maxQueue: 4, patience: 9, mix: { in: 0.3, greet: 0.12, away: 0.58 }, star2: 250, star3: 1000,
   },
   {
     id: "feast", name: "Feast Day Crowd", icon: "🎉", night: false, rules: "sunday", endless: true, opensAfter: "sunday",

@@ -12,3 +12,4 @@ test("the looks are Candle Rack's (apps/candles/public/js/looks.js)", () => same
 test("three.js is the same pinned copy as Candle Rack's", () => {
   assert.ok(fs.readFileSync(new URL("../public/vendor/three-r128.min.js", import.meta.url)).equals(fs.readFileSync(new URL("../../candles/public/vendor/three-r128.min.js", import.meta.url))));
 });
+test("the steering (people walking around each other) is Angelio's (hub/public/js/steer.js)", () => same("../public/js/steer.js", "../../../hub/public/js/steer.js"));

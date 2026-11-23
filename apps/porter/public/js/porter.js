@@ -40,7 +40,7 @@ export function pool(stage) {
 
 export function newGame({ seed = 1, stage = STAGES[0], length, porter = {} } = {}) {
   const g = { r: rng(seed), porter, t: 0, length: length ?? stage.length, stage, queue: [], front: null, door: false, doorOpenFor: 0, drainAcc: 0, drained: 0, nextArrival: 0, nextId: 1, last: null,
-    score: 0, forgiven: 0, forgiveAt: 0, bellUsed: false, dogUntil: 0, welcomed: 0, greeted: 0, sentOn: 0, wrong: 0, missed: 0, right: 0, streak: 0, bestStreak: 0, over: false, endReason: null, pool: pool(stage) };
+    stepAt: 0, score: 0, forgiven: 0, forgiveAt: 0, bellUsed: false, dogUntil: 0, welcomed: 0, greeted: 0, sentOn: 0, wrong: 0, missed: 0, right: 0, streak: 0, bestStreak: 0, over: false, endReason: null, pool: pool(stage) };
   g.nextArrival = START_DELAY;
   return g;
 }
@@ -49,10 +49,10 @@ export function newGame({ seed = 1, stage = STAGES[0], length, porter = {} } = {
 const progress = (g) => Math.min(1, g.t / g.length);
 /** The multiplier for the next right answer. */
 export const multOf = (g) => Math.min(MAX_MULT, 1 + Math.floor(g.streak / (g.porter.comboEvery ?? COMBO)));
-const graceOf = (g) => g.porter.grace ?? GRACE, freeOpenOf = (g) => g.porter.freeOpen ?? FREE_OPEN, arriveOf = (g) => g.porter.arrive ?? ARRIVE;
+const graceOf = (g) => g.porter.grace ?? GRACE, freeOpenOf = (g) => g.porter.freeOpen ?? FREE_OPEN, stepGapOf = (g) => g.porter.stepGap ?? 0;
 export const DOG_DELAY = 0.6;  // the dog gets to an animal at the door before the open door lets it in
 export const DOG_POINTS = 5;   // for an animal the dog chased off (no combo)
-export const DOG_BARK = 2.5;   // seconds Send away waits after the dog barks
+export const DOG_BARK = 1.5;   // seconds Send away waits after the dog barks
 
 function arrive(g) {
   const st = g.stage, [e0, e1] = st.every, mix = st.mix, x = g.r();
@@ -80,8 +80,8 @@ export function tick(g, dt) {
     if (g.queue.length < g.stage.maxQueue) ev.push({ type: "arrive", v: arrive(g) });
     else g.nextArrival = g.t + 0.4; // the path is full: try again in a moment
   }
-  if (!g.front && g.queue.length) {
-    const v = g.front = g.queue.shift(); v.state = "arriving"; v.arrivesAt = g.t + arriveOf(g);
+  if (!g.front && g.queue.length && g.t >= g.stepAt) {
+    const v = g.front = g.queue.shift(); v.state = "arriving"; v.arrivesAt = g.t + ARRIVE;
     ev.push({ type: "step-up", v });
   }
   const f = g.front;
@@ -91,7 +91,7 @@ export function tick(g, dt) {
     if (g.porter.dog && ANIMALS.includes(f.kind) && f.waited >= DOG_DELAY) ev.push(...dogChase(g)); // his dog gets there first
     else if (g.door && f.waited >= graceOf(g)) ev.push(...resolve(g, "door", true)); // an open door: in they walk
     else if (f.patience <= 0) {
-      f.patience = 0; f.state = "left"; g.front = null;
+      f.patience = 0; f.state = "left"; g.front = null; g.stepAt = g.t + stepGapOf(g);
       g.missed++; g.streak = 0; g.score = Math.max(0, g.score - 2); if (f.answer !== "away") g.wrong++;
       ev.push({ type: "leave", v: f });
     }
@@ -109,8 +109,8 @@ export function tick(g, dt) {
   return ev;
 }
 
-/** The visitor at the door, if they're waiting for your answer. */
-export const waiting = (g) => (g.front?.state === "waiting" ? g.front : null);
+/** The visitor at the door (or stepping up to it), if they're waiting for your answer: you can answer as soon as they appear. */
+export const waiting = (g) => (g.front?.state === "arriving" || g.front?.state === "waiting" ? g.front : null);
 
 /** Answer the visitor at the door: how = "door" (they walk in), "greet" (a proper welcome) or "away" (sent on their way). */
 function resolve(g, how, auto = false) {
@@ -134,7 +134,7 @@ function resolve(g, how, auto = false) {
   else { points = -WRONG; g.wrong++; g.streak = 0; }
   g.score = Math.max(0, g.score + points);
   if (how === "away") g.sentOn++; else if (how === "greet") g.greeted++; else g.welcomed++;
-  v.state = how === "away" ? "sent" : "welcomed"; v.how = how; g.front = null;
+  v.state = how === "away" ? "sent" : "welcomed"; v.how = how; g.front = null; g.stepAt = g.t + stepGapOf(g);
   return [{ type: "decided", v, how, correct: correct || neutral || forgiven, neutral, forgiven, quick, points, mult: correct ? mult : 1, streak: g.streak, auto }];
 }
 
@@ -155,7 +155,7 @@ function dogChase(g) {
   const v = waiting(g);
   if (!v) return [];
   g.score += DOG_POINTS; g.right++; g.sentOn++; g.dogUntil = g.t + DOG_BARK;
-  v.state = "sent"; v.how = "dog"; g.front = null;
+  v.state = "sent"; v.how = "dog"; g.front = null; g.stepAt = g.t + stepGapOf(g);
   return [{ type: "decided", v, how: "away", dog: true, correct: true, neutral: false, quick: true, points: DOG_POINTS, mult: 1, streak: g.streak }];
 }
 

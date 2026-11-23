@@ -234,7 +234,8 @@ building (the church's candle rack and doors, the chapel at night, the choir lof
    Round 3 (Nov 23, 2026): the feast day gets busier every minute; six unlockable porters (three monks: André, the old
    brother, the brother with the dog; three nuns: Sister Portress, Sister with the Bell, the Respected Sister); and
    **collisions**: a shared steering module (`hub/public/js/steer.js`, tested) so people walk around each other, with lanes on
-   the path. Next: use steer.js in Mass Usher and Candle Rack.
+   the path. Nov 23: steer.js is in Mass Usher and Candle Rack too. Answers work as soon as a visitor appears (Send away was grayed
+   out for the half second while they stepped up).
 
 Peters Pence (Balatro-style cards) is too hard for PreK: it moves to Pico Parish.
 
