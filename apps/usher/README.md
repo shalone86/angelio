@@ -38,6 +38,3 @@ identical by `test/copies.test.js`.
 - Rules: `public/js/usher.js` (pure, tested); screen: `public/js/app.js`.
 
 Next (his notes): seating habits beyond "won't scoot" (edge sitters, middle sitters), late arrivals, and his own usher, sitting people and church pieces.
-
-- People walk around each other (`public/js/steer.js`, a copy of `hub/public/js/steer.js`: steering with tests in `hub/test/steer.test.js`);
-  sliding along a pew and settling into a seat go straight.

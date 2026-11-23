@@ -326,19 +326,33 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
   // The priest waits by the sacristy; the altar server lights candles that went out and carries the cross or a candle
   // in the procession when the bells ring.
   const actors = [];
-  let agentIds = 0;
+  let agentIds = 0, ending = false;
+  const cancel = (a) => {
+    a.token = (a.token ?? 0) + 1;
+    const w = a.walk; a.walk = null;
+    a.agent.goal = null; a.agent.vx = a.agent.vz = 0;
+    w?.done?.(false);
+  };
   function actor(poses, standInHex, home, look = randomLook(), { staff = false } = {}) {
     // (the priest and servers walk straight to what they're doing, and people walk around them: `staff` ignores the others)
-    const a = { g: new THREE.Group(), poses: {}, walk: null, home, look, agent: { id: ++agentIds, x: 0, z: 0, r: 1.1, goal: null, speed: 8, tol: 0.3, ignore: staff } };
+    const a = { g: new THREE.Group(), poses: {}, walk: null, token: 0, home, look, agent: { id: ++agentIds, x: 0, z: 0, r: 1.1, goal: null, speed: 8, tol: 0.3, ignore: staff } };
     for (const [k, names] of Object.entries(poses)) { const m = [].concat(names).map((n) => meshFor(n, look)).find(Boolean); if (m) { a.poses[k] = m; m.visible = false; a.g.add(m); } }
     if (!a.poses.idle) { const st = standIn(standInHex, false); a.poses.idle = st; a.g.add(st); }
     a.pose = (k) => { const show = a.poses[k] ? k : a.poses.walk && /walk|hurry|slow/.test(k) ? "walk" : "idle"; for (const [n, m] of Object.entries(a.poses)) m.visible = n === show; a.now = show; a.t0 = time; };
     a.walkTo = (x, z, pose = "walk", speed = 8) => new Promise((done) => { a.pose(pose); a.walk = { done }; Object.assign(a.agent, { goal: { x, z }, speed, bestDist: null, stuckT: 0, ghost: 0 }); });
     // walk there the long way round if a rack is in the way (one leg at a time)
-    a.go = async (x, z, pose = "walk", speed = 8) => { for (const [px, pz] of route(a.g.position.x, a.g.position.z, x, z)) await a.walkTo(px, pz, pose, speed); };
+    a.go = async (x, z, pose = "walk", speed = 8) => {
+      const tok = a.token ?? 0;
+      for (const [px, pz] of route(a.g.position.x, a.g.position.z, x, z)) {
+        if ((a.token ?? 0) !== tok) return false;
+        await a.walkTo(px, pz, pose, speed);
+        if ((a.token ?? 0) !== tok) return false;
+      }
+      return true;
+    };
     a.timeTo = (x, z, speed = 8) => pathLength(a.g.position.x, a.g.position.z, route(a.g.position.x, a.g.position.z, x, z)) / speed;
     a.place = (x, z, turn = 0, pose = "idle") => { a.g.position.set(x, groundY(x, z), z); a.g.rotation.y = turn; a.pose(pose); a.agent.x = x; a.agent.z = z; a.agent.goal = null; a.walk = null; };
-    a.goHome = () => a.go(a.home.x, a.home.z, "walk").then(() => { a.pose("idle"); a.g.rotation.y = a.home.turn; });
+    a.goHome = () => a.go(a.home.x, a.home.z, "walk").then((ok) => { if (ok) { a.pose("idle"); a.g.rotation.y = a.home.turn; } });
     a.place(home.x, home.z, home.turn);
     scene.add(a.g); actors.push(a);
     return a;
@@ -548,13 +562,16 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
      * `light` is called at the moment it's lit. */
     helpCandle: async (who, id, light) => {
       const a = helpers[who], v = candleWorld(id);
-      if (!a || a.busy) return false;
+      if (ending || !a || a.busy) return false;
+      const tok = a.token ?? 0;
       a.busy = true;
       // from behind the rack, so he never stands between the player and the candles
-      await a.go(v.x, LAYOUT.behindRacks, "walk", 12);
+      const ok = await a.go(v.x, LAYOUT.behindRacks, "walk", 12);
+      if (!ok || ending || (a.token ?? 0) !== tok) return false;
       a.g.rotation.y = 0; a.pose("light");
       const frames = a.poses.light?.userData.frames?.length || 4, fps = a.poses.light?.userData.fps ?? 4;
       await new Promise((r) => setTimeout(r, Math.min(1600, (frames / fps) * 1000)));
+      if (ending || (a.token ?? 0) !== tok) return false;
       light();
       a.busy = false;
       await a.goHome();
@@ -565,13 +582,17 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
      * praying, lights the candles there (`light` is called then), and goes back. */
     helpLight: async (who, personId, light) => {
       const p = people.get(personId), a = helpers[who];
-      if (!p || !a || a.busy) return false;
+      if (ending || !p || !a || a.busy) return false;
+      const tok = a.token ?? 0;
       a.busy = true;
-      await a.go(p.a.g.position.x, LAYOUT.behindRacks, "walk", 14);
+      const ok = await a.go(p.a.g.position.x, LAYOUT.behindRacks, "walk", 14);
+      if (!ok || ending || (a.token ?? 0) !== tok) return false;
       a.g.rotation.y = 0; a.pose("light");
       await new Promise((r) => setTimeout(r, 900));
+      if (ending || (a.token ?? 0) !== tok) return false;
       light();
       await new Promise((r) => setTimeout(r, 500));
+      if (ending || (a.token ?? 0) !== tok) return false;
       a.busy = false;
       a.goHome();
       return true;
@@ -582,8 +603,9 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
     procession: async () => {
       const A = LAYOUT.aisle, E = SP;
       const settle = (a, spot, pose) => () => { a.pose(pose); a.g.rotation.y = spot.turn ?? 0; };
-      for (const a of [server, server2, server3, priest]) { a.walk = null; }
-      server2.g.visible = true; server.busy = priest.busy = true;
+      ending = true;
+      for (const a of [server, server2, server3, priest]) cancel(a);
+      server.g.visible = priest.g.visible = server2.g.visible = true; server.busy = priest.busy = true;
       if (BYZ) {
         doorsOpen = true;
         server.place(-8.6, -10.5, 0, "candle"); server2.place(8.6, -10.5, 0, "candle"); priest.place(E.priestStart.x, E.priestStart.z, E.priestStart.turn, "cense");
@@ -611,7 +633,8 @@ export function createChurch(canvas, { season, models = {}, rite = "roman", hex 
     // ── for the Studio's placement page ──
     /** Everyone where they stand before Mass, or (end) where they stand at the start of Mass, at once. */
     studioView: (end) => {
-      for (const a of [server, server2, server3, priest]) a.walk = null;
+      ending = false;
+      for (const a of [server, server2, server3, priest]) cancel(a);
       doorsOpen = !!end && BYZ;
       if (!end) { server2.g.visible = server3.g.visible = false; priest.place(PH.x, PH.z, PH.turn); server.place(SH.x, SH.z, SH.turn); return; }
       const E = SP, at = (a, k, pose) => a.place(E[k].x, E[k].z, E[k].turn ?? 0, pose);

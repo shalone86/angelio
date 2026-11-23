@@ -279,7 +279,7 @@ function viewPlay(stageId) {
         $("[data-combo]").textContent = multFor(g.combo) > 1 ? ` ×${multFor(g.combo)}` : "";
         showCombo();
         if (!stage.endless && !said30 && left <= 30) { said30 = true; talk(`Thirty seconds until ${service === "Liturgy" ? "the Liturgy" : "Mass"}!`, { urgent: true }); }
-        if (stage.helpers !== false && g.t >= helpAt) { helpAt = g.t + 22 + g.t / 6; help(); }
+        if (!ended && stage.helpers !== false && g.t >= helpAt) { helpAt = g.t + 22 + g.t / 6; help(); }
         for (const [id, el] of prayers) { const at = church.personHead(id); if (at) { el.style.left = at.x + "px"; el.style.top = at.y + "px"; } }
         if (ended) finish();
       }
