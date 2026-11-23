@@ -157,11 +157,11 @@ export const CHECKLISTS = [
   },
   {
     id: "monastery-porter-people", title: "Monastery Porter: people", game: "Monastery Porter",
-    note: "You're the porter, keeping the monastery gate. Visitors come up the path and knock. Monk, Nun and Bishop cover almost everyone: paint Monk and Nun in marker colors (shirt/dress = habit, belt = rope, and for Nun hair = veil) and the game recolors them for every brother, sister, Mother Abbess, the visiting abbot, and all seven porters! Regular visitors are your usual people (man, man-beard for bearded men, woman, grandfather, grandmother, child, child-girl).",
+    note: "You're the porter, keeping the monastery gate. Visitors come up the path and knock. Monk, Nun and Bishop cover almost everyone: paint Monk and Nun in marker colors (shirt/dress = habit, belt = rope, and for Nun hair = veil) and the game recolors them for every brother, sister, Mother Abbess, the visiting abbot, and all eight porters (including base Brother Porter & Sister Porter starters — and the same base monk/nun models will work across other games like Garden Givers too!). Regular visitors are your usual people (man, man-beard for bearded men, woman, grandfather, grandmother, child, child-girl).",
     items: [
-      p("monk-idle", "Monk, standing", "Hooded habit in marker colors (shirt/dress = habit, belt = rope): covers Brother Francis, Brother Thomas, outgoing brothers, the visiting abbot, and all monk porters."),
+      p("monk-idle", "Monk, standing", "Hooded habit in marker colors (shirt/dress = habit, belt = rope): covers Brother Francis, Brother Thomas, outgoing brothers, the visiting abbot, base Brother Porter, and monk characters across games."),
       p("monk-walk", "Monk, walking"),
-      p("nun-idle", "Nun, standing", "Habit, wimple and veil in marker colors (shirt/dress = habit, hair = veil): covers Mother Abbess and all three nun porters."),
+      p("nun-idle", "Nun, standing", "Habit, wimple and veil in marker colors (shirt/dress = habit, hair = veil): covers Mother Abbess, Sister Porter, and nun characters across games."),
       p("nun-walk", "Nun, walking"),
       p("bishop-idle", "The bishop, standing", "Purple robe/cassock, pectoral cross, and mitre (hat)."),
       p("bishop-walk", "The bishop, walking"),

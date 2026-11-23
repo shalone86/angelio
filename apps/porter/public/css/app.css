@@ -90,6 +90,12 @@ body.porter-game .topbar { display: none; }
 .porter-pick.picked { border-color: #2fa866; }
 .porter-pick .picked-tag { color: #1f7a49; font-weight: 800; }
 .porter-pick.locked { opacity: .6; cursor: default; }
+.finish-pick { margin: 12px auto 14px; max-width: 560px; text-align: center; }
+.finish-pick-label { font-weight: 800; margin: 0 0 8px; }
+.finish-picks { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.pick-chip { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 99px; background: var(--surface); border: 2px solid var(--border); color: var(--text); font: 800 .95rem var(--font-display); cursor: pointer; }
+.pick-chip.picked { border-color: #2fa866; background: #eaf7ee; color: #165e37; }
+.pick-new { font-size: .78rem; color: #b87a00; font-weight: 900; }
 /* the bell (Sister with the Bell), and the dog barking (Send away waits) */
 .answer.bell { flex: .7; background: #c9971f; box-shadow: 0 4px 0 #7a5a10, 0 6px 14px rgb(0 0 0 / .3); }
 .answer.barking { background: #8a8f98; box-shadow: 0 4px 0 #5a5f66; }

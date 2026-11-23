@@ -219,11 +219,14 @@ test("a timed round ends once, at the bell", () => {
 
 // ── the six porters (redone for the new controls) ──
 
-test("three monks and three nuns, each opening with stars on a stage", () => {
-  assert.equal(PORTERS.length, 7); assert.equal(PORTERS[0].opens, undefined);
-  for (const p of PORTERS.slice(1)) assert.ok(STAGES.some((s) => s.id === p.opens.stage) && p.opens.stars >= 2, p.id);
+test("base Brother/Sister starters plus three monks and three nuns, each opening with stars on a stage", () => {
+  assert.equal(PORTERS.length, 8);
+  assert.equal(PORTERS[0].opens, undefined);
+  assert.equal(PORTERS[1].opens, undefined);
+  assert.equal(PORTERS[1].nun, true);
+  for (const p of PORTERS.slice(2)) assert.ok(STAGES.some((s) => s.id === p.opens.stage) && p.opens.stars >= 2, p.id);
   const stars = { sunday: 2 }; const open = PORTERS.filter((p) => porterOpen(p, (id) => stars[id] ?? 0)).map((p) => p.id);
-  assert.deepEqual(open, ["porter", "andre"]);
+  assert.deepEqual(open, ["porter", "sister-porter", "andre"]);
   assert.equal(porterById("nobody").id, "porter");
 });
 

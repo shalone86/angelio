@@ -16,6 +16,12 @@
 .helper-pick b { font: 800 1.05rem var(--font-display); }
 .helper-pick.picked { border-color: #2fa866; }
 .helper-pick .picked-tag { color: #1f7a49; font-weight: 800; }
+.finish-pick { margin: 12px auto 14px; max-width: 560px; text-align: center; }
+.finish-pick-label { font-weight: 800; margin: 0 0 8px; }
+.finish-picks { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.pick-chip { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 99px; background: var(--surface); border: 2px solid var(--border); color: var(--text); font: 800 .95rem var(--font-display); cursor: pointer; }
+.pick-chip.picked { border-color: #2fa866; background: #eaf7ee; color: #165e37; }
+.pick-new { font-size: .78rem; color: #b87a00; font-weight: 900; }
 .games-link { margin: 18px 0 8px; }
 
 /* In-game screen */

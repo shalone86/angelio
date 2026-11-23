@@ -212,7 +212,7 @@ export function createGate(canvas, { models = {}, night = false, porter: who = {
 
   // you: the porter, just inside the gate, watching the door
   // (the six unlockable porters, porters.js: a nun is a woman in a habit and veil of her color; the old brother has gray hair)
-  const nun = /^(sister|bell|respected)$/.test(who.id);
+  const nun = !!who.nun;
   const porter = actor(peoplePoses(nun ? "woman" : who.id === "old" ? "grandfather" : "man", [who.model ?? "porter", nun ? "nun" : "monk"]), { ...robed(who.robe), hair: nun ? who.robe : who.id === "old" ? "#d8d4cc" : "#2e1d12" }, 1.2, who.robe);
   porter.place(PORTER_AT.x, PORTER_AT.z, "idle", Math.PI);
   // Brother with the Dog: his big dog sits beside him, and runs to the gate when an animal comes

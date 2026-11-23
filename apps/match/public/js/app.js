@@ -146,6 +146,24 @@ function viewPlay(stageId) {
       app.querySelector(".finish h1")?.insertAdjacentHTML("afterend",
         `<p class="final-score">🎉 ${fresh.map((h) => `<b>${esc(h.name)}</b>`).join(" and ")} can help you play now!</p>`);
     }
+    const openHelpers = HELPERS.filter((h) => helperOpen(h, starsById));
+    if (openHelpers.length >= 2) {
+      const pickedId = myHelper().id;
+      app.querySelector(".finish .row.center")?.insertAdjacentHTML("beforebegin", `
+        <div class="finish-pick">
+          <p class="finish-pick-label">Pick your Patron Helper for next time:</p>
+          <div class="finish-picks">
+            ${openHelpers.map((h) => `<button type="button" class="pick-chip${h.id === pickedId ? " picked" : ""}" data-pick="${h.id}" aria-pressed="${h.id === pickedId}"><span>${h.icon}</span><b>${esc(h.name)}</b>${!unlockedBefore.has(h.id) ? `<span class="pick-new">✨ New!</span>` : ""}</button>`).join("")}
+          </div>
+        </div>`);
+      app.querySelectorAll("[data-pick]").forEach((b) => b.addEventListener("click", () => {
+        const h = helperById(b.dataset.pick);
+        S.setSetting("helper", h.id);
+        app.querySelectorAll("[data-pick]").forEach((x) => { const on = x === b; x.classList.toggle("picked", on); x.setAttribute("aria-pressed", String(on)); });
+        sfx.select();
+        speak(h.say);
+      }));
+    }
     app.querySelector(".finish h1")?.insertAdjacentHTML("afterend",
       `<p class="final-score">You scored <b>${score}</b>${newBest ? " · a new best!" : ` · best: ${Math.max(old, score)}`}</p>
        <p class="muted">${g.wavesCleared} waves cleared · ${g.matches} matches · best streak ${g.bestStreak}${g.sharpEyes ? ` · ${g.sharpEyes} Sharp Eye` : ""}${stars < 3 ? ` · ${stage.star3} for three stars` : ""}</p>`);

@@ -100,6 +100,8 @@ function viewPlay(stageId) {
   if (!isOpen(si, starsOf)) { location.hash = "#/"; return; }
   S.setSetting("lastStage", stage.id);
   const service = stage.rite === "byzantine" ? "Liturgy" : "Mass"; // a Byzantine church: the Divine Liturgy, not Mass
+  const starsById = (id) => starsOf(stageById(id));
+  const unlockedBefore = new Set(USHERS.filter((u) => usherOpen(u, starsById)).map((u) => u.id));
   document.body.classList.add("in-game", "usher-game");
   app.innerHTML = `
     <section class="ush-play${stage.endless ? " night" : ""}">
@@ -276,6 +278,23 @@ function viewPlay(stageId) {
       const nextStage = STAGES[si + 1], opens = nextStage && !nextStage.endless && Math.max(stars, starsOf(stage)) >= 2;
       showFinish(app, { id: progressId(stage), stars, mistakes: 3 - stars, title: newBest ? "A new best!" : stage.endless ? "What a night!" : `Everyone's ready for ${service === "Liturgy" ? "the Liturgy" : "Mass"}!`,
         done: `You scored ${g.score}.`, again: `#/play/${stage.id}`, onAgain: route, next: opens ? { href: `#/play/${nextStage.id}`, label: `${nextStage.icon} ${nextStage.name}` } : null });
+      const fresh = USHERS.filter((u) => usherOpen(u, starsById) && !unlockedBefore.has(u.id));
+      if (fresh.length) app.querySelector(".finish h1")?.insertAdjacentHTML("afterend", `<p class="final-score">🎉 You can play as ${fresh.map((u) => `<b>${esc(u.name)}</b>`).join(" and ")} now!</p>`);
+      const openUshers = USHERS.filter((u) => usherOpen(u, starsById)), pickedId = myUsher().id;
+      if (openUshers.length >= 2) {
+        app.querySelector(".finish .row.center")?.insertAdjacentHTML("beforebegin", `
+          <div class="finish-pick">
+            <p class="finish-pick-label">Pick your usher for next time:</p>
+            <div class="finish-picks">
+              ${openUshers.map((u) => `<button type="button" class="pick-chip${u.id === pickedId ? " picked" : ""}" data-pick="${u.id}" aria-pressed="${u.id === pickedId}"><span>${u.icon}</span><b>${esc(u.name)}</b>${!unlockedBefore.has(u.id) ? `<span class="pick-new">✨ New!</span>` : ""}</button>`).join("")}
+            </div>
+          </div>`);
+        app.querySelectorAll("[data-pick]").forEach((b) => b.addEventListener("click", () => {
+          const u = usherById(b.dataset.pick); S.setSetting("usher", u.id);
+          app.querySelectorAll("[data-pick]").forEach((x) => { const on = x === b; x.classList.toggle("picked", on); x.setAttribute("aria-pressed", String(on)); });
+          sfx.select(); speak(u.say);
+        }));
+      }
       app.querySelector(".finish h1")?.insertAdjacentHTML("afterend", `<p class="final-score">You scored <b>${g.score}</b>${newBest ? " · a new best!" : ` · your best: ${Math.max(old, g.score)}`}</p>
         <p class="muted">${stage.endless ? `ushered ${Math.floor(g.t / 60)}:${String(Math.floor(g.t % 60)).padStart(2, "0")} · ${g.left} went home · ` : ""}${g.together} families together · ${g.split} split up · ${g.seatedPeople} people seated${stars < 3 ? ` · ${stage.star3} for three stars` : ""}</p>`);
       // the finish screen's "All Angelio games" goes to the games page here, not the home page

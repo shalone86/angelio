@@ -66,7 +66,7 @@ function viewHome() {
         const open = porterOpen(p, starsFor2), picked = myPorter().id === p.id;
         return open
           ? `<button type="button" class="porter-pick card${picked ? " picked" : ""}" data-porter="${p.id}" aria-pressed="${picked}"><span class="stage-icon">${p.icon}</span><b>${esc(p.name)}</b><span class="muted">${esc(p.blurb)}</span>${picked ? `<span class="picked-tag">✓ Playing</span>` : ""}</button>`
-          : `<div class="porter-pick card locked" aria-disabled="true"><span class="stage-icon">🔒</span><b>${esc(p.name)}</b><span class="muted">Get ${p.opens.stars === 3 ? "three" : "two"} stars in ${esc(stageById(p.opens.stage).name)} to meet ${/^(sister|bell|respected)$/.test(p.id) ? "her" : "him"}.</span></div>`;
+          : `<div class="porter-pick card locked" aria-disabled="true"><span class="stage-icon">🔒</span><b>${esc(p.name)}</b><span class="muted">Get ${p.opens.stars === 3 ? "three" : "two"} stars in ${esc(stageById(p.opens.stage).name)} to meet ${p.nun ? "her" : "him"}.</span></div>`;
       }).join("")}
     </section>
     ${stickerBook()}
@@ -330,6 +330,19 @@ function viewPlay(stageId) {
         done: `You scored ${score}.`, again: `#/play/${stage.id}`, onAgain: route, next: opens ? { href: `#/play/${next.id}`, label: `${next.icon} ${next.name}` } : null });
       const fresh = PORTERS.filter((p) => porterOpen(p, starsFor2) && !unlockedBefore.has(p.id));
       if (fresh.length) app.querySelector(".finish h1")?.insertAdjacentHTML("afterend", `<p class="final-score">🎉 You can play as ${fresh.map((p) => `<b>${esc(p.name)}</b>`).join(" and ")} now!</p>`);
+      const openPorters = PORTERS.filter((p) => porterOpen(p, starsFor2)), pickedId = myPorter().id;
+      app.querySelector(".finish .row.center")?.insertAdjacentHTML("beforebegin", `
+        <div class="finish-pick">
+          <p class="finish-pick-label">Pick your porter for next time:</p>
+          <div class="finish-picks">
+            ${openPorters.map((p) => `<button type="button" class="pick-chip${p.id === pickedId ? " picked" : ""}" data-pick="${p.id}" aria-pressed="${p.id === pickedId}"><span>${p.icon}</span><b>${esc(p.name)}</b>${!unlockedBefore.has(p.id) ? `<span class="pick-new">✨ New!</span>` : ""}</button>`).join("")}
+          </div>
+        </div>`);
+      app.querySelectorAll("[data-pick]").forEach((b) => b.addEventListener("click", () => {
+        const p = porterById(b.dataset.pick); S.setSetting("porter", p.id);
+        app.querySelectorAll("[data-pick]").forEach((x) => { const on = x === b; x.classList.toggle("picked", on); x.setAttribute("aria-pressed", String(on)); });
+        sfx.select(); speak(p.say);
+      }));
       app.querySelector(".finish h1")?.insertAdjacentHTML("afterend", `<p class="final-score">You scored <b>${score}</b>${newBest ? " · a new best!" : ` · your best: ${Math.max(old, score)}`}</p>
         <p class="muted">${stage.endless ? `kept the gate ${Math.floor(g.t / 60)}:${String(Math.floor(g.t % 60)).padStart(2, "0")} · ` : ""}${g.welcomed + g.greeted} welcomed · ${g.sentOn} sent on their way · best combo ${g.bestStreak} · ${g.wrong} not quite right${g.bumps ? ` · ${g.bumps} ${g.bumps === 1 ? "bump" : "bumps"}` : ""}${g.missed ? ` · ${g.missed} gave up waiting` : ""}${stars < 3 ? ` · ${stage.star3} for three stars` : ""}</p>`);
       // the finish screen's "All Angelio games" goes to the games page here, not the home page
