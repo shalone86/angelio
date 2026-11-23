@@ -16,7 +16,8 @@ import * as FX from "./kit/fx.js";
 import { showLesson } from "./kit/lesson.js";
 import { vary } from "./kit/vary.js";
 import { esc, say, showFinish, stickerBook, viewGrownups, installClickSounds, wireVoiceToggle } from "./kit/ui.js";
-import { newGame, tick, toggleDoor, greet, sendAway, waiting, starsFor, multOf, FREE_OPEN } from "./porter.js";
+import { newGame, tick, toggleDoor, greet, sendAway, ringBell, waiting, starsFor, multOf, FREE_OPEN } from "./porter.js";
+import { PORTERS, porterById, porterOpen } from "./porters.js";
 import { WELCOMES } from "./visitors.js";
 import { STAGES, stageById, isOpen } from "./stages.js";
 import { createGate, loadModels, MODELS } from "./gate.js";
@@ -57,10 +58,24 @@ function viewHome() {
               <span class="muted">Get two stars in ${esc(STAGES[i - 1].name)} to open it.</span></div>`;
       }).join("")}
     </section>
+    <h2 class="center porters-title">Your porter</h2>
+    <section class="porters">
+      ${PORTERS.map((p) => {
+        const open = porterOpen(p, starsFor2), picked = myPorter().id === p.id;
+        return open
+          ? `<button type="button" class="porter-pick card${picked ? " picked" : ""}" data-porter="${p.id}" aria-pressed="${picked}"><span class="stage-icon">${p.icon}</span><b>${esc(p.name)}</b><span class="muted">${esc(p.blurb)}</span>${picked ? `<span class="picked-tag">✓ Playing</span>` : ""}</button>`
+          : `<div class="porter-pick card locked" aria-disabled="true"><span class="stage-icon">🔒</span><b>${esc(p.name)}</b><span class="muted">Get ${p.opens.stars === 3 ? "three" : "two"} stars in ${esc(stageById(p.opens.stage).name)} to meet ${/^(sister|bell|respected)$/.test(p.id) ? "her" : "him"}.</span></div>`;
+      }).join("")}
+    </section>
     ${stickerBook()}
     ${gamesLink}`;
+  app.querySelectorAll("[data-porter]").forEach((b) => b.addEventListener("click", () => { const p = porterById(b.dataset.porter); S.setSetting("porter", p.id); viewHome(); speak(p.say); }));
   speak("Someone is knocking at the monastery door! Can you keep the door? Pick a day.");
 }
+/** The stars on a stage, by its id (for who is open). */
+const starsFor2 = (id) => starsOf(stageById(id));
+/** The porter you picked (if open; else the first). */
+function myPorter() { const p = porterById(S.settings().porter); return porterOpen(p, starsFor2) ? p : PORTERS[0]; }
 
 // what to say: most lines once a round, never too close together
 function talker(bubble) {
@@ -84,6 +99,7 @@ function viewPlay(stageId) {
   if (!isOpen(si, starsOf)) { location.hash = "#/"; return; }
   S.setSetting("lastStage", stage.id);
   document.body.classList.add("in-game", "porter-game");
+  const who = myPorter(), unlockedBefore = new Set(PORTERS.filter((p) => porterOpen(p, starsFor2)).map((p) => p.id));
   const clock0 = stage.endless ? "0:00" : `${Math.floor(stage.length / 60)}:${String(stage.length % 60).padStart(2, "0")}`;
   app.innerHTML = `
     <section class="porter-play${stage.night ? " night" : ""}">
@@ -101,6 +117,7 @@ function viewPlay(stageId) {
         <button type="button" class="answer door" data-act="door" aria-pressed="false"><span aria-hidden="true">🚪</span> <b data-door-label>Open door</b></button>
         <button type="button" class="answer in" data-act="greet"><span aria-hidden="true">👋</span> Welcome</button>
         <button type="button" class="answer later" data-act="away"><span aria-hidden="true">🙋</span> Send away</button>
+        ${who.bell ? `<button type="button" class="answer bell" data-act="bell"><span aria-hidden="true">🔔</span> Bell</button>` : ""}
       </div>
       <div class="bubble porter-bubble" aria-live="polite"><span class="mascot" aria-hidden="true">⛪</span><p class="say"></p></div>
       <div class="pops" aria-hidden="true"></div>
@@ -127,11 +144,11 @@ function viewPlay(stageId) {
     say(bubble, "Opening the gate…", { speakText: false });
     const models = await loadModels(MODELS);
     if (!alive) return;
-    gate = createGate(canvas, { models, night: stage.night });
+    gate = createGate(canvas, { models, night: stage.night, porter: who });
     const side = matchMedia("(orientation: landscape) and (max-height: 520px)"); // sideways: the bubble and answers are in the right column
     const fitView = () => gate?.resize({ top: ($(".hud")?.offsetHeight ?? 56) + 6, bottom: side.matches ? 10 : (bubble.offsetHeight || 60) + (answers.offsetHeight || 70) + 26 });
     fitView(); addEventListener("resize", fitView);
-    const g = newGame({ seed: Math.floor(Math.random() * 1e9), stage });
+    const g = newGame({ seed: Math.floor(Math.random() * 1e9), stage, porter: who });
     window.__porter = { game: g, gate }; // (for the browser tests)
     gate.sync(g);
     talk(stage.rule, { urgent: true, mascot: stage.icon });
@@ -154,7 +171,9 @@ function viewPlay(stageId) {
           doorBtn.setAttribute("aria-pressed", String(ev.open)); doorBtn.classList.toggle("open", ev.open); doorLabel.textContent = ev.open ? "Close door" : "Open door";
         } else if (ev.type === "decided") {
           const v = ev.v, crowded = !!(g.front || g.queue.length);
+          if (ev.dog) { gate.dogChase(); sfx.chime(); popAt(v.id, `+${ev.points} 🐕`, "quick"); gate.sendOn(v.id); say(bubble, "Good dog! Woof!", { speakText: false }); continue; }
           if (ev.how === "away") gate.sendOn(v.id); else gate.enter(v.id);
+          if (ev.forgiven) { popAt(v.id, "Forgiven! 💛", "good"); stop(); talk(`That's all right! ${v.why}`, { urgent: true, mascot: "💛" }); continue; }
           if (ev.how === "greet" && !ev.neutral && ev.correct) gate.flash(1.2);
           if (ev.correct && !ev.neutral) {
             ev.how === "away" ? sfx.chime() : sfx.win();
@@ -171,15 +190,17 @@ function viewPlay(stageId) {
         } else if (ev.type === "leave") {
           gate.giveUp(ev.v.id); sfx.oops(); popAt(ev.v.id, "Gave up", "oops");
           talk(vary("gaveup", ["They got tired of waiting and went home. That's okay!", "Oh, they went home. Try to answer a little faster!"]), { urgent: true, mascot: "⛪" });
+        } else if (ev.type === "bell") {
+          sfx.win(); popDoor("🔔 Ding, dong!", "good"); stop(); talk("Ding, dong! Everyone is patient again.", { urgent: true, mascot: "🔔" });
         } else if (ev.type === "draft") {
           popDoor(`−${ev.points} 🍃`, "oops"); sfx.oops();
         } else if (ev.type === "end") ended = true;
       }
     };
     // ── your three buttons ──
-    const act = (what) => { if (ended) return; handle(what === "door" ? toggleDoor(g) : what === "greet" ? greet(g) : sendAway(g)); };
+    const act = (what) => { if (ended) return; handle(what === "door" ? toggleDoor(g) : what === "greet" ? greet(g) : what === "bell" ? ringBell(g) : sendAway(g)); };
     answers.addEventListener("click", (e) => { const b = e.target.closest("[data-act]"); if (b && !b.disabled) act(b.dataset.act); });
-    const keys = (e) => { if (e.repeat) return; const k = e.key.toLowerCase(); if (k === " " || k === "d" || k === "arrowleft") act("door"); else if (k === "w" || k === "g" || k === "arrowdown") act("greet"); else if (k === "s" || k === "arrowright") act("away"); };
+    const keys = (e) => { if (e.repeat) return; const k = e.key.toLowerCase(); if (k === " " || k === "d" || k === "arrowleft") act("door"); else if (k === "w" || k === "g" || k === "arrowdown") act("greet"); else if (k === "s" || k === "arrowright") act("away"); else if (k === "b") act("bell"); };
     addEventListener("keydown", keys);
     stopKeys = () => removeEventListener("keydown", keys);
 
@@ -198,6 +219,8 @@ function viewPlay(stageId) {
         const m = multOf(g); $("[data-combo]").textContent = m > 1 ? `×${m}` : "";
         const at = waiting(g);
         for (const b of answers.querySelectorAll('[data-act="greet"], [data-act="away"]')) b.disabled = !at;
+        if (who.dog) { const barking = g.t < g.dogUntil; const aw = answers.querySelector('[data-act="away"]'); if (barking) aw.disabled = true; aw.classList.toggle("barking", barking); }
+        const bb = answers.querySelector('[data-act="bell"]'); if (bb) bb.disabled = g.bellUsed;
         answers.classList.toggle("ready", !!at);
         const drafty = g.door && g.doorOpenFor > FREE_OPEN;
         $("[data-draft]").hidden = !drafty; gate.setDraft(drafty);
@@ -237,6 +260,8 @@ function viewPlay(stageId) {
       const next = STAGES[si + 1], opens = next && !next.endless && Math.max(stars, starsOf(stage)) >= 2;
       showFinish(app, { id: progressId(stage), stars, mistakes: g.wrong, title: newBest ? "A new best!" : stage.endless ? "What a feast day!" : "The door is kept!",
         done: `You scored ${score}.`, again: `#/play/${stage.id}`, onAgain: route, next: opens ? { href: `#/play/${next.id}`, label: `${next.icon} ${next.name}` } : null });
+      const fresh = PORTERS.filter((p) => porterOpen(p, starsFor2) && !unlockedBefore.has(p.id));
+      if (fresh.length) app.querySelector(".finish h1")?.insertAdjacentHTML("afterend", `<p class="final-score">🎉 You can play as ${fresh.map((p) => `<b>${esc(p.name)}</b>`).join(" and ")} now!</p>`);
       app.querySelector(".finish h1")?.insertAdjacentHTML("afterend", `<p class="final-score">You scored <b>${score}</b>${newBest ? " · a new best!" : ` · your best: ${Math.max(old, score)}`}</p>
         <p class="muted">${stage.endless ? `kept the door ${Math.floor(g.t / 60)}:${String(Math.floor(g.t % 60)).padStart(2, "0")} · ` : ""}${g.welcomed} came in · ${g.greeted} greeted · ${g.sentOn} sent on their way · best combo ${g.bestStreak} · ${g.wrong} not quite right${g.missed ? ` · ${g.missed} gave up waiting` : ""}${stars < 3 ? ` · ${stage.star3} for three stars` : ""}</p>`);
       // the finish screen's "All Angelio games" goes to the games page here, not the home page

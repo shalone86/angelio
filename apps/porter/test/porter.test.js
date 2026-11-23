@@ -169,3 +169,88 @@ test("the feast day: every minute more people come (the gaps between them shrink
   const m1 = per(0, 60), m2 = per(60, 120), m3 = per(120, 180);
   assert.ok(m2 > m1 * 1.25 && m3 > m2 * 1.25, `people per minute: ${m1}, ${m2}, ${m3}`);
 });
+
+// ── the six porters ──
+import { PORTERS, porterById, porterOpen } from "../public/js/porters.js";
+import { ringBell, DOG_POINTS } from "../public/js/porter.js";
+const at = (porter, mix, extra = {}) => { const g = newGame({ seed: 4, stage: { ...STAGES[0], mix, ...extra }, porter }); while (!waiting(g)) tick(g, 0.1); return g; };
+const MIX = { in: { in: 1, greet: 0, away: 0 }, greet: { in: 0, greet: 1, away: 0 }, away: { in: 0, greet: 0, away: 1 } };
+
+test("three monks and three nuns, each opening with stars on a stage", () => {
+  assert.equal(PORTERS.length, 7); assert.equal(PORTERS[0].opens, undefined);
+  for (const p of PORTERS.slice(1)) assert.ok(STAGES.some((s) => s.id === p.opens.stage) && p.opens.stars >= 2, p.id);
+  const stars = { sunday: 2 }; const open = PORTERS.filter((p) => porterOpen(p, (id) => stars[id] ?? 0)).map((p) => p.id);
+  assert.deepEqual(open, ["porter", "andre"]);
+  assert.equal(porterById("nobody").id, "porter");
+});
+
+test("Brother André forgives the first mistake each minute, but his combos grow slowly", () => {
+  const g = at(porterById("andre"), MIX.away); g.score = 30; g.streak = 3;
+  const r = toggleDoor(g).find((e) => e.type === "decided");
+  assert.ok(r.forgiven && r.correct && g.score === 30 && g.wrong === 0 && g.streak === 3, "forgiven: no points lost, not counted, combo kept");
+  while (!waiting(g)) tick(g, 0.1);
+  toggleDoor(g); toggleDoor(g); // (closed again, so nothing walks in by itself)
+  const g2 = at(porterById("andre"), MIX.away); g2.forgiveAt = g2.t + 60; g2.score = 30;
+  assert.ok(!toggleDoor(g2).find((e) => e.type === "decided").correct && g2.score === 22 && g2.wrong === 1, "the second one in the same minute is a real mistake");
+  const slow = newGame({ porter: porterById("andre") }), usual = newGame({});
+  slow.streak = usual.streak = 5; assert.equal(multOf(usual), 2); assert.equal(multOf(slow), 1);
+  slow.streak = 7; assert.equal(multOf(slow), 2);
+});
+
+test("the Old Brother Porter: the door can stay open longer, people take their time, but the next visitor is slow to step up", () => {
+  const g = newGame({ seed: 2, porter: porterById("old"), stage: { ...STAGES[0], mix: MIX.away, every: [999, 999] } });
+  g.queue = []; g.nextArrival = 1e9; g.score = 50; toggleDoor(g);
+  for (let i = 0; i < 45; i++) tick(g, 0.1);   // 4.5 s open: an ordinary porter would be paying for the draft by now
+  assert.equal(Math.round(g.score), 50);
+  for (let i = 0; i < 40; i++) tick(g, 0.1); assert.ok(g.score < 50, "but not forever");
+  const h = newGame({ seed: 3, porter: porterById("old") }); h.nextArrival = 0; tick(h, 0.1);
+  const arriving = h.front; assert.ok(arriving.arrivesAt - h.t > 1, "slower to call the next visitor");
+});
+
+test("Brother with the Dog: the dog chases animals off by itself, then barks and nobody can be sent away for a moment", () => {
+  const dog = porterById("dog");
+  const g = newGame({ seed: 5, porter: dog, stage: { ...STAGES[0], mix: MIX.away } });
+  g.pool = { in: [], greet: [], away: [VISITORS.find((v) => v.id === "goat")] }; g.nextArrival = 0;
+  let chase = null; for (let i = 0; i < 60 && !chase; i++) chase = tick(g, 0.1).find((e) => e.type === "decided");
+  assert.ok(chase.dog && chase.correct && chase.points === DOG_POINTS && g.streak === 0, "chased off for a few points");
+  g.pool = { in: [], greet: [], away: [VISITORS.find((v) => v.id === "peddler")] }; g.nextArrival = g.t;
+  while (!waiting(g)) tick(g, 0.1);
+  assert.deepEqual(sendAway(g), [], "barking: can't send anyone away just yet");
+  while (g.t < g.dogUntil) tick(g, 0.1);
+  assert.ok(sendAway(g)[0].correct, "and then it's quiet again");
+});
+
+test("Sister Portress's visitors are in more of a hurry, and special guests glow", () => {
+  const g = at(porterById("sister"), MIX.greet); assert.ok(g.front.max < STAGES[0].patience);
+  assert.ok(porterById("sister").glow);
+});
+
+test("Sister with the Bell rings it once: everyone waiting is patient again, and no one new comes for a moment", () => {
+  const g = at(porterById("bell"), MIX.in);
+  for (let i = 0; i < 30; i++) tick(g, 0.1);
+  const before = g.front.patience; assert.ok(before < g.front.max);
+  const t = g.t; g.nextArrival = t + 0.5;
+  assert.equal(ringBell(g)[0].type, "bell");
+  assert.equal(g.front.patience, g.front.max); assert.ok(g.nextArrival >= t + 5);
+  assert.deepEqual(ringBell(g), [], "only once");
+  assert.deepEqual(ringBell(at(porterById("porter"), MIX.in)), [], "only Sister with the Bell has one");
+});
+
+test("the Respected Sister: a special guest who just walks in is fine, but her greetings are worth less", () => {
+  const g = at(porterById("respected"), MIX.greet); const r = toggleDoor(g).find((e) => e.type === "decided");
+  assert.ok(r.correct && !r.neutral && r.points > 0 && g.wrong === 0, "everyone knows her");
+  const h = at(porterById("respected"), MIX.greet), u = at(porterById("porter"), MIX.greet);
+  assert.ok(greet(h)[0].points < greet(u)[0].points, "a greeting is worth less");
+});
+
+test("every porter can play every stage and beat an idle one", () => {
+  for (const p of PORTERS) for (const stage of STAGES.slice(0, 3)) {
+    const g = newGame({ seed: 7, stage, porter: p }); let seen = 0, who = null;
+    while (!g.over) {
+      tick(g, 0.1); const v = waiting(g); if (v !== who) { who = v; seen = 0; }
+      const next = g.front ?? g.queue[0]; if (g.door && next && next.answer !== "in") toggleDoor(g);
+      if (v && (seen += 0.1) >= 1) { if (v.answer === "in") { if (!g.door) toggleDoor(g); } else if (v.answer === "greet") greet(g); else sendAway(g); }
+    }
+    assert.ok(g.score > 200, `${p.id} on ${stage.id}: ${Math.round(g.score)}`);
+  }
+});

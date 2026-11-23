@@ -6,19 +6,21 @@
 import { readVox, toScene } from "./vox.js";
 import { randomLook, recolor } from "./looks.js";
 import { ANIMALS, VISITORS } from "./visitors.js";
+import { stepAgents } from "./steer.js";
 
 const ART = /(^|\.)angelio\.org$/.test(location.hostname) ? "" : "https://angelio.org";
 
 // Where things stand (1 unit = one voxel; his people are 8 tall). The gate is at z = 0, outside is -z, you look toward -z.
 export const DOOR = { x: 0, z: -10 };       // where the visitor at the door stands (just outside)
 const SPAWN_Z = -75;                        // far down the path, off the top of the screen
-const spotInLine = (i) => ({ x: ((i * 7) % 3) - 1, z: DOOR.z - 7 * (i + 1) }); // the path, one behind the other
+const LEAVE_X = 4.2;                        // the right-hand side of the path: people sent away walk down it, past the line
+const spotInLine = (i) => ({ x: -1.8 + (((i * 7) % 3) - 1) * 0.6, z: DOOR.z - 7 * (i + 1) }); // the left of the path, one behind the other
 const PORTER_AT = { x: -8, z: 6 };
 const CHAPEL_DOOR = { x: 11.5, z: 17 };
 const KINDS = ["man", "woman", "grandfather", "grandmother", "child", "child-girl"];
 const GIRLISH = new Set(["woman", "grandmother", "child-girl"]);
 const SIZE = { man: 1.12, woman: 1.1, grandfather: 1.08, grandmother: 1.06, child: 0.95, "child-girl": 0.95 };
-const ROBES = { porter: "#2b2830", monk: "#5a4030" };
+const ROBES = { monk: "#5a4030" };
 
 /** Every model the game asks for (whichever exist are used; his boy and girl stand in for the rest). */
 export const MODELS = ["porter-idle", "porter-walk", "monk-idle", "monk-walk", ...ANIMALS.flatMap((a) => [`${a}-idle`, `${a}-walk`]),
@@ -38,7 +40,7 @@ export async function loadModels(names = MODELS) {
   return out;
 }
 
-export function createGate(canvas, { models = {}, night = false }) {
+export function createGate(canvas, { models = {}, night = false, porter: who = { id: "porter", robe: "#2b2830", model: "porter" } }) {
   const THREE = window.THREE;
   const R = new THREE.WebGLRenderer({ canvas, antialias: true });
   R.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
@@ -160,18 +162,18 @@ export function createGate(canvas, { models = {}, night = false }) {
 
   // An actor: a person with a few poses (each the first of his models that exists), who walks and stands.
   const actors = [];
+  let agentIds = 0;
   function actor(poses, look, scale = 1, hex = "#5f7f9e", fallback = null) {
-    const a = { g: new THREE.Group(), poses: {}, move: null, look };
+    const a = { g: new THREE.Group(), poses: {}, nav: null, look, agent: { id: ++agentIds, x: 0, z: 0, r: 1.3 * scale, goal: null, speed: 14 } };
+    a.agent.actor = a;
     for (const [k, names] of Object.entries(poses)) { const m = names.map((n) => meshFor(n, look)).find(Boolean); if (m) { m.visible = false; a.poses[k] = m; a.g.add(m); } }
     for (const k of Object.keys(poses)) if (!a.poses[k]) { const st = fallback ? fallback() : standIn(hex); st.visible = false; a.poses[k] = st; a.g.add(st); }
-    a.g.scale.setScalar(scale);
+    a.g.scale.setScalar(scale); a.agent.r = 1.3 * scale;
     a.pose = (k) => { for (const [n, m] of Object.entries(a.poses)) m.visible = n === k; a.now = k; };
-    a.place = (x, z, pose, turn = 0) => { a.g.position.set(x, 0, z); a.g.rotation.y = turn; a.pose(pose); };
-    /** Walk to x, z; resolves on arrival. */
+    a.place = (x, z, pose, turn = 0) => { a.g.position.set(x, 0, z); a.g.rotation.y = turn; a.pose(pose); a.agent.x = x; a.agent.z = z; a.agent.goal = null; a.nav = null; };
+    /** Walk to x, z (around whoever is in the way: steer.js); resolves on arrival. */
     a.goTo = (x, z, speed = 14, pose = "walk", end = "idle") => new Promise((done) => {
-      const from = a.g.position.clone(), to = new THREE.Vector3(x, 0, z), dur = Math.max(0.1, from.distanceTo(to) / speed);
-      a.pose(pose); a.move = { from, to, t: 0, dur, done, end };
-      const dx = x - from.x, dz = z - from.z; if (Math.hypot(dx, dz) > 0.1) a.g.rotation.y = Math.atan2(dx, dz);
+      a.pose(pose); a.nav = { end, done }; Object.assign(a.agent, { goal: { x, z }, speed, bestDist: null, stuckT: 0, ghost: 0 });
     });
     scene.add(a.g); actors.push(a);
     return a;
@@ -182,8 +184,21 @@ export function createGate(canvas, { models = {}, night = false }) {
   const robed = (robe) => ({ ...randomLook(Math.random, { older: Math.random() < 0.3 }), shirt: robe, dress: robe, belt: "#e8dcc0", shoes: "#2a1a10" });
 
   // you: the porter, just inside the gate, watching the door
-  const porter = actor(peoplePoses("man", ["porter"]), { ...robed(ROBES.porter), hair: "#2e1d12" }, 1.2, "#2b2830");
+  // (the six unlockable porters, porters.js: a nun is a woman in a habit and veil of her color; the old brother has gray hair)
+  const nun = /^(sister|bell|respected)$/.test(who.id);
+  const porter = actor(peoplePoses(nun ? "woman" : "man", [who.model ?? "porter"]), { ...robed(who.robe), hair: nun ? who.robe : who.id === "old" ? "#d8d4cc" : "#2e1d12" }, 1.2, who.robe);
   porter.place(PORTER_AT.x, PORTER_AT.z, "idle", Math.PI);
+  // Brother with the Dog: his big dog sits beside him, and runs to the gate when an animal comes
+  const dogHome = { x: PORTER_AT.x + 5, z: PORTER_AT.z + 3 };
+  const dog = who.dog ? actor({ walk: ["dog-walk"], idle: ["dog-idle", "dog-walk"] }, randomLook(), 1.3, "#a8692f", () => critter("dog")) : null;
+  dog?.place(dogHome.x, dogHome.z, "idle", Math.PI);
+  if (dog) dog.g.scale.setScalar(1.3 * (dog.poses.idle.userData.scale ?? 1));
+  async function dogChase() {
+    if (!dog) return;
+    await dog.goTo(2.5, -6, 30); if (disposed) return;
+    await dog.goTo(dogHome.x, dogHome.z, 20, "walk", "idle"); if (disposed) return;
+    dog.g.rotation.y = Math.PI;
+  }
 
   // ── camera: the gate, the path and the chapel fit between the top bar and the bubble ──
   const KEEP = [[-24, 0, 26], [24, 0, 26], [-24, 0, -52], [24, 0, -52], [0, 17, -4]];
@@ -213,7 +228,8 @@ export function createGate(canvas, { models = {}, night = false }) {
     const a = animal ? actor({ walk: [`${v.kind}-walk`], idle: [`${v.kind}-idle`, `${v.kind}-walk`] }, randomLook(), 1.05, "#f1ece0", () => critter(v.kind))
       : actor(peoplePoses(v.kind, [v.def, ...(v.robe ? ["monk"] : [])]), v.robe ? robed(v.robe) : randomLook(Math.random, { older: /grand/.test(v.kind), clothes: true }), SIZE[v.kind] ?? 1, "#7d8a96");
     if (animal) a.g.scale.setScalar(1.05 * (a.poses.walk.userData.scale ?? 1));
-    a.place((Math.random() - 0.5) * 3, SPAWN_Z, "walk", 0);
+    if (who.glow && v.answer === "greet") { const halo = new THREE.Sprite(haloMat()); halo.position.set(0, 6, 0); halo.scale.set(9, 9, 1); halo.userData.glow = true; a.g.add(halo); } // Sister Portress sees who is special
+    a.place(-1.8 - Math.random() * 1.5, SPAWN_Z, "walk", 0);
     const f = { a, at: null, mode: "line" }; folk.set(v.id, f); return f;
   }
   /** Bring the screen up to date with the rules: new visitors appear far down the path, and everyone in line steps forward. */
@@ -243,20 +259,26 @@ export function createGate(canvas, { models = {}, night = false }) {
   /** Come back later: they turn and walk back down the path. */
   async function sendOn(id) {
     const f = folk.get(id); if (!f) return; f.mode = "away";
-    await f.a.goTo(f.a.g.position.x * 0.5, SPAWN_Z, 18); if (disposed) return; remove(f.a); folk.delete(id);
+    await f.a.goTo(LEAVE_X, f.a.g.position.z - 4, 18); if (disposed) return;       // step out to the right, then down the path past the line
+    await f.a.goTo(LEAVE_X, SPAWN_Z, 18); if (disposed) return; remove(f.a); folk.delete(id);
   }
   const giveUp = sendOn;
 
   // ── each frame ──
   function update(dt) {
     time += dt;
+    // everyone walks toward their goal, around each other (steer.js), and turns the way they're going
+    for (const a of actors) { a.agent.x = a.g.position.x; a.agent.z = a.g.position.z; a.agent.fixed = !a.agent.goal; }
+    const arrived = stepAgents(actors.map((a) => a.agent), dt);
     for (const a of actors) {
-      if (a.move) {
-        const m = a.move; m.t = Math.min(1, m.t + dt / m.dur);
-        a.g.position.lerpVectors(m.from, m.to, m.t);
-        if (m.t >= 1) { a.move = null; a.pose(m.end); m.done(); }
+      const ag = a.agent;
+      if (ag.goal || arrived.includes(ag)) { a.g.position.x = ag.x; a.g.position.z = ag.z; }
+      if (Math.hypot(ag.vx ?? 0, ag.vz ?? 0) > 0.8) {
+        const want = Math.atan2(ag.vx, ag.vz); let d = want - a.g.rotation.y; d = Math.atan2(Math.sin(d), Math.cos(d)); a.g.rotation.y += d * Math.min(1, dt * 14);
       }
+      if (arrived.includes(ag) && a.nav) { const n = a.nav; a.nav = null; a.pose(n.end); n.done(); }
       const pm = a.poses[a.now]; if (pm) animate(pm, time);
+      for (const c of a.g.children) if (c.userData.glow) { const k = 8 + 2 * Math.sin(time * 6); c.scale.set(k, k, 1); }
     }
     doorTarget = wanted || time < flashUntil ? 1 : 0;
     doorOpen += (doorTarget - doorOpen) * Math.min(1, dt * 7);
@@ -269,6 +291,6 @@ export function createGate(canvas, { models = {}, night = false }) {
   const headOf = (id) => { const f = folk.get(id); if (!f) return null; const p = f.a.g.position; return screenOf(p.x, 10.5 * f.a.g.scale.y, p.z); };
   /** The draft: the lanterns flicker while the door has been open too long. */
   const setDraft = (on) => { draft = on; };
-  return { update, resize, sync, enter, setDoor, flash, setDraft, sendOn, giveUp, headOf, screenOf, hasModels: () => Object.keys(models),
+  return { update, resize, sync, enter, setDoor, flash, setDraft, sendOn, giveUp, dogChase, headOf, positions: () => actors.map((a) => ({ x: a.agent.x, z: a.agent.z, r: a.agent.r, moving: !!a.agent.goal })), screenOf, hasModels: () => Object.keys(models),
     dispose: () => { disposed = true; R.dispose(); R.forceContextLoss?.(); } };
 }

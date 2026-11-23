@@ -25,6 +25,20 @@ of boxes) and the gate is built from plain blocks. `vox.js`, `looks.js` and thre
   the expected come in), **The Great Silence** (only the brothers who live there, the repairman and people in trouble; a late
   bishop is greeted), and the endless **Feast Day Crowd** (opens with two stars on Sunday Mass): every minute the gaps between
   people shrink by a third (`perMinute`: about every 4 s at first, every 1.5 s at 3 minutes), and the day ends when six are waiting at the gate (a 🚪 meter shows it). Someone in trouble always comes in.
+- **Porters** (`public/js/porters.js`, picked on the home page, saved on the device): Brother Porter, then three monks and three
+  nuns, each good at something and not at something else. **Brother André** (two stars on Sunday Mass): the first mistake each
+  minute is forgiven, but combos grow slower. **Old Brother Porter** (two stars on Guest Day): the door can stay open 5 s
+  before the draft and visitors wait longer before walking in, but the next visitor steps up slowly. **Brother with the Dog**
+  (two stars on the Great Silence): his dog chases animals off by itself (a few points, no combo), then barks and Send away
+  waits 2.5 s. **Sister Portress** (three stars on Sunday Mass): special guests glow, but everyone is in more of a hurry.
+  **Sister with the Bell** (three stars on Guest Day): a 🔔 button, once a round, gives everyone waiting their patience back and
+  holds off new visitors for 5 s. **Respected Sister** (three stars on the Great Silence): a special guest who just walks in is
+  fine, but her greetings are worth less. Models: `porter-andre-walk`… on the Drawings page ("Monastery Porter: the porters").
+- **People walk around each other** (`public/js/steer.js`, a copy of `hub/public/js/steer.js`, tested in `hub/test/steer.test.js`):
+  each person heads for their goal, steers around anyone in front (keeping right when head-on), slows if someone is right in the
+  way, and is never stuck (after a moment of no progress they ignore the others). Visitors line up on the left of the path;
+  people sent away step out to the right and walk down it. Anyone walking through a door that closes early still walks through it
+  (the rules don't care). Mass Usher and Candle Rack can use the same file for their people.
 - His animals (`goat-walk`, `sheep-walk`, `cow`, `pig`, `dog`, `cat`, `chicken`, `duck`, `rabbit`, `horse`, each `-idle` and
   `-walk`) are on the Drawings page ("Monastery Porter: animals"); any visitor can also have a character of their own,
   named after them (`bishop-walk`; "Monastery Porter: special visitors"). More animals: add one to `ANIMALS` and `VISITORS` in

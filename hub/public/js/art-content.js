@@ -165,6 +165,18 @@ export const CHECKLISTS = [
     ],
   },
   {
+    id: "monastery-porter-porters", title: "Monastery Porter: the porters", game: "Monastery Porter",
+    note: "Three monks and three nuns you can play as, each opening with stars (Brother André and the old brother and the brother with the dog; Sister Portress, Sister with the Bell and the Respected Sister). Each stands and walks, facing the front like your people; robes and veils are in your marker colors (shirt and dress = the habit, hair = the veil). Until a pose is made the game paints a robe on your boy or girl. Brother with the Dog also needs his dog: dog-idle and dog-walk, on the animals list.",
+    items: [
+      p("porter-andre-idle", "Brother André, standing", "The kind porter saint (St. André Bessette): a brown habit, a gentle face."), p("porter-andre-walk", "Brother André, walking"),
+      p("porter-old-idle", "Old Brother Porter, standing", "White hair and a beard, a little stooped."), p("porter-old-walk", "Old Brother Porter, walking"),
+      p("porter-dog-idle", "Brother with the Dog, standing", "A black habit, holding the dog's leash."), p("porter-dog-walk", "Brother with the Dog, walking"),
+      p("porter-sister-idle", "Sister Portress, standing", "A white habit and veil."), p("porter-sister-walk", "Sister Portress, walking"),
+      p("porter-bell-idle", "Sister with the Bell, standing", "A blue habit, with a hand bell."), p("porter-bell-walk", "Sister with the Bell, walking"),
+      p("porter-respected-idle", "Respected Sister, standing", "A purple veil, a cross on a chain."), p("porter-respected-walk", "Respected Sister, walking"),
+    ],
+  },
+  {
     id: "monastery-porter-animals", title: "Monastery Porter: animals", game: "Monastery Porter",
     note: "The animals that wander up to the monastery gate (all of them get sent kindly on their way). Each one stands and walks, facing the front like your people. Make them any size you like: a cow can be bigger than a person, a cat smaller. Until you draw one, the game uses a little animal of colored boxes. Tell me if you want more animals!",
     items: [

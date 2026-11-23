@@ -12,7 +12,7 @@
 // Each stage has its own rule about who comes in; someone in trouble always does. A visitor who waits too long gives up.
 // Quick right answers in a row build a combo that multiplies the points. Timed stages end at the bell; the endless one
 // ends when too many people are waiting.
-import { VISITORS, hintFor } from "./visitors.js";
+import { VISITORS, ANIMALS, hintFor } from "./visitors.js";
 import { STAGES } from "./stages.js";
 
 export const ARRIVE = 0.5;      // seconds for the next visitor to step up to the door
@@ -38,9 +38,9 @@ export function pool(stage) {
   return out;
 }
 
-export function newGame({ seed = 1, stage = STAGES[0], length } = {}) {
-  const g = { r: rng(seed), t: 0, length: length ?? stage.length, stage, queue: [], front: null, door: false, doorOpenFor: 0, drainAcc: 0, drained: 0, nextArrival: 0, nextId: 1, last: null,
-    score: 0, welcomed: 0, greeted: 0, sentOn: 0, wrong: 0, missed: 0, right: 0, streak: 0, bestStreak: 0, over: false, endReason: null, pool: pool(stage) };
+export function newGame({ seed = 1, stage = STAGES[0], length, porter = {} } = {}) {
+  const g = { r: rng(seed), porter, t: 0, length: length ?? stage.length, stage, queue: [], front: null, door: false, doorOpenFor: 0, drainAcc: 0, drained: 0, nextArrival: 0, nextId: 1, last: null,
+    score: 0, forgiven: 0, forgiveAt: 0, bellUsed: false, dogUntil: 0, welcomed: 0, greeted: 0, sentOn: 0, wrong: 0, missed: 0, right: 0, streak: 0, bestStreak: 0, over: false, endReason: null, pool: pool(stage) };
   g.nextArrival = START_DELAY;
   return g;
 }
@@ -48,7 +48,11 @@ export function newGame({ seed = 1, stage = STAGES[0], length } = {}) {
 /** How far along a timed stage is, 0 → 1 (to the bell). */
 const progress = (g) => Math.min(1, g.t / g.length);
 /** The multiplier for the next right answer. */
-export const multOf = (g) => Math.min(MAX_MULT, 1 + Math.floor(g.streak / COMBO));
+export const multOf = (g) => Math.min(MAX_MULT, 1 + Math.floor(g.streak / (g.porter.comboEvery ?? COMBO)));
+const graceOf = (g) => g.porter.grace ?? GRACE, freeOpenOf = (g) => g.porter.freeOpen ?? FREE_OPEN, arriveOf = (g) => g.porter.arrive ?? ARRIVE;
+export const DOG_DELAY = 0.6;  // the dog gets to an animal at the door before the open door lets it in
+export const DOG_POINTS = 5;   // for an animal the dog chased off (no combo)
+export const DOG_BARK = 2.5;   // seconds Send away waits after the dog barks
 
 function arrive(g) {
   const st = g.stage, [e0, e1] = st.every, mix = st.mix, x = g.r();
@@ -57,7 +61,7 @@ function arrive(g) {
   if (!list.length) list = g.pool[side].length ? g.pool[side] : [...g.pool.in, ...g.pool.greet, ...g.pool.away];
   const def = list[Math.floor(g.r() * list.length) % list.length];
   g.last = def.id;
-  const max = st.patience * (def.vip ? VIP_PATIENCE : 1), rules = st.rules ?? st.id;
+  const max = st.patience * (g.porter.patience ?? 1) * (def.vip ? VIP_PATIENCE : 1), rules = st.rules ?? st.id;
   const v = { id: g.nextId++, def: def.id, emoji: def.emoji, kind: def.kind, robe: def.robe, vip: !!def.vip, line: def.line, reply: def.reply ?? "", later: def.later ?? "", why: hintFor(def, rules), answer: def.answers[rules],
     patience: max, max, waited: 0, state: "line" };
   g.queue.push(v);
@@ -77,14 +81,15 @@ export function tick(g, dt) {
     else g.nextArrival = g.t + 0.4; // the path is full: try again in a moment
   }
   if (!g.front && g.queue.length) {
-    const v = g.front = g.queue.shift(); v.state = "arriving"; v.arrivesAt = g.t + ARRIVE;
+    const v = g.front = g.queue.shift(); v.state = "arriving"; v.arrivesAt = g.t + arriveOf(g);
     ev.push({ type: "step-up", v });
   }
   const f = g.front;
   if (f?.state === "arriving" && g.t >= f.arrivesAt) { f.state = "waiting"; ev.push({ type: "knock", v: f }); }
   else if (f?.state === "waiting") {
     f.patience -= dt; f.waited += dt;
-    if (g.door && f.waited >= GRACE) ev.push(...resolve(g, "door", true)); // an open door: in they walk
+    if (g.porter.dog && ANIMALS.includes(f.kind) && f.waited >= DOG_DELAY) ev.push(...dogChase(g)); // his dog gets there first
+    else if (g.door && f.waited >= graceOf(g)) ev.push(...resolve(g, "door", true)); // an open door: in they walk
     else if (f.patience <= 0) {
       f.patience = 0; f.state = "left"; g.front = null;
       g.missed++; g.streak = 0; g.score = Math.max(0, g.score - 2); if (f.answer !== "away") g.wrong++;
@@ -94,7 +99,7 @@ export function tick(g, dt) {
   // the draft: a door left open too long costs points
   if (g.door) {
     g.doorOpenFor += dt;
-    if (g.doorOpenFor > FREE_OPEN && g.score > 0) {
+    if (g.doorOpenFor > freeOpenOf(g) && g.score > 0) {
       const lose = Math.min(g.score, DRAIN * dt); g.score -= lose; g.drained += lose; g.drainAcc += lose;
       if (g.drainAcc >= 2) { ev.push({ type: "draft", points: Math.floor(g.drainAcc) }); g.drainAcc -= Math.floor(g.drainAcc); }
     }
@@ -114,22 +119,23 @@ function resolve(g, how, auto = false) {
   const a = v.answer;
   // right: a person who belongs through the open door, a special guest greeted (anyone who belongs may be greeted too,
   // just for fewer points), or someone sent away who should be
-  const correct = how === "door" ? a === "in" : how === "greet" ? a === "greet" : a === "away";
+  const correct = how === "door" ? a === "in" || (a === "greet" && !!g.porter.respected) : how === "greet" ? a === "greet" : a === "away";
   // greeting someone who only needed the door opened is harmless, but earns nothing and breaks the combo
   const neutral = how === "greet" && a === "in";
   const quick = auto || v.patience / v.max > QUICK;
-  let points = 0;
+  let points = 0, forgiven = false;
   const mult = multOf(g);
   if (correct) {
-    const base = how === "greet" ? (v.vip ? 25 : 20) : how === "door" ? (v.vip ? 15 : 10) : 8;
+    const base = how === "greet" ? (g.porter.respected ? 12 : v.vip ? 25 : 20) : how === "door" ? (v.vip ? 15 : 10) : 8;
     points = (base + (quick ? 3 : 0)) * mult;
     g.right++; g.streak++; g.bestStreak = Math.max(g.bestStreak, g.streak);
   } else if (neutral) { g.streak = 0; }
+  else if (g.porter.forgiving && g.t >= g.forgiveAt) { g.forgiveAt = g.t + 60; g.forgiven++; forgiven = true; } // kind Brother André: the first mistake each minute is forgiven
   else { points = -WRONG; g.wrong++; g.streak = 0; }
   g.score = Math.max(0, g.score + points);
   if (how === "away") g.sentOn++; else if (how === "greet") g.greeted++; else g.welcomed++;
   v.state = how === "away" ? "sent" : "welcomed"; v.how = how; g.front = null;
-  return [{ type: "decided", v, how, correct: correct || neutral, neutral, quick, points, mult: correct ? mult : 1, streak: g.streak, auto }];
+  return [{ type: "decided", v, how, correct: correct || neutral || forgiven, neutral, forgiven, quick, points, mult: correct ? mult : 1, streak: g.streak, auto }];
 }
 
 /** Open or close the door. Opening it lets the visitor at the door walk in right away. Returns the events. */
@@ -141,7 +147,26 @@ export function toggleDoor(g) {
   return ev;
 }
 export const greet = (g) => resolve(g, "greet");
-export const sendAway = (g) => resolve(g, "away");
+/** Send them on their way (not while the dog is still barking). */
+export const sendAway = (g) => (g.t < g.dogUntil ? [] : resolve(g, "away"));
+
+/** The dog chases an animal at the door off by itself: a few points, no combo, and then it barks. */
+function dogChase(g) {
+  const v = waiting(g);
+  if (!v) return [];
+  g.score += DOG_POINTS; g.right++; g.sentOn++; g.dogUntil = g.t + DOG_BARK;
+  v.state = "sent"; v.how = "dog"; g.front = null;
+  return [{ type: "decided", v, how: "away", dog: true, correct: true, neutral: false, quick: true, points: DOG_POINTS, mult: 1, streak: g.streak }];
+}
+
+/** Sister's bell (once a round): everyone waiting is patient again, and no one new comes for a few seconds. */
+export const BELL_QUIET = 5;
+export function ringBell(g) {
+  if (g.over || !g.porter.bell || g.bellUsed) return [];
+  g.bellUsed = true; g.nextArrival = Math.max(g.nextArrival, g.t + BELL_QUIET);
+  for (const v of [g.front, ...g.queue]) if (v) { v.patience = v.max; v.waited = 0; }
+  return [{ type: "bell" }];
+}
 
 /** Stars: two for steady good answers, three for quick, right and in a row. Tuned in the tests. */
 export const starsFor = (g) => (g.score >= g.stage.star3 ? 3 : g.score >= g.stage.star2 ? 2 : 1);

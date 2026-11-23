@@ -231,6 +231,10 @@ building (the church's candle rack and doors, the chapel at night, the choir lof
    "Glory to Jesus Christ!"; 🙋 Send away), a combo multiplier for higher scores, many more people who don't belong on Sunday
    and ten kinds of animals (his drawings on the Drawings page), varied welcomes, and an endless Feast Day Crowd that ends
    when six are waiting at the gate.
+   Round 3 (Nov 23, 2026): the feast day gets busier every minute; six unlockable porters (three monks: André, the old
+   brother, the brother with the dog; three nuns: Sister Portress, Sister with the Bell, the Respected Sister); and
+   **collisions**: a shared steering module (`hub/public/js/steer.js`, tested) so people walk around each other, with lanes on
+   the path. Next: use steer.js in Mass Usher and Candle Rack.
 
 Peters Pence (Balatro-style cards) is too hard for PreK: it moves to Pico Parish.
 
