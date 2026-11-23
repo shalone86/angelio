@@ -57,6 +57,7 @@ body.candle-game main { max-width: none; padding: 0 !important; }
   background: linear-gradient(#5bb4ff, #bfe3ff); box-shadow: 0 2px 0 #3a8fd9; }
 .hub-link img { width: 30px; height: 30px; border-radius: 9px; }
 .hub-link:active { transform: translateY(2px); box-shadow: none; }
+.games-link-top { margin-left: -4px; background: linear-gradient(#7b4fd6, #b98cff); box-shadow: 0 2px 0 #5a35a8; }
 /* Phones: the menu gets its own row and scrolls sideways instead of being cut off. */
 @media (max-width: 560px) {
   .topbar { flex-wrap: wrap; row-gap: 6px; }

@@ -50,3 +50,8 @@ document.addEventListener("click", async (e) => {
   } catch { try { speechSynthesis.speak(new SpeechSynthesisUtterance(text)); } catch { /* no voice */ } }
 });
 jingleOnce("angelio");
+
+// The Games page is its own home-screen app: save it so it opens offline.
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  navigator.serviceWorker.register("/games/sw.js", { scope: "/games/" }).catch(() => {});
+}
