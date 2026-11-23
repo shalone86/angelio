@@ -153,6 +153,31 @@ export const CHECKLISTS = [
       p("monstrance", "Monstrance", "On the altar for Adoration at Night (Candle Rack's chapel can use it too)."),
     ],
   },
+  {
+    id: "monastery-porter-people", title: "Monastery Porter: people", game: "Monastery Porter",
+    note: "You're the porter, keeping the monastery door. Visitors come up the path and knock. The porter and Brother Francis wear robes in your marker colors (shirt and dress = the robe, belt = the rope); the visitors are your usual people (man, woman, grandfather, grandmother, child, child-girl), each walking and standing, in their own colors. Visitors use the same people as Candle Rack's and Mass Usher's lists (the -walk and -idle poses): the peddler, the repairman, the visiting abbot, the lost child. Until a pose is made, the boy and girl stand in.",
+    items: [
+      p("porter-idle", "Porter, standing", "Watching the door from just inside the gate (seen from above and behind). Until made: the boy in a black robe."),
+      p("porter-walk", "Porter, walking"),
+      p("monk-idle", "Brother Francis (a monk), standing", "A brother coming back from the garden: a brown robe."),
+      p("monk-walk", "Brother Francis, walking"),
+      p("goat-idle", "Goat, standing", "The goat that wanders up to the gate. Four legs, horns and a little beard. Until made: a goat of white boxes."),
+      p("goat-walk", "Goat, walking"),
+
+    ],
+  },
+  {
+    id: "monastery-porter-gate", title: "Monastery Porter: the gate", game: "Monastery Porter",
+    note: "The gate in the wall, seen from above and from inside, with the path outside and the courtyard inside. The game builds all of this from stone-colored blocks until you make your own.",
+    items: [
+      { slug: "porter-gatehouse", label: "Gatehouse", size: [24, 16], note: "Two gateposts and a lintel with a cross on top, 12 voxels wide for the door; people are 8 tall." },
+      { slug: "porter-door", label: "Wooden door", size: [12, 10], note: "Two leaves that swing open toward you (frame 1 shut, frame 2 open)." },
+      { slug: "porter-lantern", label: "Lantern", size: [8, 8], note: "On each gatepost; it glows." },
+      { slug: "porter-wall", label: "Wall piece", size: [16, 8], note: "A piece of the monastery wall that repeats." },
+      { slug: "porter-well", label: "Well", size: [10, 8], note: "In the courtyard." },
+      { slug: "porter-chapel", label: "Chapel", size: [30, 24], note: "Where welcomed visitors go: a small stone chapel with a door facing the gate." },
+    ],
+  },
 ];
 
 /** Every slug a checklist names (for the page). */

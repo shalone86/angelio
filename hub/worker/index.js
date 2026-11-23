@@ -20,6 +20,7 @@ export const APPS = {
   articulate: "ARTICULATE", // Articulate (articulation Worker)
   candles: "CANDLES", // Candle Rack (candles Worker): the game of getting the church ready before Mass
   usher: "USHER", // Mass Usher (usher Worker): seating families before Mass (a demo)
+  porter: "PORTER", // Monastery Porter (porter Worker): keeping the monastery door (a demo)
 };
 
 import { normalizeCode, newCode, codeStatus, day, month } from "./codes.js";

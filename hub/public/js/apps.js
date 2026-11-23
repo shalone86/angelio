@@ -55,6 +55,10 @@ export const APP_LIST = [
     name: "Mass Usher", path: "usher", subject: "games", grades: "All ages", emoji: "🪑",
     blurb: "A game (an early demo): seat the families coming to Mass. Help people scoot down to make room, and keep each family together.",
   },
+  {
+    name: "Monastery Porter", path: "porter", subject: "games", grades: "All ages", emoji: "🚪",
+    blurb: "A game (an early demo): keep the monastery door. Listen to who knocks, welcome them in, or kindly ask them to come back later.",
+  },
   // Coming soon (see ROADMAP.md)
   { name: "Choir", subject: "games", grades: "All ages", emoji: "🎶", blurb: "Tap along with the music in the choir loft: the beat gets faster, then two lanes, then three." },
   { name: "Saints Match", subject: "games", grades: "All ages", emoji: "😇", blurb: "Memory cards with the saints: find the pairs, then match each saint to their sign." },

@@ -1,0 +1,66 @@
+/* Monastery Porter (base.css has the shared look): the voxel gate (js/gate.js) with the game on top. */
+.hero .title { color: #6b4a2a; }
+.demo-chip { display: inline-block; font-weight: 800; padding: 6px 14px; border-radius: 99px; background: var(--surface); border: 2px dashed var(--border); margin: 4px auto 10px; }
+
+/* The round: the voxel gate fills the screen; the clock, score, the visitors' pictures, the two answers and the bubble float on top. */
+body.porter-game { overflow: hidden; background: #2a2036; }
+body.porter-game main { max-width: none; padding: 0 !important; }
+body.porter-game .topbar { display: none; }
+.porter-play { position: fixed; inset: 0; }
+.porter-play canvas.gate { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+.porter-play .hud { position: absolute; left: 0; right: 0; top: 0; display: flex; align-items: center; gap: 10px; pointer-events: none;
+  padding: calc(8px + env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) 6px max(12px, env(safe-area-inset-left)); }
+.porter-play .hud > * { pointer-events: auto; }
+.porter-play .clock, .porter-play .score { background: rgb(255 248 235 / .95); color: #3b2a12; border-radius: 16px; padding: 6px 14px; font-weight: 800; font-size: 1.2rem; box-shadow: 0 2px 0 rgb(0 0 0 / .2); }
+.porter-play .clock { margin: 0 auto; }
+.porter-play .clock-label { font-size: .85rem; font-weight: 700; opacity: .7; }
+/* the picture over each visitor, and (the one at the door) how long they'll wait */
+.pins { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.pin { position: absolute; transform: translate(-50%, -100%); display: grid; justify-items: center; gap: 2px; filter: drop-shadow(0 1px 2px rgb(0 0 0 / .45)); }
+.pin-pic { font-size: 1.5rem; line-height: 1; }
+.pin .patience { display: none; width: 54px; height: 8px; border-radius: 99px; background: rgb(255 255 255 / .85); overflow: hidden; }
+.pin .patience i { display: block; height: 100%; width: 100%; border-radius: 99px; }
+.pin.front .pin-pic { font-size: 2.4rem; animation: knock .5s ease-in-out 3; }
+.pin.front .patience { display: block; }
+@keyframes knock { 50% { transform: translateY(-6px) rotate(-8deg); } }
+/* the two answers */
+.answers { position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(104px + env(safe-area-inset-bottom)); display: flex; gap: 12px; width: min(94vw, 560px); z-index: 4; }
+.answers[hidden] { display: none; }
+.answer { flex: 1; min-height: 64px; border-radius: 20px; border: 3px solid #fff; color: #fff; font: 800 1.05rem/1.1 var(--font-display, Nunito, sans-serif); padding: 6px 8px; cursor: pointer; touch-action: manipulation;
+  box-shadow: 0 4px 0 rgb(0 0 0 / .3), 0 6px 14px rgb(0 0 0 / .3); }
+.answer.in { background: #2fa866; box-shadow: 0 4px 0 #1f7a49, 0 6px 14px rgb(0 0 0 / .3); }
+.answer.later { background: #2a6db3; box-shadow: 0 4px 0 #173f6e, 0 6px 14px rgb(0 0 0 / .3); }
+.answer span { font-size: 1.4rem; margin-right: 2px; }
+.answer:disabled { opacity: .45; }
+.answer:not(:disabled):active { transform: translateY(2px); }
+.answers.ready .answer { animation: ready 1.2s ease-in-out infinite; }
+@keyframes ready { 50% { filter: brightness(1.12); } }
+.porter-play .porter-bubble { position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(10px + env(safe-area-inset-bottom)); width: min(94vw, 560px); margin: 0; z-index: 5; }
+.porter-play .porter-lesson { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(94vw, 560px); max-height: 88vh; overflow: auto; z-index: 40; }
+.porter-example { font-size: 2.2rem; }
+.pops { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 6; }
+.pop { position: absolute; transform: translate(-50%, -50%); font-weight: 900; font-size: 1.3rem; color: #fff; text-shadow: 0 2px 0 #2a4a7a, 0 0 6px #2a6db3; animation: popup 1.3s ease-out forwards; white-space: nowrap; }
+.pop.good { color: #fff3b0; text-shadow: 0 2px 0 #7a4a00, 0 0 8px #ffb02e; font-size: 1.5rem; }
+.pop.quick { color: #c9f5ff; font-size: 1.5rem; }
+.pop.oops { color: #ffd9d6; text-shadow: 0 2px 0 #7a1f1a, 0 0 6px #e0453f; }
+@keyframes popup { to { transform: translate(-50%, -170%); opacity: 0; } }
+.final-score { font-size: 1.4rem; margin: 0 0 4px; }
+@media (prefers-color-scheme: dark) { body.porter-game { background: #2a2230; } }
+@media (prefers-reduced-motion: reduce) { .pop { animation: none; } .pin.front .pin-pic, .answers.ready .answer { animation: none; } }
+/* a phone held sideways: like every Angelio game, the speech bubble in the right column (base.css) */
+@media (orientation: landscape) and (max-height: 520px) {
+  .porter-play canvas.gate { right: auto; width: calc(100% - 256px); }
+  .porter-play .porter-bubble { position: fixed; left: auto; right: 0; top: 50px; bottom: auto; transform: none; width: 256px; }
+  .answers { left: auto; right: 0; transform: none; bottom: 10px; width: 256px; flex-direction: column; gap: 8px; }
+  .answer { min-height: 52px; font-size: 1.05rem; }
+  .porter-play .clock, .porter-play .score { font-size: 1rem; padding: 3px 10px; }
+}
+
+/* Home: the stages, one card each (locked ones say how to open them) */
+.stages { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin: 8px 0 18px; }
+.stage { display: grid; gap: 4px; justify-items: center; text-align: center; text-decoration: none; color: var(--text); padding: 16px 14px; }
+.stage b { font: 800 1.2rem var(--font-display); }
+.stage-icon { font-size: 2.2rem; line-height: 1; }
+.stage-stars { color: #d9a400; font-weight: 800; letter-spacing: .05em; }
+.stage.locked { opacity: .6; }
+.games-link { margin: 18px 0 8px; }
