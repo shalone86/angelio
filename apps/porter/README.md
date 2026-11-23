@@ -23,8 +23,8 @@ of boxes) and the gate is built from plain blocks. `vox.js`, `looks.js` and thre
 - Stages, each opening with two stars on the one before: **Sunday Mass** (the people who belong come in; special guests are
   greeted; peddlers, jugglers, a pizza delivery, a clown, ten kinds of animals and so on are sent on), **Guest Day** (only
   the expected come in), **The Great Silence** (only the brothers who live there, the repairman and people in trouble; a late
-  bishop is greeted), and the endless **Feast Day Crowd** (opens with two stars on Sunday Mass): they come faster and
-  faster, and the day ends when six are waiting at the gate (a 🚪 meter shows it). Someone in trouble always comes in.
+  bishop is greeted), and the endless **Feast Day Crowd** (opens with two stars on Sunday Mass): every minute the gaps between
+  people shrink by a third (`perMinute`: about every 4 s at first, every 1.5 s at 3 minutes), and the day ends when six are waiting at the gate (a 🚪 meter shows it). Someone in trouble always comes in.
 - His animals (`goat-walk`, `sheep-walk`, `cow`, `pig`, `dog`, `cat`, `chicken`, `duck`, `rabbit`, `horse`, each `-idle` and
   `-walk`) are on the Drawings page ("Monastery Porter: animals"); any visitor can also have a character of their own,
   named after them (`bishop-walk`; "Monastery Porter: special visitors"). More animals: add one to `ANIMALS` and `VISITORS` in

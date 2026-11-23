@@ -45,8 +45,8 @@ export function newGame({ seed = 1, stage = STAGES[0], length } = {}) {
   return g;
 }
 
-/** How far along it is, 0 → 1 (a timed stage: to the bell; the endless one: up the ramp). */
-const progress = (g) => Math.min(1, g.stage.endless ? g.t / g.stage.ramp : g.t / g.length);
+/** How far along a timed stage is, 0 → 1 (to the bell). */
+const progress = (g) => Math.min(1, g.t / g.length);
 /** The multiplier for the next right answer. */
 export const multOf = (g) => Math.min(MAX_MULT, 1 + Math.floor(g.streak / COMBO));
 
@@ -61,7 +61,9 @@ function arrive(g) {
   const v = { id: g.nextId++, def: def.id, emoji: def.emoji, kind: def.kind, robe: def.robe, vip: !!def.vip, line: def.line, reply: def.reply ?? "", later: def.later ?? "", why: hintFor(def, rules), answer: def.answers[rules],
     patience: max, max, waited: 0, state: "line" };
   g.queue.push(v);
-  g.nextArrival = g.t + (e0 + (e1 - e0) * progress(g)) * (0.8 + g.r() * 0.4) * (st.endless ? Math.max(0.6, 1 - Math.max(0, g.t - st.ramp) / 400) : 1);
+  // a timed stage: a little busier toward the bell. The feast day: every minute, the gaps between people shrink by a third (`perMinute`), down to `floor`
+  const gap = st.endless ? Math.max(st.floor, e0 * st.perMinute ** (g.t / 60)) : e0 + (e1 - e0) * progress(g);
+  g.nextArrival = g.t + gap * (0.8 + g.r() * 0.4);
   return v;
 }
 

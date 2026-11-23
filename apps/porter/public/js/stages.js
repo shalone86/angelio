@@ -30,11 +30,11 @@ export const STAGES = [
   },
   {
     id: "feast", name: "Feast Day Crowd", icon: "🎉", night: false, rules: "sunday", endless: true, opensAfter: "sunday",
-    blurb: "A big feast day, and the whole village is coming! They keep coming faster and faster. How long can you keep the door?",
+    blurb: "A big feast day, and the whole village is coming! They keep coming faster and faster, more every minute. How long can you keep the door?",
     say: "It's a feast day, and everyone is coming to the monastery! They'll come faster and faster. If too many people are waiting, the day is over. Keep the door as long as you can!",
     rule: "Keep the door as long as you can! If too many people are waiting, the day is over.",
     bell: "The line at the gate got too long. What a busy feast day! Time to rest.",
-    length: Infinity, ramp: 240, every: [4.5, 1.1], maxQueue: 99, maxLine: 6, patience: 9, mix: { in: 0.42, greet: 0.2, away: 0.38 }, star2: 600, star3: 4000,
+    length: Infinity, every: [4.2, 4.2], perMinute: 0.65, floor: 0.45, maxQueue: 99, maxLine: 6, patience: 9, mix: { in: 0.42, greet: 0.2, away: 0.38 }, star2: 600, star3: 4000,
   },
 ];
 export const stageById = (id) => STAGES.find((s) => s.id === id) ?? STAGES[0];

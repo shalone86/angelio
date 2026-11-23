@@ -146,7 +146,7 @@ test("stars on every stage: idle 1; opening everything, greeting everything or s
   }
 });
 
-test("the feast day: too many waiting ends it, a quick porter lasts far longer", () => {
+test("the feast day: more people every minute, too many waiting ends it, a quick porter lasts longer", () => {
   const stage = STAGES.find((s) => s.endless);
   const idle = play(1, "idle", { stage }), quick = play(0.7, "right", { stage });
   assert.equal(idle.endReason, "line"); assert.ok(idle.queue.length >= stage.maxLine);
@@ -158,4 +158,14 @@ test("a timed round ends once, at the bell", () => {
   let ends = 0;
   while (!g.over) for (const e of tick(g, 0.1)) if (e.type === "end") ends++;
   assert.equal(ends, 1); assert.equal(g.t, g.length); assert.equal(g.endReason, "bell"); assert.deepEqual(tick(g, 1), []);
+});
+
+test("the feast day: every minute more people come (the gaps between them shrink by about a third)", () => {
+  const stage = STAGES.find((s) => s.endless);
+  const arrivals = [];
+  const g = newGame({ seed: 5, stage });
+  while (!g.over && g.t < 300) { for (const e of tick(g, 0.1)) if (e.type === "arrive") arrivals.push(g.t); waiting(g) && greet(g); if (g.front) { g.front.state = "welcomed"; g.front = null; } }
+  const per = (a, b) => arrivals.filter((t) => t >= a && t < b).length;
+  const m1 = per(0, 60), m2 = per(60, 120), m3 = per(120, 180);
+  assert.ok(m2 > m1 * 1.25 && m3 > m2 * 1.25, `people per minute: ${m1}, ${m2}, ${m3}`);
 });
