@@ -238,5 +238,11 @@ test("round end transition: clock hits 0 and app.js finish() is in viewPlay scop
   const asyncPos = src.indexOf("(async () => {");
   assert.ok(finishPos > 0 && handlePos > finishPos && asyncPos > handlePos,
     "finish() and handle() must share viewPlay scope before the async game loop starts");
+  assert.ok(!src.slice(handlePos, asyncPos).includes("speakText: true"),
+    "fast card clicks in handle() stay silent");
+
+  const portraitSrc = fs.readFileSync(new URL("../public/js/portraits.js", import.meta.url), "utf8");
+  assert.match(portraitSrc, /saint-halo/);
+  assert.match(portraitSrc, /bodyFrames/);
 });
 

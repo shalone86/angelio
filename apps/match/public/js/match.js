@@ -257,8 +257,8 @@ export function flip(g, cardId) {
     const sharpEye = a.swapped || b.swapped;
     if (sharpEye) g.sharpEyes += 1;
 
-    const base = 100 + (a.golden ? 50 : 0) + (symbolPair ? (g.helper.symbolBonus ?? 0) : 0) + (sharpEye ? 75 : 0);
-    const points = Math.max(10, Math.round(base * mult * rushMult * (g.helper.pointsScale ?? 1)));
+    const base = 6 + (a.golden ? 4 : 0) + (symbolPair ? (g.helper.symbolBonus ?? 0) : 0) + (sharpEye ? 5 : 0);
+    const points = Math.max(1, Math.round(base * mult * rushMult * (g.helper.pointsScale ?? 1)));
     g.score += points;
 
     let timeAdded = 0;
@@ -283,7 +283,7 @@ export function flip(g, cardId) {
 
     if (g.cards.every((x) => x.matched)) {
       const flawless = g.waveMisses === 0;
-      const bonus = Math.round((250 + g.wave * 50 + (flawless ? 150 : 0)) * (g.helper.pointsScale ?? 1));
+      const bonus = Math.round((16 + g.wave * 3 + (flawless ? 10 : 0)) * (g.helper.pointsScale ?? 1));
       g.score += bonus;
       g.wavesCleared += 1;
       let waveTime = 0;

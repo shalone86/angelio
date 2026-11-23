@@ -4,6 +4,12 @@
 import * as S from "./kit/store.js";
 import { jingleOnce } from "./kit/jingle.js";
 S.init("match:v1", { best: 0 });
+if (!S.settings().scoreScaleV2) {
+  for (const [k, v] of Object.entries(S.settings())) {
+    if (/^best/.test(k) && Number(v) > 0) S.setSetting(k, Math.max(1, Math.round(Number(v) / 16)));
+  }
+  S.setSetting("scoreScaleV2", true);
+}
 
 import { createRouter } from "./kit/router.js";
 import { speak, stop } from "./kit/tts.js";
@@ -26,8 +32,8 @@ const route = createRouter([
   [/^grownups$/, () => viewGrownups(app, { about: `<p><b>Saints Match</b> is a fast arcade matching game with Catholic saints
     from East and West and the signs by which we recognize them — like St. Peter's keys, St. Paul's sword, and St. Thérèse's roses.
     Every board opens with a quick two-second peek, rewards speedy combos, lights up with a Golden Halo Feast Rush, and adds visible
-    Wind Swaps on later boards. Every flip is read aloud so pre-readers can play too. An early demo with voxel stand-ins until custom
-    saint models are drawn. Nothing is collected; progress stays on this device.</p>` })],
+    Wind Swaps on later boards. During fast play the bubble shows each saint quietly so sound effects stay crisp and quick taps are
+    never interrupted. An early demo with voxel stand-ins until custom saint models are drawn. Nothing is collected; progress stays on this device.</p>` })],
 ], { before() { stop(); FX.clearFx(); document.body.classList.remove("in-game", "match-game"); } });
 
 const progressId = (st) => st.progress ?? `match-${st.id}`;
@@ -176,8 +182,9 @@ function viewPlay(stageId) {
       if (c.golden) btn.classList.add("golden");
       if (c.faceUp) btn.classList.add("face-up");
 
+      const p = portraits.get(s.id);
       const faceHtml = c.kind === "saint"
-        ? `<img class="saint-vox" src="${portraits.get(s.id) ?? ""}" alt="${esc(s.name)}" draggable="false">
+        ? `<img class="saint-vox" src="${p?.frames?.[0] ?? ""}" data-saint="${s.id}" data-frame="0" alt="${esc(s.name)}" draggable="false">
            <span class="card-name">${esc(s.short)}</span>
            <span class="card-badge">${c.golden ? "✨" : ""}</span>`
         : `<span class="symbol-medallion" aria-hidden="true">${s.symbol}</span>
@@ -259,8 +266,8 @@ function viewPlay(stageId) {
         syncCards();
         lastFlip = ev.card;
         const s = saintById(ev.card.saintId);
-        // On first card of a pair, read it aloud cleanly; second card is handled by match / mismatch below.
-        if (g.open.length === 1) say(bubble, cardSpeech(ev.card, s), { speakText: true });
+        // Show card info quietly during fast tapping so speech never gets cut off.
+        if (g.open.length === 1) say(bubble, cardSpeech(ev.card, s), { speakText: false });
       } else if (ev.type === "match") {
         const s = saintById(ev.saintId);
         ev.golden ? sfx.fanfare() : sfx.win();
@@ -273,7 +280,7 @@ function viewPlay(stageId) {
           ev.timeAdded ? `+${ev.timeAdded.toFixed(1)}s` : "",
         ].filter(Boolean).join(" ");
         pop(tags, cardEls.get(ev.ids[1]), ev.golden || ev.rush ? "good" : ev.sharpEye ? "quick" : "");
-        say(bubble, `<b>${esc(s.name)}!</b> ${esc(s.blurb)}`, { speakText: true, spokenOverride: `${s.name}! ${s.blurb}` });
+        say(bubble, `<b>${esc(s.name)}!</b> ${esc(s.blurb)}`, { speakText: false });
       } else if (ev.type === "mismatch") {
         sfx.oops();
         syncCards();
@@ -284,9 +291,9 @@ function viewPlay(stageId) {
         const cardLine = lastFlip ? cardSpeech(lastFlip, saintById(lastFlip.saintId)) : "";
         if (ev.forgiven) {
           pop("☀️ Combo kept!", cardEls.get(ev.ids[1]), "good");
-          say(bubble, `${esc(cardLine ? `${cardLine} — ` : "")}St. Clare kept your combo!`, { speakText: true });
+          say(bubble, `${esc(cardLine ? `${cardLine} — ` : "")}St. Clare kept your combo!`, { speakText: false });
         } else {
-          say(bubble, `${esc(cardLine ? `${cardLine} — ` : "")}${vary("miss", MISS_LINES)}`, { speakText: true });
+          say(bubble, `${esc(cardLine ? `${cardLine} — ` : "")}${vary("miss", MISS_LINES)}`, { speakText: false });
         }
       } else if (ev.type === "close") {
         syncCards();
@@ -300,7 +307,7 @@ function viewPlay(stageId) {
         sfx.chime();
         syncCards();
         pop("🔍 Found one!", cardEls.get(ev.ids[0]), "good");
-        say(bubble, `Look at the glowing cards for <b>${esc(saintById(ev.saintId).name)}</b>!`, { speakText: true });
+        say(bubble, `Look at the glowing cards for <b>${esc(saintById(ev.saintId).name)}</b>!`, { speakText: false });
       } else if (ev.type === "hint-end") {
         syncCards();
       } else if (ev.type === "wave-clear") {
@@ -337,7 +344,7 @@ function viewPlay(stageId) {
     g = newGame({ seed: Math.floor(Math.random() * 1e9), stage, helper });
     window.__match = { game: g };
     renderBoard();
-    say(bubble, `Peek fast! ${esc(stage.name)} starts!`, { speakText: true });
+    say(bubble, `Peek fast! ${esc(stage.name)} starts!`, { speakText: false });
 
     const onBoardClick = (e) => {
       const btn = e.target.closest(".mcard");
@@ -353,6 +360,7 @@ function viewPlay(stageId) {
       clearTimeout(swapTimer);
     };
 
+    const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
     let last = performance.now();
     const frame = (now) => {
       if (!alive || ended) return;
@@ -369,6 +377,21 @@ function viewPlay(stageId) {
       const mult = multOf(g);
       $("[data-combo]").textContent = mult > 1 ? `×${mult}` : "";
       $("[data-combobar]").style.width = `${Math.max(0, Math.min(100, (g.comboLeft / g.comboWindow) * 100))}%`;
+
+      if (!reduceMotion.matches) {
+        const sec = now / 1000;
+        for (const c of g.cards) {
+          if ((!c.faceUp && !c.matched) || c.kind !== "saint") continue;
+          const p = portraits.get(c.saintId);
+          if (!p || p.frames.length < 2) continue;
+          const k = Math.floor(sec * p.fps) % p.frames.length;
+          const img = cardEls.get(c.id)?.querySelector(".saint-vox");
+          if (img && img.dataset.frame !== String(k)) {
+            img.dataset.frame = String(k);
+            img.src = p.frames[k];
+          }
+        }
+      }
 
       boardEl.classList.toggle("peeking", g.phase === "peek");
       boardEl.classList.toggle("feast-rush", g.rushLeft > 0);

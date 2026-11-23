@@ -222,8 +222,9 @@ export const CHECKLISTS = [
   },
   {
     id: "saints-match-apostles", title: "Saints Match: the Apostles", game: "Saints Match",
-    note: "Standing front-facing saint cards (idle only — no walk poses needed!). Until each saint is drawn, the game puts a halo behind recolored voxel people.",
+    note: "Standing front-facing saint cards (idle only — multi-frame .vox models idle right on their cards!). Make saint-halo once and the game floats it above every saint's head instead of the stand-in ring.",
     items: [
+      p("saint-halo", "Saint halo", "Floating golden halo worn above every saint's head — make this once and all 36 saints use it instead of the stand-in ring!"),
       p("saint-peter-idle", "St. Peter", "Yellow and blue cloak, white hair/beard, holding golden keys."),
       p("saint-paul-idle", "St. Paul", "Red cloak, dark beard, holding a small sword and book."),
       p("saint-andrew-idle", "St. Andrew", "Blue fisherman robe, X-shaped cross."),

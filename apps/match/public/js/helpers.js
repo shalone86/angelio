@@ -25,7 +25,7 @@ export const HELPERS = [
   {
     id: "chrysostom", name: "St. John Chrysostom", icon: "🐝", saintId: "chrysostom", sex: "m",
     opens: { stage: "eastern", stars: 2 },
-    symbolBonus: 60, peekBonus: -0.5,
+    symbolBonus: 4, peekBonus: -0.5,
     blurb: "Bonus points on every Saint-and-Sign match, with a shorter starting peek.",
     say: "St. John Chrysostom loves smart Saint-and-Sign matches! Extra points, with a shorter peek.",
   },
