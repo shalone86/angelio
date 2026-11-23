@@ -23,7 +23,7 @@ const SIZE = { man: 1.12, woman: 1.1, grandfather: 1.08, grandmother: 1.06, chil
 const ROBES = { monk: "#5a4030" };
 
 /** Every model the game asks for (whichever exist are used; his boy and girl stand in for the rest). */
-export const MODELS = ["porter-idle", "porter-walk", "monk-idle", "monk-walk", ...ANIMALS.flatMap((a) => [`${a}-idle`, `${a}-walk`]),
+export const MODELS = ["porter-idle", "porter-walk", "monk-idle", "monk-walk", "nun-idle", "nun-walk", ...ANIMALS.flatMap((a) => [`${a}-idle`, `${a}-walk`]),
   ...["man-beard", ...KINDS].flatMap((k) => [`${k}-walk`, `${k}-idle`]),
   ...VISITORS.filter((v) => !ANIMALS.includes(v.kind)).flatMap((v) => [`${v.id}-idle`, `${v.id}-walk`])]; // (any visitor can have a character of their own: bishop-walk…)
 
@@ -213,7 +213,7 @@ export function createGate(canvas, { models = {}, night = false, porter: who = {
   // you: the porter, just inside the gate, watching the door
   // (the six unlockable porters, porters.js: a nun is a woman in a habit and veil of her color; the old brother has gray hair)
   const nun = /^(sister|bell|respected)$/.test(who.id);
-  const porter = actor(peoplePoses(nun ? "woman" : who.id === "old" ? "grandfather" : "man", [who.model ?? "porter"]), { ...robed(who.robe), hair: nun ? who.robe : who.id === "old" ? "#d8d4cc" : "#2e1d12" }, 1.2, who.robe);
+  const porter = actor(peoplePoses(nun ? "woman" : who.id === "old" ? "grandfather" : "man", [who.model ?? "porter", nun ? "nun" : "monk"]), { ...robed(who.robe), hair: nun ? who.robe : who.id === "old" ? "#d8d4cc" : "#2e1d12" }, 1.2, who.robe);
   porter.place(PORTER_AT.x, PORTER_AT.z, "idle", Math.PI);
   // Brother with the Dog: his big dog sits beside him, and runs to the gate when an animal comes
   const dogHome = { x: PORTER_AT.x + 5, z: PORTER_AT.z + 3 };
@@ -254,8 +254,15 @@ export function createGate(canvas, { models = {}, night = false, porter: who = {
   const OUT_EXIT = { garden: { x: -28, z: -38 }, bakery: { x: 14, z: -72 }, tower: { x: 28, z: -30 } };
   function makeVisitor(v) {
     const animal = ANIMALS.includes(v.kind);
+    const extra = v.def === "mother" ? [v.def, "nun"]
+      : v.def === "abbot" ? [v.def, "monk"]
+      : [v.def, ...(v.robe ? ["monk"] : []), ...(v.kind === "man" && hasBeard() && Math.random() < 0.5 ? ["man-beard"] : [])];
+    const look = v.def === "mother" ? { ...robed("#2b2830"), hair: "#2b2830" }
+      : v.def === "abbot" ? { ...robed("#2b2830"), hair: "#d8d4cc" }
+      : v.robe ? robed(v.robe)
+      : randomLook(Math.random, { older: /grand/.test(v.kind), clothes: true });
     const a = animal ? actor({ walk: [`${v.kind}-walk`], idle: [`${v.kind}-idle`, `${v.kind}-walk`] }, randomLook(), 1.05, "#f1ece0", () => critter(v.kind))
-      : actor(peoplePoses(v.kind, [v.def, ...(v.robe ? ["monk"] : []), ...(v.kind === "man" && hasBeard() && Math.random() < 0.5 ? ["man-beard"] : [])]), v.robe ? robed(v.robe) : randomLook(Math.random, { older: /grand/.test(v.kind), clothes: true }), SIZE[v.kind] ?? 1, "#7d8a96");
+      : actor(peoplePoses(v.kind, extra), look, SIZE[v.kind] ?? 1, "#7d8a96");
     if (animal) a.g.scale.setScalar(1.05 * (a.poses.walk.userData.scale ?? 1));
     if (who.glow && (v.answer === "in" || v.answer === "greet")) { const halo = new THREE.Sprite(haloMat()); halo.position.set(0, 6, 0); halo.scale.set(9, 9, 1); halo.userData.glow = true; a.g.add(halo); } // Sister Portress sees who belongs
     a.place(-1.8 - Math.random() * 1.5, SPAWN_Z, "walk", 0);

@@ -157,18 +157,21 @@ export const CHECKLISTS = [
   },
   {
     id: "monastery-porter-people", title: "Monastery Porter: people", game: "Monastery Porter",
-    note: "You're the porter, keeping the monastery gate. Visitors come up the path and knock. The porter and Brother Francis wear robes in your marker colors (shirt and dress = the robe, belt = the rope); the visitors are your usual people (man, man-beard for bearded men, woman, grandfather, grandmother, child, child-girl), each walking and standing, in their own colors. Visitors use the same people as Candle Rack's and Mass Usher's lists (the -walk and -idle poses): the peddler, the repairman, the visiting abbot, the lost child. Until a pose is made, the boy and girl stand in.",
+    note: "You're the porter, keeping the monastery gate. Visitors come up the path and knock. Monk, Nun and Bishop cover almost everyone: paint Monk and Nun in marker colors (shirt/dress = habit, belt = rope, and for Nun hair = veil) and the game recolors them for every brother, sister, Mother Abbess, the visiting abbot, and all seven porters! Regular visitors are your usual people (man, man-beard for bearded men, woman, grandfather, grandmother, child, child-girl).",
     items: [
-      p("porter-idle", "Porter, standing", "Watching the door from just inside the gate (seen from above and behind). Until made: the boy in a black robe."),
+      p("monk-idle", "Monk, standing", "Hooded habit in marker colors (shirt/dress = habit, belt = rope): covers Brother Francis, Brother Thomas, outgoing brothers, the visiting abbot, and all monk porters."),
+      p("monk-walk", "Monk, walking"),
+      p("nun-idle", "Nun, standing", "Habit, wimple and veil in marker colors (shirt/dress = habit, hair = veil): covers Mother Abbess and all three nun porters."),
+      p("nun-walk", "Nun, walking"),
+      p("bishop-idle", "The bishop, standing", "Purple robe/cassock, pectoral cross, and mitre (hat)."),
+      p("bishop-walk", "The bishop, walking"),
+      p("porter-idle", "Porter, standing", "Optional once Monk is made: watching the gate from inside."),
       p("porter-walk", "Porter, walking"),
-      p("monk-idle", "Brother Francis (a monk), standing", "A brother coming back from the garden: a brown robe."),
-      p("monk-walk", "Brother Francis, walking"),
-
     ],
   },
   {
     id: "monastery-porter-porters", title: "Monastery Porter: the porters", game: "Monastery Porter",
-    note: "Three monks and three nuns you can play as, each opening with stars (Brother André and the old brother and the brother with the dog; Sister Portress, Sister with the Bell and the Respected Sister). Each stands and walks, facing the front like your people; robes and veils are in your marker colors (shirt and dress = the habit, hair = the veil). Until a pose is made the game paints a robe on your boy or girl. Brother with the Dog also needs his dog: dog-idle and dog-walk, on the animals list.",
+    note: "Optional bespoke poses for the three monks and three nuns you can play as, each opening with stars (Brother André, Old Brother Porter, Brother with the Dog; Sister Portress, Sister with the Bell, Respected Sister). Once Monk and Nun are made, the game recolors those for all six automatically! Only draw these if you want custom props (dog leash, hand bell, cross on a chain). Brother with the Dog also needs dog-idle and dog-walk on the animals list.",
     items: [
       p("porter-andre-idle", "Brother André, standing", "The kind porter saint (St. André Bessette): a brown habit, a gentle face."), p("porter-andre-walk", "Brother André, walking"),
       p("porter-old-idle", "Old Brother Porter, standing", "White hair and a beard, a little stooped."), p("porter-old-walk", "Old Brother Porter, walking"),
@@ -196,9 +199,8 @@ export const CHECKLISTS = [
   },
   {
     id: "monastery-porter-special", title: "Monastery Porter: special visitors", game: "Monastery Porter",
-    note: "Any visitor can have a character of their own: name the files after them (bishop-idle, bishop-walk) and the game uses yours instead of the usual man or woman. These are the ones who deserve it most: the people who need a special greeting, and a few funny ones.",
+    note: "Optional extras: any visitor can have a character of their own (name the files after them, like mayor-idle / mayor-walk). Abbot and Mother Abbess already use Monk and Nun until you make custom ones.",
     items: [
-      p("bishop-idle", "The bishop, standing", "Purple, with a cross and a mitre."), p("bishop-walk", "The bishop, walking"),
       p("abbot-idle", "The visiting abbot, standing"), p("abbot-walk", "The visiting abbot, walking"),
       p("mayor-idle", "The mayor, standing", "A sash across the chest."), p("mayor-walk", "The mayor, walking"),
       p("mother-idle", "Mother Abbess, standing", "A habit and a veil."), p("mother-walk", "Mother Abbess, walking"),
