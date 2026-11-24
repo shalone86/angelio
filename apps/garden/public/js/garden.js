@@ -97,7 +97,7 @@ export const multOf = (g) => Math.min(4, 1 + Math.floor(g.streak / 4));
 export function starsFor(g) {
   if (g.score >= g.stage.star3) return 3;
   if (g.score >= g.stage.star2) return 2;
-  if (g.score >= (g.stage.star1 ?? 100)) return 1;
+  if (g.score >= (g.stage.star1 ?? 150)) return 1;
   return 0;
 }
 

@@ -152,7 +152,7 @@ Code: [`apps/garden/`](../apps/garden/) · Developer README: [`apps/garden/READM
   - **Harvest Food Bank baskets:** Tap ripe produce (Carrots, Tomatoes, Celery, Apples, Pears, Basil, Mint) matching an open Food Bank card. Completing a basket dispatches one of **2 helper monks/sisters** down the path to the cart.
   - **Watch the order freshness:** Completed orders earn fresh bonus points while young, and tick negative if kept overdue.
   - **Solid orchard trees:** Trees have collision clearance (`TREE_COLLIDER_R = 4.4`) so characters walk around trunks smoothly instead of clipping inside.
-- **Stages (0:45 timed + Endless Harvest) & Star Targets (`100 / 200 / 300` across every timed stage):**
+- **Stages (0:45 timed + Endless Harvest) & Star Targets (`150 / 250 / 425` across every stage):**
   1. **The Garden** (45 s) — Vegetable beds (Carrots, Tomatoes, Celery), bugs & birds.
   2. **The Orchard** (45 s, 2★ on Garden) — Adds Apple & Pear trees plus 2-tap squirrels.
   3. **The Herb Garden** (45 s, 2★ on Orchard) — Adds Basil & Mint planters plus larger 3-item Food Bank orders.

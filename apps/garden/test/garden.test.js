@@ -7,19 +7,19 @@ import { GARDENERS, gardenerById, gardenerOpen } from "../public/js/gardeners.js
 import { newGame, tick, tapSpot, tapPest, orderReward, starsFor, timeLeft } from "../public/js/garden.js";
 import { stepWithCollisions, clearTarget, TREE_COLLIDER_R } from "../public/js/plot.js";
 
-test("four 45s stages + Endless Harvest, 100/200/300 stars, plus Brother/Sister starters and 2-monk / 2-nun unlocks", () => {
+test("four 45s stages + Endless Harvest, 150/250/425 stars, plus Brother/Sister starters and 2-monk / 2-nun unlocks", () => {
   assert.equal(STAGES.length, 5);
   const timed = STAGES.filter((st) => !st.endless);
   const endless = STAGES.find((st) => st.endless);
   assert.equal(timed.length, 4);
   for (const st of timed) assert.equal(st.length, 45);
   for (const st of STAGES) {
-    assert.equal(st.star1, 100);
-    assert.equal(st.star2, 200);
-    assert.equal(st.star3, 300);
+    assert.equal(st.star1, 150);
+    assert.equal(st.star2, 250);
+    assert.equal(st.star3, 425);
   }
   const g = newGame({ seed: 1, stage: STAGES[0], gardener: gardenerById("brother") });
-  for (const [score, want] of [[0, 0], [99, 0], [100, 1], [199, 1], [200, 2], [299, 2], [300, 3]]) {
+  for (const [score, want] of [[0, 0], [149, 0], [150, 1], [249, 1], [250, 2], [424, 2], [425, 3]]) {
     g.score = score;
     assert.equal(starsFor(g), want, `score ${score} -> ${want}★`);
   }
@@ -262,7 +262,7 @@ test("pretend players: every stage (including Endless) terminates and separates 
   const bro = gardenerById("brother");
   for (const st of STAGES) {
     const idle = play(st, 999, false, bro, 1);
-    const steady = play(st, 1.5, false, bro, 2);
+    const steady = play(st, 1.2, false, bro, 2);
     const quick = play(st, 0.7, true, bro, 3);
     assert.equal(idle.over, true, `${st.id} idle ends`);
     assert.equal(steady.over, true, `${st.id} steady ends`);
