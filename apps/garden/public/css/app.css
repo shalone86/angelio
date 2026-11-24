@@ -7,6 +7,7 @@
 .stage { display: grid; gap: 4px; justify-items: center; text-align: center; text-decoration: none; color: var(--text); padding: 16px 14px; }
 .stage.night { background: linear-gradient(160deg, #273647, #1c2734); color: #f6f0dc; border: 2px solid #516a87; }
 .stage.night .muted { color: #c7d2de; }
+.stage.endless { border: 2px solid #e3b341; background: linear-gradient(160deg, #fffdf4, #fff5d6); }
 .stage b { font: 800 1.18rem var(--font-display); }
 .stage-icon { font-size: 2.2rem; line-height: 1; }
 .stage-stars { color: #d9a400; font-weight: 800; letter-spacing: .05em; }
@@ -41,7 +42,15 @@ body.garden-game .topbar { display: none; }
 .garden-play .clock-label { font-size: .85rem; font-weight: 700; opacity: .78; margin-right: 4px; }
 .garden-play .score .streak { margin-left: 6px; color: #c98600; font-weight: 900; }
 
+.eaten-meter { position: absolute; left: 50%; transform: translateX(-50%); top: calc(56px + env(safe-area-inset-top)); display: flex; align-items: center; gap: 3px;
+  padding: 4px 10px; border-radius: 99px; background: rgb(255 248 235 / .94); color: #2b2416; box-shadow: 0 2px 0 rgb(0 0 0 / .2); pointer-events: none; z-index: 4; white-space: nowrap; font-weight: 800; font-size: .88rem; }
+.eaten-meter span:first-child { margin-right: 4px; }
+.eaten-meter i { width: 10px; height: 14px; border-radius: 3px; background: rgb(0 0 0 / .12); }
+.eaten-meter i.on { background: #e69d24; }
+.eaten-meter.danger i.on { background: #e0453f; animation: warnPulse .7s ease-in-out infinite; }
+.eaten-meter .wave-tag { margin-left: 6px; padding-left: 6px; border-left: 1px solid rgb(0 0 0 / .15); color: #366e2a; }
 .orders-bar { position: absolute; left: 50%; transform: translateX(-50%); top: calc(56px + env(safe-area-inset-top)); display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; max-width: 96vw; z-index: 4; pointer-events: none; }
+.eaten-meter ~ .orders-bar { top: calc(92px + env(safe-area-inset-top)); }
 .order-card { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 8px; min-width: 112px; padding: 5px 10px; border-radius: 14px; background: rgb(255 251 240 / .96); color: #2b2416; border: 2px solid #d4be8a; box-shadow: 0 3px 0 rgb(0 0 0 / .22); }
 .order-card.hurry { border-color: #e69d24; background: #fff4d6; }
 .order-card.late { border-color: #e0453f; background: #ffe4e2; animation: warnPulse .7s ease-in-out infinite; }
@@ -79,7 +88,9 @@ body.garden-game .topbar { display: none; }
 /* Landscape phone layout: orders & speech bubble fit in a right column */
 @media (orientation: landscape) and (max-height: 520px) {
   .garden-play canvas.plot { right: auto; width: calc(100% - 252px); }
+  .eaten-meter { left: calc(50% - 126px); }
   .orders-bar { left: auto; right: 8px; transform: none; top: 52px; width: 236px; flex-direction: column; align-items: stretch; }
+  .eaten-meter ~ .orders-bar { top: 52px; }
   .garden-play .garden-bubble { position: fixed; left: auto; right: 0; margin: 0; top: auto; bottom: 8px; width: 248px; }
   .garden-play .clock, .garden-play .score { font-size: 1rem; padding: 3px 10px; }
 }
@@ -89,7 +100,7 @@ body.garden-game .topbar { display: none; }
 @keyframes warnPulse { 50% { opacity: .8; } }
 @keyframes popup { to { transform: translate(-50%, -165%); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) {
-  .gpin, .order-card.late, .pop { animation: none; }
+  .gpin, .order-card.late, .eaten-meter.danger i.on, .pop { animation: none; }
 }
 
 /* Back to Angelio (angelio.org) and to all the games (angelio.org/games/), at the left of the top bar. */

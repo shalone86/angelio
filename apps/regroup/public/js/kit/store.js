@@ -57,13 +57,12 @@ export const stickers = () => state.stickers.map((s) =>
 export const solved = () => state.solved;
 export function solvedOne() { state.solved++; save(); }
 
-/** Record a finished level (keeps the best stars). Returns the sticker if one was earned. */
 /**
- * Record a finished level (keeps the best stars) and its sticker: one per level, giant when the
- * level had no mistakes (`big`), mini otherwise; a mini one grows when the level is perfect later.
- * Returns { e, big, isNew, grew }.
+ * Record a finished level (keeps the best stars) and its sticker: one per level, giant when `big`
+ * (or 3 stars), mini otherwise; pass `sticker = null` when the round did not earn one.
+ * Returns { e, big, isNew, grew, first }.
  */
-export function finishLevel(id, stars, sticker, big = stars === 3) {
+export function finishLevel(id, stars, sticker = null, big = stars >= 3) {
   const p = (state.levels[id] ??= { plays: 0, done: 0, stars: 0 });
   const first = !p.done;
   p.plays++;
@@ -72,10 +71,10 @@ export function finishLevel(id, stars, sticker, big = stars === 3) {
   p.at = Date.now();
   let entry = state.stickers.find((s) => s && typeof s === "object" && s.id === id);
   let isNew = false, grew = false;
-  if (!entry) { entry = { e: sticker, big: !!big, id }; state.stickers.push(entry); isNew = true; }
-  else if (big && !entry.big) { entry.big = true; grew = true; }
+  if (!entry && sticker) { entry = { e: sticker, big: !!big, id }; state.stickers.push(entry); isNew = true; }
+  else if (entry && big && !entry.big) { entry.big = true; grew = true; }
   save();
-  shareSticker(KEY.split(":")[0], id, entry.e, entry.big);
-  return { e: entry.e, big: entry.big, isNew, grew, first };
+  if (entry) shareSticker(KEY.split(":")[0], id, entry.e, entry.big);
+  return entry ? { e: entry.e, big: entry.big, isNew, grew, first } : { e: null, big: false, isNew: false, grew: false, first };
 }
 export function resetProgress() { state.levels = {}; state.stickers = []; state.solved = 0; save(); }

@@ -25,3 +25,24 @@ test("one sticker per level: mini with mistakes, grows giant after a perfect rep
   assert.deepEqual(JSON.parse(mem["angelio:stickers"])["demo/a"].big, true);
   delete globalThis.localStorage;
 });
+
+test("finishLevel with null sticker (0–1★ in games) earns no new sticker, keeps existing, and 3★ grows giant", async () => {
+  const mem = {};
+  globalThis.localStorage = { getItem: (k) => mem[k] ?? null, setItem: (k, v) => { mem[k] = String(v); } };
+  const S = await import("../public/js/kit/store.js?bystars");
+  S.init("demo:v1");
+  let r = S.finishLevel("s1", 1, null, false);
+  assert.deepEqual([r.e, r.big, r.isNew, r.grew], [null, false, false, false]);
+  assert.equal(S.stickers().length, 0);
+
+  r = S.finishLevel("s1", 2, "🌟", false);
+  assert.deepEqual([r.e, r.big, r.isNew, r.grew], ["🌟", false, true, false]);
+
+  r = S.finishLevel("s1", 1, null, false);
+  assert.deepEqual([r.e, r.big, r.isNew, r.grew], ["🌟", false, false, false]);
+
+  r = S.finishLevel("s1", 3, "🦄");
+  assert.deepEqual([r.e, r.big, r.isNew, r.grew], ["🌟", true, false, true]);
+  assert.equal(S.stickers().length, 1);
+  delete globalThis.localStorage;
+});

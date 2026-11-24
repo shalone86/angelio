@@ -59,7 +59,7 @@ function viewHome() {
               <span class="muted">Get two stars in ${esc(STAGES[i - 1].name)} to open it.</span></div>`;
       }).join("")}
     </section>
-    ${stickerBook()}
+    ${stickerBook({ byStars: true })}
     ${gamesLink}`;
   speak(`${season.say} Mass starts soon. Can you get the church ready? Pick a church.`);
 }
@@ -307,7 +307,7 @@ function viewPlay(stageId) {
       document.body.classList.remove("candle-game"); // the finish screen scrolls like any page
       const nextStage = STAGES[si + 1], opens = nextStage && Math.max(stars, starsOf(stage)) >= 2;
       showFinish(app, {
-        id: progressId(stage), stars, mistakes: 3 - stars, title: newBest ? "A new best!" : stage.endless ? "What a night!" : "The church is ready!",
+        id: progressId(stage), stars, mistakes: 0, byStars: true, title: newBest ? "A new best!" : stage.endless ? "What a night!" : "The church is ready!",
         done: `You scored ${g.score}.`, again: `#/play/${stage.id}`, onAgain: route,
         next: opens ? { href: `#/play/${nextStage.id}`, label: `${nextStage.icon} ${nextStage.name}` } : null,
       });

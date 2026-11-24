@@ -69,7 +69,7 @@ function viewHome() {
           : `<div class="porter-pick card locked" aria-disabled="true"><span class="stage-icon">🔒</span><b>${esc(p.name)}</b><span class="muted">Get ${p.opens.stars === 3 ? "three" : "two"} stars in ${esc(stageById(p.opens.stage).name)} to meet ${p.nun ? "her" : "him"}.</span></div>`;
       }).join("")}
     </section>
-    ${stickerBook()}
+    ${stickerBook({ byStars: true })}
     ${gamesLink}`;
   app.querySelectorAll("[data-porter]").forEach((b) => b.addEventListener("click", () => { const p = porterById(b.dataset.porter); S.setSetting("porter", p.id); viewHome(); speak(p.say); }));
   speak("Someone is knocking at the monastery gate! Can you keep the gate? Pick a day.");
@@ -326,7 +326,7 @@ function viewPlay(stageId) {
       cancelAnimationFrame(raf); gate.dispose(); gate = null; stopListeners();
       document.body.classList.remove("porter-game");
       const next = STAGES[si + 1], opens = next && !next.endless && Math.max(stars, starsOf(stage)) >= 2;
-      showFinish(app, { id: progressId(stage), stars, mistakes: g.wrong, title: newBest ? "A new best!" : stage.endless ? "What a feast day!" : "The gate is kept!",
+      showFinish(app, { id: progressId(stage), stars, mistakes: g.wrong, byStars: true, title: newBest ? "A new best!" : stage.endless ? "What a feast day!" : "The gate is kept!",
         done: `You scored ${score}.`, again: `#/play/${stage.id}`, onAgain: route, next: opens ? { href: `#/play/${next.id}`, label: `${next.icon} ${next.name}` } : null });
       const fresh = PORTERS.filter((p) => porterOpen(p, starsFor2) && !unlockedBefore.has(p.id));
       if (fresh.length) app.querySelector(".finish h1")?.insertAdjacentHTML("afterend", `<p class="final-score">🎉 You can play as ${fresh.map((p) => `<b>${esc(p.name)}</b>`).join(" and ")} now!</p>`);

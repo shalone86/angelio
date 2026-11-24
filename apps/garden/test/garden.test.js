@@ -6,12 +6,15 @@ import { STAGES, stageById, isOpen } from "../public/js/stages.js";
 import { GARDENERS, gardenerById, gardenerOpen } from "../public/js/gardeners.js";
 import { newGame, tick, tapSpot, tapPest, orderReward, starsFor, timeLeft } from "../public/js/garden.js";
 
-test("four 60s stages with no endless mode, plus Brother/Sister starters and 2-monk / 2-nun unlocks", () => {
-  assert.equal(STAGES.length, 4);
-  for (const st of STAGES) {
-    assert.equal(st.length, 60);
-    assert.ok(!st.endless);
-  }
+test("four 45s stages + Endless Harvest, plus Brother/Sister starters and 2-monk / 2-nun unlocks", () => {
+  assert.equal(STAGES.length, 5);
+  const timed = STAGES.filter((st) => !st.endless);
+  const endless = STAGES.find((st) => st.endless);
+  assert.equal(timed.length, 4);
+  for (const st of timed) assert.equal(st.length, 45);
+  assert.equal(endless.id, "endless");
+  assert.equal(endless.length, Infinity);
+  assert.equal(endless.maxEaten, 10);
   assert.equal(GARDENERS.length, 6);
   const starters = GARDENERS.filter((g) => !g.opens);
   const unlocks = GARDENERS.filter((g) => g.opens);
@@ -92,7 +95,7 @@ test("orders fill when matching ripe produce is tapped, auto-deliver, decay to 0
   assert.ok(g.score < 100);
 });
 
-test("night vigil: zero orders, no picking, guard bonuses, ends cleanly at 60s", () => {
+test("night vigil: zero orders, no picking, guard bonuses, ends cleanly at 45s", () => {
   const g = newGame({ seed: 7, stage: stageById("vigil"), gardener: gardenerById("sister") });
   assert.equal(g.orders.length, 0);
   const spotEv = tapSpot(g, g.spots[0].id);
@@ -100,7 +103,32 @@ test("night vigil: zero orders, no picking, guard bonuses, ends cleanly at 60s",
   const bonuses = [];
   while (!g.over) bonuses.push(...tick(g, 0.25).filter((e) => e.type === "guard-bonus"));
   assert.equal(timeLeft(g), 0);
-  assert.ok(bonuses.length >= 5);
+  assert.ok(bonuses.length >= 4);
+});
+
+test("endless harvest: 30s wave escalation, eaten meter fills and ends stage cleanly", () => {
+  const st = stageById("endless");
+  const g = newGame({ seed: 11, stage: st, gardener: gardenerById("brother") });
+  assert.equal(g.wave, 1);
+  assert.equal(timeLeft(g), Infinity);
+  const waves = [];
+  for (let i = 0; i < 620 && !g.over; i++) {
+    waves.push(...tick(g, 0.1).filter((e) => e.type === "wave"));
+    if (i % 3 === 0 && g.pests.length) tapPest(g, g.pests[0].id);
+  }
+  assert.ok(!g.over && g.wave >= 3);
+  assert.ok(waves.some((e) => e.wave === 2) && waves.some((e) => e.wave === 3));
+
+  // Stop defending and let critters fill the eaten-produce meter
+  let endEv = null;
+  for (let i = 0; i < 600 && !g.over; i++) {
+    const ev = tick(g, 0.2).find((e) => e.type === "end");
+    if (ev) endEv = ev;
+  }
+  assert.equal(g.over, true);
+  assert.equal(g.endReason, "eaten");
+  assert.equal(g.eaten, st.maxEaten);
+  assert.equal(endEv?.reason, "eaten");
 });
 
 test("all four unlockable gardeners apply their distinct abilities", () => {
@@ -130,11 +158,11 @@ test("all four unlockable gardeners apply their distinct abilities", () => {
   assert.ok(grn.spots[0].growTime < b2.spots[0].growTime);
 });
 
-test("pretend players: every stage separates idle (<=1★), slow (>=2★), and quick (3★)", () => {
-  function play(stage, pause, pestFirst, seed) {
-    const g = newGame({ seed, stage, gardener: gardenerById("brother") });
+test("pretend players: every stage (including Endless) terminates and separates idle (<=1★), slow (>=2★), and quick (3★)", () => {
+  function play(stage, pause, pestFirst, gardener, seed) {
+    const g = newGame({ seed, stage, gardener });
     let wait = 0.5;
-    while (!g.over) {
+    while (!g.over && g.t < 400) {
       tick(g, 0.1);
       wait -= 0.1;
       if (wait > 0) continue;
@@ -155,13 +183,32 @@ test("pretend players: every stage separates idle (<=1★), slow (>=2★), and q
     return g;
   }
 
+  const bro = gardenerById("brother");
   for (const st of STAGES) {
-    const idle = play(st, 999, false, 1);
-    const slow = play(st, 2.3, false, 2);
-    const pro = play(st, 0.55, true, 3);
+    const idle = play(st, 999, false, bro, 1);
+    const slow = play(st, st.endless ? 2.0 : 2.3, false, bro, 2);
+    const pro = play(st, st.endless ? 0.50 : 0.55, true, bro, 3);
+    assert.equal(idle.over, true, `${st.id} idle ends`);
+    assert.equal(slow.over, true, `${st.id} slow ends`);
+    assert.equal(pro.over, true, `${st.id} pro ends`);
     assert.ok(starsFor(idle) <= 1, `${st.id} idle gets <=1★ (got ${idle.score})`);
     assert.ok(starsFor(slow) >= 2, `${st.id} slow player gets >=2★ (got ${slow.score} vs ${st.star2})`);
     assert.equal(starsFor(pro), 3, `${st.id} pro player earns 3★ (got ${pro.score} vs ${st.star3})`);
+  }
+
+  const endStage = stageById("endless");
+  for (const gd of [gardenerById("bugs"), gardenerById("green"), bro]) {
+    const pause = gd === bro ? 0.25 : 0.45;
+    const run = play(endStage, pause, true, gd, 4);
+    assert.equal(run.over, true, `endless ${gd.id} (${pause}s) eventually fills eaten meter`);
+  }
+});
+
+test("all 5 Angelio games use star-based stickers (3★ giant regardless of mistakes, 2★ mini)", () => {
+  for (const game of ["candles", "usher", "porter", "match", "garden"]) {
+    const src = fs.readFileSync(new URL(`../../${game}/public/js/app.js`, import.meta.url), "utf8");
+    assert.match(src, /stickerBook\(\s*\{\s*byStars:\s*true\s*\}\s*\)/, `${game} stickerBook uses byStars`);
+    assert.match(src, /showFinish\([\s\S]*?byStars:\s*true/, `${game} showFinish uses byStars`);
   }
 });
 

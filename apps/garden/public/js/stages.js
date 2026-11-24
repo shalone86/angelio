@@ -1,10 +1,10 @@
-// Stages in Garden Givers (apps/garden): four 1:30 stages, NO endless mode.
+// Stages in Garden Givers (apps/garden): four 45s timed stages + Endless Harvest.
 // Pure data: used by garden.js, plot.js, app.js and test/garden.test.js.
 
 export const STAGES = [
   {
     id: "garden", name: "The Garden", icon: "🥕", progress: "garden-garden",
-    length: 60, open: true, star2: 180, star3: 540,
+    length: 45, open: true, star2: 120, star3: 400,
     kinds: ["bed"], pests: ["bug", "bird"], pestEvery: [5.0, 3.1],
     maxOrders: 2, orderSizes: [1, 2], orderFresh: 18,
     blurb: "Shoo bugs and birds off carrots, tomatoes, and celery, and fill food bank orders fast!",
@@ -12,7 +12,7 @@ export const STAGES = [
   },
   {
     id: "orchard", name: "The Orchard", icon: "🍎", progress: "garden-orchard",
-    length: 60, after: "garden", star2: 140, star3: 580,
+    length: 45, after: "garden", star2: 95, star3: 420,
     kinds: ["bed", "tree"], pests: ["bug", "bird", "squirrel"], pestEvery: [4.3, 2.5],
     maxOrders: 2, orderSizes: [2, 3], orderFresh: 17,
     blurb: "Fruit trees join the garden! Watch for squirrels climbing for apples and pears.",
@@ -20,7 +20,7 @@ export const STAGES = [
   },
   {
     id: "herbs", name: "The Herb Garden", icon: "🌿", progress: "garden-herbs",
-    length: 60, after: "orchard", star2: 170, star3: 560,
+    length: 45, after: "orchard", star2: 80, star3: 460,
     kinds: ["bed", "tree", "herb"], pests: ["bug", "bird", "squirrel"], pestEvery: [3.8, 2.2],
     maxOrders: 3, orderSizes: [2, 3], orderFresh: 16,
     blurb: "Basil and mint planters open along the stone wall, with busy 3-item baskets!",
@@ -28,12 +28,21 @@ export const STAGES = [
   },
   {
     id: "vigil", name: "Night Vigil", icon: "🌙", progress: "garden-vigil",
-    length: 60, after: "herbs", star2: 260, star3: 850,
+    length: 45, after: "herbs", star2: 180, star3: 680,
     night: true, vigil: true,
     kinds: ["bed", "tree", "herb"], pests: ["bug", "bird", "squirrel", "raccoon"], pestEvery: [2.2, 1.0],
     maxOrders: 0, orderSizes: [0, 0], orderFresh: 0,
     blurb: "Lanterns glow at night! Protect every bed, tree, and herb until dawn — no deliveries tonight.",
     rule: "Watch the garden by lantern light and shoo every nighttime critter before dawn!",
+  },
+  {
+    id: "endless", name: "Endless Harvest", icon: "🌻", progress: "garden-endless",
+    length: Infinity, endless: true, after: "garden", maxEaten: 10, star2: 380, star3: 2400,
+    kinds: ["bed", "tree", "herb"], pests: ["bug", "bird", "squirrel", "raccoon"],
+    pestEvery: [2.7, 0.22],
+    maxOrders: 2, orderSizes: [1, 3], orderFresh: 18,
+    blurb: "Endless mode! More bugs and critters arrive every 30 seconds until the eaten-produce meter fills up.",
+    rule: "Defend the whole garden and fill orders! Every 30 seconds more critters arrive — don't let the eaten meter fill!",
   },
 ];
 

@@ -71,7 +71,7 @@ function viewHome() {
           : `<div class="helper-pick card locked" aria-disabled="true"><span class="stage-icon">🔒</span><b>${esc(h.name)}</b><span class="muted">Get two stars in ${esc(stageById(h.opens.stage).name)} to meet ${h.sex === "f" ? "her" : "him"}.</span></div>`;
       }).join("")}
     </section>
-    ${stickerBook()}
+    ${stickerBook({ byStars: true })}
     ${gamesLink}`;
   app.querySelectorAll("[data-helper]").forEach((b) => b.addEventListener("click", () => {
     const h = helperById(b.dataset.helper);
@@ -135,6 +135,7 @@ function viewPlay(stageId) {
       id: progressId(stage),
       stars,
       mistakes: g.wrong,
+      byStars: true,
       title: newBest ? "A new best!" : stage.endless ? "What a rush!" : "Well matched!",
       done: `You scored ${score}.`,
       again: `#/play/${stage.id}`,

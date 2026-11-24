@@ -68,7 +68,7 @@ function viewHome() {
           : `<div class="usher-pick card locked" aria-disabled="true"><span class="stage-icon">🔒</span><b>${esc(u.name)}</b><span class="muted">Get two stars in ${esc(stageById(u.opensAfter).name)} to meet them.</span></div>`;
       }).join("")}
     </section>
-    ${stickerBook()}
+    ${stickerBook({ byStars: true })}
     ${gamesLink}`;
   app.querySelectorAll("[data-usher]").forEach((b) => b.addEventListener("click", () => { const u = usherById(b.dataset.usher); S.setSetting("usher", u.id); viewHome(); speak(u.say); }));
   speak("Families are coming to Mass! Can you find everyone a seat? Pick a church.");
@@ -276,7 +276,7 @@ function viewPlay(stageId) {
       cancelAnimationFrame(raf); nave.dispose(); nave = null;
       document.body.classList.remove("usher-game");
       const nextStage = STAGES[si + 1], opens = nextStage && !nextStage.endless && Math.max(stars, starsOf(stage)) >= 2;
-      showFinish(app, { id: progressId(stage), stars, mistakes: 3 - stars, title: newBest ? "A new best!" : stage.endless ? "What a night!" : `Everyone's ready for ${service === "Liturgy" ? "the Liturgy" : "Mass"}!`,
+      showFinish(app, { id: progressId(stage), stars, mistakes: 0, byStars: true, title: newBest ? "A new best!" : stage.endless ? "What a night!" : `Everyone's ready for ${service === "Liturgy" ? "the Liturgy" : "Mass"}!`,
         done: `You scored ${g.score}.`, again: `#/play/${stage.id}`, onAgain: route, next: opens ? { href: `#/play/${nextStage.id}`, label: `${nextStage.icon} ${nextStage.name}` } : null });
       const fresh = USHERS.filter((u) => usherOpen(u, starsById) && !unlockedBefore.has(u.id));
       if (fresh.length) app.querySelector(".finish h1")?.insertAdjacentHTML("afterend", `<p class="final-score">🎉 You can play as ${fresh.map((u) => `<b>${esc(u.name)}</b>`).join(" and ")} now!</p>`);

@@ -74,47 +74,71 @@ export function markDot(root, k, helped) {
 }
 
 /**
- * Stars, the level's sticker, confetti and "play again / next". One sticker per level: giant
- * with no mistakes, mini otherwise; a mini sticker grows into a giant one after a perfect replay.
+ * Stars, the level's sticker, confetti and "play again / next". One sticker per level:
+ * when `byStars` is true, 3 stars earns a giant sticker (regardless of mistakes), 2 stars earns
+ * a mini sticker, and <2 stars earns no new sticker. Otherwise 0 mistakes (or 3 stars) makes it giant.
  */
-export function showFinish(app, { id, stars, mistakes, title, done, again, next, onAgain }) {
+export function showFinish(app, { id, stars, mistakes, title, done, again, next, onAgain, byStars = false }) {
   document.body.classList.remove("in-game");
-  const perfect = mistakes === 0;
-  const st = S.finishLevel(id, stars, pick(STICKERS), perfect);
+  const big = byStars ? stars >= 3 : (stars >= 3 || mistakes === 0);
+  const perfect = !byStars && mistakes === 0;
+  const earn = byStars && stars < 2 ? null : pick(STICKERS);
+  const st = S.finishLevel(id, stars, earn, big);
   sfx.fanfare();
-  confetti(perfect ? 100 : 45);
-  const line = st.grew ? "Your sticker grew into a GIANT sticker!"
-    : st.isNew && st.big ? "A giant sticker! No mistakes at all!"
-    : st.isNew ? "A mini sticker! Play again with no mistakes to make it giant."
-    : st.big ? (perfect ? "No mistakes at all. Wow!" : done)
-    : perfect ? "" : "No mistakes next time, and your mini sticker grows giant!";
+  confetti(big ? 100 : st.e ? 45 : 20);
+  const line = byStars
+    ? (!st.e ? "Get two stars for a mini sticker, or three stars for a giant one!"
+      : st.grew ? "Three stars! Your sticker grew into a GIANT sticker!"
+      : st.isNew && st.big ? "Three stars! You earned a giant sticker!"
+      : st.isNew ? "Two stars! A mini sticker! Get three stars next time to make it giant."
+      : st.big ? (big ? "Three stars! Awesome job!" : done)
+      : "Get three stars next time, and your mini sticker grows giant!")
+    : (st.grew ? "Your sticker grew into a GIANT sticker!"
+      : st.isNew && st.big ? (perfect ? "A giant sticker! No mistakes at all!" : "Three stars! You earned a giant sticker!")
+      : st.isNew ? "A mini sticker! Play again with no mistakes to make it giant."
+      : st.big ? (perfect ? "No mistakes at all. Wow!" : done)
+      : perfect ? "" : "No mistakes next time, and your mini sticker grows giant!");
   const label = st.grew ? "It grew! 🌟" : st.isNew ? (st.big ? "Giant sticker!" : "Mini sticker!") : st.big ? "Your giant sticker" : "Your mini sticker";
+  const heading = byStars
+    ? (big ? vary("threeStars", ["Three stars!", "Super star!", "Amazing!"]) : title)
+    : (perfect ? vary("perfect", ["Perfect!", "No mistakes!", "Super star!"]) : title);
+  const againLabel = st.big ? "Play again" : st.e ? "Try for giant!" : "Try again!";
+  const spokenLine = byStars
+    ? (!st.e ? "Good try! Get two stars for a mini sticker, or three stars for a giant one!"
+      : st.grew ? "Wow! Three stars! Your sticker grew into a giant sticker!"
+      : st.isNew && st.big ? vary("giantStars", ["Three stars! You earned a giant sticker!", "Super star! Here's a giant sticker!"])
+      : st.isNew ? vary("miniStars", ["Two stars! You got a mini sticker. Get three stars next time to make it giant!", "Nice work! Here's a mini sticker. Three stars next time makes it giant!"])
+      : big ? "Three stars! Awesome job!" : stars >= 2 ? "Two stars! Three stars next time makes your sticker giant!" : "Good try!")
+    : (st.grew ? "Wow! Your sticker grew into a giant sticker!"
+      : st.isNew && st.big ? vary("giant", ["You did it with no mistakes! You got a giant sticker!", "Perfect! Here's a giant sticker!"])
+      : st.isNew ? vary("mini", ["You did it! You got a mini sticker. Play again with no mistakes to make it giant!", "Nice work! Here's a mini sticker. No mistakes next time makes it giant!"])
+      : perfect ? "You did it! No mistakes!" : "You did it!");
   app.innerHTML = `
     <section class="finish">
       <div class="big-stars">${starsHtml(stars)}</div>
-      <h1>${perfect ? vary("perfect", ["Perfect!", "No mistakes!", "Super star!"]) : title}</h1>
-      <p class="new-sticker ${st.big ? "big-sticker" : "mini-sticker"}${st.grew ? " grew" : ""}"><span>${stickerHtml(st.e)}</span><br>${label}</p>
+      <h1>${heading}</h1>
+      ${st.e ? `<p class="new-sticker ${st.big ? "big-sticker" : "mini-sticker"}${st.grew ? " grew" : ""}"><span>${stickerHtml(st.e)}</span><br>${label}</p>` : ""}
       ${line ? `<p class="muted">${esc(line)}</p>` : ""}
       <div class="row center">
-        <a class="btn big${st.big ? "" : " primary"}" href="${again}" data-again>🔁 ${st.big ? "Play again" : "Try for giant!"}</a>
+        <a class="btn big${st.big ? "" : " primary"}" href="${again}" data-again>🔁 ${againLabel}</a>
         <a class="btn big" href="#/">🏠 Home</a>
         ${next ? `<a class="btn big${st.big ? " primary" : ""}" href="${next.href}">${next.label}</a>` : ""}
       </div>
       <p class="finish-links" style="display:flex;flex-wrap:wrap;justify-content:center;align-items:stretch;gap:10px"><a class="btn world-link" href="https://angelio.org/"><img src="https://angelio.org/icon.svg" alt="" width="22" height="22" style="vertical-align:-5px;border-radius:6px"> All Angelio games</a>${STICKER_WORLD ? ` <a class="btn world-link" href="${STICKER_WORLD}">🌍 Sticker World</a>` : ""}</p>
     </section>`;
-  speak(st.grew ? "Wow! Your sticker grew into a giant sticker!"
-    : st.isNew && st.big ? vary("giant", ["You did it with no mistakes! You got a giant sticker!", "Perfect! Here's a giant sticker!"])
-    : st.isNew ? vary("mini", ["You did it! You got a mini sticker. Play again with no mistakes to make it giant!", "Nice work! Here's a mini sticker. No mistakes next time makes it giant!"])
-    : perfect ? "You did it! No mistakes!" : "You did it!");
+  speak(spokenLine);
   if (onAgain) app.querySelector("[data-again]").onclick = (e) => { e.preventDefault(); onAgain(); };
 }
 
-export function stickerBook() {
+export function stickerBook({ byStars = false } = {}) {
   const st = S.stickers();
+  const emptyHint = byStars
+    ? "Get two stars on a stage for a mini sticker, or three stars for a giant one!"
+    : "Finish a level to get your first sticker! No mistakes makes it a giant one.";
   return `<section class="sticker-book">
       <h2>My stickers <small>${S.solved()} solved</small></h2>
       ${st.length ? `<div class="stickers">${st.map((s) => `<span class="${s.big ? "big" : "mini"}" title="${s.big ? "giant" : "mini"} sticker">${stickerHtml(s.e)}</span>`).join("")}</div>`
-        : `<p class="muted small">Finish a level to get your first sticker! No mistakes makes it a giant one.</p>`}
+        : `<p class="muted small">${emptyHint}</p>`}
       ${STICKER_WORLD && st.length ? `<a class="btn world-link" href="${STICKER_WORLD}">🌍 Play in Sticker World</a>` : ""}
     </section>`;
 }

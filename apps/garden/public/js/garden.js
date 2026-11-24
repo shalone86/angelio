@@ -62,8 +62,10 @@ export function newGame({ seed = 1, stage = stageById("garden"), gardener = gard
     gardener,
     r: rng(seed),
     t: 0,
-    length: stage.length ?? 60,
+    length: stage.endless ? Infinity : (stage.length ?? 45),
     over: false,
+    endReason: null,
+    wave: 1,
     score: 0,
     spots,
     pests: [],
@@ -90,7 +92,7 @@ export function newGame({ seed = 1, stage = stageById("garden"), gardener = gard
   return g;
 }
 
-export const timeLeft = (g) => Math.max(0, g.length - g.t);
+export const timeLeft = (g) => (g.stage.endless ? Infinity : Math.max(0, g.length - g.t));
 export const multOf = (g) => Math.min(4, 1 + Math.floor(g.streak / 4));
 export function starsFor(g) {
   if (g.score >= g.stage.star3) return 3;
@@ -101,12 +103,14 @@ export function starsFor(g) {
 function spawnPest(g, events) {
   const busy = new Set(g.pests.map((p) => p.spotId));
   const pool = g.stage.pests.map(pestById);
-  const free = g.spots.filter((s) => !busy.has(s.id) && (g.stage.vigil || s.ripe || g.r() < 0.35));
+  let free = g.spots.filter((s) => !busy.has(s.id) && (g.stage.vigil || s.ripe || g.r() < (g.stage.endless ? 0.5 : 0.35)));
+  if (!free.length && g.stage.endless) free = g.spots.filter((s) => !busy.has(s.id));
   if (!free.length) return;
   const targetSpot = free[Math.floor(g.r() * free.length)];
   const allowed = pool.filter((p) => p.targets.includes(targetSpot.kind));
   const kind = (allowed.length ? allowed : pool)[Math.floor(g.r() * (allowed.length || pool.length))];
-  const stay = kind.eatTime * (g.gardener.pestStay ?? 1);
+  const eatScale = g.stage.endless ? Math.max(0.55, 1 - (g.wave - 1) * 0.06) : 1;
+  const stay = kind.eatTime * eatScale * (g.gardener.pestStay ?? 1);
   const pest = {
     id: ++g.pestIds,
     type: kind.id,
@@ -129,6 +133,15 @@ export function tick(g, dt) {
   const events = [];
   if (g.over || dt <= 0) return events;
   g.t += dt;
+
+  // Endless Harvest ramps every 30 seconds with bigger critter waves.
+  if (g.stage.endless) {
+    const nextWave = 1 + Math.floor(g.t / 30);
+    if (nextWave > g.wave) {
+      g.wave = nextWave;
+      events.push({ type: "wave", wave: g.wave });
+    }
+  }
 
   // Regrow picked spots.
   for (const s of g.spots) {
@@ -162,17 +175,32 @@ export function tick(g, dt) {
       g.streak = 0;
       g.wrong += 1;
       events.push({ type: "eat", pest: p, spot: sp });
+      if (g.stage.endless && g.eaten >= (g.stage.maxEaten ?? 10)) {
+        g.over = true;
+        g.endReason = "eaten";
+        events.push({ type: "end", reason: "eaten" });
+        return events;
+      }
     }
   }
 
-  // Spawn pests (pacing ramps gently from pestEvery[0] down to pestEvery[1]).
+  // Spawn pests (timed stages ramp gently; Endless escalates exponentially every 30s wave).
   g.nextPestIn -= dt;
   if (g.nextPestIn <= 0 && g.t < g.length - 0.5) {
-    spawnPest(g, events);
-    const frac = Math.min(1, g.t / g.length);
-    const [e0, e1] = g.stage.pestEvery;
-    const gap = e0 + (e1 - e0) * frac;
-    g.nextPestIn = gap * (0.8 + g.r() * 0.4);
+    if (g.stage.endless) {
+      const w = g.wave - 1;
+      const burst = w >= 5 ? 3 : w >= 3 ? 2 : 1;
+      for (let b = 0; b < burst; b++) spawnPest(g, events);
+      const [e0, e1] = g.stage.pestEvery;
+      const gap = Math.max(e1, e0 * (0.68 ** w));
+      g.nextPestIn = gap * (0.8 + g.r() * 0.4);
+    } else {
+      spawnPest(g, events);
+      const frac = Math.min(1, g.t / g.length);
+      const [e0, e1] = g.stage.pestEvery;
+      const gap = e0 + (e1 - e0) * frac;
+      g.nextPestIn = gap * (0.8 + g.r() * 0.4);
+    }
   }
 
   // Food bank orders: decay toward 0, then tick negative points as they wait overdue.
@@ -210,10 +238,11 @@ export function tick(g, dt) {
     g.nextGuardAt += 10;
   }
 
-  if (g.t >= g.length) {
+  if (!g.stage.endless && g.t >= g.length) {
     g.t = g.length;
     g.over = true;
-    events.push({ type: "end" });
+    g.endReason = "time";
+    events.push({ type: "end", reason: "time" });
   }
   return events;
 }
