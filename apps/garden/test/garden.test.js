@@ -212,13 +212,17 @@ test("all 5 Angelio games use star-based stickers (3★ giant regardless of mist
   }
 });
 
-test("app.js finish() scope, picker wiring, 2-helper cap, and valid crops/pests", () => {
+test("app.js finish() scope, TDZ initialization order, picker wiring, 2-helper cap, and valid crops/pests", () => {
   assert.ok(CROPS.length >= 7 && PESTS.length >= 4);
   const src = fs.readFileSync(new URL("../public/js/app.js", import.meta.url), "utf8");
   const finishPos = src.indexOf("function finish()");
   const handlePos = src.indexOf("function handle(");
   const asyncPos = src.indexOf("(async () => {");
+  const declPos = src.indexOf("let last = performance.now(), lastOrderHtml");
+  const syncEatenPos = src.indexOf("syncEaten();");
+  const syncOrdersPos = src.indexOf("syncOrders();");
   assert.ok(finishPos > 0 && handlePos > finishPos && asyncPos > handlePos);
+  assert.ok(declPos > asyncPos && syncEatenPos > declPos && syncOrdersPos > declPos);
   assert.ok(src.slice(finishPos, handlePos).includes("finish-pick"));
 
   const plotSrc = fs.readFileSync(new URL("../public/js/plot.js", import.meta.url), "utf8");

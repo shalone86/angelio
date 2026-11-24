@@ -253,35 +253,6 @@ function viewPlay(stageId) {
     });
     g = newGame({ seed: Math.floor(Math.random() * 1e9), stage, gardener: who });
     window.__garden = { game: g, plot };
-    plot.sync(g);
-    syncEaten();
-    syncOrders();
-    fitView();
-    addEventListener("resize", fitView);
-    say(bubble, stage.rule, { speakText: false });
-
-    const onCanvasTap = (e) => {
-      if (ended || g.over) return;
-      const hit = plot.pickAt(e.clientX, e.clientY);
-      if (hit?.pestId) handle(tapPest(g, hit.pestId));
-      else if (hit?.spotId) handle(tapSpot(g, hit.spotId));
-    };
-    canvas.addEventListener("pointerdown", onCanvasTap);
-
-    const onPinClick = (e) => {
-      if (ended || g.over) return;
-      const b = e.target.closest("[data-pest], [data-spot]");
-      if (!b) return;
-      if (b.dataset.pest) handle(tapPest(g, Number(b.dataset.pest)));
-      else if (b.dataset.spot) handle(tapSpot(g, b.dataset.spot));
-    };
-    pinsEl.addEventListener("click", onPinClick);
-
-    stopListeners = () => {
-      removeEventListener("resize", fitView);
-      canvas.removeEventListener("pointerdown", onCanvasTap);
-      pinsEl.removeEventListener("click", onPinClick);
-    };
 
     const spotPins = new Map(), pestPins = new Map();
     let last = performance.now(), lastOrderHtml = "", lastEatenHtml = "";
@@ -317,6 +288,36 @@ function viewPlay(stageId) {
       if (lastOrderHtml !== html) { ordersEl.innerHTML = html; lastOrderHtml = html; }
       return needed;
     }
+
+    plot.sync(g);
+    syncEaten();
+    syncOrders();
+    fitView();
+    addEventListener("resize", fitView);
+    say(bubble, stage.rule, { speakText: false });
+
+    const onCanvasTap = (e) => {
+      if (ended || g.over) return;
+      const hit = plot.pickAt(e.clientX, e.clientY);
+      if (hit?.pestId) handle(tapPest(g, hit.pestId));
+      else if (hit?.spotId) handle(tapSpot(g, hit.spotId));
+    };
+    canvas.addEventListener("pointerdown", onCanvasTap);
+
+    const onPinClick = (e) => {
+      if (ended || g.over) return;
+      const b = e.target.closest("[data-pest], [data-spot]");
+      if (!b) return;
+      if (b.dataset.pest) handle(tapPest(g, Number(b.dataset.pest)));
+      else if (b.dataset.spot) handle(tapSpot(g, b.dataset.spot));
+    };
+    pinsEl.addEventListener("click", onPinClick);
+
+    stopListeners = () => {
+      removeEventListener("resize", fitView);
+      canvas.removeEventListener("pointerdown", onCanvasTap);
+      pinsEl.removeEventListener("click", onPinClick);
+    };
 
     function syncPins(needed) {
       const seenSpot = new Set();
