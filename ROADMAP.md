@@ -215,6 +215,9 @@ collection while giving every game "one more run" depth without heavy downloads:
 **2D Sticker World & 3D Voxel Room (confirmed Nov 24, 2026):** Keep **two separate places** rather than replacing the 2D board:
 - **2D Sticker World (`/stickers/`):** Keep as a dedicated 2D sticker playground (kids love placing flat stickers) and expand it with **more playset stages** and **even more stickers**.
 - **3D Voxel Room (in the Game Center `/games/` Parish Map):** A separate 3D voxel room / house / desk area right inside `/games/` where kids can see and arrange all the 3D voxel collectibles, characters, and props they've earned.
+- **Collectible Tiers & Watch & Sing Rewards (Nov 24, 2026):** Learning games award 2D stickers (`art:` / emoji); the 5 arcade games now award 3D voxel stickers (`vox:`, 18 isometric SVGs baked from `art/vox/` via `tools/vox-stickers.mjs` as the genesis of the Voxel Desk). For **Watch & Sing** songs and videos (planned):
+  - **Stained-glass medallions (`glass:`):** glowing stained-glass stickers tied to songs and videos.
+  - **Video desk icons / figurines:** topic-based collectibles for each video — either designed in MagicaVoxel (`.vox`, serving double duty as both baked 2D Sticker World stickers and real 3D figurines that sit on the **3D Voxel Desk**) or generated as topic SVGs.
 - **MagicaVoxel `MATL` Experiment (Nov 24, 2026):** Previewing Emit, Glass, Metal, and Cloud materials only on the Studio Drawings checklist (`/studio/draw/`) first before deciding whether/how to bring them into games and Lesson Studio.
 - **Larger 4-Player Voxel WebJS Game (idea parked, Nov 24, 2026):** A bigger standalone 4-player couch game built with the libre web/Three.js voxel stack (`vox.js` / `voxmat.js`) and 4-controller support (`navigator.getGamepads()`), freely distributed on the web / itch.io and optionally packaged as a full offline desktop download via **Electron** (concept & gameplay TBD).
 
