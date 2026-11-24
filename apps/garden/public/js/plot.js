@@ -98,6 +98,7 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
     g.userData.frames = m.vox.frames.map((_, f) => {
       const cells = toScene(m.vox, f);
       const im = new THREE.InstancedMesh(box, new THREE.MeshLambertMaterial(), cells.length);
+      im.frustumCulled = false;
       const o = new THREE.Object3D(), col = new THREE.Color();
       cells.forEach(([x, y, z, c], i) => {
         o.position.set(x - cx, y, z - cz);
@@ -134,15 +135,26 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
     const idleOrder = nun ? ["nun-idle", "nun-walk", "woman-idle", "woman-walk"] : ["monk-idle", "monk-walk", "man-idle", "man-walk"];
     const g = new THREE.Group();
     const walkMesh = order.map((n) => meshFor(n, look)).find(Boolean) ?? standPerson(robe, look.hair);
-    const idleMesh = idleOrder.map((n) => meshFor(n, look)).find(Boolean) ?? standPerson(robe, look.hair);
+    let idleName = null, idleMesh = null;
+    for (const n of idleOrder) {
+      const m = meshFor(n, look);
+      if (m) { idleName = n; idleMesh = m; break; }
+    }
+    idleMesh ??= standPerson(robe, look.hair);
+    const idleHasAnim = Boolean(idleName?.endsWith("-idle"));
     walkMesh.visible = false;
     g.add(idleMesh, walkMesh);
     g.scale.setScalar(scale);
     scene.add(g);
+    let walking = false;
     return {
       g,
-      setWalk(walking) { idleMesh.visible = !walking; walkMesh.visible = walking; },
-      tick(dt) { animate(idleMesh, time); animate(walkMesh, time); void dt; },
+      setWalk(w) { walking = !!w; idleMesh.visible = !walking; walkMesh.visible = walking; },
+      tick(dt) {
+        if (walking) animate(walkMesh, time);
+        else if (idleHasAnim) animate(idleMesh, time);
+        void dt;
+      },
     };
   };
 
@@ -152,31 +164,49 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
   player.g.position.set(HOME_AT.x, 0, HOME_AT.z);
   let playerTarget = null, playerReturnAt = 0;
 
-  // Walking courier monks: capped at MAX_COURIERS (2) on screen so the garden stays readable
+  // Persistent courier helpers: stationed on the path until an order sends one to the Food Bank
   const MAX_COURIERS = 2;
-  const LANES = [-1.3, 0.2];
+  const LANES = [-1.4, 0.4];
   const couriers = [];
   const pendingDeliveries = [];
-  function makeBasket(crops) {
+  function makeBasket() {
     const b = new THREE.Group();
     block(2.4, 1.3, 1.8, 0, 0, 0, mat("#c99449"), b);
-    crops.slice(0, 3).forEach((cid, i) => {
-      block(0.8, 0.8, 0.8, -0.7 + i * 0.7, 1.2, 0, mat(cropById(cid).color), b);
-    });
+    b.userData.cubes = Array.from({ length: 3 }, (_, i) =>
+      block(0.8, 0.8, 0.8, -0.7 + i * 0.7, 1.2, 0, mat("#ff7a22"), b));
+    b.visible = false;
     return b;
   }
-  function launchCourier(crops) {
-    const lane = LANES.find((z) => !couriers.some((c) => c.lane === z)) ?? LANES[0];
-    const actor = makePerson({ nun: false, robe: "#5a4030" }, 1.0);
-    const basket = makeBasket(crops);
-    basket.position.set(0, 2.7, 1.5);
-    actor.g.add(basket);
-    actor.g.position.set(2, 0, lane);
-    actor.setWalk(true);
-    couriers.push({ actor, basket, crops, lane, state: "to-bank", t: 0 });
+  function setBasketCrops(basket, crops) {
+    (basket.userData.cubes ?? []).forEach((cube, i) => {
+      const cid = crops[i];
+      cube.visible = Boolean(cid);
+      if (cid) cube.material = mat(cropById(cid).color);
+    });
+  }
+  function startDelivery(c, crops) {
+    setBasketCrops(c.basket, crops);
+    c.crops = crops;
+    c.basket.visible = true;
+    c.state = "to-bank";
+    c.actor.setWalk(true);
+  }
+  if (!stage.vigil) {
+    LANES.slice(0, MAX_COURIERS).forEach((lane) => {
+      const actor = makePerson({ nun: false, robe: "#5a4030" }, 1.0);
+      const basket = makeBasket();
+      basket.position.set(0, 2.7, 1.5);
+      actor.g.add(basket);
+      const home = { x: 8.5, z: lane };
+      actor.g.position.set(home.x, 0, home.z);
+      actor.g.rotation.y = -Math.PI / 2;
+      actor.setWalk(false);
+      couriers.push({ actor, basket, crops: null, lane, home, state: "idle" });
+    });
   }
   function deliver(crops) {
-    if (couriers.length < MAX_COURIERS) launchCourier(crops);
+    const idle = couriers.find((c) => c.state === "idle");
+    if (idle) startDelivery(idle, crops);
     else if (pendingDeliveries.length < 4) pendingDeliveries.push(crops);
   }
 
@@ -389,12 +419,11 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
     }
     player.tick(dt);
 
-    // Walking courier monks (max 2 on screen, queued in pendingDeliveries)
-    for (let i = couriers.length - 1; i >= 0; i--) {
-      const c = couriers[i];
-      c.t += dt;
+    // Persistent courier helpers carry baskets to the Food Bank wagon and return to their posts
+    for (const c of couriers) {
       c.actor.tick(dt);
-      const goal = c.state === "to-bank" ? { x: BANK_POS.x - 4.2, z: BANK_POS.z + c.lane * 0.5 } : { x: 2, z: c.lane };
+      if (c.state === "idle") continue;
+      const goal = c.state === "to-bank" ? { x: BANK_POS.x - 4.2, z: BANK_POS.z + c.lane * 0.5 } : c.home;
       const cdx = goal.x - c.actor.g.position.x, cdz = goal.z - c.actor.g.position.z;
       const cdist = Math.hypot(cdx, cdz);
       if (cdist > 0.4) {
@@ -409,13 +438,14 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
           const n = deliverPile.children.length;
           block(0.9, 0.9, 0.9, (n % 4) * 1.1, Math.floor(n / 4) * 0.9, ((n >> 1) % 2) * 0.9, mat(cropById(c.crops[0]).color), deliverPile);
         }
+      } else if (pendingDeliveries.length > 0) {
+        startDelivery(c, pendingDeliveries.shift());
       } else {
-        scene.remove(c.actor.g);
-        couriers.splice(i, 1);
+        c.actor.g.position.set(c.home.x, 0, c.home.z);
+        c.actor.g.rotation.y = -Math.PI / 2;
+        c.state = "idle";
+        c.actor.setWalk(false);
       }
-    }
-    while (couriers.length < MAX_COURIERS && pendingDeliveries.length > 0) {
-      launchCourier(pendingDeliveries.shift());
     }
 
     // Active pests bounce slightly on crops; shooed pests fly away

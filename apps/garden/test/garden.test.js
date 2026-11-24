@@ -227,4 +227,6 @@ test("app.js finish() scope, TDZ initialization order, picker wiring, 2-helper c
 
   const plotSrc = fs.readFileSync(new URL("../public/js/plot.js", import.meta.url), "utf8");
   assert.match(plotSrc, /MAX_COURIERS\s*=\s*2\b/);
+  assert.match(plotSrc, /frustumCulled\s*=\s*false/);
+  assert.ok(!plotSrc.includes("scene.remove(c.actor.g)"), "helpers stay persistent in scene");
 });
