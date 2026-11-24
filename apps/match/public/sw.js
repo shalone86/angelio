@@ -1,7 +1,7 @@
 // Offline support: network first for the app (updates show right away), cache first for fonts
 // and voice clips. Bump VERSION when you change files, and list new files in ASSETS.
 
-const VERSION = "v7";
+const VERSION = "v8";
 const APP = "match";
 const SHELL = `${APP}-shell-${VERSION}`;
 const RUNTIME = `${APP}-runtime-v1`;
@@ -40,12 +40,31 @@ async function cacheFirst(req) {
   if (res.ok || res.type === "opaque") cache.put(req, res.clone());
   return res;
 }
+async function artNetworkFirst(req) {
+  const cache = await caches.open(RUNTIME);
+  try {
+    const res = await fetch(req);
+    if (res.ok) cache.put(req, res.clone());
+    return res;
+  } catch {
+    const hit = await cache.match(req);
+    if (hit) return hit;
+    const u = new URL(req.url), slug = u.searchParams.get("slug");
+    if (slug) {
+      const keys = await cache.keys();
+      const prev = keys.find((k) => { const ku = new URL(k.url); return ku.pathname === u.pathname && ku.searchParams.get("slug") === slug; });
+      if (prev) return (await cache.match(prev)) ?? Response.error();
+    }
+    return Response.error();
+  }
+}
 self.addEventListener("fetch", (e) => {
   const req = e.request;
   if (req.method !== "GET") return;
   const url = new URL(req.url);
   if (url.origin === location.origin && url.pathname.endsWith("/api/tts")) return e.respondWith(cacheFirst(req));
-  if (/\/api\/art(\/vox)?$/.test(url.pathname)) return e.respondWith(networkFirst(req));
+  // his voxel models (angelio.org/api/art…): the newest when online, the last saved copy per slug when offline
+  if (/\/api\/art(\/vox)?$/.test(url.pathname)) return e.respondWith(artNetworkFirst(req));
   if (url.origin === location.origin && url.pathname.includes("/api/")) return;
   if (/fonts\.(googleapis|gstatic)\.com$/.test(url.hostname)) return e.respondWith(cacheFirst(req));
   if (url.origin === location.origin) e.respondWith(networkFirst(req));

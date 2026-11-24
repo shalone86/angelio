@@ -294,6 +294,15 @@ test("all 5 Angelio games use star-based stickers (3★ giant regardless of mist
   }
 });
 
+test("all 5 voxel games cache /api/art safely per slug in runtime cache", () => {
+  for (const game of ["candles", "usher", "porter", "match", "garden"]) {
+    const sw = fs.readFileSync(new URL(`../../${game}/public/sw.js`, import.meta.url), "utf8");
+    assert.match(sw, /async function artNetworkFirst\(req\)/, `${game} defines artNetworkFirst`);
+    assert.match(sw, /if \(\/\\\/api\\\/art\(\\\/vox\)\?\$\/\.test\(url\.pathname\)\) return e\.respondWith\(artNetworkFirst\(req\)\);/, `${game} routes /api/art through artNetworkFirst`);
+    assert.doesNotMatch(sw, /\/api\/art[^\n]*networkFirst\(req\)/, `${game} must not strip query strings on /api/art`);
+  }
+});
+
 test("app.js finish() scope, TDZ initialization order, picker wiring, 2-helper cap, and valid crops/pests", () => {
   assert.ok(CROPS.length >= 7 && PESTS.length >= 4);
   const src = fs.readFileSync(new URL("../public/js/app.js", import.meta.url), "utf8");
