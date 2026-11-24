@@ -7,21 +7,27 @@ import { GARDENERS, gardenerById, gardenerOpen } from "../public/js/gardeners.js
 import { newGame, tick, tapSpot, tapPest, orderReward, starsFor, timeLeft } from "../public/js/garden.js";
 import { stepWithCollisions, clearTarget, TREE_COLLIDER_R } from "../public/js/plot.js";
 
-test("four 45s stages + Endless Harvest, 150/250/425 stars, plus Brother/Sister starters and 2-monk / 2-nun unlocks", () => {
+test("four 45s stages + Endless Harvest, 1★ for playing, 250/425 timed & 500/1600 endless, plus starters and 4 unlocks", () => {
   assert.equal(STAGES.length, 5);
   const timed = STAGES.filter((st) => !st.endless);
   const endless = STAGES.find((st) => st.endless);
   assert.equal(timed.length, 4);
-  for (const st of timed) assert.equal(st.length, 45);
-  for (const st of STAGES) {
-    assert.equal(st.star1, 150);
+  for (const st of timed) {
+    assert.equal(st.length, 45);
     assert.equal(st.star2, 250);
     assert.equal(st.star3, 425);
   }
+  assert.equal(endless.star2, 500);
+  assert.equal(endless.star3, 1600);
   const g = newGame({ seed: 1, stage: STAGES[0], gardener: gardenerById("brother") });
-  for (const [score, want] of [[0, 0], [149, 0], [150, 1], [249, 1], [250, 2], [424, 2], [425, 3]]) {
+  for (const [score, want] of [[0, 1], [149, 1], [249, 1], [250, 2], [424, 2], [425, 3]]) {
     g.score = score;
-    assert.equal(starsFor(g), want, `score ${score} -> ${want}★`);
+    assert.equal(starsFor(g), want, `timed score ${score} -> ${want}★`);
+  }
+  const ge = newGame({ seed: 1, stage: endless, gardener: gardenerById("brother") });
+  for (const [score, want] of [[0, 1], [499, 1], [500, 2], [1599, 2], [1600, 3]]) {
+    ge.score = score;
+    assert.equal(starsFor(ge), want, `endless score ${score} -> ${want}★`);
   }
   assert.equal(endless.id, "endless");
   assert.equal(endless.length, Infinity);
@@ -234,7 +240,7 @@ test("all four unlockable gardeners apply their distinct abilities", () => {
   assert.ok(grn.spots[0].growTime < b2.spots[0].growTime);
 });
 
-test("pretend players: every stage (including Endless) terminates and separates idle (0★), steady (>=2★), and quick (3★)", () => {
+test("pretend players: every stage (including Endless) terminates and separates idle (1★), steady (>=2★), and quick (3★)", () => {
   function play(stage, pause, pestFirst, gardener, seed) {
     const g = newGame({ seed, stage, gardener });
     let wait = 0.5;
@@ -267,7 +273,7 @@ test("pretend players: every stage (including Endless) terminates and separates 
     assert.equal(idle.over, true, `${st.id} idle ends`);
     assert.equal(steady.over, true, `${st.id} steady ends`);
     assert.equal(quick.over, true, `${st.id} quick ends`);
-    assert.equal(starsFor(idle), 0, `${st.id} idle gets 0★ (got ${idle.score})`);
+    assert.equal(starsFor(idle), 1, `${st.id} idle gets 1★ (got ${idle.score})`);
     assert.ok(starsFor(steady) >= 2, `${st.id} steady player gets >=2★ (got ${steady.score} vs ${st.star2})`);
     assert.equal(starsFor(quick), 3, `${st.id} quick player earns 3★ (got ${quick.score} vs ${st.star3})`);
   }

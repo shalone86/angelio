@@ -4,7 +4,7 @@
 export const STAGES = [
   {
     id: "garden", name: "The Garden", icon: "🥕", progress: "garden-garden",
-    length: 45, open: true, star1: 150, star2: 250, star3: 425,
+    length: 45, open: true, star2: 250, star3: 425,
     kinds: ["bed"], pests: ["bug", "bird"], pestEvery: [5.0, 3.1],
     maxOrders: 2, orderSizes: [1, 2], orderFresh: 18,
     blurb: "Shoo bugs and birds off carrots, tomatoes, and celery, and fill food bank orders fast!",
@@ -12,7 +12,7 @@ export const STAGES = [
   },
   {
     id: "orchard", name: "The Orchard", icon: "🍎", progress: "garden-orchard",
-    length: 45, after: "garden", star1: 150, star2: 250, star3: 425,
+    length: 45, after: "garden", star2: 250, star3: 425,
     kinds: ["bed", "tree"], pests: ["bug", "bird", "squirrel"], pestEvery: [4.3, 2.5],
     maxOrders: 2, orderSizes: [2, 3], orderFresh: 17,
     blurb: "Fruit trees join the garden! Squirrels take two taps to chase off the apples and pears.",
@@ -20,7 +20,7 @@ export const STAGES = [
   },
   {
     id: "herbs", name: "The Herb Garden", icon: "🌿", progress: "garden-herbs",
-    length: 45, after: "orchard", star1: 150, star2: 250, star3: 425,
+    length: 45, after: "orchard", star2: 250, star3: 425,
     kinds: ["bed", "tree", "herb"], pests: ["bug", "bird", "squirrel"], pestEvery: [3.8, 2.2],
     maxOrders: 3, orderSizes: [2, 3], orderFresh: 16,
     blurb: "Basil and mint planters open along the stone wall, with busy 3-item baskets!",
@@ -28,7 +28,7 @@ export const STAGES = [
   },
   {
     id: "vigil", name: "Night Vigil", icon: "🌙", progress: "garden-vigil",
-    length: 45, after: "herbs", star1: 150, star2: 250, star3: 425,
+    length: 45, after: "herbs", star2: 250, star3: 425,
     night: true, vigil: true,
     kinds: ["bed", "tree", "herb"], pests: ["bug", "bird", "squirrel", "raccoon"], pestEvery: [2.0, 0.72],
     maxOrders: 0, orderSizes: [0, 0], orderFresh: 0,
@@ -37,7 +37,7 @@ export const STAGES = [
   },
   {
     id: "endless", name: "Endless Harvest", icon: "🌻", progress: "garden-endless",
-    length: Infinity, endless: true, after: "garden", maxEaten: 10, star1: 150, star2: 250, star3: 425,
+    length: Infinity, endless: true, after: "garden", maxEaten: 10, star2: 500, star3: 1600,
     kinds: ["bed", "tree", "herb"], pests: ["bug", "bird", "squirrel", "raccoon"],
     pestEvery: [2.7, 0.22],
     maxOrders: 2, orderSizes: [1, 3], orderFresh: 18,

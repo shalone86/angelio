@@ -128,6 +128,7 @@ generated art, some robot voice): Pico Parish pixel style throughout, his face i
 together, up to date. The old scripts are a head start. The video set is finished when every pillar lesson (~45) and every
 church history stop (~25) has its new video and quiz: about 70 in all. Old videos stay up until their new one replaces them;
 saints, popes and seasonal extras beyond that are a bonus shelf. Music stays open-ended.
+- **Lesson Studio Procedural VFX (`workshop/video/`):** Reserve MagicaVoxel VFX marker hexes (e.g., flame tip, smoke/incense emitter) and render deterministic per-frame flickering radial candle glow, curling rising smoke puffs, and halo shimmer directly in `workshop/video/voxel-draw.js` and `Voxel.tsx` (zero external 3D software required).
 
 **Church history, East and West, very short** (owner, Nov 18): one walk from Pentecost to today, joined to the salvation
 history timeline, so parents have it in one place. Fenced: about 25 stops, a couple per few centuries; each stop is one short
@@ -186,7 +187,7 @@ is the content, so they never need new levels.
      upgrades, combos, events and orders stay.
    - **Lamplighter** (Crossy Road style): tap to hop up the streets at dusk, swipe sideways, light lamps and windows;
      wind, processions and carts cross. Endless; the voxel look fits it best.
-3. **Saints Match.** **Demo live Nov 23, 2026 at angelio.org/match/** (`apps/match`): arcade memory cards with Catholic saints (fun first, learning tangential), using animated idling voxel `-idle.vox` portraits and a shared floating `saint-halo` voxel above every saint's head (existing voxel stand-ins until his saint and halo models are drawn; Drawings checklists per stage).
+3. **Saints Match.** **Demo live Nov 23, 2026 at angelio.org/match/** (`apps/match`): arcade memory cards with Catholic saints (fun first, learning tangential), using animated idling voxel `-idle.vox` portraits and a 3D head-region golden glow halo (`headHaloSpot` in `portraits.js`) placed behind every saint's head/hair (Nov 24: live preview replacing the overhead voxel ring so the owner can test how it looks).
    - **Arcade loop:** 2-second starting flash on every board (cards start face-up so fast players can chain right away); wave-after-wave 1:30 stages (clearing a board deals the next); decaying combo multiplier (×2–×5, ×6 with St. Carlo); **Saint ↔ Symbol** pairs (St. Peter ↔ keys, St. Paul ↔ sword); a **✨ Golden Halo pair** per board triggering **Feast Rush** (2× points); and visible **🌬️ Wind Swaps** where two face-down cards glide across to swap places (matching one earns a **Sharp Eye ⚡** bonus).
    - **6 stages + Endless (male/female parity on every stage except The Apostles):** (1) *The Apostles* (6 male), (2) *Early Church* (3M + 3F), (3) *Eastern Church* (3M + 3F), (4) *Western Church* (3M + 3F), (5) *Modern Saints* (3M + 3F), (6) *Patron Saints* (3M + 3F), plus **All Saints Rush** (endless, opens with 2★ on Apostles: 40 s clock, +time per match & board clear, ramping 4→6→8 pairs mixing all 36 saints).
    - **6 unlockable Patron Helpers** (3M + 3F, each with an upside and trade-off; pickable on home and right on the finish / play-next screen): St. Anthony (🔍 find a pair), St. Lucy (🕯️ longer peek & Feast Rush, faster wind swaps), St. John Chrysostom (🐝 symbol bonus, shorter peek), St. Clare (☀️ first mistake each wave forgiven, lower max combo), St. Carlo Acutis (💻 fast ×6 combo & +rush time, short peek), St. Cecilia (🎵 long combo timer, stops wind swaps).
@@ -196,12 +197,20 @@ is the content, so they never need new levels.
    good timing, a combo meter; easy mode counts loose taps. Cantor sheet music becomes its harder levels, not a new game. Needs recordings of people's voices, so down the list.
 5. **Garden Givers.** **Demo live Nov 23, 2026 at angelio.org/garden/** (`apps/garden`): 3D voxel monastery garden and harvest game.
    - **Core loop:** Keep bugs, birds, squirrels, and night critters off the fruit and veggies growing in the garden beds, orchard trees, and herb planters. Tap ripe produce matching Food Bank orders to harvest and auto-deliver (showing up to 2 courier monks at a time walking baskets down to the food bank wagon). Order rewards decay toward 0 and then tick negative points if kept waiting.
-   - **4 timed stages (0:45 each) + Endless Harvest:** (1) *The Garden* (vegetable beds only), (2) *The Orchard* (adds fruit trees), (3) *The Herb Garden* (adds herbs to pick & protect), (4) *Night Vigil* (protects all food types at night; no picking or delivery), plus (5) **Endless Harvest** (opens with 2★ on *The Garden*: more bugs and critters arrive every 30 seconds until the eaten-produce meter fills at `maxEaten: 10`).
+   - **4 timed stages (0:45 each) + Endless Harvest:** (1) *The Garden* (vegetable beds only), (2) *The Orchard* (adds fruit trees), (3) *The Herb Garden* (adds herbs to pick & protect), (4) *Night Vigil* (protects all food types at night; no picking or delivery; `1★` just for playing, `250 / 425` for `2★ / 3★`), plus (5) **Endless Harvest** (opens with 2★ on *The Garden*; `500 / 1600` for `2★ / 3★`: more bugs and critters arrive every 30 seconds until the eaten-produce meter fills at `maxEaten: 10`).
    - **Starters & 4 unlockable gardeners (2 monks, 2 nuns):** Choose **Brother Gardener** or **Sister Gardener** starters (reusing shared `monk` / `nun` models), plus **Brother Bug-Shooer** (auto-shoos bugs), **Sister Double Harvest** (1 tap = 2 items), **Brother Patient** (orders stay fresh longer before losing points), and **Sister Green Thumb** (crops ripen and regrow faster), pickable on home and finish screens.
 **Games page (Nov 22, 2026): angelio.org/games/** ("🎮 Games" in the top menu; a banner on the home page). Every
 app in the "games" group of hub/public/js/apps.js, with your best score and stars, and the coming-soon games; it can be
-added to a phone's home screen as "Angelio Games". Later (his choice): a map of a little parish where each game is a
-building (the church's candle rack and doors, the chapel at night, the choir loft, the garden), drawn in his voxels.
+added to a phone's home screen as "Angelio Games". **Parish Map (confirmed Nov 24, 2026):** turn `/games/` into a living
+parish map drawn in his voxels, with buildings anchored to the games — **Chapel** (Candle Rack & Mass Usher), **Monastery**
+(Monastery Porter), **Garden** (Garden Givers), and **Social Hall** (Saints Match) — growing and lighting up as kids earn
+stars and bells across the whole site, aligned with the liturgical season.
+
+**Arcade Staying Power & Same-Device 2-Player (confirmed Nov 24, 2026):** Keep zero online accounts and zero kid data
+collection while giving every game "one more run" depth without heavy downloads:
+- **Same-device 2-player:** left/right co-op on **Candle Rack**, split-screen two doors on **Monastery Porter**, split-screen two gardens on **Garden Givers**, turn-based 2-player on **Saints Match**, and pass-and-play seed duel on **Mass Usher** (splitting pews on screen would be too crowded).
+- **Parish Bells & expanded character unlocks:** every completed round drops local Parish Bells/coins toward more unlockable characters, habits, and props built by recoloring/accessorizing shared `.vox` models (`looks.js` markers) at near-zero download cost.
+- **Bite-sized rotating missions & post-3★ Hard Mode:** short per-game goals beyond raw score, optional Hard Mode toggles earning Gold Crowns, plus deterministic **Today's Challenge** runs (`rng(YYYYMMDD)`).
 
 6. **Mass Usher.** Seat arriving families in the church pews (a gentle Tetris). **Demo live Nov 22, 2026 at
    angelio.org/usher/** (apps/usher): a flat top-down church to try the game itself (tap a pew to walk the family there,

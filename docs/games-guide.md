@@ -120,7 +120,7 @@ Code: [`apps/match/`](../apps/match/) · Developer README: [`apps/match/README.m
 
 - **Controls & Core Play:**
   - **2-second opening peek:** Every board starts face-up briefly before flipping down.
-  - **Card flips:** Tapping cards updates the status clue cleanly with crisp sound effects (per-card TTS is intentionally muted so fast flipping stays smooth).
+  - **Card flips:** Tapping cards updates the status clue cleanly with crisp sound effects (per-card TTS is intentionally muted so fast flipping stays smooth). Portraits glow with a 3D head-region golden halo behind each saint's head.
   - **Combos & Feast Rush:** Chain matches quickly to climb up to `×5` (`×6` with St. Carlo). Matching the ✨ **Golden Halo** pair starts **Feast Rush** for double points.
   - **Wind Swaps:** Later boards blow two face-down cards into swapped spots; matching a swapped card awards a **Sharp Eye ⚡** bonus.
 - **Stages (six 1:30 stages + Endless; strict 3M + 3F parity after The Apostles):**
@@ -152,12 +152,12 @@ Code: [`apps/garden/`](../apps/garden/) · Developer README: [`apps/garden/READM
   - **Harvest Food Bank baskets:** Tap ripe produce (Carrots, Tomatoes, Celery, Apples, Pears, Basil, Mint) matching an open Food Bank card. Completing a basket dispatches one of **2 helper monks/sisters** down the path to the cart.
   - **Watch the order freshness:** Completed orders earn fresh bonus points while young, and tick negative if kept overdue.
   - **Solid orchard trees:** Trees have collision clearance (`TREE_COLLIDER_R = 4.4`) so characters walk around trunks smoothly instead of clipping inside.
-- **Stages (0:45 timed + Endless Harvest) & Star Targets (`150 / 250 / 425` across every stage):**
+- **Stages (0:45 timed + Endless Harvest) & Star Targets (`1★` just for playing; `250 / 425` timed; `500 / 1600` Endless):**
   1. **The Garden** (45 s) — Vegetable beds (Carrots, Tomatoes, Celery), bugs & birds.
   2. **The Orchard** (45 s, 2★ on Garden) — Adds Apple & Pear trees plus 2-tap squirrels.
   3. **The Herb Garden** (45 s, 2★ on Orchard) — Adds Basil & Mint planters plus larger 3-item Food Bank orders.
   4. **Night Vigil** (45 s, 2★ on Herbs) — Protect every bed, tree, and herb at night against escalating waves (including 2-tap raccoons)—no Food Bank orders or picking.
-  5. **Endless Harvest** (opens at 2★ on The Garden) — Critter pressure steps up every `30 s` until the **eaten-produce meter** fills (`maxEaten: 10`).
+  5. **Endless Harvest** (opens at 2★ on The Garden; `500` for 2★, `1600` for 3★) — Critter pressure steps up every `30 s` until the **eaten-produce meter** fills (`maxEaten: 10`).
 - **Starters & Unlockable Gardeners (selectable on Home and Play Next):**
   - **Brother Gardener** & **Sister Gardener** (starters, reusing `monk` / `nun` models).
   - **Brother Bug-Shooer** (2★ on The Garden) — Automatically shoos critters near pests.

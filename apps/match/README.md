@@ -26,7 +26,7 @@ Plus **All Saints Rush** (endless) and 6 unlockable **Patron Helpers** (3 men, 3
 
 ## Voxel art & testing
 
-Every saint looks for `<slug>-idle` (for example `saint-peter-idle`) from `angelio.org/api/art` (listed on the Studio's Drawings page under `Saints Match: ...`), rendering a voxel portrait via `public/js/portraits.js` (with recolored uploaded stand-ins until each custom saint model is drawn). `vox.js`, `looks.js` and `three-r128.min.js` are kept identical to Candle Rack / Hub and verified by `test/copies.test.js`. Pure rules and star thresholds live in `public/js/match.js` and `test/match.test.js`.
+Every saint looks for `<slug>-idle` (for example `saint-peter-idle`) from `angelio.org/api/art` (listed on the Studio's Drawings page under `Saints Match: ...`), rendering a voxel portrait with a 3D head-region golden glow halo anchored behind the back tiles of the head via `public/js/portraits.js` (with recolored uploaded stand-ins until each custom saint model is drawn). `vox.js`, `looks.js` and `three-r128.min.js` are kept identical to Candle Rack / Hub and verified by `test/copies.test.js`. Pure rules and star thresholds live in `public/js/match.js` and `test/match.test.js`.
 
 ```sh
 npm test --workspace=match

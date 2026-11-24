@@ -4,6 +4,7 @@ import fs from "node:fs";
 import { SAINTS, saintById, saintsForStage } from "../public/js/saints.js";
 import { STAGES, stageById, isOpen, waveConfig } from "../public/js/stages.js";
 import { HELPERS, helperById, helperOpen } from "../public/js/helpers.js";
+import { headHaloSpot } from "../public/js/portraits.js";
 import { newGame, tick, flip, useHint, multOf, starsFor, timeLeft, cardById, MISMATCH_TIME, CLEAR_DELAY } from "../public/js/match.js";
 
 test("saints catalog: 6 per stage, unique slugs and symbols, M/F parity outside Apostles", () => {
@@ -244,7 +245,23 @@ test("round end transition: clock hits 0 and app.js finish() is in viewPlay scop
     "finish() renders the unlocked Patron Helper picker");
 
   const portraitSrc = fs.readFileSync(new URL("../public/js/portraits.js", import.meta.url), "utf8");
-  assert.match(portraitSrc, /saint-halo/);
+  assert.match(portraitSrc, /headHaloSpot/);
   assert.match(portraitSrc, /bodyFrames/);
+
+  // 3D head-region glow sits cleanly behind the back-most head tiles for both haired and bald saints
+  const sampleCells = [
+    [-1.5, 0.5, -0.5, "#2e5fa8"], [1.5, 0.5, 0.5, "#2e5fa8"], // robes
+    [-1.5, 5.5, -1.5, "#255359"], [1.5, 7.5, 1.5, "#255359"], // head / hair box
+  ];
+  const halo = headHaloSpot(sampleCells);
+  assert.ok(halo.z < -2.0, `halo should sit behind back head plane (got z=${halo.z})`);
+  assert.ok(halo.y >= 5.5 && halo.y <= 7.0, `halo should center on head (got y=${halo.y})`);
+  assert.ok(halo.size > 6, `halo size should wrap the head cleanly (got size=${halo.size})`);
+
+  const baldCells = [
+    [-1.5, 0.5, -0.5, "#2e5fa8"], [1.5, 0.5, 0.5, "#2e5fa8"],
+    [-1.5, 5.5, -1.5, "#efc6a0"], [1.5, 7.5, 1.5, "#efc6a0"], // no hair color marker
+  ];
+  assert.deepEqual(headHaloSpot(baldCells), halo);
 });
 
