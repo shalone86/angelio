@@ -3,7 +3,8 @@
 // (R2, through the Worker's /api/admin/studio/art routes); anyone can read it at /api/art and /api/art/vox?slug=…,
 // so Claude sees each one as soon as it's saved.
 import { CHECKLISTS } from "/js/art-content.js";
-import { readVox, voxSummary } from "/js/vox.js";
+import { readVox } from "/js/vox.js";
+import { readVoxMaterials, usedMaterials } from "./voxmat.js";
 import { voxThumb, voxViewer } from "./voxview.js";
 import { pewVox } from "/js/voxwrite.js";
 
@@ -20,9 +21,11 @@ let key = store.get("angelio:admin") || "";
 let art = { drawings: {}, voxels: {}, favorites: [], done: {} };
 let detail = null; // the item open in the detail view
 let viewer = null; // its turning preview
-const voxCache = new Map(); // slug → {saved, vox, thumb}
+const voxCache = new Map(); // slug → {saved, vox, materials, matInfo, thumb}
 let tab = null; // the open editor
 let listId = store.get("draw:list") || CHECKLISTS[0].id;
+let previewMatl = true;
+let previewDark = false;
 
 // ── talking to the Worker ──
 async function studio(path, body) {
@@ -61,8 +64,11 @@ async function model(slug) {
   if (c?.saved === v.saved) return c;
   const r = await fetch(`/api/art/vox?slug=${encodeURIComponent(slug)}&v=${encodeURIComponent(v.saved)}`);
   if (!r.ok) return null;
-  const vox = readVox(await r.arrayBuffer());
-  const got = { saved: v.saved, vox, thumb: voxThumb(vox) };
+  const bytes = await r.arrayBuffer();
+  const vox = readVox(bytes);
+  const materials = readVoxMaterials(bytes);
+  const matInfo = usedMaterials(vox, materials);
+  const got = { saved: v.saved, vox, materials, matInfo, thumb: voxThumb(vox, 128, materials) };
   voxCache.set(slug, got);
   return got;
 }
@@ -115,7 +121,11 @@ function thumb(d) {
 const made = (slug) => !!(art.voxels[slug] || art.drawings[slug]);
 function status(it) {
   const v = art.voxels[it.slug], d = art.drawings[it.slug];
-  if (v) return `Model · ${v.frames} frame${v.frames === 1 ? "" : "s"}, ${v.size.join(" × ")}`;
+  if (v) {
+    const c = voxCache.get(it.slug);
+    const matl = c?.saved === v.saved && c.matInfo?.totalSpecial ? ` · ✨ MATL: ${c.matInfo.summary}` : "";
+    return `Model · ${v.frames} frame${v.frames === 1 ? "" : "s"}, ${v.size.join(" × ")}${matl}`;
+  }
   if (d) return `Pixel drawing · ${d.width} × ${d.height}`;
   return "Not made yet";
 }
@@ -154,6 +164,7 @@ function render() {
       "People are 8 × 8 × 8 and face the front. Things can be any size; a nun is 8 tall, so match her.",
       "Each animation frame is its own model, in order, in one file.",
       "Parts that change with the season: pink (#FF77A8), a darker pink for shade.",
+      "Experiment: MagicaVoxel Render materials (Emit, Glass, Metal, Cloud) show up in this checklist preview, not in the games yet.",
       "You can drop several .vox files here at once: each goes to the item with its name.",
     ].map((t) => h("li", { text: t })))]),
     h("label", { class: "btn cl-drop" }, ["Upload .vox files…", h("input", { type: "file", accept: ".vox", multiple: true, hidden: true, onchange: (e) => uploadMany(e.target.files) })]),
@@ -177,13 +188,30 @@ async function uploadMany(files) {
 function renderDetail() {
   stopViewer();
   const it = detail, v = art.voxels[it.slug];
-  const stageEl = h("div", { class: "dt-stage" });
+  const stageEl = h("div", { class: "dt-stage" + (v && previewDark ? " dark" : "") });
+  const matNote = v ? h("p", { class: "matl-note", text: "Loading model preview…" }) : null;
+  let loadedModel = null, currentFps = v?.fps ?? 4;
+  const startViewer = () => {
+    if (!loadedModel || detail !== it) return;
+    stopViewer();
+    viewer = voxViewer(stageEl, loadedModel.vox, {
+      fps: currentFps,
+      materials: previewMatl ? loadedModel.materials : null,
+      dark: previewDark,
+    });
+  };
+  const matBtn = v ? h("button", { class: "btn small", type: "button", "aria-pressed": String(previewMatl), text: "✨ Preview MATL",
+    onclick: () => { previewMatl = !previewMatl; matBtn.setAttribute("aria-pressed", String(previewMatl)); startViewer(); } }) : null;
+  const darkBtn = v ? h("button", { class: "btn small", type: "button", "aria-pressed": String(previewDark), text: "🌙 Dark stage",
+    onclick: () => { previewDark = !previewDark; darkBtn.setAttribute("aria-pressed", String(previewDark)); stageEl.classList.toggle("dark", previewDark); startViewer(); } }) : null;
   const back = () => { if (history.state?.detail) history.back(); else render(); };
   $("list").replaceChildren(...[ // (a missing piece is left out, not shown as "null")
     h("div", { class: "dt-top" }, [h("button", { class: "btn", type: "button", text: "← Checklist", onclick: back }), h("span", { style: "flex:1" }), tick(it)]),
     h("h1", { text: it.label }),
     h("p", { class: "cl-note", text: [status(it), it.note].filter(Boolean).join(". ") }),
     stageEl,
+    v ? h("div", { class: "dt-toggles" }, [matBtn, darkBtn]) : null,
+    matNote,
     h("div", { class: "cl-more" }, [
       h("label", { class: "btn primary" }, [v ? "Replace the .vox…" : "Upload a .vox…", h("input", { type: "file", accept: ".vox", hidden: true, onchange: async (e) => { if (e.target.files[0]) { await uploadVox(it.slug, e.target.files[0]); renderDetail(); } } })]),
       h("button", { class: "btn", type: "button", text: art.drawings[it.slug] ? "Open the pixel drawing" : "Draw it in pixels", onclick: () => openEditor({ slug: it.slug, name: it.slug, width: it.size?.[0] ?? 16, height: it.size?.[1] ?? 16 }) }),
@@ -192,10 +220,17 @@ function renderDetail() {
         try { await studio("/art/vox-delete", { slug: it.slug }); voxCache.delete(it.slug); renderDetail(); } catch (e) { alert("Couldn't remove it: " + e.message); } } }) : null,
     ]),
     GAME_PIECES[it.download] ? h("div", { class: "cl-more" }, [h("button", { class: "btn", type: "button", text: GAME_PIECES[it.download].label, onclick: () => download(GAME_PIECES[it.download].make(), GAME_PIECES[it.download].file) })]) : null,
-    v && v.frames > 1 ? speedControl(it.slug, v) : null,
+    v && v.frames > 1 ? speedControl(it.slug, v, (n) => { currentFps = n; }) : null,
     h("code", { class: "small muted", text: `${it.slug}.vox` }),
   ].filter(Boolean));
-  if (v) model(it.slug).then((m) => { if (detail === it && m) viewer = voxViewer(stageEl, m.vox, { fps: v.fps ?? 4 }); }).catch((e) => { stageEl.textContent = "Couldn't show it: " + e.message; });
+  if (v) model(it.slug).then((m) => {
+    if (detail !== it || !m) return;
+    loadedModel = m;
+    matNote.textContent = m.matInfo?.totalSpecial
+      ? `✨ MATL experiment (preview only — not in games yet): ${m.matInfo.summary}`
+      : "MATL experiment ready: all voxels are Diffuse. Try Emit, Glass, Metal, or Cloud in MagicaVoxel's Render tab.";
+    startViewer();
+  }).catch((e) => { stageEl.textContent = "Couldn't show it: " + e.message; });
   else if (art.drawings[it.slug]) { const c = thumb(art.drawings[it.slug]); c.className = "dt-pixels"; stageEl.replaceChildren(c); }
   else if (GAME_PIECES[it.download]) { viewer = voxViewer(stageEl, readVox(GAME_PIECES[it.download].make()), { fps: 4 }); stageEl.append(h("p", { class: "small muted center", text: "The game's own pew, until you upload yours." })); }
   else stageEl.replaceChildren(h("span", { class: "muted", text: "Nothing here yet. Upload the model from MagicaVoxel, or draw it in pixels." }));
@@ -203,12 +238,12 @@ function renderDetail() {
 addEventListener("popstate", () => { if (detail && !tab) render(); });
 
 /** How fast an animation plays in the games: a slider that changes the preview at once and saves when let go. */
-function speedControl(slug, v) {
+function speedControl(slug, v, onFps) {
   const label = h("span", { text: "" });
   const say = (n) => { label.textContent = `Speed: ${n} frame${n === 1 ? "" : "s"} a second` + (n === 4 ? " (the usual)" : ""); };
   say(v.fps ?? 4);
   const range = h("input", { type: "range", min: 1, max: 12, step: 1, value: v.fps ?? 4, "aria-label": "Animation speed",
-    oninput: (e) => { const n = Number(e.target.value); say(n); viewer?.setFps(n); },
+    oninput: (e) => { const n = Number(e.target.value); say(n); onFps?.(n); viewer?.setFps(n); },
     onchange: async (e) => { try { await studio("/art/vox-speed", { slug, fps: Number(e.target.value) }); } catch (err) { if (err.message !== "Wrong key") alert("Couldn't save the speed: " + err.message); } } });
   return h("label", { class: "dt-speed" }, [label, range]);
 }

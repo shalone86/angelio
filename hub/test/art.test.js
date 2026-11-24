@@ -4,6 +4,7 @@ import fs from "node:fs";
 import worker from "../worker/index.js";
 import { checkDrawing, CHECKLISTS, artSlug } from "../public/js/art-content.js";
 import { readVox, toScene } from "../public/js/vox.js";
+import { readVoxMaterials, usedMaterials, toSceneWithMaterials } from "../public/studio/draw/voxmat.js";
 
 function fakeR2() {
   const files = new Map(); let n = 0;
@@ -112,4 +113,65 @@ test("upload a model, replace it (old one kept), anyone can download it, remove 
   assert.deepEqual(del.art.voxels, {});
   assert.equal((await worker.fetch(new Request("https://angelio.org/api/art/vox?slug=priest-idle"), e)).status, 404);
   assert.ok([...e.WATCH_MEDIA.files.keys()].some((k) => /^content\/art\/trash\/priest-idle-.*\.vox$/.test(k)));
+});
+
+function buildTestVoxWithMatl() {
+  const enc = (s) => new TextEncoder().encode(s);
+  const u32 = (n) => { const b = new Uint8Array(4); new DataView(b.buffer).setUint32(0, n, true); return b; };
+  const i32 = (n) => { const b = new Uint8Array(4); new DataView(b.buffer).setInt32(0, n, true); return b; };
+  const str = (s) => { const sb = enc(s); return concat([u32(sb.length), sb]); };
+  const dict = (obj) => {
+    const entries = Object.entries(obj);
+    return concat([u32(entries.length), ...entries.flatMap(([k, v]) => [str(k), str(String(v))])]);
+  };
+  const chunk = (id, payload) => concat([enc(id), u32(payload.length), u32(0), payload]);
+  const concat = (arrs) => {
+    const out = new Uint8Array(arrs.reduce((s, a) => s + a.length, 0));
+    let o = 0; for (const a of arrs) { out.set(a, o); o += a.length; } return out;
+  };
+
+  const sizePayload = concat([u32(4), u32(4), u32(4)]);
+  const voxels = [[0, 0, 0, 1], [1, 0, 0, 2], [2, 0, 0, 3], [3, 0, 0, 4], [0, 1, 0, 5]];
+  const xyziPayload = concat([u32(voxels.length), ...voxels.map((v) => new Uint8Array(v))]);
+  const matl = (id, props) => chunk("MATL", concat([i32(id), dict(props)]));
+
+  const children = concat([
+    chunk("SIZE", sizePayload),
+    chunk("XYZI", xyziPayload),
+    matl(1, { _type: "_diffuse", _rough: "0.1" }),
+    matl(2, { _type: "_emit", _emit: "0.9", _flux: "2" }),
+    matl(3, { _type: "_glass", _alpha: "0.75" }),
+    matl(4, { _type: "_metal", _metal: "0.85", _rough: "0.2" }),
+    matl(5, { _type: "_media", _weight: "0.5" }),
+    matl(9, { _type: "_emit", _emit: "0.7" }), // unused palette slot
+  ]);
+  return concat([enc("VOX "), u32(150), enc("MAIN"), u32(0), u32(children.length), children]);
+}
+
+test("MATL reader (Studio Drawings experiment): parses emit, glass, metal, cloud and ignores unused palette slots", () => {
+  const plain = fixture("priest-idle");
+  const plainMats = readVoxMaterials(plain);
+  assert.deepEqual(plainMats, {});
+  assert.equal(usedMaterials(readVox(plain), plainMats).totalSpecial, 0);
+
+  const bytes = buildTestVoxWithMatl();
+  const mats = readVoxMaterials(bytes);
+  assert.equal(mats[1], undefined);
+  assert.equal(mats[2]?.kind, "emit");
+  assert.equal(mats[2]?.flux, 2);
+  assert.equal(mats[3]?.kind, "glass");
+  assert.equal(mats[4]?.kind, "metal");
+  assert.equal(mats[5]?.kind, "cloud");
+  assert.equal(mats[9]?.kind, "emit");
+
+  const vox = readVox(bytes);
+  const used = usedMaterials(vox, mats);
+  assert.deepEqual(used.counts, { emit: 1, glass: 1, metal: 1, cloud: 1 });
+  assert.equal(used.totalSpecial, 4);
+  assert.match(used.summary, /Emit \(1\).*Glass \(1\).*Metal \(1\).*Cloud \(1\)/);
+
+  const scene = toSceneWithMaterials(vox, 0, mats);
+  assert.equal(scene.length, 5);
+  assert.equal(scene[0][4], null);
+  assert.equal(scene[1][4]?.kind, "emit");
 });

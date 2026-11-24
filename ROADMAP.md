@@ -212,6 +212,11 @@ collection while giving every game "one more run" depth without heavy downloads:
 - **Parish Bells & expanded character unlocks:** every completed round drops local Parish Bells/coins toward more unlockable characters, habits, and props built by recoloring/accessorizing shared `.vox` models (`looks.js` markers) at near-zero download cost.
 - **Bite-sized rotating missions & post-3★ Hard Mode:** short per-game goals beyond raw score, optional Hard Mode toggles earning Gold Crowns, plus deterministic **Today's Challenge** runs (`rng(YYYYMMDD)`).
 
+**2D Sticker World & 3D Voxel Room (confirmed Nov 24, 2026):** Keep **two separate places** rather than replacing the 2D board:
+- **2D Sticker World (`/stickers/`):** Keep as a dedicated 2D sticker playground (kids love placing flat stickers) and expand it with **more playset stages** and **even more stickers**.
+- **3D Voxel Room (in the Game Center `/games/` Parish Map):** A separate 3D voxel room / house / desk area right inside `/games/` where kids can see and arrange all the 3D voxel collectibles, characters, and props they've earned.
+- **MagicaVoxel `MATL` Experiment (Nov 24, 2026):** Previewing Emit, Glass, Metal, and Cloud materials only on the Studio Drawings checklist (`/studio/draw/`) first before deciding whether/how to bring them into games and Lesson Studio.
+
 6. **Mass Usher.** Seat arriving families in the church pews (a gentle Tetris). **Demo live Nov 22, 2026 at
    angelio.org/usher/** (apps/usher): a flat top-down church to try the game itself (tap a pew to walk the family there,
    swipe to scoot, tap again to seat, split families, people who won't scoot 📌, a quick bonus, two minutes to Mass);
