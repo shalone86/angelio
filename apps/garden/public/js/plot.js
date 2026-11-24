@@ -5,12 +5,55 @@ import { readVox, toScene } from "./vox.js";
 import { randomLook, recolor } from "./looks.js";
 import { cropById } from "./crops.js";
 
-const ART = /(^|\.)angelio\.org$/.test(location.hostname) ? "" : "https://angelio.org";
+const ART = typeof location !== "undefined" && /(^|\.)angelio\.org$/.test(location.hostname) ? "" : "https://angelio.org";
 
 export const MODELS = [
-  "monk-idle", "monk-walk", "nun-idle", "nun-walk", "man-walk", "man-idle", "woman-walk", "woman-idle",
+  "monk-idle", "monk-walk", "nun-idle", "nun-walk",
+  "man-walk", "man-idle", "woman-walk", "woman-idle",
+  "grandfather-idle", "grandfather-walk", "grandmother-idle", "grandmother-walk",
   "bug-idle", "bug-walk", "bird-idle", "bird-walk", "squirrel-idle", "squirrel-walk", "raccoon-idle", "raccoon-walk",
 ];
+
+/** Advance `pos` toward `dest` up to `maxStep` while pushing and sliding cleanly around circle `colliders`. */
+export function stepWithCollisions(pos, dest, maxStep, colliders = []) {
+  const dx = dest.x - pos.x, dz = dest.z - pos.z;
+  const dist = Math.hypot(dx, dz);
+  if (dist <= 1e-6 || maxStep <= 0) return { x: pos.x, z: pos.z, moved: false, rot: null };
+  const step = Math.min(dist, maxStep);
+  const pushOut = (p) => {
+    let x = p.x, z = p.z, blocker = null;
+    for (let pass = 0; pass < 2; pass++) {
+      for (const c of colliders) {
+        const ox = x - c.x, oz = z - c.z;
+        const d = Math.hypot(ox, oz);
+        if (d < c.r) {
+          blocker = c;
+          const nx = d > 1e-5 ? ox / d : 0;
+          const nz = d > 1e-5 ? oz / d : 1;
+          x = c.x + nx * c.r;
+          z = c.z + nz * c.r;
+        }
+      }
+    }
+    return { x, z, blocker };
+  };
+  let next = pushOut({ x: pos.x + (dx / dist) * step, z: pos.z + (dz / dist) * step });
+  let movedDist = Math.hypot(next.x - pos.x, next.z - pos.z);
+  if (movedDist < step * 0.25 && dist > 0.5 && next.blocker) {
+    const c = next.blocker;
+    const ox = pos.x - c.x, oz = pos.z - c.z;
+    const od = Math.hypot(ox, oz) || 1;
+    const rx = ox / od, rz = oz / od;
+    const t1 = { x: -rz, z: rx }, t2 = { x: rz, z: -rx };
+    const score = (t) => t.x * (dest.x - pos.x) + t.z * (dest.z - pos.z) + t.z * 0.05;
+    const tan = score(t1) >= score(t2) ? t1 : t2;
+    next = pushOut({ x: pos.x + tan.x * step, z: pos.z + tan.z * step });
+    movedDist = Math.hypot(next.x - pos.x, next.z - pos.z);
+  }
+  const mdx = next.x - pos.x, mdz = next.z - pos.z;
+  const moved = movedDist > 1e-4;
+  return { x: next.x, z: next.z, moved, rot: moved ? Math.atan2(mdx, mdz) : null };
+}
 
 export async function loadModels(names = MODELS) {
   const out = {};
@@ -116,7 +159,7 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
   const animate = (g, t) => {
     const fr = g.userData?.frames;
     if (fr?.length > 1) {
-      const k = Math.floor(t * (g.userData.fps || 4)) % fr.length;
+      const k = Math.floor(t * (g.userData.fps || 2)) % fr.length;
       fr.forEach((m, i) => { m.visible = i === k; });
     }
   };
@@ -131,17 +174,15 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
   };
   const makePerson = ({ nun = false, robe = "#5a4030" }, scale = 1.0) => {
     const look = { ...randomLook(), shirt: robe, dress: robe, belt: "#e8dcc0", shoes: "#2a1a10", hair: nun ? robe : "#3b2818" };
-    const order = nun ? ["nun-walk", "woman-walk", "nun-idle", "woman-idle"] : ["monk-walk", "man-walk", "monk-idle", "man-idle"];
-    const idleOrder = nun ? ["nun-idle", "nun-walk", "woman-idle", "woman-walk"] : ["monk-idle", "monk-walk", "man-idle", "man-walk"];
+    const order = nun
+      ? ["nun-walk", "woman-walk", "grandmother-walk", "nun-idle", "grandmother-idle"]
+      : ["monk-walk", "man-walk", "grandfather-walk", "monk-idle", "grandfather-idle"];
+    const idleOrder = nun
+      ? ["nun-idle", "woman-idle", "grandmother-idle", "nun-walk", "woman-walk"]
+      : ["monk-idle", "man-idle", "grandfather-idle", "monk-walk", "man-walk"];
     const g = new THREE.Group();
     const walkMesh = order.map((n) => meshFor(n, look)).find(Boolean) ?? standPerson(robe, look.hair);
-    let idleName = null, idleMesh = null;
-    for (const n of idleOrder) {
-      const m = meshFor(n, look);
-      if (m) { idleName = n; idleMesh = m; break; }
-    }
-    idleMesh ??= standPerson(robe, look.hair);
-    const idleHasAnim = Boolean(idleName?.endsWith("-idle"));
+    const idleMesh = idleOrder.map((n) => meshFor(n, look)).find(Boolean) ?? standPerson(robe, look.hair);
     walkMesh.visible = false;
     g.add(idleMesh, walkMesh);
     g.scale.setScalar(scale);
@@ -152,7 +193,7 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
       setWalk(w) { walking = !!w; idleMesh.visible = !walking; walkMesh.visible = walking; },
       tick(dt) {
         if (walking) animate(walkMesh, time);
-        else if (idleHasAnim) animate(idleMesh, time);
+        else animate(idleMesh, time);
         void dt;
       },
     };
@@ -164,11 +205,15 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
   player.g.position.set(HOME_AT.x, 0, HOME_AT.z);
   let playerTarget = null, playerReturnAt = 0;
 
-  // Persistent courier helpers: stationed on the path until an order sends one to the Food Bank
+  // Persistent courier helpers: widely separated posts + round-robin dispatch so neither helper overlaps or sits unused
   const MAX_COURIERS = 2;
-  const LANES = [-1.4, 0.4];
+  const HELPER_POSTS = [
+    { home: { x: 9.0, z: -4.2 }, bank: { x: BANK_POS.x - 4.5, z: -3.6 } },
+    { home: { x: 9.0, z: 2.2 }, bank: { x: BANK_POS.x - 4.5, z: -0.4 } },
+  ];
   const couriers = [];
   const pendingDeliveries = [];
+  let nextCourier = 0;
   function makeBasket() {
     const b = new THREE.Group();
     block(2.4, 1.3, 1.8, 0, 0, 0, mat("#c99449"), b);
@@ -192,27 +237,33 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
     c.actor.setWalk(true);
   }
   if (!stage.vigil) {
-    LANES.slice(0, MAX_COURIERS).forEach((lane) => {
+    HELPER_POSTS.slice(0, MAX_COURIERS).forEach((post) => {
       const actor = makePerson({ nun: false, robe: "#5a4030" }, 1.0);
       const basket = makeBasket();
       basket.position.set(0, 2.7, 1.5);
       actor.g.add(basket);
-      const home = { x: 8.5, z: lane };
-      actor.g.position.set(home.x, 0, home.z);
+      actor.g.position.set(post.home.x, 0, post.home.z);
       actor.g.rotation.y = -Math.PI / 2;
       actor.setWalk(false);
-      couriers.push({ actor, basket, crops: null, lane, home, state: "idle" });
+      couriers.push({ actor, basket, crops: null, home: post.home, bank: post.bank, state: "idle" });
     });
   }
   function deliver(crops) {
-    const idle = couriers.find((c) => c.state === "idle");
-    if (idle) startDelivery(idle, crops);
-    else if (pendingDeliveries.length < 4) pendingDeliveries.push(crops);
+    for (let i = 0; i < couriers.length; i++) {
+      const idx = (nextCourier + i) % couriers.length;
+      if (couriers[idx].state === "idle") {
+        nextCourier = (idx + 1) % couriers.length;
+        startDelivery(couriers[idx], crops);
+        return;
+      }
+    }
+    if (pendingDeliveries.length < 4) pendingDeliveries.push(crops);
   }
 
   // Garden beds, fruit trees, & herb planters
   const spotMeshes = new Map();
   const hitTargets = [];
+  const treeColliders = [];
   const registerHit = (mesh, info) => { mesh.userData = info; hitTargets.push(mesh); };
 
   function buildSpot(s) {
@@ -231,6 +282,7 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
       block(3.8, 2.0, 3.8, 0, 8.2, 0, mat(night ? "#2d5f36" : "#43a047"), g);
       hit.scale.set(5.8, 10.5, 5.8);
       hit.position.set(0, 5.2, 0);
+      treeColliders.push({ x: s.x, z: s.z, r: 3.4 });
     } else {
       block(3.8, 1.3, 3.8, 0, 0, 0, mat("#9e9480"), g);
       block(3.2, 0.3, 3.2, 0, 1.2, 0, mat("#4a2e19"), g);
@@ -298,10 +350,16 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
     fleeing.push({ ...entry, vy: entry.type === "bird" ? 16 : 5, vx: (Math.random() < 0.5 ? -1 : 1) * 18, t: 0 });
   }
 
+  function nudgePest(pestId) {
+    const entry = pestMap.get(pestId);
+    if (entry) entry.nudgeT = 0.28;
+  }
+
   function focusSpot(spotId) {
     const sp = spotMeshes.get(spotId);
     if (!sp) return;
-    playerTarget = { x: sp.spot.x, z: sp.spot.z + 1.8 };
+    const off = sp.spot.kind === "tree" ? { x: 0, z: 3.8 } : sp.spot.kind === "herb" ? { x: 2.8, z: 0 } : { x: 0, z: 2.8 };
+    playerTarget = { x: sp.spot.x + off.x, z: sp.spot.z + off.z };
     playerReturnAt = time + 1.1;
   }
 
@@ -387,7 +445,7 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
         gRoot.add(hit);
         registerHit(hit, { pestId: p.id, spotId: p.spotId });
         scene.add(gRoot);
-        pestMap.set(p.id, { id: p.id, type: p.type, g: gRoot, visual, hit, baseY });
+        pestMap.set(p.id, { id: p.id, type: p.type, g: gRoot, visual, hit, baseY, nudgeT: 0 });
       }
     }
     for (const [id, entry] of pestMap) {
@@ -404,16 +462,15 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
     if (disposed) return;
     time += dt;
 
-    // Player movement toward recent action spot, then drift back toward path center.
+    // Player movement toward recent action spot (sliding around trees), then return to HOME_AT.
     const dest = (playerTarget && time < playerReturnAt) ? playerTarget : HOME_AT;
-    const dx = dest.x - player.g.position.x, dz = dest.z - player.g.position.z;
-    const dist = Math.hypot(dx, dz);
+    const dist = Math.hypot(dest.x - player.g.position.x, dest.z - player.g.position.z);
     if (dist > 0.35) {
-      const step = Math.min(dist, 14 * dt);
-      player.g.position.x += (dx / dist) * step;
-      player.g.position.z += (dz / dist) * step;
-      player.g.rotation.y = Math.atan2(dx, dz);
-      player.setWalk(true);
+      const step = stepWithCollisions(player.g.position, dest, 14 * dt, treeColliders);
+      player.g.position.x = step.x;
+      player.g.position.z = step.z;
+      if (step.rot != null) player.g.rotation.y = step.rot;
+      player.setWalk(step.moved);
     } else {
       player.setWalk(false);
     }
@@ -423,7 +480,7 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
     for (const c of couriers) {
       c.actor.tick(dt);
       if (c.state === "idle") continue;
-      const goal = c.state === "to-bank" ? { x: BANK_POS.x - 4.2, z: BANK_POS.z + c.lane * 0.5 } : c.home;
+      const goal = c.state === "to-bank" ? c.bank : c.home;
       const cdx = goal.x - c.actor.g.position.x, cdz = goal.z - c.actor.g.position.z;
       const cdist = Math.hypot(cdx, cdz);
       if (cdist > 0.4) {
@@ -448,9 +505,14 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
       }
     }
 
-    // Active pests bounce slightly on crops; shooed pests fly away
+    // Active pests bounce slightly on crops (plus recoil on 2-tap hits); shooed pests fly away
     for (const entry of pestMap.values()) {
-      entry.g.position.y = entry.baseY + Math.abs(Math.sin(time * 7 + entry.id)) * 0.45;
+      let jump = Math.abs(Math.sin(time * 7 + entry.id)) * 0.45;
+      if (entry.nudgeT > 0) {
+        entry.nudgeT = Math.max(0, entry.nudgeT - dt);
+        jump += Math.sin((entry.nudgeT / 0.28) * Math.PI) * 1.4;
+      }
+      entry.g.position.y = entry.baseY + jump;
       animate(entry.visual, time);
     }
     for (let i = fleeing.length - 1; i >= 0; i--) {
@@ -470,6 +532,7 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
   return {
     sync,
     shoo,
+    nudgePest,
     deliver,
     focusSpot,
     pickAt,

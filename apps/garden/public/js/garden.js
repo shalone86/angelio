@@ -104,13 +104,23 @@ function spawnPest(g, events) {
   const busy = new Set(g.pests.map((p) => p.spotId));
   const pool = g.stage.pests.map(pestById);
   let free = g.spots.filter((s) => !busy.has(s.id) && (g.stage.vigil || s.ripe || g.r() < (g.stage.endless ? 0.5 : 0.35)));
-  if (!free.length && g.stage.endless) free = g.spots.filter((s) => !busy.has(s.id));
+  if (!free.length && (g.stage.endless || g.stage.vigil)) free = g.spots.filter((s) => !busy.has(s.id));
   if (!free.length) return;
   const targetSpot = free[Math.floor(g.r() * free.length)];
   const allowed = pool.filter((p) => p.targets.includes(targetSpot.kind));
-  const kind = (allowed.length ? allowed : pool)[Math.floor(g.r() * (allowed.length || pool.length))];
-  const eatScale = g.stage.endless ? Math.max(0.55, 1 - (g.wave - 1) * 0.06) : 1;
+  let list = allowed.length ? allowed : pool;
+  if (g.stage.vigil && g.t / g.length > 0.35 && g.r() < 0.48) {
+    const tough = list.filter((p) => (p.taps ?? 1) > 1);
+    if (tough.length) list = tough;
+  }
+  const kind = list[Math.floor(g.r() * list.length)];
+  const eatScale = g.stage.endless
+    ? Math.max(0.55, 1 - (g.wave - 1) * 0.06)
+    : g.stage.vigil
+    ? Math.max(0.76, 1 - (g.t / g.length) * 0.24)
+    : 1;
   const stay = kind.eatTime * eatScale * (g.gardener.pestStay ?? 1);
+  const taps = kind.taps ?? 1;
   const pest = {
     id: ++g.pestIds,
     type: kind.id,
@@ -118,6 +128,8 @@ function spawnPest(g, events) {
     emoji: kind.emoji,
     isBug: kind.isBug,
     points: kind.points,
+    hp: taps,
+    maxHp: taps,
     spotId: targetSpot.id,
     x: targetSpot.x,
     z: targetSpot.z,
@@ -184,7 +196,7 @@ export function tick(g, dt) {
     }
   }
 
-  // Spawn pests (timed stages ramp gently; Endless escalates exponentially every 30s wave).
+  // Spawn pests (timed stages ramp gently; Night Vigil swarms harder near dawn; Endless escalates every 30s wave).
   g.nextPestIn -= dt;
   if (g.nextPestIn <= 0 && g.t < g.length - 0.5) {
     if (g.stage.endless) {
@@ -194,6 +206,13 @@ export function tick(g, dt) {
       const [e0, e1] = g.stage.pestEvery;
       const gap = Math.max(e1, e0 * (0.68 ** w));
       g.nextPestIn = gap * (0.8 + g.r() * 0.4);
+    } else if (g.stage.vigil) {
+      const frac = Math.min(1, g.t / g.length);
+      const burst = frac >= 0.76 ? 3 : frac >= 0.50 ? 2 : 1;
+      for (let b = 0; b < burst; b++) spawnPest(g, events);
+      const [e0, e1] = g.stage.pestEvery;
+      const gap = e0 + (e1 - e0) * frac;
+      g.nextPestIn = gap * (0.85 + g.r() * 0.3);
     } else {
       spawnPest(g, events);
       const frac = Math.min(1, g.t / g.length);
@@ -252,8 +271,15 @@ export function tapPest(g, pestId) {
   if (g.over) return events;
   const idx = g.pests.findIndex((p) => p.id === pestId);
   if (idx < 0) return events;
-  const p = g.pests.splice(idx, 1)[0];
+  const p = g.pests[idx];
   const sp = g.spots.find((s) => s.id === p.spotId);
+  p.hp = (p.hp ?? 1) - 1;
+  if (p.hp > 0) {
+    p.left = Math.min(p.max, p.left + 1.4);
+    events.push({ type: "shoo-hit", pest: p, spot: sp, leftHp: p.hp });
+    return events;
+  }
+  g.pests.splice(idx, 1);
   g.streak += 1;
   g.shooed += 1;
   g.bestStreak = Math.max(g.bestStreak, g.streak);

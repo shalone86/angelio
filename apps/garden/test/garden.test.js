@@ -1,10 +1,11 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import { CROPS, PESTS } from "../public/js/crops.js";
+import { CROPS, PESTS, pestById } from "../public/js/crops.js";
 import { STAGES, stageById, isOpen } from "../public/js/stages.js";
 import { GARDENERS, gardenerById, gardenerOpen } from "../public/js/gardeners.js";
 import { newGame, tick, tapSpot, tapPest, orderReward, starsFor, timeLeft } from "../public/js/garden.js";
+import { stepWithCollisions } from "../public/js/plot.js";
 
 test("four 45s stages + Endless Harvest, plus Brother/Sister starters and 2-monk / 2-nun unlocks", () => {
   assert.equal(STAGES.length, 5);
@@ -95,15 +96,75 @@ test("orders fill when matching ripe produce is tapped, auto-deliver, decay to 0
   assert.ok(g.score < 100);
 });
 
-test("night vigil: zero orders, no picking, guard bonuses, ends cleanly at 45s", () => {
+test("night vigil: zero orders, no picking, rising critter spawns as dawn nears, ends cleanly at 45s", () => {
   const g = newGame({ seed: 7, stage: stageById("vigil"), gardener: gardenerById("sister") });
   assert.equal(g.orders.length, 0);
   const spotEv = tapSpot(g, g.spots[0].id);
   assert.ok(spotEv.some((e) => e.type === "vigil-safe"));
   const bonuses = [];
-  while (!g.over) bonuses.push(...tick(g, 0.25).filter((e) => e.type === "guard-bonus"));
+  let earlySpawns = 0, lateSpawns = 0;
+  while (!g.over) {
+    const evs = tick(g, 0.25);
+    bonuses.push(...evs.filter((e) => e.type === "guard-bonus"));
+    const spawns = evs.filter((e) => e.type === "pest-spawn").length;
+    if (g.t < 22.5) earlySpawns += spawns;
+    else lateSpawns += spawns;
+    while (g.pests.length) tapPest(g, g.pests[0].id);
+  }
   assert.equal(timeLeft(g), 0);
   assert.ok(bonuses.length >= 4);
+  assert.ok(lateSpawns > earlySpawns, `expected late spawns (${lateSpawns}) > early spawns (${earlySpawns})`);
+});
+
+test("two-tap critters: raccoons and squirrels require two taps to shoo", () => {
+  assert.equal(pestById("raccoon").taps, 2);
+  assert.equal(pestById("squirrel").taps, 2);
+  assert.equal(pestById("bug").taps, 1);
+  assert.equal(pestById("bird").taps, 1);
+
+  const g = newGame({ seed: 12, stage: stageById("vigil"), gardener: gardenerById("brother") });
+  while (!g.pests.some((p) => p.type === "raccoon" || p.type === "squirrel")) {
+    for (const p of [...g.pests]) tapPest(g, p.id);
+    tick(g, 0.2);
+  }
+  const tough = g.pests.find((p) => p.type === "raccoon" || p.type === "squirrel");
+  const scoreBefore = g.score;
+  const hit1 = tapPest(g, tough.id);
+  assert.equal(hit1[0]?.type, "shoo-hit");
+  assert.equal(tough.hp, 1);
+  assert.ok(g.pests.includes(tough), "still present after first tap");
+  assert.equal(g.score, scoreBefore, "points awarded once fully shooed");
+
+  const hit2 = tapPest(g, tough.id);
+  assert.equal(hit2[0]?.type, "shoo");
+  assert.ok(!g.pests.includes(tough), "removed on second tap");
+  assert.ok(g.score > scoreBefore);
+});
+
+test("tree collision keeps gardener outside tree trunks while walking around orchard trees", () => {
+  const trees = [-14, -6, 2, 10].map((x) => ({ x, z: -13, r: 3.4 }));
+  // Walk straight through tree at (-6, -13)
+  let pos = { x: -12, z: -13 };
+  const dest = { x: 0, z: -13 };
+  for (let i = 0; i < 60; i++) {
+    const res = stepWithCollisions(pos, dest, 0.5, [trees[1]]);
+    pos = { x: res.x, z: res.z };
+    const distTree = Math.hypot(pos.x - trees[1].x, pos.z - trees[1].z);
+    assert.ok(distTree >= 3.4 - 1e-6, `entered tree radius: ${distTree}`);
+  }
+  assert.ok(Math.hypot(pos.x - dest.x, pos.z - dest.z) < 0.6, "reached destination around tree");
+
+  // Walk past multiple orchard trees from t1 front to t4 front
+  let p2 = { x: -14, z: -14 };
+  const dest2 = { x: 2, z: -9.2 };
+  for (let i = 0; i < 120; i++) {
+    const res = stepWithCollisions(p2, dest2, 0.5, trees);
+    p2 = { x: res.x, z: res.z };
+    for (const c of trees) {
+      assert.ok(Math.hypot(p2.x - c.x, p2.z - c.z) >= 3.4 - 1e-6, "stays outside every tree");
+    }
+  }
+  assert.ok(Math.hypot(p2.x - dest2.x, p2.z - dest2.z) < 0.8, "navigates around orchard trees cleanly");
 });
 
 test("endless harvest: 30s wave escalation, eaten meter fills and ends stage cleanly", () => {
@@ -186,7 +247,7 @@ test("pretend players: every stage (including Endless) terminates and separates 
   const bro = gardenerById("brother");
   for (const st of STAGES) {
     const idle = play(st, 999, false, bro, 1);
-    const slow = play(st, st.endless ? 2.0 : 2.3, false, bro, 2);
+    const slow = play(st, st.endless ? 1.8 : 2.0, false, bro, 2);
     const pro = play(st, st.endless ? 0.50 : 0.55, true, bro, 3);
     assert.equal(idle.over, true, `${st.id} idle ends`);
     assert.equal(slow.over, true, `${st.id} slow ends`);
@@ -227,6 +288,11 @@ test("app.js finish() scope, TDZ initialization order, picker wiring, 2-helper c
 
   const plotSrc = fs.readFileSync(new URL("../public/js/plot.js", import.meta.url), "utf8");
   assert.match(plotSrc, /MAX_COURIERS\s*=\s*2\b/);
+  assert.match(plotSrc, /HELPER_POSTS\s*=/);
+  assert.match(plotSrc, /nextCourier\s*=/);
+  assert.match(plotSrc, /grandfather-idle/);
+  assert.match(plotSrc, /grandmother-idle/);
+  assert.match(plotSrc, /treeColliders/);
   assert.match(plotSrc, /frustumCulled\s*=\s*false/);
   assert.ok(!plotSrc.includes("scene.remove(c.actor.g)"), "helpers stay persistent in scene");
 });

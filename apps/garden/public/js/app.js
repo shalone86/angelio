@@ -181,6 +181,11 @@ function viewPlay(stageId) {
         plot.shoo(ev.pest.id);
         if (ev.spot) plot.focusSpot(ev.spot.id);
         pop(`+${ev.points}${ev.mult > 1 ? ` ×${ev.mult}` : ""}`, plot.spotTop(ev.spot?.id), ev.quick ? "quick" : "");
+      } else if (ev.type === "shoo-hit") {
+        sfx.bonk();
+        plot.nudgePest(ev.pest.id);
+        if (ev.spot) plot.focusSpot(ev.spot.id);
+        pop("Tap again! 👆", plot.spotTop(ev.spot?.id), "quick");
       } else if (ev.type === "auto-shoo") {
         sfx.chime();
         plot.shoo(ev.pest.id);
@@ -226,13 +231,13 @@ function viewPlay(stageId) {
         emoji: stage.icon,
         title: stage.name,
         rule: stage.vigil
-          ? `Night falls on the monastery garden! Tap bugs, crows, squirrels, and raccoons quickly to guard every plant until dawn.`
+          ? `Night falls on the monastery garden! Critters swarm faster as dawn nears — tap raccoons and squirrels twice to shoo them off and guard every plant!`
           : stage.endless
           ? `Endless harvest! Tap critters fast to shoo them and fill Food Bank orders. Every 30 seconds more critters swarm in — once ${stage.maxEaten} crops are eaten, the stage ends!`
           : `Bugs and critters come for your crops — tap them fast to shoo them off! Tap ripe produce matching the <b>Food Bank</b> orders above to pack each basket automatically before it waits too long!`,
         exampleHtml: `<p class="center garden-example">${stage.vigil ? "🐛 🐦 🐿️ 🦝 ➜ 👆" : "🐛 ➜ 👆 &nbsp; 🥕 🍎 ➜ 🧺 ➜ 🚐"}</p>`,
         voice: stage.vigil
-          ? `Night falls on the garden! Tap critters quickly to guard every crop until dawn.`
+          ? `Night falls on the garden! More critters swarm in as dawn draws near, and raccoons and squirrels take two taps!`
           : stage.endless
           ? `Endless harvest! More critters come every thirty seconds. Protect your crops and fill Food Bank orders before the eaten meter fills up!`
           : `Tap bugs and critters fast to shoo them off! Then tap ripe fruits and veggies that the Food Bank ordered before they wait too long!`,
@@ -355,14 +360,22 @@ function viewPlay(stageId) {
           btn.type = "button";
           btn.className = "gpin pest";
           btn.dataset.pest = String(p.id);
-          btn.innerHTML = `<span>${p.emoji}</span><span class="pbar"><i></i></span>`;
-          btn.setAttribute("aria-label", `Shoo ${p.name}`);
+          btn.innerHTML = `<span class="phead"><span>${p.emoji}</span>${p.hp > 1 ? `<span class="ptaps">×${p.hp}</span>` : ""}</span><span class="pbar"><i></i></span>`;
           pinsEl.append(btn);
           pestPins.set(p.id, btn);
         }
+        const tapsEl = btn.querySelector(".ptaps");
+        if (p.hp > 1) {
+          if (tapsEl) tapsEl.textContent = `×${p.hp}`;
+          else btn.querySelector(".phead")?.insertAdjacentHTML("beforeend", `<span class="ptaps">×${p.hp}</span>`);
+        } else if (tapsEl) {
+          tapsEl.remove();
+        }
+        btn.setAttribute("aria-label", p.hp > 1 ? `Shoo ${p.name} (${p.hp} taps left)` : `Shoo ${p.name}`);
         const f = Math.max(0, p.left / p.max);
         btn.querySelector("i").style.width = `${(f * 100).toFixed(0)}%`;
         btn.classList.toggle("urgent", f < 0.35);
+        btn.classList.toggle("tough", p.hp > 1);
         btn.style.left = `${pt.x}px`;
         btn.style.top = `${pt.y}px`;
       }

@@ -11,10 +11,10 @@ export const CROPS = [
 ];
 
 export const PESTS = [
-  { id: "bug", name: "Garden Beetle", emoji: "🐛", isBug: true, targets: ["bed", "herb"], eatTime: 5.6, points: 5 },
-  { id: "bird", name: "Hungry Crow", emoji: "🐦", isBug: false, targets: ["tree", "bed"], eatTime: 5.0, points: 6 },
-  { id: "squirrel", name: "Squirrel", emoji: "🐿️", isBug: false, targets: ["tree", "bed"], eatTime: 4.8, points: 7 },
-  { id: "raccoon", name: "Night Critter", emoji: "🦝", isBug: false, targets: ["bed", "tree", "herb"], eatTime: 4.6, points: 8 },
+  { id: "bug", name: "Garden Beetle", emoji: "🐛", isBug: true, targets: ["bed", "herb"], eatTime: 5.6, points: 5, taps: 1 },
+  { id: "bird", name: "Hungry Crow", emoji: "🐦", isBug: false, targets: ["tree", "bed"], eatTime: 5.0, points: 6, taps: 1 },
+  { id: "squirrel", name: "Squirrel", emoji: "🐿️", isBug: false, targets: ["tree", "bed"], eatTime: 6.0, points: 8, taps: 2 },
+  { id: "raccoon", name: "Night Critter", emoji: "🦝", isBug: false, targets: ["bed", "tree", "herb"], eatTime: 5.4, points: 11, taps: 2 },
 ];
 
 export const cropById = (id) => CROPS.find((c) => c.id === id) ?? CROPS[0];
