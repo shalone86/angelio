@@ -97,7 +97,8 @@ export const multOf = (g) => Math.min(4, 1 + Math.floor(g.streak / 4));
 export function starsFor(g) {
   if (g.score >= g.stage.star3) return 3;
   if (g.score >= g.stage.star2) return 2;
-  return g.shooed + g.delivered > 0 ? 1 : 0;
+  if (g.score >= (g.stage.star1 ?? 100)) return 1;
+  return 0;
 }
 
 function spawnPest(g, events) {

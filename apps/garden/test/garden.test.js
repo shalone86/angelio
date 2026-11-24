@@ -5,14 +5,24 @@ import { CROPS, PESTS, pestById } from "../public/js/crops.js";
 import { STAGES, stageById, isOpen } from "../public/js/stages.js";
 import { GARDENERS, gardenerById, gardenerOpen } from "../public/js/gardeners.js";
 import { newGame, tick, tapSpot, tapPest, orderReward, starsFor, timeLeft } from "../public/js/garden.js";
-import { stepWithCollisions } from "../public/js/plot.js";
+import { stepWithCollisions, clearTarget, TREE_COLLIDER_R } from "../public/js/plot.js";
 
-test("four 45s stages + Endless Harvest, plus Brother/Sister starters and 2-monk / 2-nun unlocks", () => {
+test("four 45s stages + Endless Harvest, 100/200/300 stars, plus Brother/Sister starters and 2-monk / 2-nun unlocks", () => {
   assert.equal(STAGES.length, 5);
   const timed = STAGES.filter((st) => !st.endless);
   const endless = STAGES.find((st) => st.endless);
   assert.equal(timed.length, 4);
   for (const st of timed) assert.equal(st.length, 45);
+  for (const st of STAGES) {
+    assert.equal(st.star1, 100);
+    assert.equal(st.star2, 200);
+    assert.equal(st.star3, 300);
+  }
+  const g = newGame({ seed: 1, stage: STAGES[0], gardener: gardenerById("brother") });
+  for (const [score, want] of [[0, 0], [99, 0], [100, 1], [199, 1], [200, 2], [299, 2], [300, 3]]) {
+    g.score = score;
+    assert.equal(starsFor(g), want, `score ${score} -> ${want}★`);
+  }
   assert.equal(endless.id, "endless");
   assert.equal(endless.length, Infinity);
   assert.equal(endless.maxEaten, 10);
@@ -141,30 +151,35 @@ test("two-tap critters: raccoons and squirrels require two taps to shoo", () => 
   assert.ok(g.score > scoreBefore);
 });
 
-test("tree collision keeps gardener outside tree trunks while walking around orchard trees", () => {
-  const trees = [-14, -6, 2, 10].map((x) => ({ x, z: -13, r: 3.4 }));
+test("tree collision keeps gardener well outside tree trunks and targets clear", () => {
+  assert.ok(TREE_COLLIDER_R >= 4.4);
+  const trees = [-14, -6, 2, 10].map((x) => ({ x, z: -13, r: TREE_COLLIDER_R }));
   // Walk straight through tree at (-6, -13)
   let pos = { x: -12, z: -13 };
   const dest = { x: 0, z: -13 };
-  for (let i = 0; i < 60; i++) {
+  for (let i = 0; i < 80; i++) {
     const res = stepWithCollisions(pos, dest, 0.5, [trees[1]]);
     pos = { x: res.x, z: res.z };
     const distTree = Math.hypot(pos.x - trees[1].x, pos.z - trees[1].z);
-    assert.ok(distTree >= 3.4 - 1e-6, `entered tree radius: ${distTree}`);
+    assert.ok(distTree >= TREE_COLLIDER_R - 1e-6, `entered tree radius: ${distTree}`);
   }
   assert.ok(Math.hypot(pos.x - dest.x, pos.z - dest.z) < 0.6, "reached destination around tree");
 
-  // Walk past multiple orchard trees from t1 front to t4 front
-  let p2 = { x: -14, z: -14 };
-  const dest2 = { x: 2, z: -9.2 };
+  // Walk past multiple orchard trees from top-left herb h4 front to t4 front
+  let p2 = { x: -19, z: -10.6 };
+  const dest2 = clearTarget({ x: 10, z: -13 + TREE_COLLIDER_R + 0.4 }, trees, 0.3);
   for (let i = 0; i < 120; i++) {
     const res = stepWithCollisions(p2, dest2, 0.5, trees);
     p2 = { x: res.x, z: res.z };
     for (const c of trees) {
-      assert.ok(Math.hypot(p2.x - c.x, p2.z - c.z) >= 3.4 - 1e-6, "stays outside every tree");
+      assert.ok(Math.hypot(p2.x - c.x, p2.z - c.z) >= TREE_COLLIDER_R - 1e-6, "stays outside every tree");
     }
   }
   assert.ok(Math.hypot(p2.x - dest2.x, p2.z - dest2.z) < 0.8, "navigates around orchard trees cleanly");
+
+  // Even targets initially placed near/inside tree overlap are projected clear
+  const h4Clear = clearTarget({ x: -19, z: -10.6 }, trees, 0.3);
+  for (const c of trees) assert.ok(Math.hypot(h4Clear.x - c.x, h4Clear.z - c.z) >= TREE_COLLIDER_R + 0.3 - 1e-6);
 });
 
 test("endless harvest: 30s wave escalation, eaten meter fills and ends stage cleanly", () => {
@@ -219,7 +234,7 @@ test("all four unlockable gardeners apply their distinct abilities", () => {
   assert.ok(grn.spots[0].growTime < b2.spots[0].growTime);
 });
 
-test("pretend players: every stage (including Endless) terminates and separates idle (<=1★), slow (>=2★), and quick (3★)", () => {
+test("pretend players: every stage (including Endless) terminates and separates idle (0★), steady (>=2★), and quick (3★)", () => {
   function play(stage, pause, pestFirst, gardener, seed) {
     const g = newGame({ seed, stage, gardener });
     let wait = 0.5;
@@ -247,14 +262,14 @@ test("pretend players: every stage (including Endless) terminates and separates 
   const bro = gardenerById("brother");
   for (const st of STAGES) {
     const idle = play(st, 999, false, bro, 1);
-    const slow = play(st, st.endless ? 1.8 : 2.0, false, bro, 2);
-    const pro = play(st, st.endless ? 0.50 : 0.55, true, bro, 3);
+    const steady = play(st, 1.5, false, bro, 2);
+    const quick = play(st, 0.7, true, bro, 3);
     assert.equal(idle.over, true, `${st.id} idle ends`);
-    assert.equal(slow.over, true, `${st.id} slow ends`);
-    assert.equal(pro.over, true, `${st.id} pro ends`);
-    assert.ok(starsFor(idle) <= 1, `${st.id} idle gets <=1★ (got ${idle.score})`);
-    assert.ok(starsFor(slow) >= 2, `${st.id} slow player gets >=2★ (got ${slow.score} vs ${st.star2})`);
-    assert.equal(starsFor(pro), 3, `${st.id} pro player earns 3★ (got ${pro.score} vs ${st.star3})`);
+    assert.equal(steady.over, true, `${st.id} steady ends`);
+    assert.equal(quick.over, true, `${st.id} quick ends`);
+    assert.equal(starsFor(idle), 0, `${st.id} idle gets 0★ (got ${idle.score})`);
+    assert.ok(starsFor(steady) >= 2, `${st.id} steady player gets >=2★ (got ${steady.score} vs ${st.star2})`);
+    assert.equal(starsFor(quick), 3, `${st.id} quick player earns 3★ (got ${quick.score} vs ${st.star3})`);
   }
 
   const endStage = stageById("endless");
@@ -290,8 +305,13 @@ test("app.js finish() scope, TDZ initialization order, picker wiring, 2-helper c
   assert.match(plotSrc, /MAX_COURIERS\s*=\s*2\b/);
   assert.match(plotSrc, /HELPER_POSTS\s*=/);
   assert.match(plotSrc, /nextCourier\s*=/);
-  assert.match(plotSrc, /grandfather-idle/);
-  assert.match(plotSrc, /grandmother-idle/);
+  assert.ok(!plotSrc.includes("grandfather-idle"), "no mismatched grandfather idle fallback");
+  assert.ok(!plotSrc.includes("grandmother-idle"), "no mismatched grandmother idle fallback");
+  assert.match(plotSrc, /monk-idle/);
+  assert.match(plotSrc, /nun-idle/);
+  assert.match(plotSrc, /man-idle/);
+  assert.match(plotSrc, /woman-idle/);
+  assert.match(plotSrc, /TREE_COLLIDER_R/);
   assert.match(plotSrc, /treeColliders/);
   assert.match(plotSrc, /frustumCulled\s*=\s*false/);
   assert.ok(!plotSrc.includes("scene.remove(c.actor.g)"), "helpers stay persistent in scene");

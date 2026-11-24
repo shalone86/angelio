@@ -10,9 +10,29 @@ const ART = typeof location !== "undefined" && /(^|\.)angelio\.org$/.test(locati
 export const MODELS = [
   "monk-idle", "monk-walk", "nun-idle", "nun-walk",
   "man-walk", "man-idle", "woman-walk", "woman-idle",
-  "grandfather-idle", "grandfather-walk", "grandmother-idle", "grandmother-walk",
   "bug-idle", "bug-walk", "bird-idle", "bird-walk", "squirrel-idle", "squirrel-walk", "raccoon-idle", "raccoon-walk",
 ];
+
+export const TREE_COLLIDER_R = 4.4;
+
+/** Project a target point outside every circle collider (`c.r + pad`) so characters never aim inside a tree. */
+export function clearTarget(pt, colliders = [], pad = 0.3) {
+  let x = pt.x, z = pt.z;
+  for (let pass = 0; pass < 3; pass++) {
+    for (const c of colliders) {
+      const r = c.r + pad;
+      const ox = x - c.x, oz = z - c.z;
+      const d = Math.hypot(ox, oz);
+      if (d < r) {
+        const nx = d > 1e-5 ? ox / d : 0;
+        const nz = d > 1e-5 ? oz / d : 1;
+        x = c.x + nx * r;
+        z = c.z + nz * r;
+      }
+    }
+  }
+  return { x, z };
+}
 
 /** Advance `pos` toward `dest` up to `maxStep` while pushing and sliding cleanly around circle `colliders`. */
 export function stepWithCollisions(pos, dest, maxStep, colliders = []) {
@@ -22,7 +42,7 @@ export function stepWithCollisions(pos, dest, maxStep, colliders = []) {
   const step = Math.min(dist, maxStep);
   const pushOut = (p) => {
     let x = p.x, z = p.z, blocker = null;
-    for (let pass = 0; pass < 2; pass++) {
+    for (let pass = 0; pass < 3; pass++) {
       for (const c of colliders) {
         const ox = x - c.x, oz = z - c.z;
         const d = Math.hypot(ox, oz);
@@ -174,15 +194,17 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
   };
   const makePerson = ({ nun = false, robe = "#5a4030" }, scale = 1.0) => {
     const look = { ...randomLook(), shirt: robe, dress: robe, belt: "#e8dcc0", shoes: "#2a1a10", hair: nun ? robe : "#3b2818" };
-    const order = nun
-      ? ["nun-walk", "woman-walk", "grandmother-walk", "nun-idle", "grandmother-idle"]
-      : ["monk-walk", "man-walk", "grandfather-walk", "monk-idle", "grandfather-idle"];
-    const idleOrder = nun
-      ? ["nun-idle", "woman-idle", "grandmother-idle", "nun-walk", "woman-walk"]
-      : ["monk-idle", "man-idle", "grandfather-idle", "monk-walk", "man-walk"];
+    const order = nun ? ["nun-walk", "woman-walk", "nun-idle", "woman-idle"] : ["monk-walk", "man-walk", "monk-idle", "man-idle"];
+    const idleOrder = nun ? ["nun-idle", "woman-idle", "nun-walk", "woman-walk"] : ["monk-idle", "man-idle", "monk-walk", "man-walk"];
     const g = new THREE.Group();
     const walkMesh = order.map((n) => meshFor(n, look)).find(Boolean) ?? standPerson(robe, look.hair);
-    const idleMesh = idleOrder.map((n) => meshFor(n, look)).find(Boolean) ?? standPerson(robe, look.hair);
+    let idleName = null, idleMesh = null;
+    for (const n of idleOrder) {
+      const m = meshFor(n, look);
+      if (m) { idleName = n; idleMesh = m; break; }
+    }
+    idleMesh ??= standPerson(robe, look.hair);
+    const idleHasAnim = Boolean(idleName?.endsWith("-idle"));
     walkMesh.visible = false;
     g.add(idleMesh, walkMesh);
     g.scale.setScalar(scale);
@@ -193,7 +215,7 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
       setWalk(w) { walking = !!w; idleMesh.visible = !walking; walkMesh.visible = walking; },
       tick(dt) {
         if (walking) animate(walkMesh, time);
-        else animate(idleMesh, time);
+        else if (idleHasAnim) animate(idleMesh, time);
         void dt;
       },
     };
@@ -282,7 +304,7 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
       block(3.8, 2.0, 3.8, 0, 8.2, 0, mat(night ? "#2d5f36" : "#43a047"), g);
       hit.scale.set(5.8, 10.5, 5.8);
       hit.position.set(0, 5.2, 0);
-      treeColliders.push({ x: s.x, z: s.z, r: 3.4 });
+      treeColliders.push({ x: s.x, z: s.z, r: TREE_COLLIDER_R });
     } else {
       block(3.8, 1.3, 3.8, 0, 0, 0, mat("#9e9480"), g);
       block(3.2, 0.3, 3.2, 0, 1.2, 0, mat("#4a2e19"), g);
@@ -358,8 +380,12 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
   function focusSpot(spotId) {
     const sp = spotMeshes.get(spotId);
     if (!sp) return;
-    const off = sp.spot.kind === "tree" ? { x: 0, z: 3.8 } : sp.spot.kind === "herb" ? { x: 2.8, z: 0 } : { x: 0, z: 2.8 };
-    playerTarget = { x: sp.spot.x + off.x, z: sp.spot.z + off.z };
+    const off = sp.spot.kind === "tree"
+      ? { x: 0, z: TREE_COLLIDER_R + 0.4 }
+      : sp.spot.kind === "herb"
+      ? (sp.spot.z <= -10 ? { x: 0, z: 3.4 } : { x: 2.8, z: 0 })
+      : { x: 0, z: 2.8 };
+    playerTarget = clearTarget({ x: sp.spot.x + off.x, z: sp.spot.z + off.z }, treeColliders, 0.3);
     playerReturnAt = time + 1.1;
   }
 

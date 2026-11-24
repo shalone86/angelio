@@ -38,7 +38,9 @@ test("every checklist item has a good name, a size the editor allows, and no rep
     assert.ok(i.size.every((n) => Number.isInteger(n) && n >= 8 && n <= 64), i.slug);
   }
   assert.ok(all.some((i) => i.slug === "man-beard-walk") && all.some((i) => i.slug === "man-beard-kneel"));
-  for (const s of ["monk-idle", "monk-walk", "nun-idle", "nun-walk", "bishop-idle", "bishop-walk"]) assert.ok(all.some((i) => i.slug === s), s);
+  for (const s of ["man-idle", "man-beard-idle", "woman-idle", "child-idle", "child-girl-idle", "monk-idle", "monk-walk", "nun-idle", "nun-walk", "bishop-idle", "bishop-walk"]) {
+    assert.ok(all.some((i) => i.slug === s), s);
+  }
   const matchItems = CHECKLISTS.filter((c) => c.game === "Saints Match").flatMap((c) => c.items);
   assert.equal(matchItems.length, 37);
   assert.ok(matchItems.some((i) => i.slug === "saint-halo"));
