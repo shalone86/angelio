@@ -67,7 +67,7 @@ body.garden-game .topbar { display: none; }
 .pins { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 3; }
 .gpin { position: absolute; transform: translate(-50%, -100%); pointer-events: auto; border: 2px solid #fff; cursor: pointer; touch-action: manipulation; }
 .gpin.crop { min-width: 40px; min-height: 40px; padding: 2px 7px; border-radius: 99px; font-size: 1.35rem; line-height: 1; background: rgb(255 250 235 / .9); box-shadow: 0 2px 0 rgb(0 0 0 / .24); opacity: .78; }
-.gpin.crop.wanted { opacity: 1; background: #fff9cc; border-color: #f0b62a; box-shadow: 0 3px 0 #b87a00, 0 0 12px rgb(255 212 92 / .9); animation: bob 1.1s ease-in-out infinite; z-index: 2; }
+.gpin.crop.wanted { opacity: 1; background: #fff9cc; border-color: #f0b62a; box-shadow: 0 3px 0 #b87a00, 0 0 12px rgb(255 212 92 / .9); animation: cropBob 1.1s ease-in-out infinite; z-index: 2; }
 .gpin.pest { display: grid; justify-items: center; gap: 2px; min-width: 48px; min-height: 48px; padding: 4px 8px; border-radius: 16px; background: #ffe4e2; border-color: #fff; box-shadow: 0 3px 0 #b8231c, 0 6px 14px rgb(0 0 0 / .35); animation: pestHop .6s ease-in-out infinite; z-index: 3; }
 .gpin.pest .phead { display: inline-flex; align-items: center; gap: 3px; line-height: 1; }
 .gpin.pest .phead > span:first-child { font-size: 1.65rem; line-height: 1; }
@@ -98,7 +98,7 @@ body.garden-game .topbar { display: none; }
   .garden-play .clock, .garden-play .score { font-size: 1rem; padding: 3px 10px; }
 }
 
-@keyframes bob { 50% { transform: translate(-50%, -112%); } }
+@keyframes cropBob { 50% { transform: translate(-50%, -112%); } }
 @keyframes pestHop { 50% { transform: translate(-50%, -110%) scale(1.06); } }
 @keyframes warnPulse { 50% { opacity: .8; } }
 @keyframes popup { to { transform: translate(-50%, -165%); opacity: 0; } }

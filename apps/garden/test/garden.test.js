@@ -315,4 +315,7 @@ test("app.js finish() scope, TDZ initialization order, picker wiring, 2-helper c
   assert.match(plotSrc, /treeColliders/);
   assert.match(plotSrc, /frustumCulled\s*=\s*false/);
   assert.ok(!plotSrc.includes("scene.remove(c.actor.g)"), "helpers stay persistent in scene");
+
+  const cssSrc = fs.readFileSync(new URL("../public/css/app.css", import.meta.url), "utf8");
+  assert.ok(!/@keyframes\s+bob\b/.test(cssSrc), "must not override base.css @keyframes bob for stickers");
 });
