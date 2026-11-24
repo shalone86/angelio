@@ -279,10 +279,10 @@ function viewPlay(stageId) {
       showFinish(app, { id: progressId(stage), stars, mistakes: 0, byStars: true, title: newBest ? "A new best!" : stage.endless ? "What a night!" : `Everyone's ready for ${service === "Liturgy" ? "the Liturgy" : "Mass"}!`,
         done: `You scored ${g.score}.`, again: `#/play/${stage.id}`, onAgain: route, next: opens ? { href: `#/play/${nextStage.id}`, label: `${nextStage.icon} ${nextStage.name}` } : null });
       const fresh = USHERS.filter((u) => usherOpen(u, starsById) && !unlockedBefore.has(u.id));
-      if (fresh.length) app.querySelector(".finish h1")?.insertAdjacentHTML("afterend", `<p class="final-score">🎉 You can play as ${fresh.map((u) => `<b>${esc(u.name)}</b>`).join(" and ")} now!</p>`);
+      if (fresh.length) app.querySelector(".finish h1")?.insertAdjacentHTML("afterend", `<p class="finish-unlock">🎉 You can play as ${fresh.map((u) => `<b>${esc(u.name)}</b>`).join(" and ")} now!</p>`);
       const openUshers = USHERS.filter((u) => usherOpen(u, starsById)), pickedId = myUsher().id;
       if (openUshers.length >= 2) {
-        app.querySelector(".finish .row.center")?.insertAdjacentHTML("beforebegin", `
+        app.querySelector(".finish .row.center")?.insertAdjacentHTML("afterend", `
           <div class="finish-pick">
             <p class="finish-pick-label">Pick your usher for next time:</p>
             <div class="finish-picks">

@@ -161,16 +161,30 @@ nav a.gu { font-size: 1.05rem; }
 .games-banner:active { box-shadow: 0 4px 0 #f0b79e; }
 @media (prefers-color-scheme: dark) { .games-banner { background: linear-gradient(135deg, #3a1f2a, #3a3213); } }
 
-/* The games page: big tiles with your best score and stars; coming-soon tiles quieter */
-.game-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 16px; margin: 10px 0 24px; }
-.game-tile { position: relative; background: var(--card); border-radius: 26px; box-shadow: 0 8px 0 rgb(0 0 0 / .12); overflow: hidden; }
-.game-tile a { display: grid; grid-template-columns: 96px 1fr; gap: 14px; align-items: center; padding: 16px; color: var(--ink); text-decoration: none; min-height: 128px; }
-.game-tile a:active { transform: translateY(3px); }
-.game-tile img, .game-tile .big-emoji { width: 96px; height: 96px; border-radius: 22px; }
-.game-tile .big-emoji { display: grid; place-items: center; font-size: 3.4rem; background: var(--sky-2); }
-.game-tile b { font: 800 1.45rem/1.1 "Baloo 2", sans-serif; display: block; }
-.game-tile p { margin: 4px 0 0; font-size: .95rem; color: var(--muted); }
-.game-tile .mine { display: inline-block; margin-top: 6px; font-weight: 800; color: #b8860b; }
-.game-tile .go { display: inline-block; margin-top: 8px; padding: 6px 16px; border-radius: 99px; background: #ff8a00; color: #fff; font-weight: 800; }
-.game-tile.soon { opacity: .7; } .game-tile.soon .go { background: #9aa7b8; }
-.game-tile .tile-say { position: absolute; right: 10px; top: 10px; }
+/* The games page: sleek cover capsules (Option 4+1 hybrid) with aligned art, quiet footer, & corner speaker */
+.game-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 16px; margin: 12px 0 28px; }
+@media (max-width: 520px) { .game-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } }
+.game-tile { position: relative; display: flex; flex-direction: column; background: var(--card); border-radius: 22px; border: 1px solid rgb(15 23 42 / .08); box-shadow: 0 6px 18px rgb(15 23 42 / .08); overflow: hidden; transition: transform .15s ease, box-shadow .15s ease; }
+.game-tile:not(.soon):hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgb(15 23 42 / .12); }
+.game-tile .game-link { display: flex; flex-direction: column; flex: 1; color: var(--ink); text-decoration: none; }
+.game-tile .game-link:active { transform: translateY(2px); }
+.game-cover { position: relative; aspect-ratio: 4 / 3; display: grid; place-items: center; background: linear-gradient(145deg, #dbeafe, #c7defa); }
+.game-tile[data-game="candles"] .game-cover { background: linear-gradient(145deg, #1d2042, #323e78); }
+.game-tile[data-game="usher"] .game-cover { background: linear-gradient(145deg, #f0e6d2, #dccbb0); }
+.game-tile[data-game="porter"] .game-cover { background: linear-gradient(145deg, #e5ddcc, #cfc2a9); }
+.game-tile[data-game="match"] .game-cover { background: linear-gradient(145deg, #22356a, #37559f); }
+.game-tile[data-game="garden"] .game-cover { background: linear-gradient(145deg, #4f9d48, #367834); }
+.game-cover img { width: 82px; height: 82px; border-radius: 20px; box-shadow: 0 6px 16px rgb(0 0 0 / .22); }
+.game-cover .big-emoji { font-size: 3rem; line-height: 1; }
+@media (max-width: 520px) { .game-cover img { width: 68px; height: 68px; border-radius: 16px; } }
+.game-badge { position: absolute; left: 10px; top: 10px; padding: 3px 9px; border-radius: 99px; background: rgb(15 23 42 / .52); color: #fff; font: 800 .72rem/1.2 Nunito, sans-serif; letter-spacing: .03em; text-transform: uppercase; }
+.game-meta { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.game-meta b { font: 800 1.15rem/1.15 "Baloo 2", sans-serif; display: block; }
+.game-meta p { margin: 0; font-size: .88rem; line-height: 1.3; color: var(--muted); }
+.game-foot { margin-top: auto; padding-top: 8px; display: flex; align-items: center; justify-content: space-between; font-size: .88rem; white-space: nowrap; }
+.game-tile .mine { font-weight: 800; color: #b8860b; }
+.game-tile .game-cta { font-weight: 800; color: var(--muted); font-size: .84rem; }
+.game-tile.soon { opacity: .72; }
+.game-tile .tile-say { position: absolute; right: 8px; top: 8px; width: 34px; height: 34px; padding: 0; border-radius: 999px; border: 0; box-shadow: none; background: rgb(15 23 42 / .38); color: #fff; font-size: .95rem; display: grid; place-items: center; backdrop-filter: blur(4px); }
+.game-tile .tile-say:hover { background: rgb(15 23 42 / .58); }
+@media (prefers-color-scheme: dark) { .game-tile { border-color: rgb(255 255 255 / .1); } }

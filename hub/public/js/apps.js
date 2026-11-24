@@ -49,26 +49,35 @@ export const APP_LIST = [
   },
   {
     name: "Candle Rack", path: "candles", subject: "games", grades: "All ages", emoji: "🕯️",
-    blurb: "A game: get the church ready before Mass or the Divine Liturgy. Light the candles, keep the sanctuary lamp burning, and stay up late in the adoration chapel.",
+    blurb: "Keep church candles burning before Mass",
+    say: "Candle Rack. Light the candles before Mass, keep the sanctuary lamp burning, and watch over the adoration chapel at night.",
   },
   {
     name: "Mass Usher", path: "usher", subject: "games", grades: "All ages", emoji: "🪑",
-    blurb: "A game (an early demo): seat the families coming to Mass. Help people scoot down to make room, and keep each family together.",
+    blurb: "Seat families together before Mass",
+    say: "Mass Usher. Welcome families at the doors, help people scoot down the pews, and seat every family together.",
   },
   {
     name: "Monastery Porter", path: "porter", subject: "games", grades: "All ages", emoji: "🚪",
-    blurb: "A game (an early demo): keep the monastery door. Listen to who knocks, welcome them in, or kindly ask them to come back later.",
+    blurb: "Welcome guests at the monastery gate",
+    say: "Monastery Porter. Listen to who knocks at the monastery door, welcome guests in, or kindly send others on their way.",
   },
   {
     name: "Saints Match", path: "match", subject: "games", grades: "All ages", emoji: "😇",
-    blurb: "A game (an early demo): fast memory cards with Catholic saints and their signs, combos, wind swaps, and All Saints Rush.",
+    blurb: "Pair Catholic saints with their signs",
+    say: "Saints Match. Flip cards fast to pair Catholic saints and their symbols, build combos, and beat All Saints Rush.",
   },
   {
     name: "Garden Givers", path: "garden", subject: "games", grades: "All ages", emoji: "🥕",
-    blurb: "A game (an early demo): shoo critters off the monastery garden and orchard, pick ripe produce, and deliver orders to the food bank.",
+    blurb: "Guard crops & pack Food Bank baskets",
+    say: "Garden Givers. Shoo critters off the monastery garden and orchard, pick ripe produce, and deliver baskets to the food bank.",
   },
   // Coming soon (see ROADMAP.md)
-  { name: "Choir", subject: "games", grades: "All ages", emoji: "🎶", blurb: "Tap along with the music in the choir loft: the beat gets faster, then two lanes, then three." },
+  {
+    name: "Choir", subject: "games", grades: "All ages", emoji: "🎶",
+    blurb: "Tap along in the choir loft",
+    say: "Choir. Coming soon: tap along with the music in the choir loft as the beat gets faster.",
+  },
   { name: "Spelling", subject: "language", grades: "Grades 1–3", emoji: "🔤", blurb: "Hear a word, build it letter by letter, and learn the spelling patterns." },
   { name: "Writing Skills", subject: "language", grades: "Grades 1–4", emoji: "📝", blurb: "From sentences to paragraphs: build, fix and grow your writing." },
   { name: "Catholic History", subject: "history", grades: "All ages", emoji: "⛪", blurb: "Saints, the early Church and the great moments, on drag-and-drop timelines." },

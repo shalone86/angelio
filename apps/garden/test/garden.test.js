@@ -303,6 +303,14 @@ test("all 5 voxel games cache /api/art safely per slug in runtime cache", () => 
   }
 });
 
+test("finish screen places character pickers below action buttons across picker games", () => {
+  for (const game of ["usher", "porter", "match", "garden"]) {
+    const src = fs.readFileSync(new URL(`../../${game}/public/js/app.js`, import.meta.url), "utf8");
+    assert.match(src, /querySelector\(["']\.finish \.row\.center["']\)\?\.insertAdjacentHTML\(["']afterend["']/, `${game} places picker below .row.center`);
+    assert.doesNotMatch(src, /querySelector\(["']\.finish \.row\.center["']\)\?\.insertAdjacentHTML\(["']beforebegin["']/, `${game} must not place picker above .row.center`);
+  }
+});
+
 test("app.js finish() scope, TDZ initialization order, picker wiring, 2-helper cap, and valid crops/pests", () => {
   assert.ok(CROPS.length >= 7 && PESTS.length >= 4);
   const src = fs.readFileSync(new URL("../public/js/app.js", import.meta.url), "utf8");

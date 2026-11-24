@@ -140,10 +140,10 @@ function viewPlay(stageId) {
     const fresh = GARDENERS.filter((gd) => gardenerOpen(gd, starsById) && !unlockedBefore.has(gd.id));
     if (fresh.length) {
       app.querySelector(".finish h1")?.insertAdjacentHTML("afterend",
-        `<p class="final-score">🎉 ${fresh.map((gd) => `<b>${esc(gd.name)}</b>`).join(" and ")} can garden with you now!</p>`);
+        `<p class="finish-unlock">🎉 ${fresh.map((gd) => `<b>${esc(gd.name)}</b>`).join(" and ")} can garden with you now!</p>`);
     }
     const openGardeners = GARDENERS.filter((gd) => gardenerOpen(gd, starsById)), pickedId = myGardener().id;
-    app.querySelector(".finish .row.center")?.insertAdjacentHTML("beforebegin", `
+    app.querySelector(".finish .row.center")?.insertAdjacentHTML("afterend", `
       <div class="finish-pick">
         <p class="finish-pick-label">Pick your gardener for next time:</p>
         <div class="finish-picks">

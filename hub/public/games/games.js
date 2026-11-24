@@ -21,15 +21,23 @@ function mine(path) {
 
 const tile = (a) => {
   const m = a.path ? mine(a.path) : null;
-  return `<div class="game-tile${a.path ? "" : " soon"}">
-    <a href="${a.path ? `/${a.path}/` : "#soon"}" ${a.path ? "" : 'aria-disabled="true" tabindex="-1"'} aria-label="${esc(a.name)}: ${esc(a.blurb)}">
-      ${a.path ? `<img src="/${a.path}/icon.svg" alt="" width="96" height="96">` : `<span class="big-emoji" aria-hidden="true">${a.emoji}</span>`}
-      <span><b>${esc(a.name)}</b><p>${esc(a.blurb)}</p>
-        ${m ? `<span class="mine">${"★".repeat(m.stars)}${"☆".repeat(3 - m.stars)}${m.best ? ` · best ${m.best}` : ""}</span><br>` : ""}
-        <span class="go">${a.path ? "▶ Play" : "Coming soon"}</span></span>
+  const spoken = a.say ?? `${a.name}. ${a.blurb}`;
+  return `<article class="game-tile${a.path ? "" : " soon"}" data-game="${esc(a.path || "soon")}">
+    <a class="game-link" href="${a.path ? `/${a.path}/` : "#soon"}" ${a.path ? "" : 'aria-disabled="true" tabindex="-1"'} aria-label="${esc(a.name)}: ${esc(a.blurb)}">
+      <div class="game-cover">
+        ${a.path ? `<img src="/${a.path}/icon.svg" alt="" width="84" height="84">` : `<span class="big-emoji" aria-hidden="true">${a.emoji}</span>`}
+        ${!a.path ? `<span class="game-badge">Soon</span>` : ""}
+      </div>
+      <div class="game-meta">
+        <b>${esc(a.name)}</b>
+        <p>${esc(a.blurb)}</p>
+        <div class="game-foot">
+          ${m ? `<span class="mine">${"★".repeat(m.stars)}${"☆".repeat(3 - m.stars)}${m.best ? ` · ${m.best}` : ""}</span>` : `<span class="game-cta">${a.path ? "Tap to play" : "Coming soon"}</span>`}
+        </div>
+      </div>
     </a>
-    <button type="button" class="tile-say" data-say="${esc(`${a.name}. ${a.blurb}`)}" aria-label="Hear about ${esc(a.name)}">🔊</button>
-  </div>`;
+    <button type="button" class="tile-say" data-say="${esc(spoken)}" aria-label="Hear about ${esc(a.name)}">🔊</button>
+  </article>`;
 };
 document.getElementById("games").innerHTML = games.filter((a) => a.path).map(tile).join("");
 document.getElementById("soon").innerHTML = games.filter((a) => !a.path).map(tile).join("");

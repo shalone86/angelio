@@ -145,12 +145,12 @@ function viewPlay(stageId) {
     const fresh = HELPERS.filter((h) => helperOpen(h, starsById) && !unlockedBefore.has(h.id));
     if (fresh.length) {
       app.querySelector(".finish h1")?.insertAdjacentHTML("afterend",
-        `<p class="final-score">🎉 ${fresh.map((h) => `<b>${esc(h.name)}</b>`).join(" and ")} can help you play now!</p>`);
+        `<p class="finish-unlock">🎉 ${fresh.map((h) => `<b>${esc(h.name)}</b>`).join(" and ")} can help you play now!</p>`);
     }
     const openHelpers = HELPERS.filter((h) => helperOpen(h, starsById));
     if (openHelpers.length >= 2) {
       const pickedId = myHelper().id;
-      app.querySelector(".finish .row.center")?.insertAdjacentHTML("beforebegin", `
+      app.querySelector(".finish .row.center")?.insertAdjacentHTML("afterend", `
         <div class="finish-pick">
           <p class="finish-pick-label">Pick your Patron Helper for next time:</p>
           <div class="finish-picks">

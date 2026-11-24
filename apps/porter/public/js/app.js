@@ -329,9 +329,9 @@ function viewPlay(stageId) {
       showFinish(app, { id: progressId(stage), stars, mistakes: g.wrong, byStars: true, title: newBest ? "A new best!" : stage.endless ? "What a feast day!" : "The gate is kept!",
         done: `You scored ${score}.`, again: `#/play/${stage.id}`, onAgain: route, next: opens ? { href: `#/play/${next.id}`, label: `${next.icon} ${next.name}` } : null });
       const fresh = PORTERS.filter((p) => porterOpen(p, starsFor2) && !unlockedBefore.has(p.id));
-      if (fresh.length) app.querySelector(".finish h1")?.insertAdjacentHTML("afterend", `<p class="final-score">🎉 You can play as ${fresh.map((p) => `<b>${esc(p.name)}</b>`).join(" and ")} now!</p>`);
+      if (fresh.length) app.querySelector(".finish h1")?.insertAdjacentHTML("afterend", `<p class="finish-unlock">🎉 You can play as ${fresh.map((p) => `<b>${esc(p.name)}</b>`).join(" and ")} now!</p>`);
       const openPorters = PORTERS.filter((p) => porterOpen(p, starsFor2)), pickedId = myPorter().id;
-      app.querySelector(".finish .row.center")?.insertAdjacentHTML("beforebegin", `
+      app.querySelector(".finish .row.center")?.insertAdjacentHTML("afterend", `
         <div class="finish-pick">
           <p class="finish-pick-label">Pick your porter for next time:</p>
           <div class="finish-picks">

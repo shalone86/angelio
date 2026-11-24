@@ -16,12 +16,6 @@
 .helper-pick b { font: 800 1.05rem var(--font-display); }
 .helper-pick.picked { border-color: #2fa866; }
 .helper-pick .picked-tag { color: #1f7a49; font-weight: 800; }
-.finish-pick { margin: 12px auto 14px; max-width: 560px; text-align: center; }
-.finish-pick-label { font-weight: 800; margin: 0 0 8px; }
-.finish-picks { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
-.pick-chip { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 99px; background: var(--surface); border: 2px solid var(--border); color: var(--text); font: 800 .95rem var(--font-display); cursor: pointer; }
-.pick-chip.picked { border-color: #2fa866; background: #eaf7ee; color: #165e37; }
-.pick-new { font-size: .78rem; color: #b87a00; font-weight: 900; }
 .games-link { margin: 18px 0 8px; }
 
 /* In-game screen */
@@ -93,7 +87,6 @@ body.match-game .topbar { display: none; }
 .pop { position: fixed; transform: translate(-50%, -50%); font-weight: 900; font-size: 1.25rem; color: #fff; text-shadow: 0 2px 0 #23386b, 0 0 8px #35549e; animation: popup 1.15s ease-out forwards; white-space: nowrap; }
 .pop.good { color: #fff3b0; text-shadow: 0 2px 0 #7a4a00, 0 0 10px #ffb02e; font-size: 1.45rem; }
 .pop.quick { color: #d4f4f2; text-shadow: 0 2px 0 #0f4c5c; font-size: 1.4rem; }
-.final-score { font-size: 1.35rem; margin: 0 0 4px; }
 
 /* Landscape phone layout: controls & speech bubble move into a right column */
 @media (orientation: landscape) and (max-height: 520px) {
@@ -118,4 +111,29 @@ body.match-game .topbar { display: none; }
   background: linear-gradient(#5bb4ff, #bfe3ff); box-shadow: 0 2px 0 #3a8fd9; }
 .hub-link img { width: 30px; height: 30px; border-radius: 9px; }
 .hub-link:active { transform: translateY(2px); box-shadow: none; }
+
+/* Sleek, mobile-first finish card (matches angelio.org/games/) */
+.finish { max-width: 480px; margin: 14px auto 24px; padding: 20px 18px 18px; background: var(--surface); border-radius: 24px; border: 1px solid var(--border); box-shadow: 0 8px 24px rgb(15 23 42 / .09); text-align: center; }
+.finish .big-stars .stars { font-size: 2.5rem; letter-spacing: .06em; }
+.finish h1 { font-size: clamp(1.65rem, 6vw, 2.1rem); margin: 4px 0 6px; }
+.final-score { font-size: 1.12rem; margin: 2px 0; }
+.finish-unlock { display: inline-block; margin: 8px auto 2px; padding: 5px 12px; border-radius: 99px; background: var(--yellow-soft); color: var(--yellow-ink); font-size: .9rem; font-weight: 800; }
+.finish > .muted { font-size: .88rem; margin: 4px auto 6px; max-width: 38ch; line-height: 1.35; }
+.finish .new-sticker { display: inline-flex; align-items: center; gap: 10px; margin: 10px auto 6px; padding: 8px 16px; border-radius: 18px; background: var(--yellow-soft); border: 1px solid var(--border); font-size: .98rem; line-height: 1.2; }
+.finish .new-sticker br { display: none; }
+.finish .new-sticker span { font-size: 2.4rem; line-height: 1; }
+.finish .new-sticker.big-sticker span { font-size: 3rem; }
+.finish .new-sticker.mini-sticker span { font-size: 1.8rem; }
+.finish .row.center { margin: 14px 0 4px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.finish .row.center .btn.big { width: 100%; justify-content: center; padding: 11px 12px; font-size: 1rem; border-radius: 16px; box-shadow: 0 3px 0 rgb(0 0 0 / .1); margin: 0; }
+.finish .row.center:has(> :nth-child(3)) .btn.big.primary { grid-column: 1 / -1; order: -1; padding: 13px 16px; font-size: 1.08rem; }
+.finish-pick { margin: 14px 0 6px; padding-top: 12px; border-top: 1px solid var(--border); text-align: center; }
+.finish-pick-label { font-size: .82rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 0 0 8px; }
+.finish-picks { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.pick-chip { display: inline-flex; align-items: center; gap: 5px; padding: 6px 11px; border-radius: 99px; background: var(--bg); border: 1.5px solid var(--border); color: var(--text); font: 800 .88rem var(--font-display); cursor: pointer; }
+.pick-chip.picked { border-color: var(--green); background: var(--good-soft); color: var(--green-ink); }
+.pick-new { font-size: .76rem; color: var(--yellow-ink); font-weight: 900; }
+.finish .finish-links { margin: 14px 0 0 !important; padding-top: 10px; border-top: 1px solid var(--border); gap: 8px !important; }
+.finish .finish-links .btn.world-link { flex: 1 1 140px; justify-content: center; padding: 8px 12px; font-size: .88rem; border-radius: 14px; background: transparent; border: 1.5px solid var(--border); box-shadow: none; color: var(--muted); }
+.finish .finish-links .btn.world-link:hover { color: var(--text); border-color: var(--text); }
 .games-link-top { margin-left: -4px; background: linear-gradient(#7b4fd6, #b98cff); box-shadow: 0 2px 0 #5a35a8; }

@@ -1,7 +1,7 @@
 // Offline support: network first for the app (updates show right away), cache first for fonts
 // and voice clips. Bump VERSION when you change files, and list new files in ASSETS.
 
-const VERSION = "v8";
+const VERSION = "v9";
 const APP = "match";
 const SHELL = `${APP}-shell-${VERSION}`;
 const RUNTIME = `${APP}-runtime-v1`;
