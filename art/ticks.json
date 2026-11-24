@@ -31,7 +31,12 @@
   "child-girl-walk": true,
   "child-walk": true,
   "man-kneel": true,
+  "man-walk": true,
+  "woman-walk": true,
   "woman-kneel": true,
-  "woman-walk": true
+  "grandmother-walk": true,
+  "grandmother-idle": true,
+  "grandfather-walk": true,
+  "grandfather-idle": true
  }
 }
