@@ -358,6 +358,7 @@ test("voxel sticker rendering, byStars stickerBook count, and Option A homes acr
     const appSrc = fs.readFileSync(new URL(`../../${game}/public/js/app.js`, import.meta.url), "utf8");
     const cssSrc = fs.readFileSync(new URL(`../../${game}/public/css/app.css`, import.meta.url), "utf8");
     assert.ok(appSrc.includes("home-head") && appSrc.includes("stage-top") && appSrc.includes("stage-stars"), `${game} renders Option A stage cards`);
+    assert.ok(cssSrc.includes("@media (min-width: 1024px)") && cssSrc.includes("main:has(.home-head)"), `${game} scales Option A home cleanly on wide desktop`);
     if (game !== "candles") {
       assert.ok(appSrc.includes("char-dock") && appSrc.includes("char-perk"), `${game} renders Option A char dock`);
     }

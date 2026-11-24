@@ -115,6 +115,36 @@ a.stage:active { transform: translateY(2px); box-shadow: none; }
 .sticker-book .stickers span { flex: none; display: inline-grid; place-items: center; }
 .sticker-book .world-link { margin: 0; padding: 4px 11px; font-size: .8rem; box-shadow: none; border-width: 1.5px; }
 .sticker-book .muted.small { width: 100%; margin: 0; font-size: .82rem; }
+@media (min-width: 1024px) {
+  main:has(.home-head) { max-width: min(1140px, 92vw); padding: 20px 28px 64px; }
+  .home-head { padding: 12px 0 16px; }
+  .home-title { font-size: 2.35rem; }
+  .home-sub { font-size: 1.06rem; }
+  .demo-chip { font-size: .92rem; padding: 6px 14px; }
+  .stages { gap: 16px; margin: 8px 0 22px; }
+  .stage { min-height: 142px; padding: 16px 18px; border-radius: 20px; border-width: 2px; box-shadow: 0 4px 0 var(--border); }
+  .stage.night { box-shadow: 0 4px 0 #121a24; }
+  .stage.endless { box-shadow: 0 4px 0 #131836; }
+  .stage.locked { box-shadow: none; }
+  .stage-icon { font-size: 2rem; }
+  .stage-tag { font-size: .88rem; }
+  .stage-name { font-size: 1.18rem; }
+  .stage-stars { font-size: .96rem; }
+  .stage-req { font-size: .88rem; }
+  .char-dock { margin: 4px 0 18px; gap: 10px; }
+  .char-pills { gap: 10px; }
+  .char-pill { padding: 9px 16px; font-size: 1rem; gap: 7px; border-width: 2px; }
+  .char-perk { font-size: 1rem; }
+  .sticker-book { margin: 18px 0 14px; padding: 16px 20px; border-radius: 20px; gap: 10px 16px; border-width: 2px; }
+  .sticker-book h2 { font-size: 1.12rem; }
+  .sticker-book h2 small { font-size: .92rem; }
+  .sticker-book .stickers { font-size: 2.65rem; gap: 10px; padding: 4px 0; }
+  .sticker-book .stickers .mini { font-size: 1.85rem; }
+  .sticker-book .world-link { padding: 7px 16px; font-size: .94rem; }
+  .sticker-book .muted.small { font-size: .95rem; }
+  .games-link { margin: 18px 0 10px; }
+  .games-link .btn.small { padding: 9px 18px; font-size: .96rem; }
+}
 /* the bell (Sister with the Bell), and the dog barking (Send away waits) */
 .answer.bell { flex: .7; background: #c9971f; box-shadow: 0 4px 0 #7a5a10, 0 6px 14px rgb(0 0 0 / .3); }
 .answer.barking { background: #8a8f98; box-shadow: 0 4px 0 #5a5f66; }
