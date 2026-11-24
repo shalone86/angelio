@@ -216,6 +216,7 @@ collection while giving every game "one more run" depth without heavy downloads:
 - **2D Sticker World (`/stickers/`):** Keep as a dedicated 2D sticker playground (kids love placing flat stickers) and expand it with **more playset stages** and **even more stickers**.
 - **3D Voxel Room (in the Game Center `/games/` Parish Map):** A separate 3D voxel room / house / desk area right inside `/games/` where kids can see and arrange all the 3D voxel collectibles, characters, and props they've earned.
 - **MagicaVoxel `MATL` Experiment (Nov 24, 2026):** Previewing Emit, Glass, Metal, and Cloud materials only on the Studio Drawings checklist (`/studio/draw/`) first before deciding whether/how to bring them into games and Lesson Studio.
+- **Larger 4-Player Voxel WebJS Game (idea parked, Nov 24, 2026):** A bigger standalone 4-player couch game built with the libre web/Three.js voxel stack (`vox.js` / `voxmat.js`) and 4-controller support (`navigator.getGamepads()`), freely distributed on the web / itch.io and optionally packaged as a full offline desktop download via **Electron** (concept & gameplay TBD).
 
 6. **Mass Usher.** Seat arriving families in the church pews (a gentle Tetris). **Demo live Nov 22, 2026 at
    angelio.org/usher/** (apps/usher): a flat top-down church to try the game itself (tap a pew to walk the family there,
