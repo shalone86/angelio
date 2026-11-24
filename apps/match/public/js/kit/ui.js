@@ -24,12 +24,24 @@ export const STICKERS = ["🦄", "🚀", "🦖", "🌈", "🐙", "🎈", "🦋",
   "art:mary", "art:baby-jesus", "art:sacred-heart", "art:chalice", "art:monstrance", "art:bible", "art:lily",
   "art:st-joseph", "art:st-francis", "art:guardian-angel", "art:holy-family", "art:rosary", "art:agnus-dei", "art:advent-wreath", "art:loaves-fishes"];
 
-/** A sticker as HTML: an emoji, or one of our drawings ("art:mary"). Sized by font-size, like emoji. */
+/** A sticker as HTML: an emoji, or one of our drawings ("art:mary") or voxel stickers ("vox:priest-bless"). Sized by font-size, like emoji. */
 const ART = { mary: "Mary", "baby-jesus": "Baby Jesus", "sacred-heart": "Sacred Heart", chalice: "Chalice", monstrance: "Monstrance", bible: "Holy Bible", lily: "Lily",
   "st-joseph": "St. Joseph", "st-francis": "St. Francis", "guardian-angel": "Guardian angel", "holy-family": "The Holy Family", rosary: "Rosary", "agnus-dei": "Lamb of God", "advent-wreath": "Advent wreath", "loaves-fishes": "Loaves and fishes" };
-export const stickerHtml = (e) => (String(e).startsWith("art:")
-  ? `<img class="art-sticker" src="https://angelio.org/stickers/art/${esc(e.slice(4))}.svg" alt="${esc(ART[e.slice(4)] ?? "sticker")}" draggable="false">`
-  : esc(e));
+export const VOX_NAMES = {
+  "priest-bless": "Father Blessing", "priest-mass-idle": "Father at Mass", "priest-idle": "Father",
+  "east-priest-cense": "Father Censing", "east-priest-phelonion-idle": "Eastern Priest",
+  "server-candle-idle": "Candle Server", "server-cross-idle": "Cross Server", "server-light": "Lighting Server",
+  "east-server-ripidion-idle": "Ripidion Server", "east-server-cross-idle": "Eastern Cross Server",
+  "child-walk": "Boy", "child-girl-walk": "Girl", "child-kneel": "Boy Praying", "child-girl-kneel": "Girl Praying",
+  "man-walk": "Man", "woman-kneel": "Woman Praying", "grandfather-idle": "Grandfather", "grandmother-idle": "Grandmother",
+};
+export const VOX_STICKERS = Object.keys(VOX_NAMES).map((k) => `vox:${k}`);
+export const stickerHtml = (e) => {
+  const s = String(e ?? "");
+  if (s.startsWith("art:")) return `<img class="art-sticker" src="https://angelio.org/stickers/art/${esc(s.slice(4))}.svg" alt="${esc(ART[s.slice(4)] ?? "sticker")}" draggable="false">`;
+  if (s.startsWith("vox:")) return `<img class="art-sticker" src="https://angelio.org/stickers/vox/${esc(s.slice(4))}.svg" alt="${esc(VOX_NAMES[s.slice(4)] ?? "voxel sticker")}" draggable="false">`;
+  return esc(s);
+};
 
 export const starsHtml = (n) => `<span class="stars" aria-label="${n} of 3 stars">${"★".repeat(n)}<span class="off">${"★".repeat(3 - n)}</span></span>`;
 // 3 stars only with no mistakes, matching the giant sticker (any mistake: a mini sticker and a yellow dot).
@@ -78,11 +90,21 @@ export function markDot(root, k, helped) {
  * when `byStars` is true, 3 stars earns a giant sticker (regardless of mistakes), 2 stars earns
  * a mini sticker, and <2 stars earns no new sticker. Otherwise 0 mistakes (or 3 stars) makes it giant.
  */
-export function showFinish(app, { id, stars, mistakes, title, done, again, next, onAgain, byStars = false }) {
+export function showFinish(app, { id, stars, mistakes, title, done, again, next, onAgain, byStars = false, voxelStickers = byStars }) {
   document.body.classList.remove("in-game");
   const big = byStars ? stars >= 3 : (stars >= 3 || mistakes === 0);
   const perfect = !byStars && mistakes === 0;
-  const earn = byStars && stars < 2 ? null : pick(STICKERS);
+  let pool = STICKERS;
+  if (voxelStickers) {
+    const owned = new Set(S.stickers().map((s) => s.e));
+    try {
+      const shared = JSON.parse(localStorage.getItem("angelio:stickers") ?? "{}");
+      for (const v of Object.values(shared)) if (v?.e) owned.add(v.e);
+    } catch { /* ignore */ }
+    const fresh = VOX_STICKERS.filter((v) => !owned.has(v));
+    pool = fresh.length ? fresh : VOX_STICKERS;
+  }
+  const earn = byStars && stars < 2 ? null : pick(pool);
   const st = S.finishLevel(id, stars, earn, big);
   sfx.fanfare();
   confetti(big ? 100 : st.e ? 45 : 20);
@@ -133,10 +155,12 @@ export function showFinish(app, { id, stars, mistakes, title, done, again, next,
 export function stickerBook({ byStars = false } = {}) {
   const st = S.stickers();
   const emptyHint = byStars
-    ? "Get two stars on a stage for a mini sticker, or three stars for a giant one!"
+    ? "Get two stars on a stage for a mini voxel sticker, or three stars for a giant one!"
     : "Finish a level to get your first sticker! No mistakes makes it a giant one.";
+  const title = byStars ? "My voxel stickers" : "My stickers";
+  const count = byStars ? `${st.length} ${st.length === 1 ? "sticker" : "stickers"}` : `${S.solved()} solved`;
   return `<section class="sticker-book">
-      <h2>My stickers <small>${S.solved()} solved</small></h2>
+      <h2>${title} <small>${count}</small></h2>
       ${st.length ? `<div class="stickers">${st.map((s) => `<span class="${s.big ? "big" : "mini"}" title="${s.big ? "giant" : "mini"} sticker">${stickerHtml(s.e)}</span>`).join("")}</div>`
         : `<p class="muted small">${emptyHint}</p>`}
       ${STICKER_WORLD && st.length ? `<a class="btn world-link" href="${STICKER_WORLD}">🌍 Play in Sticker World</a>` : ""}

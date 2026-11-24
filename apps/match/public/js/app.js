@@ -41,43 +41,64 @@ const bestKey = (st) => (st.id === "apostles" ? "best" : `best-${st.id}`);
 const starsOf = (st) => S.progress(progressId(st)).stars;
 const starsById = (id) => starsOf(stageById(id));
 const myHelper = () => { const h = helperById(S.settings().helper); return helperOpen(h, starsById) ? h : HELPERS[0]; };
-const gamesLink = `<p class="center games-link"><a class="btn" href="${GAMES}">🎮 All the Angelio games</a></p>`;
+const gamesLink = `<p class="center games-link"><a class="btn small ghosty" href="${GAMES}">🎮 All the Angelio games</a></p>`;
+
+const HELPER_SHORT = { starter: "Server", anthony: "Anthony", lucy: "Lucy", chrysostom: "Chrysostom", clare: "Clare", carlo: "Carlo", cecilia: "Cecilia" };
 
 function viewHome() {
+  const cur = myHelper();
   app.innerHTML = `
-    <section class="hero">
-      <h1 class="title">Saints Match</h1>
-      <p class="lede">Take a quick peek, then match the saints and their signs before the clock runs out! Spot the Golden Halo for Feast Rush and watch out when the wind swaps two cards.</p>
-      <p class="demo-chip">🧪 Demo: voxel stand-ins until custom saints are drawn</p>
+    <section class="home-head">
+      <div class="home-title-wrap">
+        <h1 class="home-title">Saints Match</h1>
+        <p class="home-sub">Pair saints with their signs before the clock runs out</p>
+      </div>
+      <span class="demo-chip">🧪 Demo</span>
     </section>
-    <section class="stages">
+    <section class="stages stages-7">
       ${STAGES.map((st, i) => {
         const open = isOpen(i, starsOf), p = S.progress(progressId(st)), best = S.settings()[bestKey(st)] || 0;
         const req = st.after ? stageById(st.after) : STAGES[i - 1];
+        const tag = st.endless ? "Endless" : "1:30";
         return open
-          ? `<a class="stage card${st.endless ? " endless" : ""}" href="#/play/${st.id}"><span class="stage-icon">${st.icon}</span><b>${esc(st.name)}</b>
-              <span class="muted">${esc(st.blurb)}</span>
-              <span class="stage-stars">${"★".repeat(p.stars)}${"☆".repeat(3 - p.stars)}${best ? ` · best ${best}` : ""}</span></a>`
-          : `<div class="stage card locked" aria-disabled="true"><span class="stage-icon">🔒</span><b>${esc(st.name)}</b>
-              <span class="muted">Get two stars in ${esc(req.name)} to open it.</span></div>`;
+          ? `<a class="stage card${st.endless ? " endless" : ""}" href="#/play/${st.id}">
+              <div class="stage-top"><span class="stage-icon">${st.icon}</span><span class="stage-tag">${tag}</span></div>
+              <b class="stage-name">${esc(st.name)}</b>
+              <span class="stage-stars">${"★".repeat(p.stars)}${"☆".repeat(3 - p.stars)}${best ? ` · ${best}` : " · Ready"}</span></a>`
+          : `<div class="stage card locked" aria-disabled="true">
+              <div class="stage-top"><span class="stage-icon">🔒</span><span class="stage-tag">Locked</span></div>
+              <b class="stage-name">${esc(st.name)}</b>
+              <span class="stage-req">2★ ${esc(req.name)}</span></div>`;
       }).join("")}
     </section>
-    <h2 class="center helpers-title">Your Patron Helper</h2>
-    <section class="helpers">
-      ${HELPERS.map((h) => {
-        const open = helperOpen(h, starsById), picked = myHelper().id === h.id;
-        return open
-          ? `<button type="button" class="helper-pick card${picked ? " picked" : ""}" data-helper="${h.id}" aria-pressed="${picked}"><span class="stage-icon">${h.icon}</span><b>${esc(h.name)}</b><span class="muted">${esc(h.blurb)}</span>${picked ? `<span class="picked-tag">✓ Helping</span>` : ""}</button>`
-          : `<div class="helper-pick card locked" aria-disabled="true"><span class="stage-icon">🔒</span><b>${esc(h.name)}</b><span class="muted">Get two stars in ${esc(stageById(h.opens.stage).name)} to meet ${h.sex === "f" ? "her" : "him"}.</span></div>`;
-      }).join("")}
+    <section class="char-dock" aria-label="Your Patron Helper">
+      <div class="char-pills">
+        ${HELPERS.map((h) => {
+          const open = helperOpen(h, starsById), picked = cur.id === h.id;
+          const short = HELPER_SHORT[h.id] ?? h.name;
+          const req = h.opens ? `Get 2★ in ${stageById(h.opens.stage).name} to meet ${h.sex === "f" ? "her" : "him"}.` : "";
+          return open
+            ? `<button type="button" class="char-pill${picked ? " picked" : ""}" data-helper="${h.id}" aria-pressed="${picked}"><span>${h.icon}</span><span>${esc(short)}</span></button>`
+            : `<button type="button" class="char-pill locked" data-locked="1" data-locked-name="${esc(h.name)}" data-locked-req="${esc(req)}" title="${esc(req)}"><span>🔒</span><span>${esc(short)}</span></button>`;
+        }).join("")}
+      </div>
+      <p class="char-perk"><b>${cur.icon} ${esc(cur.name)}:</b> ${esc(cur.blurb)}</p>
     </section>
     ${stickerBook({ byStars: true })}
     ${gamesLink}`;
+  const perk = app.querySelector(".char-perk");
   app.querySelectorAll("[data-helper]").forEach((b) => b.addEventListener("click", () => {
     const h = helperById(b.dataset.helper);
     S.setSetting("helper", h.id);
-    viewHome();
+    app.querySelectorAll("[data-helper]").forEach((x) => { const on = x === b; x.classList.toggle("picked", on); x.setAttribute("aria-pressed", on); });
+    app.querySelectorAll(".peek-locked").forEach((x) => x.classList.remove("peek-locked"));
+    if (perk) perk.innerHTML = `<b>${h.icon} ${esc(h.name)}:</b> ${esc(h.blurb)}`;
     speak(h.say);
+  }));
+  app.querySelectorAll("[data-locked]").forEach((b) => b.addEventListener("click", () => {
+    app.querySelectorAll(".peek-locked").forEach((x) => x.classList.toggle("peek-locked", x === b));
+    if (perk) perk.innerHTML = `<b>🔒 ${esc(b.dataset.lockedName)}:</b> ${esc(b.dataset.lockedReq)}`;
+    speak(b.dataset.lockedReq);
   }));
   speak("Pick a stage for Saints Match!");
 }

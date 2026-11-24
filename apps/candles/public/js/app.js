@@ -39,24 +39,32 @@ const route = createRouter([
 const progressId = (st) => st.progress ?? `rack-${st.id}`;
 const bestKey = (st) => (st.id === "sunday" ? "best" : `best-${st.id}`);
 const starsOf = (st) => S.progress(progressId(st)).stars;
-const gamesLink = `<p class="center games-link"><a class="btn" href="https://angelio.org/games/">🎮 All the Angelio games</a></p>`;
+const gamesLink = `<p class="center games-link"><a class="btn small ghosty" href="https://angelio.org/games/">🎮 All the Angelio games</a></p>`;
 
 function viewHome() {
   app.innerHTML = `
-    <section class="hero candle-hero">
-      <h1 class="title">Candle Rack</h1>
-      <p class="lede">Mass starts soon! Light the candles, keep the sanctuary lamp burning, and get the church ready.</p>
-      <p class="season-chip" style="--season:${season.hex}"><span></span>${esc(season.name)}</p>
+    <section class="home-head candle-hero">
+      <div class="home-title-wrap">
+        <h1 class="home-title">Candle Rack</h1>
+        <p class="home-sub">Light the candles and keep the lamp burning</p>
+      </div>
+      <span class="season-chip" style="--season:${season.hex}"><span></span>${esc(season.name)}</span>
     </section>
-    <section class="stages">
+    <section class="stages stages-5">
       ${STAGES.map((st, i) => {
         const open = isOpen(i, starsOf), p = S.progress(progressId(st)), best = S.settings()[bestKey(st)] || 0;
+        const req = st.opensAfter ? stageById(st.opensAfter) : STAGES[i - 1];
+        const tag = st.endless ? "Endless" : st.rite === "byzantine" ? "Byzantine" : "Roman";
+        const cls = st.endless ? " endless" : st.dark ? " night" : "";
         return open
-          ? `<a class="stage card" href="#/play/${st.id}"><span class="stage-icon">${st.icon}</span><b>${esc(st.name)}</b>
-              <span class="muted">${esc(st.blurb)}</span>
-              <span class="stage-stars">${"★".repeat(p.stars)}${"☆".repeat(3 - p.stars)}${best ? ` · best ${best}` : ""}</span></a>`
-          : `<div class="stage card locked" aria-disabled="true"><span class="stage-icon">🔒</span><b>${esc(st.name)}</b>
-              <span class="muted">Get two stars in ${esc(STAGES[i - 1].name)} to open it.</span></div>`;
+          ? `<a class="stage card${cls}" href="#/play/${st.id}">
+              <div class="stage-top"><span class="stage-icon">${st.icon}</span><span class="stage-tag">${tag}</span></div>
+              <b class="stage-name">${esc(st.name)}</b>
+              <span class="stage-stars">${"★".repeat(p.stars)}${"☆".repeat(3 - p.stars)}${best ? ` · ${best}` : " · Ready"}</span></a>`
+          : `<div class="stage card locked" aria-disabled="true">
+              <div class="stage-top"><span class="stage-icon">🔒</span><span class="stage-tag">Locked</span></div>
+              <b class="stage-name">${esc(st.name)}</b>
+              <span class="stage-req">2★ ${esc(req.name)}</span></div>`;
       }).join("")}
     </section>
     ${stickerBook({ byStars: true })}

@@ -6,6 +6,7 @@ import { STAGES, stageById, isOpen } from "../public/js/stages.js";
 import { GARDENERS, gardenerById, gardenerOpen } from "../public/js/gardeners.js";
 import { newGame, tick, tapSpot, tapPest, orderReward, starsFor, timeLeft } from "../public/js/garden.js";
 import { stepWithCollisions, clearTarget, TREE_COLLIDER_R } from "../public/js/plot.js";
+import { stickerHtml, stickerBook, VOX_STICKERS } from "../public/js/kit/ui.js";
 
 test("four 45s stages + Endless Harvest, 1★ for playing, 250/425 timed & 500/1600 endless, plus starters and 4 unlocks", () => {
   assert.equal(STAGES.length, 5);
@@ -341,4 +342,25 @@ test("app.js finish() scope, TDZ initialization order, picker wiring, 2-helper c
 
   const cssSrc = fs.readFileSync(new URL("../public/css/app.css", import.meta.url), "utf8");
   assert.ok(!/@keyframes\s+bob\b/.test(cssSrc), "must not override base.css @keyframes bob for stickers");
+});
+
+test("voxel sticker rendering, byStars stickerBook count, and Option A homes across all 5 arcade games", () => {
+  assert.ok(VOX_STICKERS.length >= 16);
+  const voxHtml = stickerHtml("vox:priest-bless");
+  assert.ok(voxHtml.includes(`<img class="art-sticker" src="https://angelio.org/stickers/vox/priest-bless.svg"`));
+  assert.ok(voxHtml.includes(`alt="Father Blessing"`));
+
+  const book = stickerBook({ byStars: true });
+  assert.ok(book.includes("My voxel stickers"));
+  assert.ok(!book.includes("0 solved"));
+
+  for (const game of ["candles", "usher", "porter", "match", "garden"]) {
+    const appSrc = fs.readFileSync(new URL(`../../${game}/public/js/app.js`, import.meta.url), "utf8");
+    const cssSrc = fs.readFileSync(new URL(`../../${game}/public/css/app.css`, import.meta.url), "utf8");
+    assert.ok(appSrc.includes("home-head") && appSrc.includes("stage-top") && appSrc.includes("stage-stars"), `${game} renders Option A stage cards`);
+    if (game !== "candles") {
+      assert.ok(appSrc.includes("char-dock") && appSrc.includes("char-perk"), `${game} renders Option A char dock`);
+    }
+    assert.ok(!/@keyframes\s+bob\b/.test(cssSrc), `${game} CSS must not define @keyframes bob`);
+  }
 });

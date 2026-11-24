@@ -40,38 +40,66 @@ const route = createRouter([
 const progressId = (st) => st.progress ?? `porter-${st.id}`;
 const bestKey = (st) => (st.id === "sunday" ? "best" : `best-${st.id}`);
 const starsOf = (st) => S.progress(progressId(st)).stars;
-const gamesLink = `<p class="center games-link"><a class="btn" href="${GAMES}">🎮 All the Angelio games</a></p>`;
+const gamesLink = `<p class="center games-link"><a class="btn small ghosty" href="${GAMES}">🎮 All the Angelio games</a></p>`;
+
+const PORTER_SHORT = { porter: "Br. Porter", "sister-porter": "Sr. Porter", andre: "Br. André", old: "Old Br.", dog: "Dog", sister: "Portress", bell: "Bell", respected: "Respected" };
 
 function viewHome() {
+  const cur = myPorter();
   app.innerHTML = `
-    <section class="hero">
-      <h1 class="title">Monastery Porter</h1>
-      <p class="lede">Someone is knocking at the monastery gate! Listen to who they are, then swipe up or tap the gate to welcome them in, or swipe sideways to kindly send them on their way. Wait when a brother walks out!</p>
-      <p class="demo-chip">🧪 Demo: some stand-ins for now</p>
+    <section class="home-head">
+      <div class="home-title-wrap">
+        <h1 class="home-title">Monastery Porter</h1>
+        <p class="home-sub">Welcome guests at the gate &amp; wait for brothers</p>
+      </div>
+      <span class="demo-chip">🧪 Demo</span>
     </section>
-    <section class="stages">
+    <section class="stages stages-4">
       ${STAGES.map((st, i) => {
         const open = isOpen(i, starsOf), p = S.progress(progressId(st)), best = S.settings()[bestKey(st)] || 0;
+        const req = st.opensAfter ? stageById(st.opensAfter) : STAGES[i - 1];
+        const tag = st.endless ? "Endless" : "1:40";
+        const cls = st.endless ? " endless" : st.night ? " night" : "";
         return open
-          ? `<a class="stage card" href="#/play/${st.id}"><span class="stage-icon">${st.icon}</span><b>${esc(st.name)}</b>
-              <span class="muted">${esc(st.blurb)}</span>
-              <span class="stage-stars">${"★".repeat(p.stars)}${"☆".repeat(3 - p.stars)}${best ? ` · best ${best}` : ""}</span></a>`
-          : `<div class="stage card locked" aria-disabled="true"><span class="stage-icon">🔒</span><b>${esc(st.name)}</b>
-              <span class="muted">Get two stars in ${esc(STAGES[i - 1].name)} to open it.</span></div>`;
+          ? `<a class="stage card${cls}" href="#/play/${st.id}">
+              <div class="stage-top"><span class="stage-icon">${st.icon}</span><span class="stage-tag">${tag}</span></div>
+              <b class="stage-name">${esc(st.name)}</b>
+              <span class="stage-stars">${"★".repeat(p.stars)}${"☆".repeat(3 - p.stars)}${best ? ` · ${best}` : " · Ready"}</span></a>`
+          : `<div class="stage card locked" aria-disabled="true">
+              <div class="stage-top"><span class="stage-icon">🔒</span><span class="stage-tag">Locked</span></div>
+              <b class="stage-name">${esc(st.name)}</b>
+              <span class="stage-req">2★ ${esc(req.name)}</span></div>`;
       }).join("")}
     </section>
-    <h2 class="center porters-title">Your porter</h2>
-    <section class="porters">
-      ${PORTERS.map((p) => {
-        const open = porterOpen(p, starsFor2), picked = myPorter().id === p.id;
-        return open
-          ? `<button type="button" class="porter-pick card${picked ? " picked" : ""}" data-porter="${p.id}" aria-pressed="${picked}"><span class="stage-icon">${p.icon}</span><b>${esc(p.name)}</b><span class="muted">${esc(p.blurb)}</span>${picked ? `<span class="picked-tag">✓ Playing</span>` : ""}</button>`
-          : `<div class="porter-pick card locked" aria-disabled="true"><span class="stage-icon">🔒</span><b>${esc(p.name)}</b><span class="muted">Get ${p.opens.stars === 3 ? "three" : "two"} stars in ${esc(stageById(p.opens.stage).name)} to meet ${p.nun ? "her" : "him"}.</span></div>`;
-      }).join("")}
+    <section class="char-dock" aria-label="Your porter">
+      <div class="char-pills">
+        ${PORTERS.map((p) => {
+          const open = porterOpen(p, starsFor2), picked = cur.id === p.id;
+          const short = PORTER_SHORT[p.id] ?? p.name;
+          const req = p.opens ? `Get ${p.opens.stars === 3 ? "3★" : "2★"} in ${stageById(p.opens.stage).name} to meet ${p.nun ? "her" : "him"}.` : "";
+          return open
+            ? `<button type="button" class="char-pill${picked ? " picked" : ""}" data-porter="${p.id}" aria-pressed="${picked}"><span>${p.icon}</span><span>${esc(short)}</span></button>`
+            : `<button type="button" class="char-pill locked" data-locked="1" data-locked-name="${esc(p.name)}" data-locked-req="${esc(req)}" title="${esc(req)}"><span>🔒</span><span>${esc(short)}</span></button>`;
+        }).join("")}
+      </div>
+      <p class="char-perk"><b>${cur.icon} ${esc(cur.name)}:</b> ${esc(cur.blurb)}</p>
     </section>
     ${stickerBook({ byStars: true })}
     ${gamesLink}`;
-  app.querySelectorAll("[data-porter]").forEach((b) => b.addEventListener("click", () => { const p = porterById(b.dataset.porter); S.setSetting("porter", p.id); viewHome(); speak(p.say); }));
+  const perk = app.querySelector(".char-perk");
+  app.querySelectorAll("[data-porter]").forEach((b) => b.addEventListener("click", () => {
+    const p = porterById(b.dataset.porter);
+    S.setSetting("porter", p.id);
+    app.querySelectorAll("[data-porter]").forEach((x) => { const on = x === b; x.classList.toggle("picked", on); x.setAttribute("aria-pressed", on); });
+    app.querySelectorAll(".peek-locked").forEach((x) => x.classList.remove("peek-locked"));
+    if (perk) perk.innerHTML = `<b>${p.icon} ${esc(p.name)}:</b> ${esc(p.blurb)}`;
+    speak(p.say);
+  }));
+  app.querySelectorAll("[data-locked]").forEach((b) => b.addEventListener("click", () => {
+    app.querySelectorAll(".peek-locked").forEach((x) => x.classList.toggle("peek-locked", x === b));
+    if (perk) perk.innerHTML = `<b>🔒 ${esc(b.dataset.lockedName)}:</b> ${esc(b.dataset.lockedReq)}`;
+    speak(b.dataset.lockedReq);
+  }));
   speak("Someone is knocking at the monastery gate! Can you keep the gate? Pick a day.");
 }
 /** The stars on a stage, by its id (for who is open). */

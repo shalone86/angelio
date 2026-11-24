@@ -33,43 +33,64 @@ const bestKey = (st) => (st.id === "garden" ? "best" : `best-${st.id}`);
 const starsOf = (st) => S.progress(progressId(st)).stars;
 const starsById = (id) => starsOf(stageById(id));
 const myGardener = () => { const g = gardenerById(S.settings().gardener); return gardenerOpen(g, starsById) ? g : GARDENERS[0]; };
-const gamesLink = `<p class="center games-link"><a class="btn" href="${GAMES}">🎮 All the Angelio games</a></p>`;
+const gamesLink = `<p class="center games-link"><a class="btn small ghosty" href="${GAMES}">🎮 All the Angelio games</a></p>`;
+
+const GARDENER_SHORT = { brother: "Brother", sister: "Sister", bugs: "Bug-Shooer", double: "Double", patient: "Patient", green: "Green Thumb" };
 
 function viewHome() {
+  const cur = myGardener();
   app.innerHTML = `
-    <section class="hero">
-      <h1 class="title">Garden Givers</h1>
-      <p class="lede">Keep bugs, birds, and critters off the garden and fruit trees, pick ripe produce for the Food Bank, and deliver orders fast before points tick negative!</p>
-      <p class="demo-chip">🧪 Demo: some voxel stand-ins until critters &amp; plants are drawn</p>
+    <section class="home-head">
+      <div class="home-title-wrap">
+        <h1 class="home-title">Garden Givers</h1>
+        <p class="home-sub">Guard crops &amp; deliver Food Bank baskets</p>
+      </div>
+      <span class="demo-chip">🧪 Demo</span>
     </section>
-    <section class="stages">
+    <section class="stages stages-5">
       ${STAGES.map((st, i) => {
         const open = isOpen(i, starsOf), p = S.progress(progressId(st)), best = S.settings()[bestKey(st)] || 0;
         const req = st.after ? stageById(st.after) : STAGES[i - 1];
+        const tag = st.endless ? "Endless" : "0:45";
         return open
-          ? `<a class="stage card${st.night ? " night" : ""}${st.endless ? " endless" : ""}" href="#/play/${st.id}"><span class="stage-icon">${st.icon}</span><b>${esc(st.name)}</b>
-              <span class="muted">${esc(st.blurb)}</span>
-              <span class="stage-stars">${"★".repeat(p.stars)}${"☆".repeat(3 - p.stars)}${best ? ` · best ${best}` : ""}</span></a>`
-          : `<div class="stage card locked" aria-disabled="true"><span class="stage-icon">🔒</span><b>${esc(st.name)}</b>
-              <span class="muted">Get two stars in ${esc(req.name)} to open it.</span></div>`;
+          ? `<a class="stage card${st.night ? " night" : ""}${st.endless ? " endless" : ""}" href="#/play/${st.id}">
+              <div class="stage-top"><span class="stage-icon">${st.icon}</span><span class="stage-tag">${tag}</span></div>
+              <b class="stage-name">${esc(st.name)}</b>
+              <span class="stage-stars">${"★".repeat(p.stars)}${"☆".repeat(3 - p.stars)}${best ? ` · ${best}` : " · Ready"}</span></a>`
+          : `<div class="stage card locked" aria-disabled="true">
+              <div class="stage-top"><span class="stage-icon">🔒</span><span class="stage-tag">Locked</span></div>
+              <b class="stage-name">${esc(st.name)}</b>
+              <span class="stage-req">2★ ${esc(req.name)}</span></div>`;
       }).join("")}
     </section>
-    <h2 class="center gardeners-title">Your Gardener</h2>
-    <section class="gardeners">
-      ${GARDENERS.map((gd) => {
-        const open = gardenerOpen(gd, starsById), picked = myGardener().id === gd.id;
-        return open
-          ? `<button type="button" class="gardener-pick card${picked ? " picked" : ""}" data-gd="${gd.id}" aria-pressed="${picked}"><span class="stage-icon">${gd.icon}</span><b>${esc(gd.name)}</b><span class="muted">${esc(gd.blurb)}</span>${picked ? `<span class="picked-tag">✓ Gardening</span>` : ""}</button>`
-          : `<div class="gardener-pick card locked" aria-disabled="true"><span class="stage-icon">🔒</span><b>${esc(gd.name)}</b><span class="muted">Get two stars in ${esc(stageById(gd.opens.stage).name)} to meet ${gd.nun ? "her" : "him"}.</span></div>`;
-      }).join("")}
+    <section class="char-dock" aria-label="Your Gardener">
+      <div class="char-pills">
+        ${GARDENERS.map((gd) => {
+          const open = gardenerOpen(gd, starsById), picked = cur.id === gd.id;
+          const short = GARDENER_SHORT[gd.id] ?? gd.name;
+          const req = gd.opens ? `Get 2★ in ${stageById(gd.opens.stage).name} to meet ${gd.nun ? "her" : "him"}.` : "";
+          return open
+            ? `<button type="button" class="char-pill${picked ? " picked" : ""}" data-gd="${gd.id}" aria-pressed="${picked}"><span>${gd.icon}</span><span>${esc(short)}</span></button>`
+            : `<button type="button" class="char-pill locked" data-locked="1" data-locked-name="${esc(gd.name)}" data-locked-req="${esc(req)}" title="${esc(req)}"><span>🔒</span><span>${esc(short)}</span></button>`;
+        }).join("")}
+      </div>
+      <p class="char-perk"><b>${cur.icon} ${esc(cur.name)}:</b> ${esc(cur.blurb)}</p>
     </section>
     ${stickerBook({ byStars: true })}
     ${gamesLink}`;
+  const perk = app.querySelector(".char-perk");
   app.querySelectorAll("[data-gd]").forEach((b) => b.addEventListener("click", () => {
     const gd = gardenerById(b.dataset.gd);
     S.setSetting("gardener", gd.id);
-    viewHome();
+    app.querySelectorAll("[data-gd]").forEach((x) => { const on = x === b; x.classList.toggle("picked", on); x.setAttribute("aria-pressed", on); });
+    app.querySelectorAll(".peek-locked").forEach((x) => x.classList.remove("peek-locked"));
+    if (perk) perk.innerHTML = `<b>${gd.icon} ${esc(gd.name)}:</b> ${esc(gd.blurb)}`;
     speak(gd.say);
+  }));
+  app.querySelectorAll("[data-locked]").forEach((b) => b.addEventListener("click", () => {
+    app.querySelectorAll(".peek-locked").forEach((x) => x.classList.toggle("peek-locked", x === b));
+    if (perk) perk.innerHTML = `<b>🔒 ${esc(b.dataset.lockedName)}:</b> ${esc(b.dataset.lockedReq)}`;
+    speak(b.dataset.lockedReq);
   }));
   speak("Pick a stage in Garden Givers!");
 }

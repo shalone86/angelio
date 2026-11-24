@@ -1,6 +1,9 @@
 /* Monastery Porter (base.css has the shared look): the voxel gate (js/gate.js) with the game on top. */
-.hero .title { color: #6b4a2a; }
-.demo-chip { display: inline-block; font-weight: 800; padding: 6px 14px; border-radius: 99px; background: var(--surface); border: 2px dashed var(--border); margin: 4px auto 10px; }
+.home-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; padding: 6px 0 8px; }
+.home-title-wrap { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; min-width: 0; }
+.home-title { margin: 0; font-size: clamp(1.35rem, 4.5vw, 1.85rem); line-height: 1.1; color: #6b4a2a; }
+.home-sub { margin: 0; font-size: .88rem; color: var(--muted); font-weight: 700; }
+.demo-chip { display: inline-flex; align-items: center; font-weight: 800; font-size: .8rem; padding: 4px 10px; border-radius: 99px; background: var(--surface); border: 1.5px solid var(--border); color: var(--muted); margin: 0; }
 
 /* The round: the voxel gate fills the screen; the clock, score, the visitors' pictures, the two answers and the bubble float on top. */
 body.porter-game { overflow: hidden; background: #2a2036; }
@@ -72,23 +75,46 @@ body.porter-game .topbar { display: none; }
   .porter-play .clock, .porter-play .score { font-size: 1rem; padding: 3px 10px; }
 }
 
-/* Home: the stages, one card each (locked ones say how to open them) */
-.stages { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin: 8px 0 18px; }
-.stage { display: grid; gap: 4px; justify-items: center; text-align: center; text-decoration: none; color: var(--text); padding: 16px 14px; }
-.stage b { font: 800 1.2rem var(--font-display); }
-.stage-icon { font-size: 2.2rem; line-height: 1; }
-.stage-stars { color: #d9a400; font-weight: 800; letter-spacing: .05em; }
-.stage.locked { opacity: .6; }
-.games-link { margin: 18px 0 8px; }
-
-/* Home: pick your porter (porters.js); locked ones say which day opens them */
-.porters-title { margin: 10px 0 4px; font: 800 1.3rem var(--font-display); }
-.porters { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin: 6px 0 18px; }
-.porter-pick { display: grid; gap: 4px; justify-items: center; text-align: center; padding: 14px 10px; font: inherit; color: var(--text); cursor: pointer; border: 3px solid transparent; }
-.porter-pick b { font: 800 1.05rem var(--font-display); }
-.porter-pick.picked { border-color: #2fa866; }
-.porter-pick .picked-tag { color: #1f7a49; font-weight: 800; }
-.porter-pick.locked { opacity: .6; cursor: default; }
+/* Option A home: uniform stage blocks, slim character pills + 1 perk line, sleek sticker bar */
+.stages { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin: 4px 0 12px; }
+@media (min-width: 600px) { .stages.stages-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.stage { display: flex; flex-direction: column; justify-content: space-between; min-height: 94px; gap: 4px; text-align: left; text-decoration: none; color: var(--text);
+  padding: 10px 11px; border-radius: 16px; border: 1.5px solid var(--border); background: var(--surface); box-shadow: 0 3px 0 var(--border); transition: transform .08s, filter .12s; }
+.stage-top { display: flex; align-items: center; justify-content: space-between; gap: 4px; width: 100%; }
+.stage-icon { font-size: 1.35rem; line-height: 1; }
+.stage-tag { font-size: .74rem; font-weight: 800; color: var(--muted); }
+.stage-name { font: 800 .92rem/1.15 var(--font-display); }
+.stage-stars { font-size: .78rem; color: #c78b00; font-weight: 800; letter-spacing: .02em; }
+.stage-req { font-size: .75rem; color: var(--muted); font-weight: 700; }
+.stage.night { background: linear-gradient(155deg, #273647, #1c2734); color: #f6f0dc; border-color: #475d78; box-shadow: 0 3px 0 #121a24; }
+.stage.night .stage-tag { color: #c7d2de; }
+.stage.night .stage-stars { color: #ffd24c; }
+.stage.endless { background: linear-gradient(155deg, #1d2246, #2e396b); color: #fff; border-color: #4a5794; box-shadow: 0 3px 0 #131836; }
+.stage.endless .stage-tag, .stage.endless .stage-stars { color: #ffd24c; }
+.stage.locked { opacity: .68; border-style: dashed; box-shadow: none; background: color-mix(in srgb, var(--surface) 65%, transparent); }
+a.stage:hover { filter: brightness(1.03); }
+a.stage:active { transform: translateY(2px); box-shadow: none; }
+.games-link { margin: 10px 0 6px; }
+.char-dock { margin: 2px 0 8px; display: grid; gap: 6px; }
+.char-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.char-pill { display: inline-flex; align-items: center; gap: 5px; padding: 6px 11px; border-radius: 99px;
+  border: 1.5px solid var(--border); background: var(--surface); box-shadow: 0 2px 0 var(--border);
+  font: 800 .85rem/1.1 var(--font-display); color: var(--text); cursor: pointer; touch-action: manipulation; }
+.char-pill.picked { background: var(--good-soft); border-color: var(--green); color: var(--green-ink); box-shadow: 0 2px 0 var(--green-dark); }
+.char-pill.locked { opacity: .62; border-style: dashed; box-shadow: none; }
+.char-pill.locked.peek-locked { opacity: .95; border-color: var(--accent); color: var(--text); }
+.char-perk { margin: 0 2px; font-size: .84rem; color: var(--muted); line-height: 1.35; }
+.char-perk b { color: var(--text); }
+.sticker-book { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 10px;
+  margin: 10px 0 6px; padding: 9px 12px; border-radius: 16px; background: var(--surface); border: 1.5px solid var(--border); box-shadow: 0 2px 0 var(--border); }
+.sticker-book h2 { margin: 0; font-size: .92rem; display: flex; align-items: center; gap: 6px; }
+.sticker-book h2 small { font-size: .78rem; margin: 0; }
+.sticker-book .stickers { order: 3; width: 100%; display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 6px; padding: 2px 0; scrollbar-width: none; font-size: 1.85rem; }
+.sticker-book .stickers::-webkit-scrollbar { display: none; }
+.sticker-book .stickers .mini { font-size: 1.3rem; }
+.sticker-book .stickers span { flex: none; display: inline-grid; place-items: center; }
+.sticker-book .world-link { margin: 0; padding: 4px 11px; font-size: .8rem; box-shadow: none; border-width: 1.5px; }
+.sticker-book .muted.small { width: 100%; margin: 0; font-size: .82rem; }
 /* the bell (Sister with the Bell), and the dog barking (Send away waits) */
 .answer.bell { flex: .7; background: #c9971f; box-shadow: 0 4px 0 #7a5a10, 0 6px 14px rgb(0 0 0 / .3); }
 .answer.barking { background: #8a8f98; box-shadow: 0 4px 0 #5a5f66; }

@@ -7,12 +7,23 @@ import { loadStickers, pointsFor, loadWorld, saveWorld } from "./data.js";
 import { jingleOnce, playJingle } from "../js/jingle.js";
 
 const $ = (s, el = document) => el.querySelector(s);
-// Stickers are emoji, or our own drawings saved as "art:mary" (art/mary.svg), sized like emoji.
+// Stickers are emoji, or our own drawings ("art:mary") / voxel characters ("vox:priest-bless"), sized like emoji.
 const ART_NAMES = { mary: "Mary", "baby-jesus": "Baby Jesus", "sacred-heart": "Sacred Heart", chalice: "Chalice", monstrance: "Monstrance", bible: "Holy Bible", lily: "Lily",
   "st-joseph": "St. Joseph", "st-francis": "St. Francis", "guardian-angel": "Guardian angel", "holy-family": "The Holy Family", rosary: "Rosary", "agnus-dei": "Lamb of God", "advent-wreath": "Advent wreath", "loaves-fishes": "Loaves and fishes" };
-const art = (e) => (String(e).startsWith("art:") && ART_NAMES[e.slice(4)]
-  ? `<img class="art-sticker" src="art/${e.slice(4)}.svg" alt="${ART_NAMES[e.slice(4)]}" draggable="false">`
-  : String(e).replace(/[<>&"]/g, ""));
+const VOX_NAMES = {
+  "priest-bless": "Father Blessing", "priest-mass-idle": "Father at Mass", "priest-idle": "Father",
+  "east-priest-cense": "Father Censing", "east-priest-phelonion-idle": "Eastern Priest",
+  "server-candle-idle": "Candle Server", "server-cross-idle": "Cross Server", "server-light": "Lighting Server",
+  "east-server-ripidion-idle": "Ripidion Server", "east-server-cross-idle": "Eastern Cross Server",
+  "child-walk": "Boy", "child-girl-walk": "Girl", "child-kneel": "Boy Praying", "child-girl-kneel": "Girl Praying",
+  "man-walk": "Man", "woman-kneel": "Woman Praying", "grandfather-idle": "Grandfather", "grandmother-idle": "Grandmother",
+};
+const art = (e) => {
+  const s = String(e ?? "");
+  if (s.startsWith("art:") && ART_NAMES[s.slice(4)]) return `<img class="art-sticker" src="art/${s.slice(4)}.svg" alt="${ART_NAMES[s.slice(4)]}" draggable="false">`;
+  if (s.startsWith("vox:") && VOX_NAMES[s.slice(4)]) return `<img class="art-sticker" src="vox/${s.slice(4)}.svg" alt="${VOX_NAMES[s.slice(4)]}" draggable="false">`;
+  return s.replace(/[<>&"]/g, "");
+};
 const stickers = loadStickers();
 const points = pointsFor(stickers);
 const world = loadWorld();
