@@ -148,7 +148,7 @@
 }
 
 /* The Watch & Sing home uses the same sky and feather links as the Angelio section homes. */
-.watch-clouds { display: none; }
+.watch-clouds, .watch-loading-hero, .today.watch-loading-cards { display: none; }
 .watch-home {
   --watch-paper: light-dark(#fff, #1c2b45);
   --watch-ink: light-dark(#183153, #eaf3ff);
@@ -156,6 +156,9 @@
   --watch-edge: light-dark(#cfe6fb, #0b1526);
   --watch-pill: light-dark(#e3f0ff, #16304f);
   --watch-pill-edge: light-dark(#eedec2, #3a5276);
+}
+.watch-home body {
+  min-height: 100vh;
   color: var(--watch-ink);
   background: linear-gradient(light-dark(#7cc4ff, #1d3a66), light-dark(#bfe3ff, #142744) 420px, light-dark(#f2f9ff, #0f1c33) 900px) light-dark(#f2f9ff, #0f1c33) no-repeat;
 }
@@ -211,3 +214,10 @@
   font: 800 1.25rem/1.2 var(--font-display); text-align: center;
 }
 .watch-home :is(.see-all, .world-link):active { box-shadow: none; }
+
+.watch-home .watch-loading-hero { display: block; }
+.watch-home .today.watch-loading-cards { display: grid; }
+.watch-loading-cards span {
+  display: block; aspect-ratio: 16 / 9; border-radius: 20px;
+  background: color-mix(in srgb, var(--watch-pill) 70%, transparent);
+}
