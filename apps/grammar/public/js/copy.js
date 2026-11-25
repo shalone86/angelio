@@ -2,7 +2,7 @@
 // Type any word or sentence to display it big on screen for children to copy,
 // with optional handwriting guide lines, Montessori grammar symbols, and finger spaces.
 
-import { analyzeSentence, PARTS_OF_SPEECH, montessoriSvg } from "./grammar.js";
+import { analyzeSentence, analyzeWordList, PARTS_OF_SPEECH, montessoriSvg } from "./grammar.js";
 import { sfx } from "./kit/sound.js";
 import { speak, stop } from "./kit/tts.js";
 import * as FX from "./kit/fx.js";
@@ -18,7 +18,13 @@ const PRESETS = [
 ];
 
 export function viewCopy(app) {
-  let currentText = "The friendly cat ran quickly.";
+  const drafts = {
+    sentence: { input: "The friendly cat ran quickly.", displayed: "The friendly cat ran quickly." },
+    word: { input: "cat brave quickly", displayed: "cat brave quickly" },
+  };
+  const wordParts = new Map();
+  let mode = "sentence";
+  let currentText = drafts[mode].displayed;
   let showMontessori = true;
   let showHandwritingLines = false;
   let showFingerSpaces = true;
@@ -30,19 +36,26 @@ export function viewCopy(app) {
       <div class="copy-topbar">
         <div>
           <h1>Show & Copy Board</h1>
-          <p class="muted small">Type any word or sentence below to display it big for kids to copy on paper or a whiteboard.</p>
+          <p class="muted small">Display words or a sentence for kids to copy.</p>
         </div>
       </div>
 
-      <!-- Input and Presets Card -->
       <div class="card copy-input-card">
+        <fieldset class="copy-mode">
+          <legend>Practice mode</legend>
+          <label><input type="radio" name="copy-mode" value="sentence" checked> Sentence mode</label>
+          <label><input type="radio" name="copy-mode" value="word"> Word mode</label>
+        </fieldset>
+        <p class="muted small copy-input-help" id="copy-input-help">Type a sentence to show it on the board.</p>
         <div class="copy-input-row">
-          <input type="text" id="copy-text-input" class="copy-text-input" value="${esc(currentText)}" placeholder="Type a word or sentence here…" autocomplete="off">
+          <textarea id="copy-text-input" class="copy-text-input" rows="1" aria-label="Text to display" aria-describedby="copy-input-help" autocomplete="off">${esc(currentText)}</textarea>
           <button class="btn big primary copy-update-btn" data-update>Show Big ✨</button>
         </div>
         <div class="copy-presets-row">
-          <span class="muted small">Quick ideas:</span>
-          ${PRESETS.map((p, i) => `<button class="btn small copy-preset-btn" data-preset="${i}">${p.label}</button>`).join(" ")}
+          <div class="copy-presets" data-sentence-presets>
+            <span class="muted small">Quick ideas:</span>
+            ${PRESETS.map((p, i) => `<button class="btn small copy-preset-btn" data-preset="${i}">${p.label}</button>`).join(" ")}
+          </div>
           <button class="btn small danger" data-clear-input>Clear</button>
         </div>
       </div>
@@ -95,7 +108,8 @@ export function viewCopy(app) {
       return;
     }
 
-    const tokens = analyzeSentence(text);
+    const wordMode = mode === "word";
+    const tokens = wordMode ? analyzeWordList(text) : analyzeSentence(text);
 
     screenCard.classList.toggle("handwriting-lines", showHandwritingLines);
     screenCard.classList.toggle("giant-font", giantMode);
@@ -103,16 +117,24 @@ export function viewCopy(app) {
     displayEl.innerHTML = `
       <div class="copy-words-row">
         ${tokens.map((tok, i) => {
-          const meta = PARTS_OF_SPEECH[tok.pos];
-          const posClass = tok.pos ? ` pos-${tok.pos}` : "";
+          const pos = wordMode ? (wordParts.get(i) ?? tok.pos) : tok.pos;
+          const meta = PARTS_OF_SPEECH[pos];
+          const posClass = pos && (showMontessori || !wordMode) ? ` pos-${pos}` : "";
           const capClass = highlightCapPunct && tok.isCapital ? " has-cap" : "";
           const punctClass = highlightCapPunct && tok.trailingPunct ? " has-punct" : "";
 
           const symHtml = showMontessori && meta
-            ? `<div class="copy-sym-badge" title="${meta.name}">${montessoriSvg(tok.pos, giantMode ? 26 : 22)}<span class="copy-pos-name">${meta.name}</span></div>`
+            ? `<div class="copy-sym-badge" title="${meta.name}">${montessoriSvg(pos, giantMode ? 26 : 22)}<span class="copy-pos-name">${meta.name}</span></div>`
             : "";
 
-          const spaceHtml = showFingerSpaces && i < tokens.length - 1
+          const partPicker = wordMode && showMontessori && tok.clean
+            ? `<select class="copy-word-part" data-part-index="${i}" aria-label="Part of speech for ${esc(tok.raw)}">
+                <option value="" ${pos ? "" : "selected"}>${tok.possible.length > 1 ? "Choose part of speech" : "No symbol"}</option>
+                ${Object.values(PARTS_OF_SPEECH).map((part) => `<option value="${part.id}" ${part.id === pos ? "selected" : ""}>${part.name}${tok.possible.length > 1 && tok.possible.includes(part.id) ? " (possible)" : ""}</option>`).join("")}
+              </select>`
+            : "";
+
+          const spaceHtml = !wordMode && showFingerSpaces && i < tokens.length - 1
             ? `<span class="copy-finger-space" title="Finger space between words"><span class="space-pill">👉 ⎵</span></span>`
             : "";
 
@@ -120,8 +142,9 @@ export function viewCopy(app) {
             <div class="copy-word-item${posClass}${capClass}${punctClass}" data-word="${esc(tok.clean)}">
               ${symHtml}
               <div class="copy-word-text" title="Tap to hear this word">
-                ${tok.raw}
+                ${esc(tok.raw)}
               </div>
+              ${partPicker}
             </div>
             ${spaceHtml}`;
         }).join("")}
@@ -129,7 +152,7 @@ export function viewCopy(app) {
 
     // Click individual words to speak
     displayEl.querySelectorAll(".copy-word-item").forEach((el) => {
-      el.onclick = () => {
+      el.querySelector(".copy-word-text").onclick = () => {
         const w = el.dataset.word;
         sfx.click();
         speak(w, { force: true });
@@ -138,19 +161,43 @@ export function viewCopy(app) {
     });
   }
 
-  // Event handlers
-  app.querySelector("[data-update]").onclick = () => {
+  function showInput() {
+    if (mode === "word" && inputEl.value.trim() !== currentText.trim()) wordParts.clear();
     currentText = inputEl.value;
     sfx.click();
     renderBoard();
+  }
+
+  app.querySelector("[data-update]").onclick = showInput;
+  inputEl.onkeydown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey && !e.isComposing) {
+      e.preventDefault();
+      showInput();
+    }
   };
 
-  inputEl.onkeydown = (e) => {
-    if (e.key === "Enter") {
-      currentText = inputEl.value;
-      sfx.click();
-      renderBoard();
-    }
+  app.querySelector(".copy-mode").onchange = (e) => {
+    drafts[mode] = { input: inputEl.value, displayed: currentText };
+    mode = e.target.value;
+    const draft = drafts[mode];
+    inputEl.value = draft.input;
+    currentText = draft.displayed;
+    const wordMode = mode === "word";
+    app.querySelector("[data-sentence-presets]").hidden = wordMode;
+    app.querySelector("#toggle-spaces").closest("label").hidden = wordMode;
+    app.querySelector("#copy-input-help").textContent = wordMode
+      ? "Separate words with spaces, commas, or new lines. Pick a part of speech when a word has several uses."
+      : "Type a sentence to show it on the board.";
+    sfx.toggle();
+    renderBoard();
+  };
+
+  displayEl.onchange = (e) => {
+    const index = e.target.dataset.partIndex;
+    if (index === undefined) return;
+    wordParts.set(Number(index), e.target.value);
+    renderBoard();
+    displayEl.querySelector(`[data-part-index="${index}"]`).focus();
   };
 
   app.querySelectorAll("[data-preset]").forEach((btn) => {
@@ -164,6 +211,7 @@ export function viewCopy(app) {
   });
 
   app.querySelector("[data-clear-input]").onclick = () => {
+    if (mode === "word") wordParts.clear();
     currentText = "";
     inputEl.value = "";
     sfx.back();
@@ -204,7 +252,8 @@ export function viewCopy(app) {
     if (!currentText.trim()) return;
     sfx.right();
     FX.confetti(20);
-    speak(currentText, { force: true });
+    const spoken = mode === "word" ? analyzeWordList(currentText).map((token) => token.clean).filter(Boolean).join(", ") : currentText;
+    if (spoken) speak(spoken, { force: true });
   };
 
   app.querySelector("[data-copy-clip]").onclick = () => {

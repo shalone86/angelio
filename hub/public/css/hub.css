@@ -188,3 +188,10 @@ nav a.gu { font-size: 1.05rem; }
 .game-tile .tile-say { position: absolute; right: 8px; top: 8px; width: 34px; height: 34px; padding: 0; border-radius: 999px; border: 0; box-shadow: none; background: rgb(15 23 42 / .38); color: #fff; font-size: .95rem; display: grid; place-items: center; backdrop-filter: blur(4px); }
 .game-tile .tile-say:hover { background: rgb(15 23 42 / .58); }
 @media (prefers-color-scheme: dark) { .game-tile { border-color: rgb(255 255 255 / .1); } }
+
+.parent-tools a {
+  display: grid; gap: 4px; padding: 12px 14px; border-radius: 20px;
+  color: var(--ink); background: var(--sky-2); text-decoration: none;
+}
+.parent-tools a:hover strong { text-decoration: underline; }
+.parent-tools span { color: var(--muted); }

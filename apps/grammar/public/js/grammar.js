@@ -1334,6 +1334,35 @@ const DICT_ADJECTIVES = new Set([
   "curious", "playful", "hungry", "delicious", "chilly", "proud", "kind", "neat", "clean"
 ]);
 
+const WORD_LIST_PARTS = {
+  article: DICT_ARTICLES,
+  pronoun: DICT_PRONOUNS,
+  conjunction: DICT_CONJUNCTIONS,
+  preposition: DICT_PREPOSITIONS,
+  interjection: DICT_INTERJECTIONS,
+  verb: DICT_VERBS,
+  adjective: DICT_ADJECTIVES,
+  adverb: new Set([...DICT_ADVERBS, ...PARTS_OF_SPEECH.adverb.examples, "carefully", "gently", "happily", "quietly", "sadly", "soon"]),
+  noun: new Set("apple apples ball bat bark book books box can cat cats chair class dance dog dogs flower flowers fly friend garden house jump light look orange paint park pencil play rain read rock rose run school sleep star sun swim table teacher tree trees walk water well wind word".split(" ")),
+};
+
+const ADDITIONAL_WORD_PARTS = new Map([
+  ["fast", ["adjective", "adverb", "verb", "noun"]],
+  ["light", ["noun", "adjective", "verb"]],
+  ["well", ["adverb", "adjective", "noun", "verb", "interjection"]],
+]);
+
+/** Look up each word independently. A single match can display a symbol immediately. */
+export function analyzeWordList(text) {
+  return String(text ?? "").split(/[\s,]+/).filter(Boolean).map((raw) => {
+    const clean = raw.toLowerCase().replaceAll("’", "'").replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, "");
+    const possible = ADDITIONAL_WORD_PARTS.get(clean)
+      ?? Object.keys(WORD_LIST_PARTS).filter((pos) => WORD_LIST_PARTS[pos].has(clean));
+    const pos = possible.length === 1 ? possible[0] : "";
+    return { raw, clean, possible, pos, isCapital: /^\p{Lu}/u.test(raw), trailingPunct: /[.!?:;”"']$/.test(raw) };
+  });
+}
+
 /**
  * Analyzes any sentence text, returning tokenized words with Montessori parts of speech,
  * punctuation, and spacing metadata for the Show & Copy board.
