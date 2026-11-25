@@ -10,12 +10,14 @@ header { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; pad
 .brand { display: flex; align-items: center; gap: 8px; font: 800 1.5rem "Baloo 2", sans-serif; color: #fff; text-shadow: 0 2px 0 #3a8fd9; text-decoration: none; }
 .brand img { border-radius: 10px; box-shadow: 0 2px 0 #3a8fd9; }
 nav { margin-left: auto; display: flex; gap: 6px; }
-nav a { color: #fff; text-decoration: none; font-weight: 800; background: rgb(255 255 255 / .25); padding: 6px 12px; border-radius: 999px; white-space: nowrap; }
-nav a:hover { background: rgb(255 255 255 / .4); }
-/* Phones: three equal buttons that always fit (they wrap their text if the phone uses big fonts). */
+nav a, .home-header .gu { color: #fff; text-decoration: none; font-weight: 800; background: rgb(255 255 255 / .25); padding: 6px 12px; border-radius: 999px; white-space: nowrap; }
+nav a:hover, .home-header .gu:hover { background: rgb(255 255 255 / .4); }
+.home-header .gu { display: grid; place-items: center; min-width: 44px; min-height: 44px; font-size: 1.05rem; }
+/* On phones the settings link shares the brand row, and the main menu has its own row. */
 @media (max-width: 560px) {
-  nav { margin-left: 0; width: 100%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
-  nav a { font-size: .88rem; padding: 6px 4px; text-align: center; white-space: normal; line-height: 1.15; display: flex; align-items: center; justify-content: center; }
+  nav { margin-left: 0; width: 100%; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+  .home-header .gu { margin-left: auto; }
+  nav a { min-height: 44px; font-size: .88rem; padding: 6px 4px; text-align: center; white-space: normal; line-height: 1.15; display: flex; align-items: center; justify-content: center; }
 }
 .hero { text-align: center; padding: 22px 0 56px; position: relative; }
 .hero > * { position: relative; z-index: 1; }
@@ -59,8 +61,8 @@ footer { text-align: center; color: var(--muted); font-size: .85rem; margin-top:
 @media (prefers-color-scheme: dark) {
   :root { --ink: #eaf3ff; --muted: #b4c7e0; --card: #1c2b45; --sky-2: #253a5c; }
   body { background: linear-gradient(#1d3a66 0, #142744 420px, #0f1c33 900px) #0f1c33 no-repeat; }
-  nav a { color: var(--ink); background: var(--card); }
-  nav a:hover { background: var(--sky-2); }
+  nav a, .home-header .gu { color: var(--ink); background: var(--card); }
+  nav a:hover, .home-header .gu:hover { background: var(--sky-2); }
   .lede { color: #d6e7ff; } .cardc { box-shadow: 0 8px 0 #0b1526; } .panel { box-shadow: 0 8px 0 #0b1526; }
   .cloud, .cloud::before, .cloud::after { background: #2b4470; } .cardc small { color: #9fcdff; } a { color: #9fcdff; }
   .cardc.soon { background: rgb(28 43 69 / .55); border-color: #2b4470; }
@@ -112,11 +114,9 @@ footer { text-align: center; color: var(--muted); font-size: .85rem; margin-top:
 .hero .lede { margin-bottom: 4px; font-size: 1.02rem; }
 .feather { font-size: 2.8rem; }
 .sky { height: 420px; }
-@media (max-width: 560px) {
-  nav { grid-template-columns: 1fr 1fr 1.25fr auto; }
-  nav a.gu { padding: 6px 12px; }
+@media (max-width: 400px) {
+  .home-header nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-nav a.gu { font-size: 1.05rem; }
 .subject { margin-top: 18px; padding: 14px 14px 18px; border-radius: 30px; background: color-mix(in srgb, var(--c) 12%, var(--card)); box-shadow: 0 6px 0 color-mix(in srgb, var(--c) 30%, transparent); }
 .subject h2 { margin: 0 0 12px 6px; color: color-mix(in srgb, var(--c) 75%, var(--ink)); font-size: 1.45rem; }
 .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
