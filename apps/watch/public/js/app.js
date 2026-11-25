@@ -416,7 +416,7 @@ topbarHeight(); addEventListener("resize", topbarHeight);
 
 installClickSounds();
 jingleOnce("watch", () => S.settings().sounds);
-app.innerHTML = `<p class="center muted">Loading…</p>`;
+// Keep the initial page visible until the library is ready to render.
 // Hidden lessons and songs (the Studio's "Hide") don't show, and drop out of their courses and albums.
 // In the Studio's preview (?studio) everything shows, and the Studio sends its unsaved library to draw.
 const STUDIO = new URLSearchParams(location.search).has("studio");
