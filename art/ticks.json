@@ -37,6 +37,13 @@
   "grandmother-walk": true,
   "grandmother-idle": true,
   "grandfather-walk": true,
-  "grandfather-idle": true
+  "grandfather-idle": true,
+  "child-girl-idle": true,
+  "child-idle": true,
+  "woman-idle": true,
+  "man-idle": true,
+  "man-beard-idle": true,
+  "man-beard-walk": true,
+  "man-beard-kneel": true
  }
 }
