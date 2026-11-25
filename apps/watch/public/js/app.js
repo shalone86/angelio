@@ -162,9 +162,9 @@ function viewAll(kind) {
   if (!L) { location.hash = "#/"; return; }
   const cards = L.cards();
   app.innerHTML = `
-    <section class="watch">
-      <div class="watch-top"><a class="icon-btn" href="#/" aria-label="Back">✕</a>
-        <h1 class="watch-title collection-heading"><span><span aria-hidden="true">${L.emoji}</span> All ${L.title.toLowerCase()}</span><span class="muted small course-of">${cards.length}</span></h1></div>
+    <section class="watch watch-library">
+      <div class="watch-top"><a class="btn library-back" href="#/"><span aria-hidden="true">←</span> Back</a>
+        <h1 class="watch-title collection-heading">All ${L.title.toLowerCase()}<span class="muted small course-of">${cards.length} ${L.title.toLowerCase()}</span></h1></div>
       <div class="video-grid">${cards.join("")}</div>
     </section>`;
   speak(`All the ${L.title.toLowerCase()}.`);
