@@ -48,7 +48,7 @@ a.cardc:active { transform: translateY(4px); box-shadow: 0 2px 0 #cfe6fb; }
 .cardc small { background: var(--sky-2); color: #2a6db3; font-weight: 800; font-size: .78rem; padding: 2px 10px; border-radius: 999px; }
 .cardc p { margin: 0; color: var(--muted); font-size: .94rem; line-height: 1.35; }
 .cardc.soon { opacity: .55; box-shadow: none; background: rgb(255 255 255 / .55); border: 2px dashed #b9d8f5; }
-.panel { margin-top: 36px; padding: 22px; border-radius: 28px; background: #fff; box-shadow: 0 8px 0 #cfe6fb; }
+.panel { margin-top: 36px; padding: 22px; border-radius: 28px; background: var(--card); box-shadow: 0 8px 0 #cfe6fb; }
 .panel h2 { font: 800 1.5rem "Baloo 2", sans-serif; margin: 0 0 6px; }
 .panel h3 { margin: 10px 0 4px; }
 .duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
@@ -59,6 +59,8 @@ footer { text-align: center; color: var(--muted); font-size: .85rem; margin-top:
 @media (prefers-color-scheme: dark) {
   :root { --ink: #eaf3ff; --muted: #b4c7e0; --card: #1c2b45; --sky-2: #253a5c; }
   body { background: linear-gradient(#1d3a66 0, #142744 420px, #0f1c33 900px) #0f1c33 no-repeat; }
+  nav a { color: var(--ink); background: var(--card); }
+  nav a:hover { background: var(--sky-2); }
   .lede { color: #d6e7ff; } .cardc { box-shadow: 0 8px 0 #0b1526; } .panel { box-shadow: 0 8px 0 #0b1526; }
   .cloud, .cloud::before, .cloud::after { background: #2b4470; } .cardc small { color: #9fcdff; } a { color: #9fcdff; }
   .cardc.soon { background: rgb(28 43 69 / .55); border-color: #2b4470; }
@@ -86,7 +88,12 @@ footer { text-align: center; color: var(--muted); font-size: .85rem; margin-top:
 .code-status button { padding: 4px 12px; font-size: .85rem; box-shadow: none; background: #fff; margin-left: 6px; }
 .code-status { font-weight: 700; min-height: 1.4em; }
 .code-status.ok { color: #137a41; } .code-status.bad { color: #b02d33; }
-@media (prefers-color-scheme: dark) { .code-form input { background: #12233f; color: var(--ink); border-color: #2f4a73; } }
+@media (prefers-color-scheme: dark) {
+  .code-form input { background: #12233f; color: var(--ink); border-color: #6e8bb3; }
+  .code-form input::placeholder { color: var(--muted); opacity: 1; }
+  .code-status.ok { color: #91e4b0; }
+  .code-status.bad { color: #ffb4b9; }
+}
 
 /* Thank-you, terms and privacy pages */
 .page h1 { font: 800 2rem "Baloo 2", sans-serif; margin: 0 0 6px; }
