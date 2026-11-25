@@ -1,6 +1,7 @@
 # Notes for AI assistants working in this repo
 
 - **The owner is Shalone Cason, a man (he/him).** In the recordings he is Dad; his wife is Mom. Never call him "she".
+- **Keep docs short and visual:** Human time is valuable — never write walls of text or thousands of words. Make what a feature **does and doesn't** do clear in as few words as possible, and add real screenshots (`docs/img/`) wherever an image explains it faster than prose.
 - **One repo:** all of Angelio is here: `hub/` (angelio.org), `apps/<name>/` (each app, still its own Worker
   with its own wrangler.jsonc), `template/` (the app template). The old per-app repos (snap-split, regroup,
   doubles, grammar, fractions, letterlane, readaloud, watch, articulation, app-template) are archives: work here.

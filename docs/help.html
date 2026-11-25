@@ -3,565 +3,246 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Angelio Games &amp; Tech Help</title>
+  <title>Angelio Help &amp; Screenshots</title>
   <style>
     :root {
-      --bg: #f2f9ff;
-      --card: #ffffff;
-      --ink: #183153;
-      --muted: #4b6584;
-      --line: #cfe6fb;
-      --accent: #2f4a7a;
-      --sun: #ffc93c;
-      --sun-ink: #4a3300;
-      --pill: #e7f2fe;
-      --mark: #fff0a6;
-      --code-bg: #eef5fc;
-      --shadow: 0 4px 0 var(--line);
+      --bg: #f2f9ff; --card: #fff; --ink: #183153; --muted: #4b6584; --line: #cfe6fb;
+      --accent: #2f4a7a; --sun: #ffc93c; --sun-ink: #4a3300; --pill: #e7f2fe; --mark: #fff0a6;
+      --code-bg: #eef5fc; --shadow: 0 4px 0 var(--line);
     }
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg: #0f1b2e;
-        --card: #16263f;
-        --ink: #edf4ff;
-        --muted: #a6bddb;
-        --line: #284266;
-        --accent: #6ea8fe;
-        --sun: #f6c445;
-        --sun-ink: #2c1e00;
-        --pill: #203556;
-        --mark: #6b5300;
-        --code-bg: #102036;
-        --shadow: 0 4px 0 #091322;
+        --bg: #0f1b2e; --card: #16263f; --ink: #edf4ff; --muted: #a6bddb; --line: #284266;
+        --accent: #6ea8fe; --sun: #f6c445; --sun-ink: #2c1e00; --pill: #203556; --mark: #6b5300;
+        --code-bg: #102036; --shadow: 0 4px 0 #091322;
       }
     }
     * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font: 16px/1.55 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: var(--ink);
-      background: var(--bg);
-    }
+    body { margin: 0; font: 15.5px/1.5 system-ui, -apple-system, sans-serif; color: var(--ink); background: var(--bg); }
     a { color: var(--accent); text-decoration: none; font-weight: 600; }
     a:hover { text-decoration: underline; }
-    code {
-      font: 0.88em/1.4 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      background: var(--code-bg);
-      padding: 0.12em 0.38em;
-      border-radius: 6px;
-      border: 1px solid var(--line);
-    }
-    header {
-      background: var(--card);
-      border-bottom: 2px solid var(--line);
-      padding: 20px 16px 16px;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-    .wrap { max-width: 980px; margin: 0 auto; }
-    .title-row { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: baseline; justify-content: space-between; }
-    h1 { margin: 0; font-size: 1.6rem; letter-spacing: -0.01em; }
-    .doc-links { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 0.92rem; }
-    .sub { margin: 6px 0 14px; color: var(--muted); font-size: 0.96rem; }
-    .search-row { display: flex; gap: 8px; align-items: center; }
-    .search-box {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      background: var(--bg);
-      border: 2px solid var(--line);
-      border-radius: 14px;
-      padding: 4px 10px;
-    }
+    code { font: 0.86em/1.4 ui-monospace, Menlo, Consolas, monospace; background: var(--code-bg); padding: 1px 5px; border-radius: 6px; border: 1px solid var(--line); }
+    header { background: var(--card); border-bottom: 2px solid var(--line); padding: 16px; position: sticky; top: 0; z-index: 10; }
+    .wrap, main, footer { max-width: 980px; margin: 0 auto; }
+    .title-row { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: baseline; justify-content: space-between; }
+    h1 { margin: 0; font-size: 1.45rem; }
+    .doc-links { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 0.9rem; }
+    .sub { margin: 4px 0 12px; color: var(--muted); font-size: 0.92rem; }
+    .search-row { display: flex; gap: 8px; }
+    .search-box { flex: 1; background: var(--bg); border: 2px solid var(--line); border-radius: 12px; padding: 3px 10px; }
     .search-box:focus-within { border-color: var(--accent); }
-    .search-box input {
-      width: 100%;
-      border: 0;
-      background: transparent;
-      color: var(--ink);
-      font: 1rem/1.4 inherit;
-      padding: 6px;
-      outline: none;
-    }
-    .clear-btn {
-      border: 0;
-      border-radius: 10px;
-      padding: 8px 14px;
-      background: var(--pill);
-      color: var(--ink);
-      font: 700 0.9rem inherit;
-      cursor: pointer;
-    }
-    .clear-btn:hover { filter: brightness(0.95); }
-    .filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 12px;
-      align-items: center;
-    }
-    .pill {
-      border: 1.5px solid var(--line);
-      background: var(--pill);
-      color: var(--ink);
-      border-radius: 999px;
-      padding: 6px 13px;
-      font: 700 0.88rem inherit;
-      cursor: pointer;
-    }
-    .pill[aria-pressed="true"] {
-      background: var(--sun);
-      color: var(--sun-ink);
-      border-color: var(--sun);
-    }
-    .meta-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 16px 0 8px;
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-    kbd {
-      font: 0.8em ui-monospace, monospace;
-      padding: 1px 6px;
-      border: 1px solid var(--line);
-      border-radius: 5px;
-      background: var(--card);
-    }
-    main { max-width: 980px; margin: 0 auto; padding: 6px 16px 48px; }
-    .grid { display: grid; gap: 14px; }
-    .card {
-      background: var(--card);
-      border: 1.5px solid var(--line);
-      border-radius: 18px;
-      padding: 16px 18px;
-      box-shadow: var(--shadow);
-    }
-    .card-top { display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
-    .card h2 { margin: 0; font-size: 1.15rem; }
-    .badge {
-      font-size: 0.78rem;
-      font-weight: 800;
-      padding: 3px 10px;
-      border-radius: 999px;
-      background: var(--pill);
-      color: var(--accent);
-      white-space: nowrap;
-    }
-    .summary { margin: 0 0 10px; color: var(--muted); }
-    .bullets { margin: 0; padding-left: 20px; }
-    .bullets li { margin: 4px 0; }
-    .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
-    .tag {
-      font-size: 0.76rem;
-      color: var(--muted);
-      background: var(--bg);
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 2px 8px;
-    }
+    .search-box input { width: 100%; border: 0; background: transparent; color: var(--ink); font: inherit; padding: 5px; outline: none; }
+    .clear-btn { border: 0; border-radius: 10px; padding: 7px 14px; background: var(--pill); color: var(--ink); font: 700 0.9rem inherit; cursor: pointer; }
+    .filters { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .pill { border: 1.5px solid var(--line); background: var(--pill); color: var(--ink); border-radius: 999px; padding: 5px 12px; font: 700 0.84rem inherit; cursor: pointer; }
+    .pill[aria-pressed="true"] { background: var(--sun); color: var(--sun-ink); border-color: var(--sun); }
+    main { padding: 12px 16px 40px; }
+    .meta-bar { display: flex; justify-content: space-between; margin: 4px 0 10px; color: var(--muted); font-size: 0.86rem; }
+    kbd { font: 0.8em ui-monospace, monospace; padding: 1px 5px; border: 1px solid var(--line); border-radius: 5px; background: var(--card); }
+    .grid { display: grid; gap: 12px; }
+    .card { background: var(--card); border: 1.5px solid var(--line); border-radius: 16px; padding: 14px 16px; box-shadow: var(--shadow); }
+    .card-top { display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
+    .card h2 { margin: 0; font-size: 1.08rem; }
+    .badge { font-size: 0.74rem; font-weight: 800; padding: 2px 9px; border-radius: 999px; background: var(--pill); color: var(--accent); }
+    .summary { margin: 0 0 8px; color: var(--muted); font-size: 0.93rem; }
+    .bullets { margin: 0; padding-left: 18px; }
+    .bullets li { margin: 3px 0; }
+    .card-img { display: block; width: 100%; max-height: 290px; object-fit: cover; object-position: top; border-radius: 12px; border: 1px solid var(--line); margin-top: 10px; background: var(--bg); }
+    .card-img.mobile { max-width: 260px; max-height: none; }
     mark { background: var(--mark); color: inherit; border-radius: 3px; padding: 0 2px; }
-    .empty {
-      background: var(--card);
-      border: 2px dashed var(--line);
-      border-radius: 18px;
-      padding: 28px 18px;
-      text-align: center;
-      color: var(--muted);
-    }
-    footer {
-      max-width: 980px;
-      margin: 0 auto;
-      padding: 0 16px 36px;
-      color: var(--muted);
-      font-size: 0.88rem;
-    }
+    .empty { background: var(--card); border: 2px dashed var(--line); border-radius: 16px; padding: 24px; text-align: center; color: var(--muted); }
+    footer { padding: 0 16px 32px; color: var(--muted); font-size: 0.86rem; }
   </style>
 </head>
 <body>
 <header>
   <div class="wrap">
     <div class="title-row">
-      <h1>Angelio Games &amp; Tech Help</h1>
-      <nav class="doc-links" aria-label="Markdown guides">
-        <a href="./README.md">Docs Home</a>
+      <h1>Angelio Help &amp; Screenshots</h1>
+      <nav class="doc-links">
+        <a href="./README.md">Docs</a>
         <a href="./games-guide.md">Games Handbook</a>
-        <a href="./tech-help.md">Tech Help (.md)</a>
-        <a href="./selling-codes.md">Selling Codes</a>
+        <a href="./tech-help.md">Tech Help</a>
+        <a href="./selling-codes.md">Codes</a>
         <a href="../ROADMAP.md">Roadmap</a>
       </nav>
     </div>
-    <p class="sub">Offline searchable guide to every Angelio game, learning app, <code>#/</code> routing, voxel art, deploys, and troubleshooting.</p>
+    <p class="sub">Offline quick reference for games, stickers, <code>#/</code> URLs, voxel markers, deploys, and fixes.</p>
     <div class="search-row">
-      <div class="search-box">
-        <input id="q" type="search" placeholder="Search games, #/ links, Ghost, stickers, sw.js, TDZ, tree collision, marker hex..." aria-label="Search help topics">
-      </div>
+      <div class="search-box"><input id="q" type="search" placeholder="Search stickers, voxel, #/, sw.js, TDZ, garden, usher..." aria-label="Search help"></div>
       <button type="button" class="clear-btn" id="clearBtn">Clear</button>
     </div>
-    <div class="filters" id="filters" role="group" aria-label="Filter by category"></div>
+    <div class="filters" id="filters" role="group" aria-label="Categories"></div>
   </div>
 </header>
-
 <main>
-  <div class="meta-bar">
-    <span id="count">Loading topics...</span>
-    <span>Shortcuts: <kbd>/</kbd> to search, <kbd>Esc</kbd> to clear</span>
-  </div>
+  <div class="meta-bar"><span id="count"></span><span><kbd>/</kbd> search · <kbd>Esc</kbd> clear</span></div>
   <section class="grid" id="results" aria-live="polite"></section>
 </main>
-
-<footer>
-  Works offline straight from disk (<code>file://</code>). Live hub: <a href="https://angelio.org/games/">angelio.org/games/</a>.
-</footer>
-
+<footer>Offline via <code>file://</code> · Live: <a href="https://angelio.org/games/">angelio.org/games/</a></footer>
 <script>
 (() => {
   const CATEGORIES = [
-    { id: "all", label: "All Topics" },
-    { id: "games", label: "Games & Apps" },
-    { id: "urls", label: "URLs & Architecture" },
-    { id: "art", label: "Voxel Art & Audio" },
-    { id: "deploy", label: "Deploy & Git" },
-    { id: "troubleshooting", label: "Troubleshooting" },
+    { id: "all", label: "All" },
+    { id: "games", label: "Games" },
+    { id: "urls", label: "URLs & Stack" },
+    { id: "art", label: "Voxel & Audio" },
+    { id: "fixes", label: "Fixes" }
   ];
 
   const ITEMS = [
     {
-      cat: "urls",
-      badge: "URLs & Architecture",
-      title: "Why Angelio links use #/ (and why Ghost does not)",
-      summary: "Internal routes inside each game use location.hash in kit/router.js while clean folder paths (/garden/, /match/) come from Cloudflare service bindings.",
+      cat: "games", badge: "Games", title: "Stickers & Rewards (Voxel vs 2D)",
+      summary: "Arcade games give isometric voxel stickers by stars; learning apps give 2D stickers by mistakes.",
+      img: "./img/sticker-world.png",
       bullets: [
-        "hub/worker/index.js routes clean paths like angelio.org/garden/ to the garden Worker and strips the prefix.",
-        "kit/router.js handles everything after #/ (#/play/garden, #/grownups) inside the browser with location.hash and hashchange.",
-        "Nothing after # hits the network, keeping relative assets (css/app.css, sw.js) and offline cached shells simple across 14 Workers.",
-        "Ghost uses real server URLs so blog posts are searchable and shareable. #/ is uncommon on blogs/public websites, though practical for offline-first single-page apps.",
-        "If Watch & Sing lessons or songs ever need clean shareable per-item URLs without #/, use history.pushState plus Worker fallback to index.html."
+        "5 Arcade games (byStars: true): 3★ = giant voxel sticker (mistakes ignored), 2★ = mini voxel sticker, 0–1★ = no new sticker.",
+        "18 voxel SVGs (vox:<slug>) live in hub/public/stickers/vox/; unowned ones drop first across angelio:stickers.",
+        "9 Learning apps: 0 mistakes = giant 2D sticker, 1+ mistakes = mini 2D sticker (no voxel stickers)."
       ],
-      keywords: "hash hashtag # #/ links url ghost blog pushstate seo offline router kit/router.js hub/worker/index.js"
+      keywords: "stickers voxel 2d byStars giant mini reward world"
     },
     {
-      cat: "games",
-      badge: "Games & Apps",
-      title: "Shared Star & Sticker Rule (All 5 Arcade Games)",
-      summary: "Arcade games follow the byStars rule in kit/store.js and kit/ui.js so stars decide rewards rather than zero mistakes.",
+      cat: "games", badge: "Games", title: "Option A Game Homes (Desktop & Mobile)",
+      summary: "Uniform stage cards (including Endless) that scale up at >=1024px and switch cleanly to 2 columns on phones.",
+      img: "./img/usher-home-desktop.png",
       bullets: [
-        "3 stars (★★★) = Giant sticker every time, no matter how many mistakes or spills happened.",
-        "2 stars (★★) = Mini sticker and unlocks the next stage plus 2-star characters or endless mode.",
-        "0 or 1 star = No new sticker earned (already earned stickers stay saved in Sticker World).",
-        "Contrast: the learning apps (Snap, Regroup, Doubles, Fractions, Grammar, Letters, Read Aloud, Watch & Sing) award a Giant sticker for 0 mistakes and a Mini sticker for 1+ mistakes."
+        "Locked stage cards show their unlock requirement and don't launch.",
+        "Locked character pills reveal their unlock requirement in the perk line without switching your active pick.",
+        "Arcade sticker bar shows sticker count ('My voxel stickers · N stickers'), never '0 solved'."
       ],
-      keywords: "stars sticker giant mini byStars store.js ui.js 3 stars 2 stars mistakes unlock reward"
+      keywords: "home screen mobile desktop layout option a endless cards locked"
     },
     {
-      cat: "games",
-      badge: "Games & Apps",
-      title: "Candle Rack (/candles/)",
-      summary: "90-second liturgical action game: light candles and vigil lamps before Mass starts and keep the Sanctuary Lamp fueled.",
+      cat: "games", badge: "Games", title: "Candle Rack (/candles/)",
+      summary: "Light vigil candles before Mass, oil the Sanctuary Lamp, relight your taper on stages 2+.",
+      img: "./img/candles-home.png",
       bullets: [
-        "Stages: Sunday Mass (Roman), Divine Liturgy (Byzantine, introduces lighting taper limit), Christmas Midnight Mass, Pascha (starts completely dark), and Adoration at Night (Endless, 4 racks / 32 spots, ends when too many active candles are out).",
-        "Tap or swipe along rows within 2 s for combos up to x5; tap flickering candles (<25% wax) for just-in-time bonuses.",
-        "Tap the Sanctuary Lamp before it drains (20-30 s), tap the big candle to relight your taper, and tap priest or server to light behind kneeling parishioners.",
-        "Character picker: none. Studio layout editor: angelio.org/studio/candles/."
+        "Has NO character picker (uses active liturgical season chip instead).",
+        "Stages: Sunday Mass, Divine Liturgy, Christmas Midnight Mass, Pascha (starts dark), Adoration Endless (4 racks / 32 spots).",
+        "Edit prop spots live at /studio/candles/."
       ],
-      keywords: "candles candle rack adoration sunday mass divine liturgy pascha christmas taper lamp draft priest server layout"
+      keywords: "candles rack adoration taper lamp studio"
     },
     {
-      cat: "games",
-      badge: "Games & Apps",
-      title: "Mass Usher (/usher/)",
-      summary: "120-second church seating game: walk families to pews, scoot seated parishioners, and keep families together.",
+      cat: "games", badge: "Games", title: "Mass Usher (/usher/)",
+      summary: "Walk families to pews and swipe pews to scoot parishioners so families fit together.",
+      img: "./img/usher-home-mobile.png", imgClass: "mobile",
       bullets: [
-        "Stages: Sunday Mass (Roman, 2★ 150 / 3★ 370), Divine Liturgy (Byzantine, 2★ 140 / 3★ 320), Christmas Midnight Mass (Roman, 2★ 140 / 3★ 260), Pascha (Byzantine, 2★ 100 / 3★ 240), and Adoration at Night (Endless, ends at 6 queued families).",
-        "Scoring: 10 pts seated, 4 pts standing in row 5, +3/person quick bonus within 8 s of reaching the front.",
-        "All-male usher picker on Home & Finish: Usher (1x balanced), Young Usher (2★ Sunday, 1.5x speed, cannot scoot), Experienced Usher (2★ Liturgy, autoScoot, 0.7x speed), Respected Usher (2★ Christmas, moves pinned stayers)."
+        "10 pts seated vs 4 pts back-row standing (+3 quick bonus <= 8 s).",
+        "📌 stayers won't scoot unless playing Respected Usher.",
+        "4 timed stages + Adoration Endless (ends at 6 waiting families); 4 all-male ushers."
       ],
-      keywords: "usher mass usher pews scoot families roman byzantine adoration standing stayers young experienced respected"
+      keywords: "usher pews scoot stayers mobile adoration"
     },
     {
-      cat: "games",
-      badge: "Games & Apps",
-      title: "Monastery Porter (/porter/)",
-      summary: "Fast one-move monastery gate game: Welcome those who belong, Send away peddlers and animals, and don't bump outgoing brothers.",
+      cat: "games", badge: "Games", title: "Monastery Porter (/porter/)",
+      summary: "One decision per visitor: Welcome (W/Up/Space/tap gate) or Send away (S/Left/Right/swipe).",
+      img: "./img/porter-home.png",
       bullets: [
-        "Controls: Welcome (swipe up, tap gate, W / Up / Space / Enter) vs Send away (swipe sideways, S / Left / Right), plus B for Sister's bell.",
-        "Stages: Sunday Mass, Guest Day, The Great Silence, and Feast Day Crowd (Endless).",
-        "Characters (selectable on Home & Play Next): Brother Porter & Sister Porter starters + Brother Andre (forgiving, slow combo), Old Brother Porter (patient visitors), Brother with the Dog (chases animals), Sister Portress (glows matches, shorter patience), Sister with the Bell (1x patience reset), Respected Sister (no bumps, 0.85x points)."
+        "Wait when outgoing brothers cross the gate or your combo drops.",
+        "Stages: Sunday Mass, Guest Day, The Great Silence, Feast Day Crowd (Endless).",
+        "2 starters + 6 unlockable monks & nuns."
       ],
-      keywords: "porter monastery gate welcome send away brother sister andre dog bell portress respected bump patience"
+      keywords: "porter gate welcome send away monks nuns"
     },
     {
-      cat: "games",
-      badge: "Games & Apps",
-      title: "Saints Match (/match/)",
-      summary: "Arcade memory match across 36 Catholic saints and their signs with 2-second peeks, Feast Rush, Wind Swaps, and Patron Helpers.",
+      cat: "games", badge: "Games", title: "Saints Match (/match/)",
+      summary: "Memory cards across 36 saints with 2 s opening peek, Feast Rush (2x), and Wind Swaps.",
+      img: "./img/match-home.png",
       bullets: [
-        "Six 90-second stages: The Apostles (6M), Early Church (3M/3F), Eastern Church (3M/3F), Western Church (3M/3F), Modern Saints (3M/3F), Patron Saints (3M/3F).",
-        "Endless mode All Saints Rush (opens at 2★ on Apostles): starts with a 40 s clock (capped at 45 s) adding time on matches and board clears.",
-        "Golden Halo pairs trigger double-point Feast Rush; later waves swap two face-down cards (Wind Swap) with Sharp Eye bonuses; per-card speech is muted during fast flips; portraits glow with a 3D head-region golden halo behind the head.",
-        "Patron Helpers (starter Altar Server + 6 unlocked at 2★): St. Anthony (1 hint/board), St. Lucy (longer peek & Rush), St. John Chrysostom (+4 sign matches), St. Clare (1 forgiven miss/board), St. Carlo Acutis (x6 combo), St. Cecilia (no wind swaps, 6.5 s combo)."
+        "Per-card flip speech is muted on purpose so fast flips never stutter audio.",
+        "Strict 3M / 3F parity after The Apostles; All Saints Rush Endless adds time per match (45 s cap).",
+        "Altar Server starter + 6 Patron Helpers."
       ],
-      keywords: "match saints memory apostles early eastern western modern patrons all saints rush feast rush wind swap patron helpers"
+      keywords: "match saints feast rush wind swap mute tts"
     },
     {
-      cat: "games",
-      badge: "Games & Apps",
-      title: "Garden Givers (/garden/)",
-      summary: "Protect monastery beds, orchard trees, and herbs in 45-second stages (1★ play, 250/425 timed, 500/1600 endless) and harvest Food Bank baskets.",
+      cat: "games", badge: "Games", title: "Garden Givers (/garden/)",
+      summary: "Shoo critters off beds, trees & herbs and pick Food Bank orders before rewards go negative.",
+      img: "./img/garden-home.png",
       bullets: [
-        "Critters: bugs & birds clear in 1 tap; squirrels & night raccoons take 2 taps to shoo away.",
-        "Four 0:45 stages (1★ just for playing; 250 = 2★; 425 = 3★): The Garden (veggies), The Orchard (trees + squirrels), The Herb Garden (basil/mint + 3-item orders), Night Vigil (protect all crops at night against rising bursts; no picking).",
-        "Endless Harvest (opens at 2★ Garden; 500 = 2★; 1600 = 3★): +critters every 30 s, meter full at 10 eaten crops.",
-        "Up to 2 persistent helper monks/sisters run baskets round-robin between posts and Food Bank cart; orchard trees have solid collision radius (4.4).",
-        "Starters: Brother Gardener & Sister Gardener; unlockables: Brother Bug-Shooer (2★ Garden), Sister Double Harvest (2★ Orchard), Brother Patient (2★ Herbs), Sister Green Thumb (2★ Night Vigil)."
+        "1 tap bugs/birds; 2 taps squirrels & raccoons. Up to 2 courier helpers walk baskets around tree colliders (r = 4.4).",
+        "Night Vigil protects everything with no picking/orders; Endless ends at 10 eaten crops.",
+        "Stars: 1★ play, 250/425 timed (0:45), 500/1600 Endless. 2 starters + 4 unlockable gardeners."
       ],
-      keywords: "garden givers critters squirrel raccoon 2 taps orchard trees food bank helpers couriers 45 seconds 250 425 500 1600 endless"
+      keywords: "garden critters 2 taps orchard food bank endless"
     },
     {
-      cat: "games",
-      badge: "Games & Apps",
-      title: "Learning Apps, Sticker World, Games Hub & Studio",
-      summary: "Directory of all 9 learning apps plus Angelio hub tools at angelio.org.",
+      cat: "urls", badge: "URLs & Stack", title: "Why links use #/ (and Ghost comparison)",
+      summary: "Cloudflare routes folders (/garden/); kit/router.js handles #/play/... offline in the browser.",
+      img: "./img/hub-games.png",
       bullets: [
-        "Learning apps: PreK Math (/snap/), Regroup! (/regroup/), Doubles (/doubles/), Fraction Feast (/fractions/), Grammar! (/grammar/), Letter Lane (/letters/), Read Aloud (/read/), Watch & Sing (/watch/), and standalone Articulate (/articulate/).",
-        "Games Hub (/games/): lists live & coming-soon games and reads localStorage (<path>:v1) to show best scores and stars.",
-        "Sticker World (/stickers/): interactive sticker boards filled with Giant and Mini stickers earned in games & lessons.",
-        "Angelio Studio (/studio/): password-protected CMS for Watch & Sing, Reading lessons (/studio/reading.html), Drawings (/studio/draw/), and Candle Rack spots (/studio/candles/).",
-        "Admin (/admin/): create/find/revoke family speech-check codes, record letter sounds (/admin/sounds.html), family voice lines (/admin/voices.html), and song lead sheets (/admin/leadsheet)."
+        "Nothing after # hits the server, so relative css/js paths and single-file sw.js offline shells work across 14 Workers.",
+        "Ghost uses real server URLs for SEO/blog sharing; game sub-screens don't need indexing."
       ],
-      keywords: "learning apps snap regroup doubles fractions grammar letters read watch articulate stickers studio admin voices sounds"
+      keywords: "hash #/ router ghost seo offline sw"
     },
     {
-      cat: "urls",
-      badge: "URLs & Architecture",
-      title: "Where Data Lives: Git vs Cloudflare R2 vs localStorage",
-      summary: "Separate layers prevent Studio edits, code deploys, and kids' saved progress from overwriting each other.",
+      cat: "urls", badge: "URLs & Stack", title: "Workers, kit/ Sync & Daily Commands",
+      summary: "1 hub + 14 Workers; edit kit/ once and sync everywhere.",
       bullets: [
-        "Code & game logic: GitHub main branch + Cloudflare Workers (npm run deploy -- <app>).",
-        "Live Studio content: Cloudflare R2 stores Watch & Sing content, .vox drawings, Candle Rack layouts, and voice recordings—with nightly backups pushed back to backup/ on main.",
-        "Player progress: stored locally in each browser under localStorage keys like <path>:v1 (stars, scores, stickers, character pick, voice pick)."
+        "npm test — strict kit-check + all 17 test suites.",
+        "npm run kit-sync — copy kit/ edits into all apps (remember to bump sw.js VERSION).",
+        "git pull --rebase origin main — pull nightly Studio backups before pushing.",
+        "npm run deploy -- <app> — deploy Worker (refuses dirty git)."
       ],
-      keywords: "architecture r2 backup localstorage workers cloudflare kit master sync state persistence"
+      keywords: "kit-sync kit-check deploy commands rebase workers"
     },
     {
-      cat: "art",
-      badge: "Voxel Art & Audio",
-      title: "MagicaVoxel Checklists & Reserved Marker Hex Colors",
-      summary: "Games load .vox models uploaded on /studio/draw/ and recolor specific marker hex codes per person or liturgical season.",
+      cat: "art", badge: "Voxel & Audio", title: "MagicaVoxel Markers (looks.js)",
+      summary: "Reserved marker hexes recolor per person or liturgical season automatically.",
       bullets: [
-        "Track exact model slugs in hub/public/js/art-content.js (including -idle poses like monk-idle, nun-idle, man-idle, woman-idle, saint-peter-idle).",
-        "Until missing -idle models are uploaded, Garden Givers holds stationary walkers on walking frame 0.",
-        "Reserved marker hexes (looks.js): Hair #255359 · Eyes #0066ff or #0b346e · Skin #cccc99 or #fad689 · Shirt #ffcc99 · Dress #ff9966 · Belt #ff9999 · Shoes #ffcccc.",
-        "Priest vestment markers: Roman chasuble #ff77a8 and Byzantine phelonion #ffcc66 recolor to the active liturgical season."
+        "Hair #255359 · Eyes #0066ff/#0b346e · Skin #cccc99/#fad689.",
+        "Shirt #ffcc99 · Dress #ff9966 · Belt #ff9999 · Shoes #ffcccc.",
+        "Roman Chasuble #ff77a8 · Byzantine Phelonion #ffcc66 (don't use elsewhere).",
+        "Unuploaded slugs show box stand-ins; missing -idle holds walkers on frame 0."
       ],
-      keywords: "vox voxel magicavoxel colors hex markers looks.js idle art-content checklists chasuble phelonion hair skin eyes"
+      keywords: "vox magicavoxel hex marker recolor looks.js idle"
     },
     {
-      cat: "deploy",
-      badge: "Deploy & Git",
-      title: "Everyday Commands: Test, Sync kit/, Pull Rebase & Deploy",
-      summary: "Run these scripts from the monorepo root so shared files, service workers, tests, and Workers stay aligned.",
+      cat: "fixes", badge: "Fixes", title: "Common Troubleshooting",
+      summary: "Fast Symptom → Fix checks before editing code.",
       bullets: [
-        "npm install — one shared dependency install at the repo root.",
-        "npm test — runs strict kit-check plus all app unit test suites (run npm test --workspace=garden for one app).",
-        "npm run kit-sync — copies updated kit/ files to all 14 kit apps and bumps sw.js cache versions.",
-        "git pull --rebase origin main — always pull nightly Studio backup commits before pushing.",
-        "npm run deploy -- <app> — deploys a single Worker (refuses if git has uncommitted work)."
+        "Stale deploy cache: Bump sw.js VERSION, commit, redeploy; hard-refresh.",
+        "Black screen: Check Console for TDZ ('before initialization') and move helper defs up.",
+        "Wild finish sticker: Never name any @keyframes 'bob' in apps/*/public/css/app.css.",
+        "Push rejected / deploy refused: Commit cleanly and run git pull --rebase origin main."
       ],
-      keywords: "commands npm test kit-sync kit-check deploy workspace rebase push cloudflare worker"
-    },
-    {
-      cat: "deploy",
-      badge: "Deploy & Git",
-      title: "Adding a New Game or Learning App",
-      summary: "Wire a copy of template/ into the hub proxy and app registry in 4 steps.",
-      bullets: [
-        "1. Copy template/ into apps/<name>/ and set its Worker name in wrangler.jsonc.",
-        "2. Add <name> to APPS and service bindings in hub/worker/index.js.",
-        "3. Add its entry card in hub/public/js/apps.js.",
-        "4. Run npm run kit-sync && npm test, then deploy both <name> and hub."
-      ],
-      keywords: "new app template hub/worker/index.js apps.js bindings scaffold add game"
-    },
-    {
-      cat: "troubleshooting",
-      badge: "Troubleshooting",
-      title: "Fix: Site still shows old code after a deploy",
-      summary: "Browsers hold onto the old offline bundle until the app's sw.js version changes.",
-      bullets: [
-        "Cause: Editing an app without bumping sw.js (or not running npm run kit-sync after editing kit/).",
-        "Fix: Run npm run kit-sync (for kit/ changes) or bump the app's sw.js cache version, commit, and deploy; hard-refresh or update Service Workers in DevTools."
-      ],
-      keywords: "stale cache old code sw.js service worker refresh deploy not updating"
-    },
-    {
-      cat: "troubleshooting",
-      badge: "Troubleshooting",
-      title: "Fix: Black screen when starting a game (TDZ / module crash)",
-      summary: "An uncaught JS error before render (often Temporal Dead Zone access before const init) stops the canvas from mounting.",
-      bullets: [
-        "Cause: Calling a module-level const arrow helper before its declaration line, or a boot-time TypeError.",
-        "Fix: Check DevTools Console for 'Cannot access ... before initialization', fix declaration order, run npm test --workspace=<app>, and verify live in browser before deploying."
-      ],
-      keywords: "black screen blank canvas tdz cannot access before initialization crash console error"
-    },
-    {
-      cat: "troubleshooting",
-      badge: "Troubleshooting",
-      title: "Fix: npm test fails on kit-check or deploy refuses",
-      summary: "Automated guards prevent drifting kit copies and un-committed live deploys.",
-      bullets: [
-        "kit-check failure: Make shared changes in top-level kit/, never directly inside apps/*/public/js/kit/, then run npm run kit-sync.",
-        "deploy refusal: Commit or clean up all modified/untracked files (git status -sb) before running npm run deploy -- <app>."
-      ],
-      keywords: "kit-check failed kit drift deploy refused uncommitted changes git status"
-    },
-    {
-      cat: "troubleshooting",
-      badge: "Troubleshooting",
-      title: "Fix: git push rejected on main",
-      summary: "Nightly Studio R2 backups automatically commit to origin/main.",
-      bullets: [
-        "Cause: Remote main moved ahead because of backup commits or another push.",
-        "Fix: Run git pull --rebase origin main && git push origin main."
-      ],
-      keywords: "git push rejected non-fast-forward fetch first nightly backup rebase"
-    },
-    {
-      cat: "troubleshooting",
-      badge: "Troubleshooting",
-      title: "Fix: End-screen sticker swings halfway across the screen",
-      summary: "A local @keyframes bob animation collides with shared kit/base.css sticker bobbing.",
-      bullets: [
-        "Cause: Defining @keyframes bob inside a game's app.css overrides kit/base.css's gentle sticker bob on the Finish overlay.",
-        "Fix: Name scene animations uniquely (such as @keyframes cropBob in Garden Givers) and never name an app keyframe 'bob'."
-      ],
-      keywords: "sticker swing wildly huge motion keyframes bob cropBob base.css finish screen css"
-    },
-    {
-      cat: "troubleshooting",
-      badge: "Troubleshooting",
-      title: "Fix: Spoken audio muted or silent in browser / iOS",
-      summary: "Mobile browsers require a tap before audio starts, and Saints Match mutes rapid card flips on purpose.",
-      bullets: [
-        "Browser policy: AudioContext unlocks on the first user tap/click.",
-        "Missing clips: Check recorded lines at angelio.org/admin/voices.html and DevTools Network for /api/tts.",
-        "Saints Match: Per-card flip TTS is intentionally muted so quick tapping stays responsive; SFX still play."
-      ],
-      keywords: "audio sound muted silent safari ios voice tts match flips unlock"
-    },
-    {
-      cat: "troubleshooting",
-      badge: "Troubleshooting",
-      title: "Fix: Characters walk inside orchard trees or helpers overlap (Garden Givers)",
-      summary: "Path targets need tree collider clearance and distinct helper posts.",
-      bullets: [
-        "Trees use TREE_COLLIDER_R = 4.4 with clearTarget and stepWithCollisions in apps/garden/public/js/plot.js.",
-        "Only 2 persistent helpers (MAX_COURIERS = 2) wait on opposite HELPER_POSTS and deliver baskets round-robin."
-      ],
-      keywords: "tree collision orchard inside trunk overlap helpers stack courier garden plot.js"
+      keywords: "cache sw.js tdz black screen bob keyframe deploy push"
     }
   ];
 
   const state = { cat: "all", q: "" };
-  const qEl = document.getElementById("q");
-  const clearEl = document.getElementById("clearBtn");
-  const filtersEl = document.getElementById("filters");
-  const countEl = document.getElementById("count");
-  const resultsEl = document.getElementById("results");
-
+  const qEl = document.getElementById("q"), clearEl = document.getElementById("clearBtn"), filtersEl = document.getElementById("filters"), countEl = document.getElementById("count"), resultsEl = document.getElementById("results");
   const ESC = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ESC[c]);
   const reEsc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
-  function highlight(text, terms) {
-    const safe = esc(text);
-    if (!terms.length) return safe;
-    const pat = new RegExp(`(${terms.map(reEsc).join("|")})`, "ig");
-    return safe.replace(pat, "<mark>$1</mark>");
-  }
-
-  function matches(item, terms) {
-    if (state.cat !== "all" && item.cat !== state.cat) return false;
-    if (!terms.length) return true;
-    const hay = `${item.title} ${item.summary} ${item.bullets.join(" ")} ${item.keywords} ${item.badge}`.toLowerCase();
-    return terms.every((t) => hay.includes(t));
-  }
+  const hi = (t, terms) => terms.length ? esc(t).replace(new RegExp(`(${terms.map(reEsc).join("|")})`, "ig"), "<mark>$1</mark>") : esc(t);
+  const match = (it, terms) => (state.cat === "all" || it.cat === state.cat) && (!terms.length || terms.every((t) => `${it.title} ${it.summary} ${it.bullets.join(" ")} ${it.keywords}`.toLowerCase().includes(t)));
 
   function renderFilters() {
-    filtersEl.innerHTML = CATEGORIES.map((c) => {
-      const pressed = state.cat === c.id ? "true" : "false";
-      return `<button type="button" class="pill" data-cat="${esc(c.id)}" aria-pressed="${pressed}">${esc(c.label)}</button>`;
-    }).join("");
+    filtersEl.innerHTML = CATEGORIES.map((c) => `<button type="button" class="pill" data-cat="${c.id}" aria-pressed="${state.cat === c.id}">${c.label}</button>`).join("");
   }
-
   function render() {
     const terms = state.q.trim().toLowerCase().split(/\s+/).filter(Boolean);
-    const found = ITEMS.filter((item) => matches(item, terms));
-    countEl.textContent = `Showing ${found.length} of ${ITEMS.length} help topics`;
-
-    if (!found.length) {
-      resultsEl.innerHTML = `<div class="empty">
-        <p><strong>No matching help topics for "${esc(state.q.trim())}".</strong></p>
-        <p>Try broader words like <code>sticker</code>, <code>#/</code>, <code>sw.js</code>, <code>garden</code>, or click <strong>All Topics</strong>.</p>
-      </div>`;
-      return;
-    }
-
-    resultsEl.innerHTML = found.map((item) => {
-      const tags = item.keywords.split(/\s+/).slice(0, 6).map((t) => `<span class="tag">${esc(t)}</span>`).join("");
-      return `<article class="card">
-        <div class="card-top">
-          <h2>${highlight(item.title, terms)}</h2>
-          <span class="badge">${esc(item.badge)}</span>
-        </div>
-        <p class="summary">${highlight(item.summary, terms)}</p>
-        <ul class="bullets">${item.bullets.map((b) => `<li>${highlight(b, terms)}</li>`).join("")}</ul>
-        <div class="tags">${tags}</div>
-      </article>`;
-    }).join("");
+    const found = ITEMS.filter((it) => match(it, terms));
+    countEl.textContent = `${found.length} / ${ITEMS.length} topics`;
+    resultsEl.innerHTML = found.length ? found.map((it) => `<article class="card">
+      <div class="card-top"><h2>${hi(it.title, terms)}</h2><span class="badge">${esc(it.badge)}</span></div>
+      <p class="summary">${hi(it.summary, terms)}</p>
+      <ul class="bullets">${it.bullets.map((b) => `<li>${hi(b, terms)}</li>`).join("")}</ul>
+      ${it.img ? `<img class="card-img${it.imgClass ? ` ${it.imgClass}` : ""}" src="${it.img}" alt="${esc(it.title)}" loading="lazy">` : ""}
+    </article>`).join("") : `<div class="empty">No matches for "${esc(state.q.trim())}".</div>`;
   }
-
-  filtersEl.addEventListener("click", (e) => {
-    const btn = e.target.closest("[data-cat]");
-    if (!btn) return;
-    state.cat = btn.dataset.cat;
-    renderFilters();
-    render();
-  });
-
-  qEl.addEventListener("input", () => {
-    state.q = qEl.value;
-    render();
-  });
-
-  clearEl.addEventListener("click", () => {
-    state.q = "";
-    state.cat = "all";
-    qEl.value = "";
-    renderFilters();
-    render();
-    qEl.focus();
-  });
-
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "/" && document.activeElement !== qEl && !e.metaKey && !e.ctrlKey && !e.altKey) {
-      e.preventDefault();
-      qEl.focus();
-      qEl.select();
-    } else if (e.key === "Escape" && (state.q || state.cat !== "all")) {
-      state.q = "";
-      state.cat = "all";
-      qEl.value = "";
-      renderFilters();
-      render();
-    }
-  });
-
-  renderFilters();
-  render();
+  filtersEl.onclick = (e) => { const b = e.target.closest("[data-cat]"); if (!b) return; state.cat = b.dataset.cat; renderFilters(); render(); };
+  qEl.oninput = () => { state.q = qEl.value; render(); };
+  clearEl.onclick = () => { state.q = ""; state.cat = "all"; qEl.value = ""; renderFilters(); render(); qEl.focus(); };
+  document.onkeydown = (e) => {
+    if (e.key === "/" && document.activeElement !== qEl && !e.metaKey && !e.ctrlKey && !e.altKey) { e.preventDefault(); qEl.focus(); qEl.select(); }
+    else if (e.key === "Escape" && (state.q || state.cat !== "all")) clearEl.click();
+  };
+  renderFilters(); render();
 })();
 </script>
 </body>
