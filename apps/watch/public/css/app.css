@@ -232,7 +232,13 @@
   background: color-mix(in srgb, var(--watch-pill) 70%, transparent);
 }
 
-.watch-app:not(.watch-home) .topbar { position: sticky; background: var(--bg); }
+.watch-app:not(.watch-home) .topbar { position: sticky; }
+.watch-app .watch-top { margin: 0; padding: 4px 0; background: transparent; }
+.watch-app .watch-top, .watch-app:not(.watch-home) .topbar { backdrop-filter: blur(16px); }
+.watch-title.collection-heading { flex-direction: row; align-items: baseline; flex-wrap: wrap; gap: 4px 8px; }
+.video-grid .tag { margin-top: auto; }
+.watch-app .sticker-book { padding: 16px 20px 20px; margin-top: 22px; border-radius: 20px; }
+.watch-app .sticker-book h2 { margin-top: 0; }
 .watch-app .btn:not(.primary):not(.danger):not(.ghosty):not(.right):not(.wrong) {
   background: linear-gradient(var(--watch-pill), var(--watch-paper));
   border-color: var(--watch-pill-edge);

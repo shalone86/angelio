@@ -92,8 +92,9 @@ const groupCard = (href, g, list, noun) => {
   const done = g.items.filter(watched).length;
   return `
     <a class="video-card group-card" href="${href}">
-      <span class="thumb"><img src="${esc(first?.poster ?? "")}" alt="" loading="lazy"><span class="count">${g.items.length} ${noun}</span></span>
+      <span class="thumb"><img src="${esc(first?.poster ?? "")}" alt="" loading="lazy"></span>
       <span class="video-title"><span aria-hidden="true">${g.emoji}</span> ${esc(g.title)}</span>
+      <span class="tag">${g.items.length} ${noun}</span>
       ${done ? `<span class="muted small">${done} of ${g.items.length} watched</span>` : ""}
     </a>`;
 };
@@ -163,7 +164,7 @@ function viewAll(kind) {
   app.innerHTML = `
     <section class="watch">
       <div class="watch-top"><a class="icon-btn" href="#/" aria-label="Back">✕</a>
-        <h1 class="watch-title"><span aria-hidden="true">${L.emoji}</span> All ${L.title.toLowerCase()}<span class="muted small course-of">${cards.length}</span></h1></div>
+        <h1 class="watch-title collection-heading"><span><span aria-hidden="true">${L.emoji}</span> All ${L.title.toLowerCase()}</span><span class="muted small course-of">${cards.length}</span></h1></div>
       <div class="video-grid">${cards.join("")}</div>
     </section>`;
   speak(`All the ${L.title.toLowerCase()}.`);
