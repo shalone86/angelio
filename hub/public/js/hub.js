@@ -1,5 +1,4 @@
-// The hub page: a tile per live app, in a section per subject (the menu links to #math, #language,
-// #faith). Live apps open at angelio.org/<path>/; the rest are one "coming soon" row.
+// The hub and subject pages share the same catalog and spoken app tiles.
 
 import { SUBJECTS, APP_LIST } from "./apps.js";
 import { jingleOnce } from "./jingle.js";
@@ -18,9 +17,13 @@ const tile = (a) => `
     <button type="button" class="tile-say" data-say="${esc(`${a.name}. ${a.blurb}`)}" aria-label="Hear about ${esc(a.name)}">🔊</button>
   </div>`;
 
-document.getElementById("apps").innerHTML = SUBJECTS.filter((s) => !s.page).map((s) => {
+const catalog = document.getElementById("apps");
+const subject = catalog.dataset.subject;
+catalog.innerHTML = SUBJECTS.filter((s) => subject ? s.id === subject : !s.page).map((s) => {
   const live = APP_LIST.filter((a) => a.subject === s.id && a.path);
-  return live.length ? `<section class="subject" id="${s.id}" style="--c:${s.color}"><h2><span aria-hidden="true">${s.emoji}</span> ${esc(s.title)}</h2><div class="tiles">${live.map(tile).join("")}</div></section>` : "";
+  if (!live.length) return "";
+  const heading = subject ? "" : `<h2><span aria-hidden="true">${s.emoji}</span> ${esc(s.title)}</h2>`;
+  return `<section class="subject" id="${s.id}" aria-label="${esc(s.title)} apps" style="--c:${s.color}">${heading}<div class="tiles">${live.map(tile).join("")}</div></section>`;
 }).join("");
 
 // Watch & Sing's box: the app, plus today's course, lesson and song (the same picks as inside the app).
@@ -49,7 +52,7 @@ if (faithTiles) fetch("/watch/data/library.json").then((r) => r.json()).then((li
     + (song ? dayTile(`/watch/#/song/${song.id}`, "Song of the day", song.title, song.poster) : ""));
 }).catch(() => {});
 
-const soon = APP_LIST.filter((a) => !a.path && a.subject !== "games"); // the games page has its own coming-soon tiles
+const soon = APP_LIST.filter((a) => !a.path && (subject ? a.subject === subject : a.subject !== "games")); // Games has its own coming-soon tiles
 document.getElementById("soon").innerHTML = soon.length ? `<section class="soon-row" aria-label="Coming soon"><h3>Coming soon</h3>
   <div>${soon.map((a) => `<span class="chip" title="${esc(a.blurb)}"><span aria-hidden="true">${a.emoji}</span> ${esc(a.name)}</span>`).join("")}</div></section>` : "";
 

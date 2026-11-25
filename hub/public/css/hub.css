@@ -202,3 +202,10 @@ footer { text-align: center; color: var(--muted); font-size: .85rem; margin-top:
 }
 .parent-tools a:hover strong { text-decoration: underline; }
 .parent-tools span { color: var(--muted); }
+
+.section-header { flex-wrap: nowrap; gap: 8px; }
+.section-feather {
+  display: grid; place-items: center; width: 44px; height: 44px;
+  border-radius: 13px; background: var(--card); text-decoration: none;
+}
+.section-feather img { display: block; border-radius: 9px; }
