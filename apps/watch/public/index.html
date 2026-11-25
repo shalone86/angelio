@@ -21,6 +21,16 @@
   <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
+  <script>
+    // Saved progress carried over from the old address (see worker/moved.js). Only used if this
+    // device has no progress here yet, so it never overwrites anything.
+    try {
+      var m = location.hash.match(/^#migrate=(.*)$/);
+      if (m) { if (!localStorage.getItem("watch:v1")) localStorage.setItem("watch:v1", decodeURIComponent(m[1])); history.replaceState(null, "", location.pathname + "#/"); }
+    } catch (e) {}
+    // Paint the correct shell while the module and video library are still loading.
+    document.body.classList.toggle("watch-home", /^#?\/?$/.test(location.hash));
+  </script>
   <div class="watch-clouds" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
   <header class="topbar">
     <a class="hub-link" href="https://angelio.org/" aria-label="Angelio home" title="Angelio home"><img src="https://angelio.org/icon.svg" alt="" width="30" height="30"></a>
@@ -32,14 +42,6 @@
   </header>
   <main id="app"><p class="muted">Loading…</p></main>
   <div id="fx" aria-hidden="true"></div>
-  <script>
-    // Saved progress carried over from the old address (see worker/moved.js). Only used if this
-    // device has no progress here yet, so it never overwrites anything.
-    try {
-      var m = location.hash.match(/^#migrate=(.*)$/);
-      if (m) { if (!localStorage.getItem("watch:v1")) localStorage.setItem("watch:v1", decodeURIComponent(m[1])); history.replaceState(null, "", location.pathname + "#/"); }
-    } catch (e) {}
-  </script>
   <script type="module" src="js/app.js"></script>
 </body>
 </html>
