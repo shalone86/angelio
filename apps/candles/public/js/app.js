@@ -11,7 +11,7 @@ import { speak, stop } from "./kit/tts.js";
 import { sfx } from "./kit/sound.js";
 import * as FX from "./kit/fx.js";
 import { showLesson } from "./kit/lesson.js";
-import { vary } from "./kit/vary.js";
+import { vary, todayKey, todayLabel, dailySeed, dailyStage } from "./kit/vary.js";
 import { esc, say, showFinish, stickerBook, viewGrownups, installClickSounds, wireVoiceToggle } from "./kit/ui.js";
 import { newGame, tick, tapCandle, tapLamp, tapBigCandle, chainBonus, lightFree, helperLight, blockedNeedy, blockerOf, COMBO_GAP, starsFor, needy, multFor, WALK_IN, outLimit } from "./game.js";
 import { seasonOf, byzantineSeasonOf, COLORS } from "./season.js";
@@ -42,6 +42,7 @@ const starsOf = (st) => S.progress(progressId(st)).stars;
 const gamesLink = `<p class="center games-link"><a class="btn small ghosty" href="https://angelio.org/games/">🎮 All the Angelio games</a></p>`;
 
 function viewHome() {
+  const dKey = todayKey(), dStage = dailyStage(STAGES, "candles", dKey), dRec = S.dailyRecord(dKey);
   app.innerHTML = `
     <section class="home-head candle-hero">
       <div class="home-title-wrap">
@@ -50,6 +51,17 @@ function viewHome() {
       </div>
       <span class="season-chip" style="--season:${season.hex}"><span></span>${esc(season.name)}</span>
     </section>
+    <a class="daily-card" href="#/play/daily">
+      <span class="daily-left">
+        <span class="daily-badge">📅 Today's Challenge</span>
+        <b class="daily-stage">${dStage.icon} ${esc(dStage.name)}</b>
+        <span class="daily-date">${esc(todayLabel())}</span>
+      </span>
+      <span class="daily-right">
+        <span>${dRec.plays ? `${"★".repeat(dRec.stars)}${"☆".repeat(3 - dRec.stars)} · ${dRec.best}` : "Same run for all"}</span>
+        <span class="daily-cta">${dRec.plays ? "Retry" : "Play"} →</span>
+      </span>
+    </a>
     <section class="stages stages-5">
       ${STAGES.map((st, i) => {
         const open = isOpen(i, starsOf), p = S.progress(progressId(st)), best = S.settings()[bestKey(st)] || 0;
@@ -88,10 +100,11 @@ function talker(bubble) {
 }
 
 function viewPlay(stageId) {
-  // "Play" in the top bar (#/play, no stage): the church played last
-  const stage = stageById(stageId ?? S.settings().lastStage), si = STAGES.indexOf(stage);
-  if (!isOpen(si, starsOf)) { location.hash = "#/"; return; }
-  S.setSetting("lastStage", stage.id);
+  // "Play" in the top bar (#/play, no stage): the church played last; #/play/daily: Today's Challenge
+  const daily = stageId === "daily", dateKey = todayKey();
+  const stage = daily ? dailyStage(STAGES, "candles", dateKey) : stageById(stageId ?? S.settings().lastStage), si = STAGES.indexOf(stage);
+  if (!daily && !isOpen(si, starsOf)) { location.hash = "#/"; return; }
+  if (!daily) S.setSetting("lastStage", stage.id);
   const service = stage.rite === "byzantine" ? "Liturgy" : "Mass"; // a Byzantine church: the Divine Liturgy, not Mass
   // the feasts have their own color; otherwise the Church year's (a Byzantine church keeps its own calendar's colors)
   const hex = stage.color ? COLORS[stage.color] : stage.rite === "byzantine" ? byzantineSeasonOf(new Date()).hex : season.hex;
@@ -101,7 +114,7 @@ function viewPlay(stageId) {
       <canvas class="church" aria-label="The church: tap the candles to light them"></canvas>
       <div class="hud">
         <a class="icon-btn" href="#/" aria-label="Stop and go home">✕</a>
-        <div class="clock" aria-label="${stage.endless ? "How long you've kept watch" : `Time until ${service}`}"><span class="clock-label">${stage.endless ? "🌙 Night" : `${service} in`}</span> <b data-clock>${stage.endless ? "0:00" : "1:30"}</b></div>
+        <div class="clock" aria-label="${stage.endless ? "How long you've kept watch" : `Time until ${service}`}"><span class="clock-label">${daily ? "📅 " : ""}${stage.endless ? "🌙 Night" : `${service} in`}</span> <b data-clock>${stage.endless ? "0:00" : "1:30"}</b></div>
         <div class="taper" data-taper hidden aria-label="Your taper"></div>
         <div class="score"><b data-score>0</b><span data-combo class="streak"></span></div>
         <button class="icon-btn toggle" data-voice title="Read aloud">🔊</button>
@@ -121,7 +134,7 @@ function viewPlay(stageId) {
 
   (async () => {
     // "How it works", the first time (and whenever asked again from the card)
-    if (!S.progress(progressId(stage)).plays && (si === 0 || stage.taper)) {
+    if (!daily && !S.progress(progressId(stage)).plays && (si === 0 || stage.taper)) {
       const card = $(".candle-lesson"); card.hidden = false;
       await showLesson(card, stage.endless ? {
         emoji: stage.icon, title: stage.name,
@@ -150,7 +163,7 @@ function viewPlay(stageId) {
     // keep the racks clear of the clock (top) and the speech bubble (bottom)
     const fitView = () => church?.resize({ top: ($(".hud")?.offsetHeight ?? 60) + 6, bottom: (bubble.offsetHeight || 60) + 16 });
     fitView(); addEventListener("resize", fitView);
-    const g = newGame({ seed: Math.floor(Math.random() * 1e9), stage });
+    const g = newGame({ seed: daily ? dailySeed("candles", dateKey) : Math.floor(Math.random() * 1e9), stage });
     const prayers = new Map(); // person id → 🙏 above their head
     window.__candleRack = { game: g, church }; // (for the browser tests; nothing reads it in the game)
     talk(stage.color ? stage.say : `${season.say} ${stage.say}`, { urgent: true });
@@ -308,19 +321,30 @@ function viewPlay(stageId) {
         await new Promise((r) => setTimeout(r, 1200));
       }
       if (!alive) return;
-      const old = S.settings()[bestKey(stage)] || 0;
-      const stars = starsFor(g), best = Math.max(old, g.score), newBest = g.score > old;
-      S.setSetting(bestKey(stage), best);
+      const stars = starsFor(g);
+      const nextStage = STAGES[si + 1];
+      let newBest, bestLine, opens = !daily && nextStage && Math.max(stars, starsOf(stage)) >= 2;
+      if (daily) {
+        const dr = S.saveDaily(dateKey, g.score, stars);
+        newBest = dr.newBest;
+        bestLine = `<p class="final-score">📅 Today (${esc(todayLabel())}) · <b>${g.score}</b>${dr.newBest ? " · new daily best!" : ` · today's best: ${dr.best}`}</p>`;
+      } else {
+        const old = S.settings()[bestKey(stage)] || 0;
+        const best = Math.max(old, g.score);
+        newBest = g.score > old;
+        S.setSetting(bestKey(stage), best);
+        bestLine = `<p class="final-score">You scored <b>${g.score}</b>${newBest ? " · a new best!" : ` · your best: ${best}`}</p>`;
+      }
       cancelAnimationFrame(raf); church.dispose(); church = null;
       document.body.classList.remove("candle-game"); // the finish screen scrolls like any page
-      const nextStage = STAGES[si + 1], opens = nextStage && Math.max(stars, starsOf(stage)) >= 2;
       showFinish(app, {
-        id: progressId(stage), stars, mistakes: 0, byStars: true, title: newBest ? "A new best!" : stage.endless ? "What a night!" : "The church is ready!",
-        done: `You scored ${g.score}.`, again: `#/play/${stage.id}`, onAgain: route,
+        id: daily ? `daily-${dateKey}` : progressId(stage), stars, mistakes: 0, byStars: true,
+        title: daily ? (newBest ? "New daily best!" : "Today's Challenge!") : newBest ? "A new best!" : stage.endless ? "What a night!" : "The church is ready!",
+        done: `You scored ${g.score}.`, again: daily ? "#/play/daily" : `#/play/${stage.id}`, onAgain: route,
         next: opens ? { href: `#/play/${nextStage.id}`, label: `${nextStage.icon} ${nextStage.name}` } : null,
       });
       const fin = app.querySelector(".finish h1");
-      fin?.insertAdjacentHTML("afterend", `<p class="final-score">You scored <b>${g.score}</b>${newBest ? " · a new best!" : ` · your best: ${best}`}</p>
+      fin?.insertAdjacentHTML("afterend", `${bestLine}
         <p class="muted">${stage.endless ? `kept watch ${Math.floor(g.t / 60)}:${String(Math.floor(g.t % 60)).padStart(2, "0")} · ` : ""}${g.lit + g.justInTime} candles lit · ${g.justInTime} just in time · best combo ${g.bestCombo}${stage.endless ? "" : ` · ${g.ready} burning when Mass began`}${g.helperLit ? ` · ${g.helperLit} lit by the priest and server` : ""}${stars < 3 ? ` · ${stage.star3} for three stars` : ""}${g.tapers ? ` · taper lit ${g.tapers} times` : ""}</p>`);
       // the finish screen's "All Angelio games" goes to the games page here, not the home page
       const all = app.querySelector(".finish .finish-links a[href=\"https://angelio.org/\"]"); if (all) all.href = "https://angelio.org/games/";

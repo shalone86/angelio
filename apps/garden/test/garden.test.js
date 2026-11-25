@@ -7,6 +7,8 @@ import { GARDENERS, gardenerById, gardenerOpen } from "../public/js/gardeners.js
 import { newGame, tick, tapSpot, tapPest, orderReward, starsFor, timeLeft } from "../public/js/garden.js";
 import { stepWithCollisions, clearTarget, TREE_COLLIDER_R } from "../public/js/plot.js";
 import { stickerHtml, stickerBook, VOX_STICKERS } from "../public/js/kit/ui.js";
+import { todayKey, todayLabel, dailySeed, dailyStage } from "../public/js/kit/vary.js";
+import { dailyRecord, saveDaily } from "../public/js/kit/store.js";
 
 test("four 45s stages + Endless Harvest, 1★ for playing, 250/425 timed & 500/1600 endless, plus starters and 4 unlocks", () => {
   assert.equal(STAGES.length, 5);
@@ -363,5 +365,51 @@ test("voxel sticker rendering, byStars stickerBook count, and Option A homes acr
       assert.ok(appSrc.includes("char-dock") && appSrc.includes("char-perk"), `${game} renders Option A char dock`);
     }
     assert.ok(!/@keyframes\s+bob\b/.test(cssSrc), `${game} CSS must not define @keyframes bob`);
+  }
+});
+
+test("Today's Challenge daily seed, stage selection, determinism, storage, and wiring across all 5 games", () => {
+  const d = new Date(2026, 10, 24);
+  assert.equal(todayKey(d), "2026-11-24");
+  assert.equal(todayLabel(d), "Tue · Nov 24");
+
+  const s1 = dailySeed("garden", "2026-11-24");
+  assert.equal(s1, dailySeed("garden", "2026-11-24"));
+  assert.notEqual(s1, dailySeed("garden", "2026-11-25"));
+  assert.notEqual(s1, dailySeed("usher", "2026-11-24"));
+
+  for (let day = 1; day <= 30; day++) {
+    const dk = `2026-11-${String(day).padStart(2, "0")}`;
+    const picked = dailyStage(STAGES, "garden", dk);
+    assert.ok(picked && !picked.endless, `${dk} picks a timed stage`);
+  }
+
+  const stage = dailyStage(STAGES, "garden", "2026-11-24");
+  const gA = newGame({ seed: s1, stage });
+  const gB = newGame({ seed: s1, stage });
+  assert.deepEqual(
+    gA.orders.map((o) => o.items.map((it) => it.crop)),
+    gB.orders.map((o) => o.items.map((it) => it.crop))
+  );
+  assert.deepEqual(
+    gA.spots.map((sp) => sp.ripe),
+    gB.spots.map((sp) => sp.ripe)
+  );
+
+  assert.deepEqual(dailyRecord("2026-11-24"), { date: "2026-11-24", best: 0, stars: 0, plays: 0 });
+  const r1 = saveDaily("2026-11-24", 310, 2);
+  assert.equal(r1.newBest, true);
+  assert.equal(r1.plays, 1);
+  const r2 = saveDaily("2026-11-24", 290, 1);
+  assert.equal(r2.newBest, false);
+  assert.equal(r2.best, 310);
+  assert.equal(r2.stars, 2);
+  assert.equal(r2.plays, 2);
+
+  for (const game of ["candles", "usher", "porter", "match", "garden"]) {
+    const appSrc = fs.readFileSync(new URL(`../../${game}/public/js/app.js`, import.meta.url), "utf8");
+    const cssSrc = fs.readFileSync(new URL(`../../${game}/public/css/app.css`, import.meta.url), "utf8");
+    assert.ok(appSrc.includes("dailySeed") && appSrc.includes("dailyStage") && appSrc.includes("#/play/daily") && appSrc.includes("saveDaily"), `${game} wires Today's Challenge`);
+    assert.ok(cssSrc.includes(".daily-card"), `${game} styles .daily-card`);
   }
 });

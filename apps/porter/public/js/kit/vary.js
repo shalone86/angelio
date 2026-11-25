@@ -35,3 +35,24 @@ export const praise = () => vary("praise", PRAISE);
 
 export const TRY_AGAIN = ["Not quite. Try again!", "Almost! Give it another try.", "Hmm, not that one. Try again!", "So close! Look again.", "Oops! Let's try once more."];
 export const tryAgain = () => vary("try-again", TRY_AGAIN);
+
+const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+export const todayKey = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+export const todayLabel = (d = new Date()) => `${DAYS[d.getDay()]} · ${MONTHS[d.getMonth()]} ${d.getDate()}`;
+
+export function dailySeed(gameId, dateKey = todayKey()) {
+  let h = 2166136261;
+  const s = `${gameId}:${dateKey}`;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return ((h >>> 0) % 2147483646) + 1;
+}
+
+export function dailyStage(stages, gameId, dateKey = todayKey()) {
+  const timed = stages.filter((s) => !s.endless);
+  const pool = timed.length ? timed : stages;
+  return pool[dailySeed(gameId, dateKey) % pool.length];
+}

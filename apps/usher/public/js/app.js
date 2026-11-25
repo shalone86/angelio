@@ -14,7 +14,7 @@ import { speak, stop } from "./kit/tts.js";
 import { sfx } from "./kit/sound.js";
 import * as FX from "./kit/fx.js";
 import { showLesson } from "./kit/lesson.js";
-import { vary } from "./kit/vary.js";
+import { vary, todayKey, todayLabel, dailySeed, dailyStage } from "./kit/vary.js";
 import { esc, say, showFinish, stickerBook, viewGrownups, installClickSounds, wireVoiceToggle } from "./kit/ui.js";
 import { newGame, tick, tapPew, scoot, autoScoot, current, starsFor } from "./usher.js";
 import { USHERS, usherById, usherOpen } from "./ushers.js";
@@ -43,6 +43,7 @@ const gamesLink = `<p class="center games-link"><a class="btn small ghosty" href
 
 function viewHome() {
   const cur = myUsher();
+  const dKey = todayKey(), dStage = dailyStage(STAGES, "usher", dKey), dRec = S.dailyRecord(dKey);
   const shortName = (u) => (u.name === "Usher" ? "Usher" : u.name.replace(/ Usher$/, ""));
   app.innerHTML = `
     <section class="home-head">
@@ -52,6 +53,17 @@ function viewHome() {
       </div>
       <span class="demo-chip">🧪 Demo</span>
     </section>
+    <a class="daily-card" href="#/play/daily">
+      <span class="daily-left">
+        <span class="daily-badge">📅 Today's Challenge</span>
+        <b class="daily-stage">${dStage.icon} ${esc(dStage.name)}</b>
+        <span class="daily-date">${esc(todayLabel())}</span>
+      </span>
+      <span class="daily-right">
+        <span>${dRec.plays ? `${"★".repeat(dRec.stars)}${"☆".repeat(3 - dRec.stars)} · ${dRec.best}` : "Same run for all"}</span>
+        <span class="daily-cta">${dRec.plays ? "Retry" : "Play"} →</span>
+      </span>
+    </a>
     <section class="stages stages-5">
       ${STAGES.map((st, i) => {
         const open = isOpen(i, starsOf), p = S.progress(progressId(st)), best = S.settings()[bestKey(st)] || 0;
@@ -120,10 +132,11 @@ const NUM = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eig
 const dots = (fam, n = fam.size - fam.seated) => `<span class="fam" style="--c:${fam.color}">${"<i></i>".repeat(n)}</span>`;
 
 function viewPlay(stageId) {
-  // "Play" in the top bar (#/play, no stage): the church played last
-  const stage = stageById(stageId ?? S.settings().lastStage), si = STAGES.indexOf(stage);
-  if (!isOpen(si, starsOf)) { location.hash = "#/"; return; }
-  S.setSetting("lastStage", stage.id);
+  // "Play" in the top bar (#/play, no stage): the church played last; #/play/daily: Today's Challenge
+  const daily = stageId === "daily", dateKey = todayKey();
+  const stage = daily ? dailyStage(STAGES, "usher", dateKey) : stageById(stageId ?? S.settings().lastStage), si = STAGES.indexOf(stage);
+  if (!daily && !isOpen(si, starsOf)) { location.hash = "#/"; return; }
+  if (!daily) S.setSetting("lastStage", stage.id);
   const service = stage.rite === "byzantine" ? "Liturgy" : "Mass"; // a Byzantine church: the Divine Liturgy, not Mass
   const starsById = (id) => starsOf(stageById(id));
   const unlockedBefore = new Set(USHERS.filter((u) => usherOpen(u, starsById)).map((u) => u.id));
@@ -134,7 +147,7 @@ function viewPlay(stageId) {
       <div class="pew-btns" data-pew-btns></div>
       <div class="hud">
         <a class="icon-btn" href="#/" aria-label="Stop and go home">✕</a>
-        <div class="clock" aria-label="${stage.endless ? "How long you've been ushering" : `Time until ${service}`}"><span class="clock-label">${stage.endless ? "🌙 Night" : `${service} in`}</span> <b data-clock>${stage.endless ? "0:00" : "2:00"}</b></div>
+        <div class="clock" aria-label="${stage.endless ? "How long you've been ushering" : `Time until ${service}`}"><span class="clock-label">${daily ? "📅 " : ""}${stage.endless ? "🌙 Night" : `${service} in`}</span> <b data-clock>${stage.endless ? "0:00" : "2:00"}</b></div>
         <div class="score"><b data-score>0</b></div>
         <button class="icon-btn toggle" data-voice title="Read aloud">🔊</button>
       </div>
@@ -151,7 +164,7 @@ function viewPlay(stageId) {
   let alive = true, raf = 0, walking = false, nave = null;
 
   (async () => {
-    if (!S.progress(progressId(stage)).plays && (si === 0 || stage.endless)) {
+    if (!daily && !S.progress(progressId(stage)).plays && (si === 0 || stage.endless)) {
       const card = $(".ush-lesson"); card.hidden = false;
       await showLesson(card, stage.endless ? {
         emoji: stage.icon, title: stage.name,
@@ -174,7 +187,7 @@ function viewPlay(stageId) {
     nave = createNave(canvas, { models, rite: stage.rite, night: !!stage.endless, usherId: who.id, speed: who.speed });
     const fitView = () => nave?.resize({ top: ($(".hud")?.offsetHeight ?? 56) + 6, bottom: (bubble.offsetHeight || 60) + ($(".line-up")?.offsetHeight ?? 40) + 20 });
     fitView(); addEventListener("resize", fitView);
-    const g = newGame({ seed: Math.floor(Math.random() * 1e9), stage, usher: who });
+    const g = newGame({ seed: daily ? dailySeed("usher", dateKey) : Math.floor(Math.random() * 1e9), stage, usher: who });
     window.__usher = { game: g, nave }; // (for the browser tests)
     nave.sync(g); nave.family(current(g));
     talk(stage.say, { urgent: true });
@@ -296,13 +309,24 @@ function viewPlay(stageId) {
         await new Promise((r) => setTimeout(r, 1200));
       }
       if (!alive) return;
-      const old = S.settings()[bestKey(stage)] || 0, stars = starsFor(g), newBest = g.score > old;
-      S.setSetting(bestKey(stage), Math.max(old, g.score));
+      const stars = starsFor(g), nextStage = STAGES[si + 1];
+      let newBest, bestLine, opens = !daily && nextStage && !nextStage.endless && Math.max(stars, starsOf(stage)) >= 2;
+      if (daily) {
+        const dr = S.saveDaily(dateKey, g.score, stars);
+        newBest = dr.newBest;
+        bestLine = `<p class="final-score">📅 Today (${esc(todayLabel())}) · <b>${g.score}</b>${dr.newBest ? " · new daily best!" : ` · today's best: ${dr.best}`}</p>`;
+      } else {
+        const old = S.settings()[bestKey(stage)] || 0;
+        const best = Math.max(old, g.score);
+        newBest = g.score > old;
+        S.setSetting(bestKey(stage), best);
+        bestLine = `<p class="final-score">You scored <b>${g.score}</b>${newBest ? " · a new best!" : ` · your best: ${best}`}</p>`;
+      }
       cancelAnimationFrame(raf); nave.dispose(); nave = null;
       document.body.classList.remove("usher-game");
-      const nextStage = STAGES[si + 1], opens = nextStage && !nextStage.endless && Math.max(stars, starsOf(stage)) >= 2;
-      showFinish(app, { id: progressId(stage), stars, mistakes: 0, byStars: true, title: newBest ? "A new best!" : stage.endless ? "What a night!" : `Everyone's ready for ${service === "Liturgy" ? "the Liturgy" : "Mass"}!`,
-        done: `You scored ${g.score}.`, again: `#/play/${stage.id}`, onAgain: route, next: opens ? { href: `#/play/${nextStage.id}`, label: `${nextStage.icon} ${nextStage.name}` } : null });
+      showFinish(app, { id: daily ? `daily-${dateKey}` : progressId(stage), stars, mistakes: 0, byStars: true,
+        title: daily ? (newBest ? "New daily best!" : "Today's Challenge!") : newBest ? "A new best!" : stage.endless ? "What a night!" : `Everyone's ready for ${service === "Liturgy" ? "the Liturgy" : "Mass"}!`,
+        done: `You scored ${g.score}.`, again: daily ? "#/play/daily" : `#/play/${stage.id}`, onAgain: route, next: opens ? { href: `#/play/${nextStage.id}`, label: `${nextStage.icon} ${nextStage.name}` } : null });
       const fresh = USHERS.filter((u) => usherOpen(u, starsById) && !unlockedBefore.has(u.id));
       if (fresh.length) app.querySelector(".finish h1")?.insertAdjacentHTML("afterend", `<p class="finish-unlock">🎉 You can play as ${fresh.map((u) => `<b>${esc(u.name)}</b>`).join(" and ")} now!</p>`);
       const openUshers = USHERS.filter((u) => usherOpen(u, starsById)), pickedId = myUsher().id;
@@ -320,7 +344,7 @@ function viewPlay(stageId) {
           sfx.select(); speak(u.say);
         }));
       }
-      app.querySelector(".finish h1")?.insertAdjacentHTML("afterend", `<p class="final-score">You scored <b>${g.score}</b>${newBest ? " · a new best!" : ` · your best: ${Math.max(old, g.score)}`}</p>
+      app.querySelector(".finish h1")?.insertAdjacentHTML("afterend", `${bestLine}
         <p class="muted">${stage.endless ? `ushered ${Math.floor(g.t / 60)}:${String(Math.floor(g.t % 60)).padStart(2, "0")} · ${g.left} went home · ` : ""}${g.together} families together · ${g.split} split up · ${g.seatedPeople} people seated${stars < 3 ? ` · ${stage.star3} for three stars` : ""}</p>`);
       // the finish screen's "All Angelio games" goes to the games page here, not the home page
       const all = app.querySelector(".finish .finish-links a[href=\"https://angelio.org/\"]"); if (all) all.href = "https://angelio.org/games/";

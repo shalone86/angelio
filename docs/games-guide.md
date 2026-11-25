@@ -22,6 +22,7 @@ Shared saves live in browser `localStorage` (`angelio:stickers`) and load into *
 ## Arcade Home Screen (Desktop & Mobile)
 
 - **Uniform cards:** Every stage block (including dark-indigo **Endless**) shares the same card height; wide screens (`>= 1024px`) expand cleanly up to `1140px`.
+- **Today's Challenge (`#/play/daily`):** Shared daily seed (`dailySeed`) gives everyone the exact same timed stage and waves today and earns a daily voxel sticker (2★ mini / 3★ giant); it **does not** overwrite normal stage bests or unlock locked stages/characters.
 - **Locked feedback without traps:** Tapping a locked character pill updates the perk line with its unlock rule **without** changing your active character; locked stages show requirements and stay unlaunchable.
 
 ![Mass Usher Desktop](./img/usher-home-desktop.png)

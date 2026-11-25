@@ -15,7 +15,7 @@ import { speak, stop } from "./kit/tts.js";
 import { sfx } from "./kit/sound.js";
 import * as FX from "./kit/fx.js";
 import { showLesson } from "./kit/lesson.js";
-import { vary } from "./kit/vary.js";
+import { vary, todayKey, todayLabel, dailySeed, dailyStage } from "./kit/vary.js";
 import { esc, say, showFinish, stickerBook, viewGrownups, installClickSounds, wireVoiceToggle } from "./kit/ui.js";
 import { newGame, tick, welcome, sendAway, ringBell, waiting, brotherInGate, speedOf, starsFor, multOf } from "./porter.js";
 import { PORTERS, porterById, porterOpen } from "./porters.js";
@@ -46,6 +46,7 @@ const PORTER_SHORT = { porter: "Br. Porter", "sister-porter": "Sr. Porter", andr
 
 function viewHome() {
   const cur = myPorter();
+  const dKey = todayKey(), dStage = dailyStage(STAGES, "porter", dKey), dRec = S.dailyRecord(dKey);
   app.innerHTML = `
     <section class="home-head">
       <div class="home-title-wrap">
@@ -54,6 +55,17 @@ function viewHome() {
       </div>
       <span class="demo-chip">🧪 Demo</span>
     </section>
+    <a class="daily-card" href="#/play/daily">
+      <span class="daily-left">
+        <span class="daily-badge">📅 Today's Challenge</span>
+        <b class="daily-stage">${dStage.icon} ${esc(dStage.name)}</b>
+        <span class="daily-date">${esc(todayLabel())}</span>
+      </span>
+      <span class="daily-right">
+        <span>${dRec.plays ? `${"★".repeat(dRec.stars)}${"☆".repeat(3 - dRec.stars)} · ${dRec.best}` : "Same run for all"}</span>
+        <span class="daily-cta">${dRec.plays ? "Retry" : "Play"} →</span>
+      </span>
+    </a>
     <section class="stages stages-4">
       ${STAGES.map((st, i) => {
         const open = isOpen(i, starsOf), p = S.progress(progressId(st)), best = S.settings()[bestKey(st)] || 0;
@@ -124,10 +136,11 @@ function talker(bubble) {
 }
 
 function viewPlay(stageId) {
-  // "Play" in the top bar (#/play, no stage): the day played last
-  const stage = stageById(stageId ?? S.settings().lastStage), si = STAGES.indexOf(stage);
-  if (!isOpen(si, starsOf)) { location.hash = "#/"; return; }
-  S.setSetting("lastStage", stage.id);
+  // "Play" in the top bar (#/play, no stage): the day played last; #/play/daily: Today's Challenge
+  const daily = stageId === "daily", dateKey = todayKey();
+  const stage = daily ? dailyStage(STAGES, "porter", dateKey) : stageById(stageId ?? S.settings().lastStage), si = STAGES.indexOf(stage);
+  if (!daily && !isOpen(si, starsOf)) { location.hash = "#/"; return; }
+  if (!daily) S.setSetting("lastStage", stage.id);
   document.body.classList.add("in-game", "porter-game");
   const who = myPorter(), unlockedBefore = new Set(PORTERS.filter((p) => porterOpen(p, starsFor2)).map((p) => p.id));
   const clock0 = stage.endless ? "0:00" : `${Math.floor(stage.length / 60)}:${String(stage.length % 60).padStart(2, "0")}`;
@@ -137,7 +150,7 @@ function viewPlay(stageId) {
       <div class="pins" aria-hidden="true"></div>
       <div class="hud">
         <a class="icon-btn" href="#/" aria-label="Stop and go home">✕</a>
-        <div class="clock" aria-label="${stage.endless ? "How long you've kept the gate" : "Time left"}"><span class="clock-label">${stage.endless ? "🎉 Feast" : esc(stage.name)}</span> <b data-clock>${clock0}</b></div>
+        <div class="clock" aria-label="${stage.endless ? "How long you've kept the gate" : "Time left"}"><span class="clock-label">${daily ? "📅 " : ""}${stage.endless ? "🎉 Feast" : esc(stage.name)}</span> <b data-clock>${clock0}</b></div>
         <div class="score"><b data-score>0</b><span data-combo class="streak"></span></div>
         <button class="icon-btn toggle" data-voice title="Read aloud">🔊</button>
       </div>
@@ -159,7 +172,7 @@ function viewPlay(stageId) {
   let alive = true, raf = 0, gate = null, stopListeners = () => {};
 
   (async () => {
-    if (!S.progress(progressId(stage)).plays) {
+    if (!daily && !S.progress(progressId(stage)).plays) {
       const card = $(".porter-lesson"); card.hidden = false;
       await showLesson(card, {
         emoji: stage.icon, title: stage.name,
@@ -177,7 +190,7 @@ function viewPlay(stageId) {
     const side = matchMedia("(orientation: landscape) and (max-height: 520px)"); // sideways: the bubble and answers are in the right column
     const fitView = () => gate?.resize({ top: ($(".hud")?.offsetHeight ?? 56) + 6, bottom: side.matches ? 10 : (bubble.offsetHeight || 60) + (answers.offsetHeight || 70) + 26 });
     fitView(); addEventListener("resize", fitView);
-    const g = newGame({ seed: Math.floor(Math.random() * 1e9), stage, porter: who });
+    const g = newGame({ seed: daily ? dailySeed("porter", dateKey) : Math.floor(Math.random() * 1e9), stage, porter: who });
     window.__porter = { game: g, gate }; // (for the browser tests)
     gate.sync(g, speedOf(g));
     talk(stage.rule, { urgent: true, mascot: stage.icon });
@@ -349,13 +362,24 @@ function viewPlay(stageId) {
       sfx.chime();
       await new Promise((r) => setTimeout(r, 3800));
       if (!alive) return;
-      const old = S.settings()[bestKey(stage)] || 0, score = Math.round(g.score), stars = starsFor(g), newBest = score > old;
-      S.setSetting(bestKey(stage), Math.max(old, score));
+      const score = Math.round(g.score), stars = starsFor(g), next = STAGES[si + 1];
+      let newBest, bestLine, opens = !daily && next && !next.endless && Math.max(stars, starsOf(stage)) >= 2;
+      if (daily) {
+        const dr = S.saveDaily(dateKey, score, stars);
+        newBest = dr.newBest;
+        bestLine = `<p class="final-score">📅 Today (${esc(todayLabel())}) · <b>${score}</b>${dr.newBest ? " · new daily best!" : ` · today's best: ${dr.best}`}</p>`;
+      } else {
+        const old = S.settings()[bestKey(stage)] || 0;
+        const best = Math.max(old, score);
+        newBest = score > old;
+        S.setSetting(bestKey(stage), best);
+        bestLine = `<p class="final-score">You scored <b>${score}</b>${newBest ? " · a new best!" : ` · your best: ${best}`}</p>`;
+      }
       cancelAnimationFrame(raf); gate.dispose(); gate = null; stopListeners();
       document.body.classList.remove("porter-game");
-      const next = STAGES[si + 1], opens = next && !next.endless && Math.max(stars, starsOf(stage)) >= 2;
-      showFinish(app, { id: progressId(stage), stars, mistakes: g.wrong, byStars: true, title: newBest ? "A new best!" : stage.endless ? "What a feast day!" : "The gate is kept!",
-        done: `You scored ${score}.`, again: `#/play/${stage.id}`, onAgain: route, next: opens ? { href: `#/play/${next.id}`, label: `${next.icon} ${next.name}` } : null });
+      showFinish(app, { id: daily ? `daily-${dateKey}` : progressId(stage), stars, mistakes: g.wrong, byStars: true,
+        title: daily ? (newBest ? "New daily best!" : "Today's Challenge!") : newBest ? "A new best!" : stage.endless ? "What a feast day!" : "The gate is kept!",
+        done: `You scored ${score}.`, again: daily ? "#/play/daily" : `#/play/${stage.id}`, onAgain: route, next: opens ? { href: `#/play/${next.id}`, label: `${next.icon} ${next.name}` } : null });
       const fresh = PORTERS.filter((p) => porterOpen(p, starsFor2) && !unlockedBefore.has(p.id));
       if (fresh.length) app.querySelector(".finish h1")?.insertAdjacentHTML("afterend", `<p class="finish-unlock">🎉 You can play as ${fresh.map((p) => `<b>${esc(p.name)}</b>`).join(" and ")} now!</p>`);
       const openPorters = PORTERS.filter((p) => porterOpen(p, starsFor2)), pickedId = myPorter().id;
@@ -371,7 +395,7 @@ function viewPlay(stageId) {
         app.querySelectorAll("[data-pick]").forEach((x) => { const on = x === b; x.classList.toggle("picked", on); x.setAttribute("aria-pressed", String(on)); });
         sfx.select(); speak(p.say);
       }));
-      app.querySelector(".finish h1")?.insertAdjacentHTML("afterend", `<p class="final-score">You scored <b>${score}</b>${newBest ? " · a new best!" : ` · your best: ${Math.max(old, score)}`}</p>
+      app.querySelector(".finish h1")?.insertAdjacentHTML("afterend", `${bestLine}
         <p class="muted">${stage.endless ? `kept the gate ${Math.floor(g.t / 60)}:${String(Math.floor(g.t % 60)).padStart(2, "0")} · ` : ""}${g.welcomed + g.greeted} welcomed · ${g.sentOn} sent on their way · best combo ${g.bestStreak} · ${g.wrong} not quite right${g.bumps ? ` · ${g.bumps} ${g.bumps === 1 ? "bump" : "bumps"}` : ""}${g.missed ? ` · ${g.missed} gave up waiting` : ""}${stars < 3 ? ` · ${stage.star3} for three stars` : ""}</p>`);
       // the finish screen's "All Angelio games" goes to the games page here, not the home page
       const all = app.querySelector(".finish .finish-links a[href=\"https://angelio.org/\"]"); if (all) all.href = GAMES;

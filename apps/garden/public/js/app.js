@@ -9,6 +9,7 @@ import { speak, stop } from "./kit/tts.js";
 import { sfx } from "./kit/sound.js";
 import * as FX from "./kit/fx.js";
 import { showLesson } from "./kit/lesson.js";
+import { todayKey, todayLabel, dailySeed, dailyStage } from "./kit/vary.js";
 import { esc, say, showFinish, stickerBook, viewGrownups, installClickSounds, wireVoiceToggle } from "./kit/ui.js";
 import { cropById } from "./crops.js";
 import { STAGES, stageById, isOpen } from "./stages.js";
@@ -39,6 +40,7 @@ const GARDENER_SHORT = { brother: "Brother", sister: "Sister", bugs: "Bug-Shooer
 
 function viewHome() {
   const cur = myGardener();
+  const dKey = todayKey(), dStage = dailyStage(STAGES, "garden", dKey), dRec = S.dailyRecord(dKey);
   app.innerHTML = `
     <section class="home-head">
       <div class="home-title-wrap">
@@ -47,6 +49,17 @@ function viewHome() {
       </div>
       <span class="demo-chip">🧪 Demo</span>
     </section>
+    <a class="daily-card" href="#/play/daily">
+      <span class="daily-left">
+        <span class="daily-badge">📅 Today's Challenge</span>
+        <b class="daily-stage">${dStage.icon} ${esc(dStage.name)}</b>
+        <span class="daily-date">${esc(todayLabel())}</span>
+      </span>
+      <span class="daily-right">
+        <span>${dRec.plays ? `${"★".repeat(dRec.stars)}${"☆".repeat(3 - dRec.stars)} · ${dRec.best}` : "Same run for all"}</span>
+        <span class="daily-cta">${dRec.plays ? "Retry" : "Play"} →</span>
+      </span>
+    </a>
     <section class="stages stages-5">
       ${STAGES.map((st, i) => {
         const open = isOpen(i, starsOf), p = S.progress(progressId(st)), best = S.settings()[bestKey(st)] || 0;
@@ -96,9 +109,10 @@ function viewHome() {
 }
 
 function viewPlay(stageId) {
-  const stage = stageById(stageId ?? S.settings().lastStage), si = STAGES.indexOf(stage);
-  if (!isOpen(si, starsOf)) { location.hash = "#/"; return; }
-  S.setSetting("lastStage", stage.id);
+  const daily = stageId === "daily", dateKey = todayKey();
+  const stage = daily ? dailyStage(STAGES, "garden", dateKey) : stageById(stageId ?? S.settings().lastStage), si = STAGES.indexOf(stage);
+  if (!daily && !isOpen(si, starsOf)) { location.hash = "#/"; return; }
+  if (!daily) S.setSetting("lastStage", stage.id);
   document.body.classList.add("in-game", "garden-game");
   const who = myGardener();
   const unlockedBefore = new Set(GARDENERS.filter((gd) => gardenerOpen(gd, starsById)).map((gd) => gd.id));
@@ -111,7 +125,7 @@ function viewPlay(stageId) {
       <div class="pins" data-pins></div>
       <div class="hud">
         <a class="icon-btn" href="#/" aria-label="Stop and go home">✕</a>
-        <div class="clock" aria-label="${stage.endless ? "Time survived" : "Time left"}"><span class="clock-label">${stage.icon} ${esc(stage.name)}</span> <b data-clock>${clock0}</b></div>
+        <div class="clock" aria-label="${stage.endless ? "Time survived" : "Time left"}"><span class="clock-label">${daily ? "📅 " : ""}${stage.icon} ${esc(stage.name)}</span> <b data-clock>${clock0}</b></div>
         <div class="score"><b data-score>0</b><span data-combo class="streak"></span></div>
         <button class="icon-btn toggle" data-voice title="Read aloud">🔊</button>
       </div>
@@ -140,21 +154,29 @@ function viewPlay(stageId) {
       cl.textContent = `${Math.floor(finSec / 60)}:${String(finSec % 60).padStart(2, "0")}`;
     }
     document.body.classList.remove("garden-game");
-    const old = S.settings()[bestKey(stage)] || 0;
     const score = Math.round(g.score);
     const stars = starsFor(g);
-    const newBest = score > old;
-    S.setSetting(bestKey(stage), Math.max(old, score));
     const next = STAGES[si + 1];
-    const opens = next && isOpen(si + 1, (s) => (s.id === stage.id ? Math.max(stars, starsOf(s)) : starsOf(s)));
+    let newBest, bestLine, opens = !daily && next && isOpen(si + 1, (s) => (s.id === stage.id ? Math.max(stars, starsOf(s)) : starsOf(s)));
+    if (daily) {
+      const dr = S.saveDaily(dateKey, score, stars);
+      newBest = dr.newBest;
+      bestLine = `<p class="final-score">📅 Today (${esc(todayLabel())}) · <b>${score}</b>${dr.newBest ? " · new daily best!" : ` · today's best: ${dr.best}`}</p>`;
+    } else {
+      const old = S.settings()[bestKey(stage)] || 0;
+      const best = Math.max(old, score);
+      newBest = score > old;
+      S.setSetting(bestKey(stage), best);
+      bestLine = `<p class="final-score">You scored <b>${score}</b>${newBest ? " · a new best!" : ` · best: ${best}`}</p>`;
+    }
     showFinish(app, {
-      id: progressId(stage),
+      id: daily ? `daily-${dateKey}` : progressId(stage),
       stars,
       mistakes: g.wrong,
       byStars: true,
-      title: newBest ? "A new best!" : stage.endless ? "What a harvest!" : stage.vigil ? "Dawn is here!" : "Harvest blessed!",
+      title: daily ? (newBest ? "New daily best!" : "Today's Challenge!") : newBest ? "A new best!" : stage.endless ? "What a harvest!" : stage.vigil ? "Dawn is here!" : "Harvest blessed!",
       done: `You scored ${score}.`,
-      again: `#/play/${stage.id}`,
+      again: daily ? "#/play/daily" : `#/play/${stage.id}`,
       onAgain: route,
       next: opens ? { href: `#/play/${next.id}`, label: `${next.icon} ${next.name}` } : null,
     });
@@ -179,7 +201,7 @@ function viewPlay(stageId) {
       speak(gd.say);
     }));
     app.querySelector(".finish h1")?.insertAdjacentHTML("afterend",
-      `<p class="final-score">You scored <b>${score}</b>${newBest ? " · a new best!" : ` · best: ${Math.max(old, score)}`}</p>
+      `${bestLine}
        <p class="muted">${stage.endless ? `kept the garden ${Math.floor(g.t / 60)}:${String(Math.floor(g.t % 60)).padStart(2, "0")} · Wave ${g.wave} · ` : ""}${stage.vigil ? `${g.shooed} critters shooed · ${g.eaten} nibbled · best combo ${g.bestStreak}` : `${g.delivered} baskets delivered · ${g.shooed + g.autoShooed} critters shooed · ${g.eaten} nibbled`}${stars < 3 ? ` · ${stage.star3} for three stars` : ""}</p>`);
     const all = app.querySelector('.finish .finish-links a[href="https://angelio.org/"]');
     if (all) all.href = GAMES;
@@ -245,7 +267,7 @@ function viewPlay(stageId) {
   }
 
   (async () => {
-    if (!S.progress(progressId(stage)).plays) {
+    if (!daily && !S.progress(progressId(stage)).plays) {
       const card = $(".garden-lesson");
       card.hidden = false;
       await showLesson(card, {
@@ -277,7 +299,7 @@ function viewPlay(stageId) {
       top: ($(".hud")?.offsetHeight ?? 52) + (eatenEl?.offsetHeight ? eatenEl.offsetHeight + 8 : 0) + (ordersEl.offsetHeight || 56) + 12,
       bottom: side.matches ? 10 : (bubble.offsetHeight || 54) + 16,
     });
-    g = newGame({ seed: Math.floor(Math.random() * 1e9), stage, gardener: who });
+    g = newGame({ seed: daily ? dailySeed("garden", dateKey) : Math.floor(Math.random() * 1e9), stage, gardener: who });
     window.__garden = { game: g, plot };
 
     const spotPins = new Map(), pestPins = new Map();

@@ -78,3 +78,15 @@ export function finishLevel(id, stars, sticker = null, big = stars >= 3) {
   return entry ? { e: entry.e, big: entry.big, isNew, grew, first } : { e: null, big: false, isNew: false, grew: false, first };
 }
 export function resetProgress() { state.levels = {}; state.stickers = []; state.solved = 0; save(); }
+
+export function dailyRecord(dateKey) {
+  const cur = state.settings.daily;
+  return cur?.date === dateKey ? cur : { date: dateKey, best: 0, stars: 0, plays: 0 };
+}
+
+export function saveDaily(dateKey, score, stars) {
+  const prev = dailyRecord(dateKey);
+  const next = { date: dateKey, best: Math.max(prev.best, score), stars: Math.max(prev.stars, stars), plays: prev.plays + 1 };
+  setSetting("daily", next);
+  return { ...next, newBest: score > prev.best, prevBest: prev.best };
+}

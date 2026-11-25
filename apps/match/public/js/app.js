@@ -16,7 +16,7 @@ import { speak, stop } from "./kit/tts.js";
 import { sfx } from "./kit/sound.js";
 import * as FX from "./kit/fx.js";
 import { showLesson } from "./kit/lesson.js";
-import { vary } from "./kit/vary.js";
+import { vary, todayKey, todayLabel, dailySeed, dailyStage } from "./kit/vary.js";
 import { esc, say, showFinish, stickerBook, viewGrownups, installClickSounds, wireVoiceToggle } from "./kit/ui.js";
 import { saintById, saintsForStage } from "./saints.js";
 import { STAGES, stageById, isOpen } from "./stages.js";
@@ -47,6 +47,7 @@ const HELPER_SHORT = { starter: "Server", anthony: "Anthony", lucy: "Lucy", chry
 
 function viewHome() {
   const cur = myHelper();
+  const dKey = todayKey(), dStage = dailyStage(STAGES, "match", dKey), dRec = S.dailyRecord(dKey);
   app.innerHTML = `
     <section class="home-head">
       <div class="home-title-wrap">
@@ -55,6 +56,17 @@ function viewHome() {
       </div>
       <span class="demo-chip">🧪 Demo</span>
     </section>
+    <a class="daily-card" href="#/play/daily">
+      <span class="daily-left">
+        <span class="daily-badge">📅 Today's Challenge</span>
+        <b class="daily-stage">${dStage.icon} ${esc(dStage.name)}</b>
+        <span class="daily-date">${esc(todayLabel())}</span>
+      </span>
+      <span class="daily-right">
+        <span>${dRec.plays ? `${"★".repeat(dRec.stars)}${"☆".repeat(3 - dRec.stars)} · ${dRec.best}` : "Same run for all"}</span>
+        <span class="daily-cta">${dRec.plays ? "Retry" : "Play"} →</span>
+      </span>
+    </a>
     <section class="stages stages-7">
       ${STAGES.map((st, i) => {
         const open = isOpen(i, starsOf), p = S.progress(progressId(st)), best = S.settings()[bestKey(st)] || 0;
@@ -104,9 +116,10 @@ function viewHome() {
 }
 
 function viewPlay(stageId) {
-  const stage = stageById(stageId ?? S.settings().lastStage), si = STAGES.indexOf(stage);
-  if (!isOpen(si, starsOf)) { location.hash = "#/"; return; }
-  S.setSetting("lastStage", stage.id);
+  const daily = stageId === "daily", dateKey = todayKey();
+  const stage = daily ? dailyStage(STAGES, "match", dateKey) : stageById(stageId ?? S.settings().lastStage), si = STAGES.indexOf(stage);
+  if (!daily && !isOpen(si, starsOf)) { location.hash = "#/"; return; }
+  if (!daily) S.setSetting("lastStage", stage.id);
   document.body.classList.add("in-game", "match-game");
   const helper = myHelper();
   const unlockedBefore = new Set(HELPERS.filter((h) => helperOpen(h, starsById)).map((h) => h.id));
@@ -117,7 +130,7 @@ function viewPlay(stageId) {
     <section class="match-play${stage.endless ? " endless-mode" : ""}">
       <div class="hud">
         <a class="icon-btn" href="#/" aria-label="Stop and go home">✕</a>
-        <div class="clock" aria-label="Time left"><span class="clock-label" data-wave>${stage.icon} Wave 1</span> <b data-clock>${clock0}</b></div>
+        <div class="clock" aria-label="Time left"><span class="clock-label" data-wave>${daily ? "📅 " : ""}${stage.icon} Wave 1</span> <b data-clock>${clock0}</b></div>
         <div class="score"><div class="score-row"><b data-score>0</b><span data-combo class="streak"></span></div><span class="combo-bar"><i data-combobar></i></span></div>
         <button class="icon-btn toggle" data-voice title="Read aloud">🔊</button>
       </div>
@@ -145,21 +158,29 @@ function viewPlay(stageId) {
     const cl = $("[data-clock]");
     if (cl) cl.textContent = "0:00";
     document.body.classList.remove("match-game");
-    const old = S.settings()[bestKey(stage)] || 0;
     const score = Math.round(g.score);
     const stars = starsFor(g);
-    const newBest = score > old;
-    S.setSetting(bestKey(stage), Math.max(old, score));
     const next = STAGES[si + 1];
-    const opens = next && Math.max(stars, starsOf(stage)) >= 2;
+    let newBest, bestLine, opens = !daily && next && Math.max(stars, starsOf(stage)) >= 2;
+    if (daily) {
+      const dr = S.saveDaily(dateKey, score, stars);
+      newBest = dr.newBest;
+      bestLine = `<p class="final-score">📅 Today (${esc(todayLabel())}) · <b>${score}</b>${dr.newBest ? " · new daily best!" : ` · today's best: ${dr.best}`}</p>`;
+    } else {
+      const old = S.settings()[bestKey(stage)] || 0;
+      const best = Math.max(old, score);
+      newBest = score > old;
+      S.setSetting(bestKey(stage), best);
+      bestLine = `<p class="final-score">You scored <b>${score}</b>${newBest ? " · a new best!" : ` · best: ${best}`}</p>`;
+    }
     showFinish(app, {
-      id: progressId(stage),
+      id: daily ? `daily-${dateKey}` : progressId(stage),
       stars,
       mistakes: g.wrong,
       byStars: true,
-      title: newBest ? "A new best!" : stage.endless ? "What a rush!" : "Well matched!",
+      title: daily ? (newBest ? "New daily best!" : "Today's Challenge!") : newBest ? "A new best!" : stage.endless ? "What a rush!" : "Well matched!",
       done: `You scored ${score}.`,
-      again: `#/play/${stage.id}`,
+      again: daily ? "#/play/daily" : `#/play/${stage.id}`,
       onAgain: route,
       next: opens ? { href: `#/play/${next.id}`, label: `${next.icon} ${next.name}` } : null,
     });
@@ -187,7 +208,7 @@ function viewPlay(stageId) {
       }));
     }
     app.querySelector(".finish h1")?.insertAdjacentHTML("afterend",
-      `<p class="final-score">You scored <b>${score}</b>${newBest ? " · a new best!" : ` · best: ${Math.max(old, score)}`}</p>
+      `${bestLine}
        <p class="muted">${g.wavesCleared} waves cleared · ${g.matches} matches · best streak ${g.bestStreak}${g.sharpEyes ? ` · ${g.sharpEyes} Sharp Eye` : ""}${stars < 3 ? ` · ${stage.star3} for three stars` : ""}</p>`);
     const all = app.querySelector('.finish .finish-links a[href="https://angelio.org/"]');
     if (all) all.href = GAMES;
@@ -363,7 +384,7 @@ function viewPlay(stageId) {
   }
 
   (async () => {
-    if (!S.progress(progressId(stage)).plays) {
+    if (!daily && !S.progress(progressId(stage)).plays) {
       const card = $(".match-lesson");
       card.hidden = false;
       await showLesson(card, {
@@ -381,7 +402,7 @@ function viewPlay(stageId) {
     portraits = await loadPortraits(saintsForStage(stage.id));
     if (!alive) return;
 
-    g = newGame({ seed: Math.floor(Math.random() * 1e9), stage, helper });
+    g = newGame({ seed: daily ? dailySeed("match", dateKey) : Math.floor(Math.random() * 1e9), stage, helper });
     window.__match = { game: g };
     renderBoard();
     say(bubble, `Peek fast! ${esc(stage.name)} starts!`, { speakText: false });
@@ -410,7 +431,7 @@ function viewPlay(stageId) {
       if (ended || g.over) return;
 
       const secs = Math.ceil(timeLeft(g));
-      $("[data-wave]").textContent = `${stage.icon} Wave ${g.wave}`;
+      $("[data-wave]").textContent = `${daily ? "📅 " : ""}${stage.icon} Wave ${g.wave}`;
       $("[data-clock]").textContent = `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, "0")}`;
       $("[data-clock]").closest(".clock")?.classList.toggle("urgent", secs <= 10);
       $("[data-score]").textContent = Math.round(g.score);
