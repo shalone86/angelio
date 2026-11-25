@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { newGame, tick, tapPew, scoot, autoScoot, longestRun, current, familyPoints, starsFor, SEATS, ROUND } from "../public/js/usher.js";
+import { newGame, tick, tapPew, scoot, autoScoot, longestRun, current, familyPoints, starsFor, ROWS, SEATS, ROUND } from "../public/js/usher.js";
+import { SEAT_W, AISLE, ROW_GAP, LANE, WALK_GAP, ENTRY_STAGGER, doorOffsets, seatSpot, pewEnd } from "../public/js/nave.js";
 import { STAGES, isOpen } from "../public/js/stages.js";
 
 const P = (spec) => spec.split("").map((c) => (c === "." ? null : { family: 0, stay: c === "S" })); // "x" sits, "S" stays
@@ -141,4 +142,19 @@ test("the ushers: the young one can't scoot, the experienced one scoots on arriv
   const r = autoScoot(g, 0);
   assert.equal(r.type, "scooted"); assert.equal(longestRun(g.pews[0]), 3);
   assert.ok(usherOpen(USHERS[0], () => 0) && !usherOpen(u("young"), () => 0) && usherOpen(u("young"), (id) => (id === "sunday" ? 2 : 0)));
+});
+
+test("nave spacing keeps 5×5 pews with 0.85× head clearance, wider door arc, single-file aisle, and 0.24 s pew stagger", () => {
+  assert.equal(ROWS, 5);
+  assert.equal(SEATS, 5);
+  assert.ok(SEAT_W >= 6.58 && AISLE >= 6.5 && ROW_GAP >= 10.5 && LANE >= 4.0 && WALK_GAP >= 4.8);
+  assert.equal(ENTRY_STAGGER, 0.24);
+  const pts = [[0, 0], ...doorOffsets(7)];
+  for (let i = 0; i < pts.length; i++) {
+    for (let j = i + 1; j < pts.length; j++) {
+      assert.ok(Math.hypot(pts[i][0] - pts[j][0], pts[i][1] - pts[j][1]) >= 5.2, `door slots ${i} and ${j} clear`);
+    }
+  }
+  assert.ok(pewEnd(0).x > 0 && pewEnd(1).x < 0, "usher stands across the aisle from the pew");
+  assert.ok(Math.abs(seatSpot(0, 0).x) >= AISLE && Math.abs((seatSpot(0, 1).x - seatSpot(0, 0).x) + SEAT_W) < 1e-9);
 });

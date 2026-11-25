@@ -8,15 +8,23 @@ import { readVox, toScene } from "./vox.js";
 import { randomLook, recolor } from "./looks.js";
 import { ROWS, SEATS, pewOf } from "./usher.js";
 
-const ART = /(^|\.)angelio\.org$/.test(location.hostname) ? "" : "https://angelio.org";
+const ART = typeof location !== "undefined" && /(^|\.)angelio\.org$/.test(location.hostname) ? "" : "https://angelio.org";
 
-// Where things stand (1 unit = one voxel; his people are 8 tall).
-export const SEAT_W = 5.4, AISLE = 5.2, ROW_GAP = 9, FRONT_Z = -28, DOORS_Z = 22;
-const LANE = 3.2; // the space in front of a pew's seats (between it and the back of the pew ahead), where people walk in and out
+// Where things stand (1 unit = one voxel; his people are 8 tall, scaled down slightly here so 5×5 pews stay clear).
+export const SEAT_W = 6.6, AISLE = 6.6, ROW_GAP = 10.6, FRONT_Z = -30, DOORS_Z = 33;
+export const LANE = 4.2, WALK_GAP = 5.0, ENTRY_STAGGER = 0.24; // pew walking corridor, single-file gap, and staggered entry
 const KINDS = ["man", "woman", "grandfather", "grandmother", "child", "child-girl"];
 const QUIET = ["#6b6b6b", "#7a6a58", "#5a5a66", "#8a8478", "#4f5a52", "#6a5a5a"];
 const GIRLISH = new Set(["woman", "grandmother", "child-girl"]);
-const SIZE = { man: 1.12, woman: 1.1, grandfather: 1.08, grandmother: 1.06, child: 0.95, "child-girl": 0.95 };
+const SIZE = { man: 0.95, woman: 0.94, grandfather: 0.92, grandmother: 0.90, child: 0.81, "child-girl": 0.81 };
+
+const DOOR_ARC = [
+  [-6.8, 5.2], [0, 5.8], [6.8, 5.2],
+  [-10.2, 10.6], [-3.4, 11.2], [3.4, 11.2], [10.2, 10.6],
+  [0, 16.4],
+];
+/** Semicircle offsets (relative to the usher at the doors) so waiting families never clump on top of each other. */
+export const doorOffsets = (n) => Array.from({ length: n }, (_, i) => DOOR_ARC[i] ?? [((i % 4) - 1.5) * 6.8, 16.4 + Math.floor((i - 7) / 4) * 5.6]);
 
 /** Every model the game asks for (whichever exist are used; his boy and girl stand in for the rest). */
 export const MODELS = ["usher-idle", "usher-walk", "usher-point", ...["usher-young", "usher-old", "usher-respected"].flatMap((u) => [`${u}-idle`, `${u}-walk`, `${u}-point`]), "server-idle", "server-walk", "priest-idle", "priest-mass-idle", "priest-mass-walk", "priest-kneel",
@@ -42,8 +50,8 @@ export function seatSpot(pew, s) {
   const { row, side } = pewOf(pew), x = AISLE + SEAT_W / 2 + s * SEAT_W;
   return { x: side === 0 ? -x : x, z: FRONT_Z + row * ROW_GAP };
 }
-/** Where you stand to seat a pew: in the aisle, at its end. */
-export const pewEnd = (pew) => { const { row, side } = pewOf(pew); return { x: side === 0 ? -2 : 2, z: FRONT_Z + row * ROW_GAP + 1.5 }; };
+/** Where you stand to seat a pew: across the aisle facing its open lane so the family turns in cleanly. */
+export const pewEnd = (pew) => { const { row, side } = pewOf(pew); return { x: side === 0 ? 3.2 : -3.2, z: FRONT_Z + row * ROW_GAP - 1.5 }; };
 
 export function createNave(canvas, { models = {}, rite = "roman", night = false, usherId = "usher", speed = 1 }) {
   const BYZ = rite === "byzantine";
@@ -61,10 +69,10 @@ export function createNave(canvas, { models = {}, rite = "roman", night = false,
   // ── light and the room (stand-ins until his church pieces) ──
   scene.add(new THREE.HemisphereLight("#fff4e0", "#4a3a2a", night ? 0.38 : 0.85));
   const sun = new THREE.DirectionalLight("#ffe6c0", night ? 0.12 : 0.45); sun.position.set(-30, 50, 30); scene.add(sun);
-  const W = AISLE + SEAT_W * SEATS + 4, backZ = FRONT_Z + ROWS * ROW_GAP;
-  block(W * 2, 0.5, DOORS_Z - FRONT_Z + 20, 0, -0.5, (DOORS_Z + FRONT_Z - 20) / 2, mat("#cdbb98"));            // floor
-  block(5.2, 0.12, DOORS_Z - FRONT_Z + 14, 0, 0, (DOORS_Z + FRONT_Z - 14) / 2, mat("#a8323a"));                  // aisle carpet
-  block(W * 2, 0.6, 14, 0, 0, FRONT_Z - 12, mat("#b9a886"));                                                      // sanctuary step
+  const W = AISLE + SEAT_W * SEATS + 5, backZ = FRONT_Z + ROWS * ROW_GAP;
+  block(W * 2, 0.5, DOORS_Z - FRONT_Z + 38, 0, -0.5, (DOORS_Z + 18 + FRONT_Z - 20) / 2, mat("#cdbb98"));            // floor
+  block(7.0, 0.12, DOORS_Z - FRONT_Z + 28, 0, 0, (DOORS_Z + 14 + FRONT_Z - 14) / 2, mat("#a8323a"));                  // aisle carpet
+  block(W * 2, 0.6, 14, 0, 0, FRONT_Z - 12, mat("#b9a886"));                                                          // sanctuary step
   block(14, 5, 5, 0, 0.6, FRONT_Z - 14, mat("#f1ead8")); block(10, 3, 0.3, 0, 1.6, FRONT_Z - 11.4, mat("#2f8a4c")); // altar and its cloth
   block(0.6, 9, 0.6, 0, 5.6, FRONT_Z - 16, mat("#c9971f")); block(4, 0.6, 0.6, 0, 12, FRONT_Z - 16, mat("#c9971f")); // cross
   // Adoration at night: the monstrance on the altar, glowing (a stand-in until his model)
@@ -86,10 +94,10 @@ export function createNave(canvas, { models = {}, rite = "roman", night = false,
   }
   let doorsOpen = false;
   block(W * 2, 30, 1, 0, 0, FRONT_Z - 19, mat("#e6dcc6"));                                                        // back wall
-  for (const sx of [-1, 1]) block(1, 30, DOORS_Z - FRONT_Z + 20, sx * W, 0, (DOORS_Z + FRONT_Z - 20) / 2, mat("#ded3bd"));
-  for (const sx of [-1, 1]) for (let i = 0; i < 4; i++) block(0.4, 8, 3, sx * (W - 0.6), 8, FRONT_Z + 4 + i * 12, mat(["#3f7fd1", "#d13f4f", "#e8c24a", "#4fa36b"][(i + (sx > 0 ? 2 : 0)) % 4]));
+  for (const sx of [-1, 1]) block(1, 30, DOORS_Z - FRONT_Z + 38, sx * W, 0, (DOORS_Z + 18 + FRONT_Z - 20) / 2, mat("#ded3bd"));
+  for (const sx of [-1, 1]) for (let i = 0; i < 4; i++) block(0.4, 8, 3, sx * (W - 0.6), 8, FRONT_Z + 4 + i * 14, mat(["#3f7fd1", "#d13f4f", "#e8c24a", "#4fa36b"][(i + (sx > 0 ? 2 : 0)) % 4]));
   // the doors, behind the last row (closest to you)
-  block(14, 0.3, 6, 0, 0, DOORS_Z + 1, mat("#7a5a3a"));
+  block(24, 0.3, 14, 0, 0, DOORS_Z + 5, mat("#7a5a3a"));
 
   // ── pews: a seat and a low back (people's heads and shoulders show above it), one tap area each ──
   const pewHits = [], pewGlow = [];
@@ -177,11 +185,18 @@ export function createNave(canvas, { models = {}, rite = "roman", night = false,
     a.g.scale.setScalar(scale);
     a.pose = (k) => { for (const [n, m] of Object.entries(a.poses)) m.visible = n === k; a.now = k; };
     a.place = (x, z, pose, turn = Math.PI) => { a.g.position.set(x, pose === "sit" ? 1.2 : 0, z); a.g.rotation.y = turn; a.pose(pose === "stand" ? "idle" : pose); a.move = null; };
-    /** Walk (or slide, when seated) to x, z; resolves on arrival. */
-    a.goTo = (x, z, speed = 16, pose = "walk", end = pose) => new Promise((done) => {
-      const from = a.g.position.clone(), to = new THREE.Vector3(x, end === "sit" ? 1.2 : 0, z), dur = Math.max(0.12, from.distanceTo(to) / speed);
-      a.pose(pose); a.move = { from, to, t: 0, dur, done, end };
-      if (pose === "walk") { const dx = x - from.x, dz = z - from.z; if (Math.hypot(dx, dz) > 0.1) a.g.rotation.y = Math.atan2(dx, dz); }
+    /** Walk (or slide, when seated) to x, z after an optional staggered delay; resolves on arrival. */
+    a.goTo = (x, z, speed = 16, pose = "walk", end = pose, delay = 0) => new Promise((done) => {
+      const to = new THREE.Vector3(x, end === "sit" ? 1.2 : 0, z);
+      a.move = { from: null, to, speed, t: 0, dur: 0.12, delay, pose, end, done };
+      if (delay <= 0) {
+        a.move.from = a.g.position.clone();
+        a.move.dur = Math.max(0.12, a.move.from.distanceTo(to) / speed);
+        a.pose(pose);
+        if (pose === "walk") { const dx = x - a.move.from.x, dz = z - a.move.from.z; if (Math.hypot(dx, dz) > 0.1) a.g.rotation.y = Math.atan2(dx, dz); }
+      } else {
+        a.pose("idle");
+      }
     });
     scene.add(a.g); actors.push(a);
     return a;
@@ -209,29 +224,29 @@ export function createNave(canvas, { models = {}, rite = "roman", night = false,
 
   // you: the usher (his server stands in until the usher's poses are made)
   // which usher you picked (ushers.js): his models when he makes them, stand-ins until then
-  const U = { usher: ["usher", "server", 1.25], young: ["usher-young", "child", 1.05], experienced: ["usher-old", "grandfather", 1.2], respected: ["usher-respected", "man", 1.25] }[usherId] ?? ["usher", "server", 1.25];
+  const U = { usher: ["usher", "server", 1.06], young: ["usher-young", "child", 0.89], experienced: ["usher-old", "grandfather", 1.02], respected: ["usher-respected", "man", 1.06] }[usherId] ?? ["usher", "server", 1.06];
   const usher = actor({ idle: [`${U[0]}-idle`, `${U[1]}-idle`, `${U[1]}-walk`, "server-idle"], walk: [`${U[0]}-walk`, `${U[1]}-walk`, "server-walk"],
     point: [`${U[0]}-point`, `${U[0]}-idle`, `${U[1]}-idle`, `${U[1]}-walk`, "server-idle"] }, randomLook(), U[2], "#2a3a5a");
-  const HOME = { x: 0, z: DOORS_Z - 3 };
+  const HOME = { x: 0, z: DOORS_Z - 4 };
   usher.place(HOME.x, HOME.z, "idle");
   // Nobody up front while families come in; when Mass begins, the priest and servers process up the aisle (a Byzantine
   // church: out of the royal doors, the priest censing). At Adoration, the priest kneels before the altar the whole night.
   const priest = actor(BYZ ? { idle: ["east-priest-phelonion-idle", "east-priest-cense"], walk: ["east-priest-cense", "east-priest-phelonion-walk"], kneel: ["priest-kneel", "priest-idle"] }
-    : { idle: ["priest-mass-idle", "priest-idle"], walk: ["priest-mass-walk", "priest-mass-idle", "priest-idle"], kneel: ["priest-kneel", "priest-idle"] }, randomLook(), 1.25, "#1d1b22");
+    : { idle: ["priest-mass-idle", "priest-idle"], walk: ["priest-mass-walk", "priest-mass-idle", "priest-idle"], kneel: ["priest-kneel", "priest-idle"] }, randomLook(), 1.06, "#1d1b22");
   const servers = [0, 1, 2].map((i) => actor(BYZ ? (i === 1 ? { idle: ["east-server-candle-idle", "east-server-ripidion-idle"], walk: ["east-server-candle-walk", "east-server-ripidion-walk"] } : { idle: ["east-server-ripidion-idle"], walk: ["east-server-ripidion-walk"] })
-    : i === 0 ? { idle: ["server-cross-idle", "server-idle"], walk: ["server-cross-walk", "server-walk"] } : { idle: ["server-candle-idle", "server-idle"], walk: ["server-candle-walk", "server-walk"] }, randomLook(), 1.05, "#b02a2a"));
+    : i === 0 ? { idle: ["server-cross-idle", "server-idle"], walk: ["server-cross-walk", "server-walk"] } : { idle: ["server-candle-idle", "server-idle"], walk: ["server-candle-walk", "server-walk"] }, randomLook(), 0.90, "#b02a2a"));
   for (const a of [priest, ...servers]) a.g.visible = false;
   if (night) { priest.g.visible = true; priest.place(0, FRONT_Z - 9, "kneel", Math.PI); priest.g.rotation.y = Math.PI; }
 
   // ── camera: the whole nave fits between the top bar and the speech bubble ──
-  const KEEP = [[-W, 0, backZ + 3], [W, 0, backZ + 3], [-W, 0, FRONT_Z - 2], [W, 0, FRONT_Z - 2], [0, 13, FRONT_Z - 16], [0, 0, DOORS_Z + 1]];
+  const KEEP = [[-W, 0, backZ + 4], [W, 0, backZ + 4], [-W, 0, FRONT_Z - 2], [W, 0, FRONT_Z - 2], [0, 13, FRONT_Z - 16], [-13, 0, DOORS_Z + 9], [13, 0, DOORS_Z + 9]];
   let pad = { top: 60, bottom: 80 };
   function resize(newPad) {
     if (newPad) pad = newPad;
     const w = canvas.clientWidth, h = canvas.clientHeight;
     R.setSize(w, h, false); cam.aspect = w / h; cam.clearViewOffset();
-    const top = 1 - (2 * pad.top) / h, bottom = -1 + (2 * pad.bottom) / h, look = new THREE.Vector3(0, 0, -8), v = new THREE.Vector3();
-    for (let d = 20; d < 260; d += 1) {
+    const top = 1 - (2 * pad.top) / h, bottom = -1 + (2 * pad.bottom) / h, look = new THREE.Vector3(0, 0, -4), v = new THREE.Vector3();
+    for (let d = 20; d < 340; d += 1) {
       // looking down steeply: the rows spread out, easier to tell apart
       cam.position.set(0, d * 0.9, 4 + d * 0.42); cam.lookAt(look); cam.updateProjectionMatrix(); cam.updateMatrixWorld();
       let ok = true, lo = Infinity, hi = -Infinity;
@@ -251,6 +266,7 @@ export function createNave(canvas, { models = {}, rite = "roman", night = false,
   let walking = []; // the family with you: their actors, by place in the family
   /** Bring the screen up to date with the rules: new people appear, anyone whose seat changed slides there. */
   function sync(g) {
+    const entering = [];
     for (const p of g.pews) p.seats.forEach((who, s) => {
       if (!who) return;
       const spot = seatSpot(p.id, s);
@@ -261,31 +277,48 @@ export function createNave(canvas, { models = {}, rite = "roman", night = false,
         // into the pew the way people do: up the aisle to the pew, then along the space in front of the seats (never
         // through the pews), then sit
         const rest = p.standing ? "stand" : "sit"; // at the back, people stand
-        if (fam && walking[i]) { walking[i] = null; const lane = spot.z - LANE, ax = Math.sign(spot.x) * 2.4; a.entering = true;
-          a.goTo(ax, a.g.position.z, 16).then(() => a.goTo(ax, lane, 14)).then(() => a.goTo(spot.x, lane, 12)).then(() => a.goTo(spot.x, spot.z, 10, "walk", rest)).then(() => { a.entering = false; }); }
+        if (fam && walking[i]) { walking[i] = null; a.entering = true; entering.push({ a, spot, rest, s }); }
         else a.place(spot.x, spot.z, rest);
         a.stay = who.stay; seated.set(who.pid, a);
       } else if (Math.abs(a.g.position.x - spot.x) > 0.1 && !a.move && !a.entering) a.goTo(spot.x, spot.z, 18, p.standing ? "idle" : "sit", p.standing ? "stand" : "sit"); // scooted
     });
+    // Furthest seat files into the pew lane first (`0.24 s` staggered spacing) so heads never pile together.
+    entering.sort((a, b) => b.s - a.s).forEach(({ a, spot, rest }, idx) => {
+      const lane = spot.z - LANE, ax = Math.sign(spot.x) * 2.4;
+      a.goTo(ax, a.g.position.z, 15, "walk", "walk", idx * ENTRY_STAGGER)
+        .then(() => a.goTo(ax, lane, 14))
+        .then(() => a.goTo(spot.x, lane, 14))
+        .then(() => a.goTo(spot.x, spot.z, 12, "walk", rest))
+        .then(() => { a.entering = false; });
+    });
     pewGlow.forEach((m, id) => { m.userData.on = g.at === id; });
   }
-  /** The family at the front of the line comes in with you (shown standing beside you at the doors). */
+  /** The family at the front of the line comes in with you (spaced in a semicircle behind you at the doors). */
   function family(fam) {
     for (const a of walking) if (a) { scene.remove(a.g); actors.splice(actors.indexOf(a), 1); }
     walking = fam ? fam.kinds.map((k, i) => (i < fam.seated ? null : person(k, fam.color, /^grand/.test(k)))) : [];
-    walking.forEach((a, i) => a?.place(usher.g.position.x + 3 + (i % 3) * 3, usher.g.position.z + 2 + Math.floor(i / 3) * 3, "idle", Math.PI));
+    const active = walking.filter(Boolean);
+    const offs = doorOffsets(active.length);
+    active.forEach((a, i) => a.place(HOME.x + offs[i][0], HOME.z + offs[i][1], "idle", Math.PI));
   }
-  /** Walk to a pew's end (up the aisle), the family close behind. */
+  /** Walk to a pew's end (up the aisle), the family following cleanly in single file behind you. */
   async function walkTo(pew) {
-    const end = pewEnd(pew);
-    const legs = [[0, usher.g.position.z], [0, end.z + 2], [end.x, end.z + 2]];
-    for (const [x, z] of legs) {
-      const goes = [usher.goTo(x, z, 20 * speed)]; // the young usher walks faster, the experienced one slower
-      walking.forEach((a, i) => { if (a) goes.push(a.goTo(x + (i % 2 ? 1.6 : -1.6), z + 3 + i * 2.2, 20 * speed)); });
-      await Promise.all(goes);
-    }
-    usher.pose("point"); usher.g.rotation.y = end.x < 0 ? -Math.PI / 2 : Math.PI / 2;
-    walking.forEach((a) => a?.pose("idle"));
+    const { side } = pewOf(pew), end = pewEnd(pew), famX = side === 0 ? -2.2 : 2.2;
+    const active = walking.filter(Boolean);
+    await Promise.all([
+      usher.goTo(0, usher.g.position.z, 20 * speed),
+      ...active.map((a, i) => a.goTo(0, usher.g.position.z + 5.2 + i * WALK_GAP, 20 * speed)),
+    ]);
+    await Promise.all([
+      usher.goTo(0, end.z + 2.5, 20 * speed),
+      ...active.map((a, i) => a.goTo(0, end.z + 2.5 + 5.2 + i * WALK_GAP, 20 * speed)),
+    ]);
+    await Promise.all([
+      usher.goTo(end.x, end.z, 20 * speed),
+      ...active.map((a, i) => a.goTo(famX, end.z + 2.5 + i * WALK_GAP, 20 * speed)),
+    ]);
+    usher.pose("point"); usher.g.rotation.y = side === 0 ? -Math.PI / 2 : Math.PI / 2;
+    active.forEach((a) => { a.pose("idle"); a.g.rotation.y = Math.PI; });
   }
   /** Someone finished praying (Adoration): they get up, walk down the aisle and out the doors. */
   function personLeave(pid) {
@@ -312,7 +345,7 @@ export function createNave(canvas, { models = {}, rite = "roman", night = false,
       await Promise.all([servers[1].goTo(-4, altar + 1, 4, "walk", "idle"), servers[2].goTo(4, altar + 1, 4, "walk", "idle"),
         priest.goTo(0, back, 8, "walk", "walk").then(() => priest.goTo(0, altar + 1.5, 8, "walk", "walk"))]);
     } else {
-      servers[0].place(0, DOORS_Z + 4, "walk"); servers[1].place(-2.2, DOORS_Z + 8, "walk"); servers[2].place(2.2, DOORS_Z + 8, "walk"); priest.place(0, DOORS_Z + 13, "walk");
+      servers[0].place(0, DOORS_Z + 4, "walk"); servers[1].place(-3.0, DOORS_Z + 9, "walk"); servers[2].place(3.0, DOORS_Z + 9, "walk"); priest.place(0, DOORS_Z + 14, "walk");
       await Promise.all([servers[0].goTo(0, altar + 0.5, 6, "walk", "idle"), servers[1].goTo(-4, altar + 1, 6, "walk", "idle"), servers[2].goTo(4, altar + 1, 6, "walk", "idle"), priest.goTo(0, altar + 3, 5.5, "walk", "idle")]);
     }
     for (const a of [priest, ...servers]) a.g.rotation.y = 0;
@@ -325,9 +358,20 @@ export function createNave(canvas, { models = {}, rite = "roman", night = false,
     time += dt;
     for (const a of actors) {
       if (a.move) {
-        const m = a.move; m.t = Math.min(1, m.t + dt / m.dur);
-        a.g.position.lerpVectors(m.from, m.to, m.t);
-        if (m.t >= 1) { a.move = null; a.pose(m.end === "stand" ? "idle" : m.end); if (m.end === "sit" || m.end === "stand") a.g.rotation.y = Math.PI; m.done(); }
+        const m = a.move;
+        if (m.delay > 0) {
+          m.delay -= dt;
+        } else {
+          if (!m.from) {
+            m.from = a.g.position.clone();
+            m.dur = Math.max(0.12, m.from.distanceTo(m.to) / m.speed);
+            a.pose(m.pose);
+            if (m.pose === "walk") { const dx = m.to.x - m.from.x, dz = m.to.z - m.from.z; if (Math.hypot(dx, dz) > 0.1) a.g.rotation.y = Math.atan2(dx, dz); }
+          }
+          m.t = Math.min(1, m.t + dt / m.dur);
+          a.g.position.lerpVectors(m.from, m.to, m.t);
+          if (m.t >= 1) { a.move = null; a.pose(m.end === "stand" ? "idle" : m.end); if (m.end === "sit" || m.end === "stand") a.g.rotation.y = Math.PI; m.done(); }
+        }
       }
       const pm = a.poses[a.now]; if (pm) animate(pm, time);
       if (pm && a.g.visible) {
@@ -365,7 +409,7 @@ export function createNave(canvas, { models = {}, rite = "roman", night = false,
   const stayers = () => [...seated.entries()].filter(([, a]) => a.stay).map(([pid, a]) => ({ pid, ...screenOf(a.g.position.x, 8 * a.g.scale.y, a.g.position.z) }));
 
   /** Where each pew's button goes on screen: just beyond its wall end, at seat height. */
-  const pewButton = (pew) => { const s = seatSpot(pew, SEATS - 1); return screenOf(s.x + (s.x < 0 ? -3.6 : 3.6), 2.5, s.z); };
+  const pewButton = (pew) => { const s = seatSpot(pew, SEATS - 1); return screenOf(s.x + (s.x < 0 ? -4.2 : 4.2), 2.5, s.z); };
   return { update, resize, pick, sync, family, walkTo, walkHome, personLeave, procession, pewButton, screenOf, stayers, usherAt: () => screenOf(usher.g.position.x, 11, usher.g.position.z),
     pewScreen: (pew) => { const s = seatSpot(pew, 2); return screenOf(s.x, 6, s.z); }, hasModels: () => Object.keys(models), dispose: () => { R.dispose(); R.forceContextLoss?.(); } };
 }
