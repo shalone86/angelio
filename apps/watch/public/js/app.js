@@ -54,7 +54,7 @@ const route = createRouter([
   [/^grownups$/, () => viewGrownups(app, { about: ABOUT })],
   [/^review$/, viewReview],
 ], {
-  before() { stop(); FX.clearFx(); document.body.classList.remove("in-game"); },
+  before() { stop(); FX.clearFx(); document.body.classList.remove("in-game", "watch-home"); },
 });
 
 // ───────── the player: starts by itself; if the browser says no, a big ▶ ─────────
@@ -122,6 +122,7 @@ function ofTheDay(list, salt) {
 // Home remembers where you scrolled, so coming back from a video lands where you were.
 const HOME_SCROLL = "watch:homeScroll";
 function viewHome() {
+  document.body.classList.add("watch-home");
   const lesson = ofTheDay(LIB.lessons, 0), song = ofTheDay(LIB.songs, 3);
   const today = (href, label, item, extra = "") => `<a class="today-card" href="${href}">
         <span class="today-label">${label}</span>
