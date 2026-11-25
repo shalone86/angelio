@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { newGame, tick, tapPew, scoot, autoScoot, longestRun, current, familyPoints, starsFor, ROWS, SEATS, ROUND } from "../public/js/usher.js";
-import { SEAT_W, AISLE, ROW_GAP, LANE, WALK_GAP, ENTRY_STAGGER, doorOffsets, seatSpot, pewEnd } from "../public/js/nave.js";
+import { SEAT_W, AISLE, ROW_GAP, LANE, WALK_GAP, ENTRY_STAGGER, ENTRY_SPEED, entryDelay, doorOffsets, seatSpot, pewEnd } from "../public/js/nave.js";
 import { STAGES, isOpen } from "../public/js/stages.js";
 
 const P = (spec) => spec.split("").map((c) => (c === "." ? null : { family: 0, stay: c === "S" })); // "x" sits, "S" stays
@@ -157,4 +157,40 @@ test("nave spacing keeps 5×5 pews with 0.85× head clearance, wider door arc, s
   }
   assert.ok(pewEnd(0).x > 0 && pewEnd(1).x < 0, "usher stands across the aisle from the pew");
   assert.ok(Math.abs(seatSpot(0, 0).x) >= AISLE && Math.abs((seatSpot(0, 1).x - seatSpot(0, 0).x) + SEAT_W) < 1e-9);
+});
+
+test("pew entry assigns the head of the queue the deepest selected seat, even in fragmented pews", () => {
+  for (const [spec, size] of [[".....", 5], ["..x..", 4], [".....", 2], ["x.x.x", 5]]) {
+    const g = newGame({ seed: 1, regulars: 0 });
+    const fam = current(g); fam.size = size; fam.stay = Array(size).fill(false);
+    fam.pids = Array.from({ length: size }, (_, i) => 1000 + i);
+    fam.kinds = Array(size).fill("man"); g.pews[0].seats = P(spec);
+    tapPew(g, 0); const r = tapPew(g, 0);
+    const seats = [...r.placed].sort((a, b) => b - a);
+    assert.deepEqual(seats.map((i) => g.pews[0].seats[i].pid), fam.pids.slice(0, seats.length));
+  }
+});
+
+test("single-file pew entry retains head clearance at the aisle turn and while sitting", () => {
+  for (const pew of [0, 1, 10, 11]) {
+    const end = pewEnd(pew), sign = Math.sign(seatSpot(pew, 0).x), ax = sign * 2.2;
+    const paths = Array.from({ length: SEATS }, (_, i) => {
+      const spot = seatSpot(pew, SEATS - 1 - i), lane = spot.z - LANE;
+      return [[ax, end.z + 2.5 + i * WALK_GAP], [ax, lane], [spot.x, lane], [spot.x, spot.z]];
+    });
+    const at = (path, t, i) => {
+      let d = Math.max(0, t - entryDelay(i)) * ENTRY_SPEED;
+      for (let n = 1; n < path.length; n++) {
+        const [x, z] = path[n - 1], [xx, zz] = path[n], len = Math.hypot(xx - x, zz - z);
+        if (d <= len) return [x + (xx - x) * d / len, z + (zz - z) * d / len];
+        d -= len;
+      }
+      return path.at(-1);
+    };
+    for (let t = 0; t < 8; t += 0.01) {
+      const ps = paths.map((p, i) => at(p, t, i));
+      for (let i = 0; i < ps.length; i++) for (let j = i + 1; j < ps.length; j++)
+        assert.ok(Math.hypot(ps[i][0] - ps[j][0], ps[i][1] - ps[j][1]) >= WALK_GAP - 0.01, `pew ${pew}, ${i}/${j}, t=${t}`);
+    }
+  }
 });

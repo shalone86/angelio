@@ -125,20 +125,25 @@ export function seat(g, id) {
   if (!fam || g.at !== id) return { type: "none" };
   let left = fam.size - fam.seated;
   if (!empties(p)) return { type: "full", pew: id };
-  const placed = [];
-  while (left > 0 && empties(p)) {
-    // the longest run of empty seats; the family fills it from the aisle end
+  const placed = [], reserved = p.seats.slice();
+  while (left > 0 && reserved.some((s) => !s)) {
+    // Reserve the same seats as before, then assign people from the wall toward the aisle.
     let best = null;
     for (let s = 0; s < SEATS; s++) {
-      if (p.seats[s]) continue;
-      let e = s; while (e + 1 < SEATS && !p.seats[e + 1]) e++;
+      if (reserved[s]) continue;
+      let e = s; while (e + 1 < SEATS && !reserved[e + 1]) e++;
       if (!best || e - s > best[1] - best[0]) best = [s, e];
       s = e;
     }
     const run = [];
-    for (let s = best[0]; s <= best[1] && left > 0; s++) { p.seats[s] = { family: fam.id, stay: fam.stay[fam.seated], pid: fam.pids[fam.seated], kind: fam.kinds[fam.seated], ...(g.stage.endless ? { until: g.t + stayTime(g) } : {}) }; fam.seated++; left--; run.push(s); }
+    for (let s = best[0]; s <= best[1] && left > 0; s++) { reserved[s] = true; left--; run.push(s); }
     fam.parts.push({ pew: id, seats: run });
     placed.push(...run);
+  }
+  // The person at the front of the walking line takes the deepest seat, even across separate gaps.
+  for (const s of [...placed].sort((a, b) => b - a)) {
+    p.seats[s] = { family: fam.id, stay: fam.stay[fam.seated], pid: fam.pids[fam.seated], kind: fam.kinds[fam.seated], ...(g.stage.endless ? { until: g.t + stayTime(g) } : {}) };
+    fam.seated++;
   }
   g.seatedPeople += placed.length;
   if (fam.seated < fam.size) return { type: "some", pew: id, placed, left: fam.size - fam.seated };

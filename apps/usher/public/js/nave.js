@@ -13,6 +13,9 @@ const ART = typeof location !== "undefined" && /(^|\.)angelio\.org$/.test(locati
 // Where things stand (1 unit = one voxel; his people are 8 tall, scaled down slightly here so 5×5 pews stay clear).
 export const SEAT_W = 6.6, AISLE = 6.6, ROW_GAP = 10.6, FRONT_Z = -30, DOORS_Z = 33;
 export const LANE = 4.2, WALK_GAP = 5.0, ENTRY_STAGGER = 0.24; // pew walking corridor, single-file gap, and staggered entry
+export const ENTRY_SPEED = 14;
+// A follower must gain enough path distance at the 90° turn to retain WALK_GAP in straight-line distance.
+export const entryDelay = (i) => i * Math.max(ENTRY_STAGGER, (Math.SQRT2 - 1) * WALK_GAP / ENTRY_SPEED);
 const KINDS = ["man", "woman", "grandfather", "grandmother", "child", "child-girl"];
 const QUIET = ["#6b6b6b", "#7a6a58", "#5a5a66", "#8a8478", "#4f5a52", "#6a5a5a"];
 const GIRLISH = new Set(["woman", "grandmother", "child-girl"]);
@@ -264,6 +267,7 @@ export function createNave(canvas, { models = {}, rite = "roman", night = false,
   // ── people: everyone seated (by their id), and the family walking with you ──
   const seated = new Map(); // pid → actor
   let walking = []; // the family with you: their actors, by place in the family
+  let entryDone = Promise.resolve();
   /** Bring the screen up to date with the rules: new people appear, anyone whose seat changed slides there. */
   function sync(g) {
     const entering = [];
@@ -277,21 +281,24 @@ export function createNave(canvas, { models = {}, rite = "roman", night = false,
         // into the pew the way people do: up the aisle to the pew, then along the space in front of the seats (never
         // through the pews), then sit
         const rest = p.standing ? "stand" : "sit"; // at the back, people stand
-        if (fam && walking[i]) { walking[i] = null; a.entering = true; entering.push({ a, spot, rest, s }); }
+        if (fam && walking[i]) { walking[i] = null; a.entering = true; entering.push({ a, spot, rest, i }); }
         else a.place(spot.x, spot.z, rest);
         a.stay = who.stay; seated.set(who.pid, a);
       } else if (Math.abs(a.g.position.x - spot.x) > 0.1 && !a.move && !a.entering) a.goTo(spot.x, spot.z, 18, p.standing ? "idle" : "sit", p.standing ? "stand" : "sit"); // scooted
     });
-    // Furthest seat files into the pew lane first (`0.24 s` staggered spacing) so heads never pile together.
-    entering.sort((a, b) => b.s - a.s).forEach(({ a, spot, rest }, idx) => {
-      const lane = spot.z - LANE, ax = Math.sign(spot.x) * 2.4;
-      a.goTo(ax, a.g.position.z, 15, "walk", "walk", idx * ENTRY_STAGGER)
-        .then(() => a.goTo(ax, lane, 14))
-        .then(() => a.goTo(spot.x, lane, 14))
-        .then(() => a.goTo(spot.x, spot.z, 12, "walk", rest))
-        .then(() => { a.entering = false; });
-    });
+    // People start in queue order, never passing one another. Same speed on every walking leg,
+    // plus extra space at the corner, prevents the line compressing as the leader turns.
+    if (entering.length) {
+      entryDone = Promise.all(entering.sort((a, b) => a.i - b.i).map(({ a, spot, rest }, idx) => {
+        const lane = spot.z - LANE, ax = Math.sign(spot.x) * 2.2;
+        return a.goTo(ax, lane, ENTRY_SPEED, "walk", "walk", entryDelay(idx))
+          .then(() => a.goTo(spot.x, lane, ENTRY_SPEED))
+          .then(() => a.goTo(spot.x, spot.z, ENTRY_SPEED, "walk", rest))
+          .then(() => { a.entering = false; });
+      }));
+    }
     pewGlow.forEach((m, id) => { m.userData.on = g.at === id; });
+    return entryDone;
   }
   /** The family at the front of the line comes in with you (spaced in a semicircle behind you at the doors). */
   function family(fam) {
@@ -332,6 +339,7 @@ export function createNave(canvas, { models = {}, rite = "roman", night = false,
   }
   /** Mass begins: you step aside, and the priest and servers process up the aisle (or out of the royal doors). */
   async function procession() {
+    await entryDone;
     walking.forEach((a) => a && (a.g.visible = false));
     await usher.goTo(-5, HOME.z + 1, 20); usher.pose("idle"); usher.g.rotation.y = Math.PI / 2;
     for (const a of [priest, ...servers]) a.g.visible = true;

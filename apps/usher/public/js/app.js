@@ -213,14 +213,20 @@ function viewPlay(stageId) {
         return;
       }
       if (r.type === "full") { sfx.tap(); talk("This pew is full. Tap a different pew!", { urgent: true }); return; }
-      if (r.type === "some") { sfx.chime(); nave.sync(g); talk(`${NUM[r.left] ?? r.left} more to seat. Tap another pew!`, { urgent: true }); return; }
+      if (r.type === "some") {
+        walking = true; sfx.chime(); await nave.sync(g); walking = false;
+        if (!g.over) talk(`${NUM[r.left] ?? r.left} more to seat. Tap another pew!`, { urgent: true }); return;
+      }
       if (r.type === "seated") {
-        nave.sync(g);
+        walking = true; const entered = nave.sync(g);
         if (g.pews[id].standing) talk.once("stand", "They can stand at the back. A seat is better, but standing works when the pews are full!", { urgent: true });
         if (r.together) { sfx.win(); popAt(id, `Together! +${r.points}`, "good"); talk(vary("together", ["Together! Wonderful!", "The whole family, side by side!", "Perfect, all together!"])); }
         else { sfx.chime(); popAt(id, `+${r.points}`); talk.once("split", "Seated! Families like to sit together, so try to keep them in one pew."); }
         if (r.quick) setTimeout(() => popAt(id, "Quick! ⚡", "quick"), 350);
-        walking = true; await nave.walkHome(); walking = false;
+        await entered;
+        if (g.over || !alive) { walking = false; return; }
+        await nave.walkHome(); walking = false;
+        if (g.over || !alive) return;
         nave.family(current(g));
       }
     };
