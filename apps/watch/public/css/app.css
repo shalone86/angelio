@@ -149,7 +149,7 @@
 
 /* The Watch & Sing home uses the same sky and feather links as the Angelio section homes. */
 .watch-clouds, .watch-loading-hero, .today.watch-loading-cards { display: none; }
-.watch-home {
+.watch-app {
   --watch-paper: light-dark(#fff, #1c2b45);
   --watch-ink: light-dark(#183153, #eaf3ff);
   --watch-muted: light-dark(#4b6584, #b4c7e0);
@@ -157,12 +157,22 @@
   --watch-pill: light-dark(#e3f0ff, #16304f);
   --watch-pill-edge: light-dark(#eedec2, #3a5276);
 }
-.watch-home body {
+.watch-app body {
+  --bg: light-dark(#f2f9ff, #0f1c33);
+  --surface: var(--watch-paper);
+  --surface-2: var(--watch-pill);
+  --border: var(--watch-edge);
+  --text: var(--watch-ink);
+  --muted: var(--watch-muted);
+  --accent: light-dark(#2568ad, #8cc8ff);
+  --accent-strong: light-dark(#194f86, #abd7ff);
+  --accent-ink: light-dark(#fff, #142744);
+  --shadow: 0 4px 0 var(--watch-edge);
   min-height: 100vh;
   color: var(--watch-ink);
   background: linear-gradient(light-dark(#7cc4ff, #1d3a66), light-dark(#bfe3ff, #142744) 420px, light-dark(#f2f9ff, #0f1c33) 900px) light-dark(#f2f9ff, #0f1c33) no-repeat;
 }
-.watch-home .watch-clouds { display: block; position: absolute; inset: 0 0 auto; height: 420px; overflow: hidden; pointer-events: none; }
+.watch-app .watch-clouds { display: block; position: absolute; inset: 0 0 auto; height: 420px; overflow: hidden; pointer-events: none; }
 .watch-clouds span, .watch-clouds span::before, .watch-clouds span::after {
   position: absolute; border-radius: 999px; background: light-dark(#fff, #2b4470);
 }
@@ -176,44 +186,44 @@
 .watch-clouds span:nth-child(4) { right: 16%; top: 230px; scale: .8; opacity: .75; }
 @media (max-width: 700px) { .watch-clouds span:nth-child(n+3) { display: none; } }
 
-.watch-home #app { position: relative; max-width: 920px; }
-.watch-home .topbar {
+.watch-app #app { position: relative; max-width: 920px; }
+.watch-app .topbar {
   max-width: 920px; margin-inline: auto; padding-top: 14px; padding-bottom: 8px;
   flex-wrap: nowrap; gap: 8px; background: transparent; backdrop-filter: none; border: 0; position: relative;
 }
-.watch-home .topbar :is(.hub-link, .brand, .nav a) {
+.watch-app .topbar :is(.hub-link, .brand, .nav a) {
   display: grid; place-items: center; flex: none; width: 44px; height: 44px;
   padding: 0; border: 0; border-radius: 13px; box-shadow: none; color: var(--watch-ink); background: var(--watch-paper);
 }
-.watch-home .topbar .hub-link img, .watch-home .topbar .logo { width: 34px; height: 34px; border-radius: 9px; transform: none; }
-.watch-home .topbar .nav { width: auto; margin-left: auto; overflow: visible; }
-.watch-home .topbar .nav [data-nav="home"], .watch-home .watch-brand-name { display: none; }
-.watch-home .topbar .nav a:hover { background: var(--watch-pill); }
+.watch-app .topbar .hub-link img, .watch-app .topbar .logo { width: 34px; height: 34px; border-radius: 9px; transform: none; }
+.watch-app .topbar .nav { width: auto; margin-left: auto; overflow: visible; }
+.watch-app .topbar .nav [data-nav="home"], .watch-app .watch-brand-name { display: none; }
+.watch-app .topbar .nav a:hover { background: var(--watch-pill); }
 
-.watch-home .small-hero { padding: 12px 0 10px; }
-.watch-home .small-hero .title {
+.watch-app .small-hero { padding: 12px 0 10px; }
+.watch-app .small-hero .title {
   font-size: clamp(2.35rem, 7vw, 3.6rem); margin: 0;
   color: light-dark(#fff, #eaf3ff); text-shadow: 0 3px 0 light-dark(#3a8fd9, #101e35);
 }
-.watch-home .small-hero .lede { color: var(--watch-ink); margin: 4px 0 0; }
-.watch-home :is(.today-card, .video-card, .sticker-book) {
+.watch-app .small-hero .lede { color: var(--watch-ink); margin: 4px 0 0; }
+.watch-app :is(.today-card, .video-card, .sticker-book) {
   background: var(--watch-paper); color: var(--watch-ink); border-color: var(--watch-edge); box-shadow: 0 5px 0 var(--watch-edge);
 }
-.watch-home .today-card { padding: 0; gap: 4px; overflow: hidden; padding-bottom: 10px; border: 0; }
-.watch-home .today-card .thumb { order: -1; }
-.watch-home .today-card .thumb img { border-radius: 0; }
-.watch-home .today-card :is(.today-label, .video-title, .tag) { padding-inline: 12px; }
-.watch-home .today-label, .watch-home .tag, .watch-home .muted { color: var(--watch-muted); }
-.watch-home .today { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.watch-home :is(.see-all, .world-link) {
+.watch-app .today-card { padding: 0; gap: 4px; overflow: hidden; padding-bottom: 10px; border: 0; }
+.watch-app .today-card .thumb { order: -1; }
+.watch-app .today-card .thumb img { border-radius: 0; }
+.watch-app .today-card :is(.today-label, .video-title, .tag) { padding-inline: 12px; }
+.watch-app .today-label, .watch-app .tag, .watch-app .muted { color: var(--watch-muted); }
+.watch-app .today { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.watch-app :is(.see-all, .world-link) {
   color: var(--watch-ink); background: linear-gradient(var(--watch-pill), var(--watch-paper));
   border-color: var(--watch-pill-edge); box-shadow: 0 4px 0 var(--watch-pill-edge); min-height: 44px;
 }
-.watch-home .world-link {
+.watch-app .world-link {
   display: flex; width: fit-content; margin: 14px auto 0; min-height: 52px;
   font: 800 1.25rem/1.2 var(--font-display); text-align: center;
 }
-.watch-home :is(.see-all, .world-link):active { box-shadow: none; }
+.watch-app :is(.see-all, .world-link):active { box-shadow: none; }
 
 .watch-home .watch-loading-hero { display: block; }
 .watch-home .today.watch-loading-cards { display: grid; }
@@ -221,3 +231,10 @@
   display: block; aspect-ratio: 16 / 9; border-radius: 20px;
   background: color-mix(in srgb, var(--watch-pill) 70%, transparent);
 }
+
+.watch-app:not(.watch-home) .topbar { position: sticky; background: var(--bg); }
+.watch-app .btn:not(.primary):not(.danger):not(.ghosty):not(.right):not(.wrong) {
+  background: linear-gradient(var(--watch-pill), var(--watch-paper));
+  border-color: var(--watch-pill-edge);
+}
+.watch-app .big-play { color: var(--accent-ink); }

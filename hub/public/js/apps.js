@@ -81,6 +81,4 @@ export const APP_LIST = [
   { name: "Spelling", subject: "language", grades: "Grades 1–3", emoji: "🔤", blurb: "Hear a word, build it letter by letter, and learn the spelling patterns." },
   { name: "Writing Skills", subject: "language", grades: "Grades 1–4", emoji: "📝", blurb: "From sentences to paragraphs: build, fix and grow your writing." },
   { name: "Catholic History", subject: "history", grades: "All ages", emoji: "⛪", blurb: "Saints, the early Church and the great moments, on drag-and-drop timelines." },
-  { name: "World History", subject: "history", grades: "All ages", emoji: "🌍", blurb: "Timelines and maps you build yourself, to remember who, where and when." },
-  { name: "U.S. History", subject: "history", grades: "All ages", emoji: "🗽", blurb: "Interactive maps and timelines from the first people to today." },
 ];

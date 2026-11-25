@@ -106,3 +106,10 @@ main { max-width: 1100px; margin: 0 auto; padding: 0 12px 16px; }
 @media (max-width: 480px) { .tools button { width: 42px; height: 42px; font-size: 1.15rem; } }
 
 .set.more-sets { opacity: .75; background: rgb(255 255 255 / .55); border-style: dashed; border-color: #b9d8f5; cursor: default; }
+
+.home-feathers { display: flex; flex-wrap: wrap; gap: 4px; }
+.home-feathers a { display: grid; place-items: center; width: 44px; height: 44px; }
+@media (max-width: 640px) {
+  .top { flex-wrap: wrap; gap: 6px; }
+  .home-feathers { flex-basis: 100%; }
+}
