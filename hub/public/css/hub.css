@@ -209,3 +209,20 @@ footer { text-align: center; color: var(--muted); font-size: .85rem; margin-top:
   border-radius: 13px; background: var(--card); text-decoration: none;
 }
 .section-feather img { display: block; border-radius: 9px; }
+
+.sticker-world-action { margin: 28px 0 0; text-align: center; }
+.sticker-world-button {
+  display: inline-flex; align-items: center; justify-content: center; min-height: 52px;
+  padding: 8px 18px; border: 2px solid #eedec2; border-radius: 999px;
+  color: var(--ink); background: linear-gradient(#e3f0ff, var(--card));
+  box-shadow: 0 4px 0 #eedec2; font: 800 1.25rem/1.2 "Baloo 2", Nunito, sans-serif;
+  text-decoration: none;
+}
+.sticker-world-button:hover { text-decoration: underline; }
+.sticker-world-button:active { transform: translateY(4px); box-shadow: none; }
+@media (prefers-color-scheme: dark) {
+  .sticker-world-button {
+    background: linear-gradient(#16304f, var(--card)); border-color: #3a5276; box-shadow: 0 4px 0 #0b1526;
+  }
+  .sticker-world-button:active { box-shadow: none; }
+}

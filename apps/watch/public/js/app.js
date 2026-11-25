@@ -4,6 +4,7 @@
 
 import * as S from "./kit/store.js";
 import { jingleOnce } from "./kit/jingle.js";
+import { STICKER_WORLD } from "./kit/stickers.js";
 S.init("watch:v1", { watched: {} });
 
 import { createRouter } from "./kit/router.js";
@@ -136,7 +137,8 @@ function viewHome() {
       ${song ? today(`#/song/${song.id}`, "🎵 Song of the day", song) : ""}
     </section>
     ${Object.entries(LISTS).map(([k, L]) => shelf(L.emoji, L.title, L.blurb, L.cards().slice(0, 12).join(""), k)).join("")}
-    ${stickerBook()}`;
+    ${stickerBook()}
+    ${STICKER_WORLD && !S.stickers().length ? `<p class="center"><a class="btn world-link" href="${STICKER_WORLD}">🌍 Play in Sticker World</a></p>` : ""}`;
   // Back to where you were: the page and each shelf's sideways scroll.
   let saved = null;
   try { saved = JSON.parse(sessionStorage.getItem(HOME_SCROLL) ?? "null"); } catch { /* none */ }
