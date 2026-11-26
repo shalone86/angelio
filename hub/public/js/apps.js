@@ -44,6 +44,10 @@ export const APP_LIST = [
     blurb: "Blends, endings, long vowels, bossy r, prefixes and more: sound out, spell, and read sentences that grow with each grade.",
   },
   {
+    name: "Spelling", path: "spell", subject: "language", grades: "Grades 1–3", emoji: "🐝",
+    blurb: "Hear a word and spell it: short vowels to magic e, vowel teams, the rules for endings, ABC order, and this week's words from school.",
+  },
+  {
     name: "Watch & Sing", path: "watch", subject: "faith", grades: "All ages", emoji: "🎵",
     blurb: "Catholic video lessons with little quizzes, and songs to sing along with.",
   },
@@ -78,7 +82,6 @@ export const APP_LIST = [
     blurb: "Tap along in the choir loft",
     say: "Choir. Coming soon: tap along with the music in the choir loft as the beat gets faster.",
   },
-  { name: "Spelling", subject: "language", grades: "Grades 1–3", emoji: "🔤", blurb: "Hear a word, build it letter by letter, and learn the spelling patterns." },
   { name: "Writing Skills", subject: "language", grades: "Grades 1–4", emoji: "📝", blurb: "From sentences to paragraphs: build, fix and grow your writing." },
   { name: "Catholic History", subject: "history", grades: "All ages", emoji: "⛪", blurb: "Saints, the early Church and the great moments, on drag-and-drop timelines." },
 ];

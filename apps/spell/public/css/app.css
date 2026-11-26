@@ -1,0 +1,314 @@
+/* Spelling styles (base.css has the shared look). */
+/* Letters in Andika, a font made for beginning readers (simple a and g, clear shapes). */
+.abc { font-family: "Andika", "Nunito", system-ui, sans-serif; font-weight: 700; line-height: 1; }
+.pic { font-size: 2.6rem; line-height: 1; }
+.pic.big { font-size: 4.6rem; }
+.pic-word { font: 800 1.15rem var(--font-body); color: var(--muted); }
+
+/* Home */
+.grade { margin-top: 18px; }
+.grade-title { font-size: 1.3rem; margin: 0; }
+.grade-blurb { margin: 2px 0 0; }
+.grade-jump { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin: 12px 0 4px; }
+.grade-chip { font: 800 .95rem var(--font-body); color: var(--text); background: var(--surface); border: 2px solid var(--border);
+  border-radius: 999px; padding: 6px 11px; box-shadow: var(--shadow); cursor: pointer; white-space: nowrap; }
+.grade-chip:active { transform: translateY(3px); box-shadow: none; }
+#grade-3, #grade-4, #grade-5 { scroll-margin-top: 70px; }
+
+/* Board */
+.board { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 14px; }
+.sound-card { display: flex; flex-direction: column; align-items: center; gap: 4px; position: relative; padding: 4px 12px; }
+.sound-card.small .pic.big { font-size: 3.6rem; }
+.hear-sound { position: absolute; top: 0; right: -46px; width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--blue);
+  background: var(--blue-soft); font-size: 1.2rem; cursor: pointer; box-shadow: 0 3px 0 rgb(29 127 224 / .25); }
+.hear-sound:active { transform: translateY(2px); box-shadow: none; }
+.big-letter .abc { font-size: 6.5rem; color: var(--accent-strong); }
+
+/* Answer buttons */
+.letter-choices { display: flex; gap: 12px; justify-content: center; flex-wrap: nowrap; }
+.letter-card { min-width: 92px; min-height: 92px; display: grid; place-items: center; padding: 6px 16px; }
+.letter-card .abc { font-size: 3.4rem; }
+.picture-choices { display: flex; gap: 10px; justify-content: center; flex-wrap: nowrap; }
+.picture-card { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 100px; padding: 8px 10px; }
+.picture-card .pic-word { font-size: 1rem; color: var(--text); }
+
+/* Clap the beats */
+.beat-row { display: flex; gap: 10px; min-height: 30px; align-items: center; justify-content: center; }
+.beat { width: 26px; height: 26px; border-radius: 50%; background: var(--accent); box-shadow: 0 3px 0 var(--accent-strong); animation: beat-in .25s ease-out; }
+@keyframes beat-in { from { transform: scale(.3); } }
+.drum { font-size: 4rem; width: 120px; height: 120px; border-radius: 50%; border: 4px solid var(--border); background: var(--surface-2); cursor: pointer;
+  box-shadow: 0 6px 0 var(--border); }
+.drum:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--border); }
+
+/* Sound boxes (blend and build) */
+.sound-boxes { display: flex; gap: 10px; justify-content: center; }
+.sound-box { width: 86px; height: 96px; border-radius: 16px; border: 3px solid var(--blue); background: var(--surface); display: grid; place-items: center;
+  cursor: pointer; box-shadow: 0 4px 0 rgb(29 127 224 / .25); }
+.sound-box .abc { font-size: 3.6rem; }
+.sound-box.empty { border-style: dashed; background: var(--blue-soft); box-shadow: none; }
+.sound-box.heard { background: var(--yellow-soft); }
+.sound-box.blending { background: var(--yellow); transform: translateY(-6px); transition: transform .2s, background .2s; }
+.blend-btn { min-width: 180px; }
+.tiles { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.tiles .letter-card { min-width: 70px; min-height: 70px; padding: 4px 10px; }
+.tiles .letter-card .abc { font-size: 2.6rem; }
+.tiles .letter-card:disabled { opacity: .3; }
+
+/* Lesson examples */
+.lesson-letters { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.lesson-letter { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 8px; border-radius: 12px; background: var(--surface); }
+.lesson-letter .abc { font-size: 2.2rem; }
+.lesson-letter .pic { font-size: 1.6rem; }
+.lesson-pair { display: flex; gap: 14px; justify-content: center; align-items: center; flex-wrap: wrap; font-size: 1.6rem; font-weight: 700; text-align: center; }
+.lesson-pair .abc { font-size: 2.6rem; }
+
+/* Back to all Angelio games (angelio.org), at the left of the top bar. */
+.hub-link { display: inline-grid; place-items: center; flex: none; width: 38px; height: 38px; border-radius: 12px;
+  background: linear-gradient(#5bb4ff, #bfe3ff); box-shadow: 0 2px 0 #3a8fd9; }
+.hub-link img { width: 30px; height: 30px; border-radius: 9px; }
+.hub-link:active { transform: translateY(2px); box-shadow: none; }
+/* Phones: the menu gets its own row and scrolls sideways instead of being cut off. */
+@media (max-width: 560px) {
+  .topbar { flex-wrap: wrap; row-gap: 6px; }
+  .topbar .nav { margin-left: 0; width: 100%; overflow-x: auto; scrollbar-width: none; flex-wrap: nowrap; }
+  .topbar .nav::-webkit-scrollbar { display: none; }
+  .topbar .nav a { white-space: nowrap; }
+}
+
+/* ───────── Small screens ───────── */
+@media (max-width: 480px) {
+  .board { padding: 10px 8px; gap: 6px; }
+  .pic.big { font-size: 3.8rem; }
+  .big-letter .abc { font-size: 5rem; }
+  .letter-choices, .picture-choices { gap: 8px; }
+  .letter-card { min-width: 0; flex: 1; min-height: 80px; }
+  .letter-card .abc { font-size: 3rem; }
+  .picture-card { min-width: 0; flex: 1; padding: 6px 4px; }
+  .picture-card .pic { font-size: 2.2rem; }
+  .picture-card .pic-word { font-size: .9rem; }
+  .sound-box { width: 72px; height: 82px; }
+  .sound-box .abc { font-size: 3rem; }
+  .drum { width: 100px; height: 100px; font-size: 3.3rem; }
+  .hear-sound { right: -40px; width: 40px; height: 40px; }
+}
+@media (orientation: landscape) and (max-height: 520px) {
+  .board { padding: 6px; gap: 4px; flex-direction: row; flex-wrap: wrap; justify-content: center; }
+  .pic.big { font-size: 3.2rem; }
+  .big-letter .abc { font-size: 4.4rem; }
+  .letter-choices, .picture-choices { flex-direction: row; flex-wrap: wrap; justify-content: center; }
+  .letter-card { min-width: 64px; min-height: 64px; flex: 0 1 auto; }
+  .letter-card .abc { font-size: 2.4rem; }
+  .picture-card { min-width: 64px; padding: 4px 6px; }
+  .picture-card .pic { font-size: 1.8rem; }
+  .picture-card .pic-word { font-size: .8rem; }
+  .sound-box { width: 64px; height: 72px; }
+  .sound-box .abc { font-size: 2.6rem; }
+  .drum { width: 84px; height: 84px; font-size: 2.8rem; }
+  .beat-row { width: 100%; }
+  .tiles .letter-card { min-width: 52px; min-height: 52px; }
+  .tiles .letter-card .abc { font-size: 2rem; }
+  .lesson-letter .abc { font-size: 1.6rem; } .lesson-letter .pic { font-size: 1.2rem; }
+  .lesson-pair { font-size: 1.2rem; } .lesson-pair .abc { font-size: 1.8rem; } .lesson-pair .pic.big { font-size: 2.4rem; }
+}
+
+/* Answer buttons fill the bar and stay big enough for small fingers */
+.letter-choices, .picture-choices { width: 100%; max-width: 440px; margin: 0 auto; }
+.picture-card { min-height: 104px; justify-content: center; }
+.picture-card .pic { font-size: 3rem; }
+@media (max-width: 480px) {
+  .picture-card { min-height: 100px; }
+  .picture-card .pic { font-size: 2.8rem; }
+  .picture-card .pic-word { font-size: 1rem; }
+}
+@media (orientation: landscape) and (max-height: 520px) {
+  .letter-choices, .picture-choices { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .letter-card { min-width: 0; min-height: 72px; }
+  .letter-card .abc { font-size: 2.8rem; }
+  .picture-card { min-width: 0; min-height: 84px; padding: 4px; }
+  .picture-card .pic { font-size: 2.4rem; }
+  .picture-card .pic-word { font-size: .85rem; }
+}
+
+/* Phonics: words broken into sound chunks (sh-i-p, n-igh-t), the pattern in orange */
+.word-big { display: flex; justify-content: center; }
+.chunked { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.chunk { font-family: "Andika", "Nunito", system-ui, sans-serif; font-weight: 700; line-height: 1; color: var(--text); }
+button.chunk { min-width: 70px; height: 92px; padding: 0 12px; font-size: 3.4rem; border-radius: 16px; border: 3px solid var(--blue);
+  background: var(--surface); cursor: pointer; box-shadow: 0 4px 0 rgb(29 127 224 / .25); }
+button.chunk:active { transform: translateY(3px); box-shadow: none; }
+.chunk.focus { color: var(--red-dark); }
+button.chunk.focus { border-color: var(--accent-strong); background: var(--yellow-soft); }
+.chunk.silent { opacity: .38; }
+button.chunk.silent { border-style: dashed; }
+button.chunk.heard { background: var(--yellow-soft); }
+button.chunk.blending { background: var(--yellow); transform: translateY(-6px); transition: transform .2s, background .2s; }
+.chunked .dot { font-size: 2rem; color: var(--muted); }
+.hear-big { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 3.4rem; padding: 14px 26px; border-radius: 22px;
+  border: 3px solid var(--blue); background: var(--blue-soft); cursor: pointer; box-shadow: 0 5px 0 rgb(29 127 224 / .25); }
+.hear-big span { font: 800 1.05rem var(--font-body); color: var(--blue-ink); }
+.hear-big:active { transform: translateY(3px); box-shadow: none; }
+.word-card { min-height: 84px; flex: 1 1 0; min-width: 0; padding: 8px 6px; display: grid; place-items: center; }
+.word-card .chunked { gap: 1px; }
+.word-card .chunk { font-size: 2.1rem; }
+.sentence { margin: 0; max-width: 680px; text-align: center; line-height: 1.5; }
+.sw { font: 700 2.3rem "Andika", "Nunito", system-ui, sans-serif; color: var(--text); background: none; border: 0; border-bottom: 3px solid transparent;
+  padding: 0 2px; margin: 0; cursor: pointer; border-radius: 6px; }
+.sw.focus { border-bottom-color: var(--accent); }
+.sw.heard { background: var(--yellow-soft); }
+.read-me { margin-top: 2px; }
+.picture-card.emoji-only .pic { font-size: 3.4rem; }
+.lesson-words { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.lesson-word { display: inline-flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 10px; border-radius: 12px; background: var(--surface); }
+.lesson-word .chunk { font-size: 2rem; }
+.lesson-word .pic { font-size: 1.8rem; }
+@media (max-width: 480px) {
+  button.chunk { min-width: 56px; height: 78px; font-size: 2.7rem; padding: 0 8px; }
+  .chunked { gap: 4px; }
+  .sw { font-size: 1.8rem; }
+  .word-card .chunk { font-size: 1.7rem; }
+  .lesson-word .chunk { font-size: 1.6rem; }
+}
+@media (orientation: landscape) and (max-height: 520px) {
+  button.chunk { min-width: 52px; height: 64px; font-size: 2.4rem; padding: 0 8px; }
+  .hear-big { font-size: 2.2rem; padding: 6px 18px; }
+  .sw { font-size: 1.55rem; }
+  .sentence { line-height: 1.3; }
+  .word-card { min-height: 64px; }
+  .word-card .chunk { font-size: 1.6rem; }
+  .picture-card.emoji-only .pic { font-size: 2.6rem; }
+  .lesson-word .chunk { font-size: 1.3rem; } .lesson-word .pic { font-size: 1.3rem; }
+}
+/* Level 1 / Level 2 inside a grade */
+.level-title { margin: 14px 0 8px; font: 800 1.05rem "Baloo 2", sans-serif; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.level-title span { font: 700 .88rem Nunito, sans-serif; color: var(--muted, #6b7280); }
+/* Spell it: chunk tiles can be whole word parts (plant, -ing) */
+.chunk-tile .abc { font-size: clamp(1.5rem, 6vw, 2.4rem) !important; white-space: nowrap; }
+.chunk-boxes .sound-box { min-width: 64px; width: auto; padding: 0 10px; }
+.chunk-boxes .sound-box .abc { white-space: nowrap; }
+/* Pick the sentence: three sentences, one under another, each with its own 🔊 */
+.sentence-choices { display: flex; flex-direction: column; gap: 8px; align-items: stretch; width: 100%; max-width: 640px; margin: 0 auto; }
+.pick-row { display: flex; gap: 8px; align-items: center; }
+.sentence-card { flex: 1; text-align: left; font: 700 clamp(1.05rem, 3.6vw, 1.35rem)/1.35 Andika, Nunito, sans-serif; padding: 12px 16px; min-height: 56px; }
+.say-row { flex: none; width: 48px; height: 48px; }
+/* 8 progress dots and 4 buttons on a narrow phone: smaller dots so nothing goes off the edge */
+@media (max-width: 460px) {
+  .play-top { gap: 6px; }
+  .play-top .dots { gap: 4px; min-width: 0; }
+  .play-top .dots i { width: 10px; height: 10px; }
+}
+.tiles .chunk-tile { flex: 0 0 auto; min-width: 72px; }
+/* Who says the sounds? Mom / Dad (home page) */
+.voice-pick { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; margin: 14px auto 4px; }
+.vp-label { font-weight: 800; width: 100%; text-align: center; }
+.vp { font: 800 1.15rem "Baloo 2", Nunito, sans-serif; min-height: 52px; min-width: 120px; padding: 6px 18px; border-radius: 999px; cursor: pointer;
+  border: 3px solid var(--border, #e5d9c3); background: var(--card, #fff); color: inherit; }
+.vp span { font-size: 1.5rem; vertical-align: -3px; }
+.vp.on { border-color: var(--accent, #ff8a00); background: color-mix(in srgb, var(--accent, #ff8a00) 16%, var(--card, #fff)); box-shadow: 0 3px 0 var(--accent, #ff8a00); }
+
+/* ───────── Spelling ───────── */
+.spelled { font-family: "Andika", "Nunito", system-ui, sans-serif; font-weight: 700; letter-spacing: .02em; }
+.hl { color: var(--red-ink); }
+.lesson-word .spelled { font-size: 2rem; }
+.lesson-word .rule-sum { font: 800 1rem var(--font-body); color: var(--muted); }
+.my-words-card { display: flex; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap; margin: 14px auto 4px; }
+.my-words-card .level-card.mine { min-width: 180px; }
+/* Pick the spelling: three words, side by side */
+.word-choices { display: flex; gap: 10px; justify-content: center; width: 100%; max-width: 560px; margin: 0 auto; }
+.word-pick { flex: 1 1 0; min-width: 0; min-height: 84px; display: grid; place-items: center; padding: 8px 6px; }
+.word-pick .spelled { font-size: clamp(1.05rem, 4.6vw, 2.2rem); white-space: nowrap; }
+/* Rule levels: ride + ing */
+.rule-sum.big { font: 700 clamp(1.8rem, 7vw, 2.6rem) "Andika", "Nunito", sans-serif; }
+.rule-sum .plus { color: var(--accent-strong); }
+/* What's missing: the word with a blank */
+.word-row { font-size: clamp(2.6rem, 11vw, 4rem); line-height: 1; display: flex; align-items: center; justify-content: center; }
+.blank { display: inline-grid; place-items: center; min-width: 1.4em; height: 1.15em; margin: 0 .08em; border-radius: 12px;
+  border: 3px dashed var(--accent-strong); background: var(--yellow-soft); color: var(--red-ink); padding: 0 .1em; }
+.blank.filled { border-style: solid; }
+.part-card .abc { font-size: clamp(2rem, 8vw, 3rem); white-space: nowrap; }
+/* Spell it: one box per letter, shrinking smoothly inside the board for long words */
+.letter-boxes { gap: 6px; width: 100%; container-type: inline-size; }
+.letter-boxes .sound-box { flex: 1 1 0; max-width: 72px; min-width: 0; width: auto; height: auto; aspect-ratio: 5 / 6; padding: 0; }
+.letter-boxes .sound-box .abc { font-size: min(3rem, calc(100cqi / var(--n) * .56)); }
+.sound-box.right, .abc-slot.right { border-color: var(--green); background: var(--green-soft); }
+/* ABC order */
+.abc-slots { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 420px; }
+.abc-row { display: flex; align-items: center; gap: 10px; }
+.abc-n { font: 800 1.4rem var(--font-body); color: var(--muted); width: 1.4em; text-align: right; }
+.abc-slot { flex: 1; min-height: 58px; border-radius: 14px; border: 3px solid var(--blue); background: var(--surface); cursor: pointer; font-size: 1.9rem; }
+.abc-slot.empty { border-style: dashed; background: var(--blue-soft); }
+.abc-tiles .word-pick { flex: 0 1 auto; min-width: 120px; min-height: 64px; padding: 6px 14px; }
+.abc-tiles .word-pick .spelled { font-size: 1.9rem; }
+.abc-tiles .word-pick:disabled { opacity: .3; }
+/* My Words page & grown-ups voice select */
+.set select { flex: none; }
+.words-page h1 { margin-bottom: 4px; }
+.words-box { width: 100%; box-sizing: border-box; font: 700 1.3rem "Andika", "Nunito", sans-serif; padding: 12px; border-radius: 14px;
+  border: 2px solid var(--border); background: var(--surface); color: var(--text); resize: vertical; }
+.word-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+.chip { font: 700 1.05rem "Andika", "Nunito", sans-serif; padding: 4px 12px; border-radius: 999px; background: var(--green-soft); color: var(--green-ink); }
+/* 1st-grade phonetic preview buttons */
+.sound-choice, .tile-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.letter-choices .sound-choice { flex: 1 1 0; min-width: 0; }
+.letter-choices .sound-choice .choice-card { width: 100%; flex: none; }
+.hear-mini { min-width: 40px; height: 34px; padding: 0 10px; border-radius: 999px; border: 2px solid var(--blue);
+  background: var(--blue-soft); font-size: 1rem; line-height: 1; cursor: pointer; box-shadow: 0 2px 0 rgb(29 127 224 / .25); touch-action: manipulation; }
+.hear-mini:active { transform: translateY(2px); box-shadow: none; }
+.tile-wrap:has(.tile:disabled) .hear-mini { opacity: .35; }
+/* 3rd-grade (and optional) full QWERTY keyboard */
+.qwerty { display: flex; flex-direction: column; gap: 6px; width: 100%; max-width: 580px; }
+.qwerty-row { display: flex; justify-content: center; gap: 5px; width: 100%; }
+.qkey { flex: 1 1 0; max-width: 52px; min-width: 0; min-height: 52px; padding: 0; border-radius: 12px; border: 2px solid var(--border);
+  background: var(--surface); box-shadow: 0 3px 0 var(--border); cursor: pointer; display: grid; place-items: center; touch-action: manipulation; }
+.qkey .abc { font-size: 1.75rem; }
+.qkey:active { transform: translateY(3px); box-shadow: none; }
+.qkey:disabled { opacity: .35; cursor: default; transform: none; box-shadow: none; }
+.qkey-back { flex: 1.5 1 0; max-width: 78px; background: var(--surface-2); font-size: 1.35rem; font-weight: 800; }
+@media (max-width: 480px) {
+  .letter-boxes { gap: 4px; }
+  .tiles { gap: 6px; }
+  .tiles .letter-card { min-width: 58px; min-height: 58px; padding: 4px 8px; }
+  .tiles .letter-card .abc { font-size: 2.2rem; }
+  .tiles .tile-wrap .letter-card { min-width: 54px; min-height: 54px; }
+  .hear-mini { min-width: 36px; height: 30px; font-size: .95rem; padding: 0 8px; }
+  .dock:has(.qwerty) { padding: 8px 6px max(10px, env(safe-area-inset-bottom)); }
+  .qwerty { gap: 5px; }
+  .qwerty-row { gap: 3px; }
+  .qkey { min-height: 46px; border-radius: 10px; }
+  .qkey .abc { font-size: 1.45rem; }
+  .qkey-back { font-size: 1.2rem; }
+}
+@media (orientation: landscape) and (max-height: 520px) {
+  .board { gap: 6px 14px; }
+  .sound-card { flex-direction: row; gap: 8px; padding: 2px 6px; }
+  .hear-sound { position: static; width: 40px; height: 40px; flex: none; }
+  .word-pick { min-height: 60px; }
+  .word-pick .spelled { font-size: 1.45rem; }
+  .word-row { font-size: 2.4rem; }
+  .letter-boxes { gap: 4px; }
+  .letter-boxes .sound-box { max-width: 56px; }
+  .abc-slot { min-height: 44px; font-size: 1.5rem; }
+  .abc-tiles .word-pick { min-width: 100px; min-height: 44px; padding: 4px 10px; }
+  .abc-tiles .word-pick .spelled { font-size: 1.35rem; }
+  .tiles { gap: 5px; }
+  .tiles .letter-card { min-width: 46px; min-height: 46px; padding: 2px 6px; }
+  .tiles .letter-card .abc { font-size: 1.8rem; }
+  .tiles .tile-wrap .letter-card { min-width: 44px; min-height: 42px; padding: 2px 4px; }
+  .hear-mini { min-width: 34px; height: 24px; font-size: .82rem; padding: 0 6px; }
+  body.has-qwerty main { padding: 4px 12px 136px; }
+  body.has-qwerty .play { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 4px 10px; padding-bottom: 4px; }
+  body.has-qwerty .play-top { position: static; width: auto; grid-column: 1; padding: 0; }
+  body.has-qwerty .bubble { position: static; width: auto; grid-column: 2; min-height: 0; padding: 3px 10px; margin: 0; border-radius: 12px; border-width: 2px; }
+  body.has-qwerty .board { grid-column: 1 / -1; padding: 6px 10px; gap: 4px 12px; }
+  body.has-qwerty .sound-card.small .pic.big { font-size: 2.5rem; }
+  body.has-qwerty .hear-sound { width: 34px; height: 34px; font-size: 1rem; }
+  body.has-qwerty .hear-big { flex-direction: row; gap: 8px; font-size: 1.5rem; padding: 4px 14px; }
+  body.has-qwerty .rule-sum.big { font-size: 1.55rem; }
+  body.has-qwerty .letter-boxes .sound-box { max-width: 48px; aspect-ratio: 1 / 1; }
+  body.has-qwerty .letter-boxes .sound-box .abc { font-size: 1.85rem; }
+  body.has-qwerty .dock { left: 0; right: 0; top: auto; bottom: 0; width: auto; border-left: none; border-top: 2px solid var(--border); padding: 6px 12px max(6px, env(safe-area-inset-bottom)); }
+  body.has-qwerty .qwerty { max-width: 680px; gap: 4px; }
+  body.has-qwerty .qwerty-row { gap: 4px; }
+  body.has-qwerty .qkey { max-width: 62px; min-height: 36px; border-radius: 10px; }
+  body.has-qwerty .qkey .abc { font-size: 1.3rem; }
+  body.has-qwerty .qkey-back { max-width: 92px; font-size: 1.1rem; }
+}

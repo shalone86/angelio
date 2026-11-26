@@ -353,9 +353,11 @@ wherever a sound is marked `{{tuh}}` in spoken text (kit `tts.js` → `setClips`
   keyboard (Chrome/Edge); key −/+ and Print on angelio.org/leadsheet/?id=<song>; Watch & Sing song pages link it (and
   hide the old PDF). Code: hub/public/js/leadsheet.js, abcjs 6.7.2 (MIT) in hub/public/vendor. Next ideas: melodies
   pulled from the vocals (less reliable than MIDI), ukulele boxes, sing-along that follows the melody.
-- **Spelling** (1–3, owner asked Nov 17, 2026; later): hear a word, build it from letter tiles, then the
-  spelling patterns in the same order as Read Aloud (short vowels, -ck, blends, magic e, vowel teams, -ed/-ing
-  endings, plurals); weekly word lists a parent can type in. Coming-soon card is on the hub.
+- ~~**Spelling**~~ (1–3, built Nov 26, 2026 in `apps/spell/`, `angelio.org/spell/`, ready to deploy): hear a word, pick the
+  right spelling of three, fill the missing part, and build it from letter tiles, in the same phonics order as
+  Read Aloud (short vowels, -ck/ll/ss/ff, sh/ch/th, blends, magic e, vowel teams, bossy r, endings), plus suffix
+  rules (drop e, double, y → i, f → ves), silent letters, ABC order, and **My Words** (weekly school lists a
+  parent types in). Next: guide words, homophones (their/there), sentences read aloud for each word.
 - **Writing skills** (1–4): build and expand sentences ("The dog ran." → "The big dog ran fast."), fix run-ons, order sentences into a paragraph, topic sentences.
 - ~~**Fractions**~~: live as **Fraction Feast** (angelio.org/fractions/). Next ideas: animate equivalent fractions (cut each half into 2 → 4 quarters), fractions greater than 1, grade 4.
 - **Multiplication & division beyond Doubles** (folded into **Doubles**, G4–5 cap): arrays → area model, dealing into groups, remainders.
@@ -433,7 +435,7 @@ Ship **PreK–3 essentials first** as the v1.0 finish line; treat the **Grade 4�
 - **Letter Lane** *(PreK–K)*: Add **Sight / Heart words**, **ending & middle sounds**, **Swap-a-Sound** (phoneme manipulation), **confused letters** (`b/d`, `p/q`), **vowels vs. consonants**, and `wh/qu/x` + `-ff/-ll/-ss/-zz`.
 - **Read Aloud** *(1–3, optional G4–5)*: Add **Sight / Heart words** (G1–2), **open vs. closed syllables**, **Short Stories with comprehension questions** (4–6 graded stories per grade covering sequence, main idea, character/setting, cause/effect, inference; G4–5 theme/POV/author's purpose), and **Word Meaning** (synonyms/antonyms, context clues, affix meanings; G4–5 Greek/Latin roots & similes/idioms).
 - **Grammar!** *(1–3, optional G4–5)*: Add **Proofreading marks** *(next up)*, **run-ons**, **4 sentence types**, **subject & predicate**, **helping/linking verbs & future tense**, **confused homophones** (`to/too/two`, `there/their/they're`, `your/you're`, `its/it's`), and **abbreviations/titles**. *(G4–5 cap: 6 compact levels — compound/complex sentences, prepositional phrases, progressive/perfect/modal verbs, reflexive/relative pronouns, adj vs. adv, title formatting.)*
-- **Spelling** *(planned)*: Phonics-order spelling + parent lists + **suffix spelling rules** (drop `e`, double consonant, `y → i`, `-f/-fe`) + **ABC order & guide words**.
+- **Spelling** *(built Nov 26, 2026 in `apps/spell/`, ready to deploy)*: Phonics-order spelling + parent lists + **suffix spelling rules** (drop `e`, double consonant, `y → i`, `-f/-fe`) + **ABC order** *(next: guide words)*.
 - **Writing Skills** *(planned)*: Sentence building/expanding/combining, paragraph ordering + **"doesn't belong"**, **topic & concluding sentences**, transitions, **fact vs. opinion + reasons**, friendly letters. *(G4–5 cap: short summarizing.)*
 - **Articulate**: Keep as-is.
 

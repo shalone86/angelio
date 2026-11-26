@@ -13,6 +13,7 @@
     { "binding": "FRACTIONS", "service": "fractions" },
     { "binding": "LETTERS", "service": "letters" },
     { "binding": "READALOUD", "service": "readaloud" },
+    { "binding": "SPELLING", "service": "spelling" },
     { "binding": "WATCH", "service": "watch" },
     { "binding": "ARTICULATE", "service": "articulation" },
     { "binding": "CANDLES", "service": "candles" },

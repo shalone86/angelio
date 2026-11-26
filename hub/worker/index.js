@@ -15,6 +15,7 @@ export const APPS = {
   fractions: "FRACTIONS", // Fraction Feast (fractions Worker)
   letters: "LETTERS", // Letter Lane (letters Worker)
   read: "READALOUD", // Read Aloud (readaloud Worker)
+  spell: "SPELLING", // Spelling (spelling Worker)
   watch: "WATCH", // Watch & Sing (watch Worker): the kids video lessons, quizzes and songs
   // Articulate also keeps its own address (articulate.shalonely.com): both work, no redirect.
   articulate: "ARTICULATE", // Articulate (articulation Worker)
