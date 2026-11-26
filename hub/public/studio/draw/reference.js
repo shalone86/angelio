@@ -27,6 +27,25 @@ window.DrawReference = (() => {
     g.drawImage(R.img, (w - iw) / 2 + R.x * w, (hgt - ih) / 2 + R.y * hgt, iw, ih);
     g.restore();
   }
+  // Angelio: picture search and pasting a link go through angelio.org's Worker (hub/worker/images.js), behind
+  // the Studio admin key, so draw.js hands over a fetch that sends it (useWeb). Thumbnails come through the same
+  // pass-through, so pictures from other sites never spoil the canvas. On the Mac the Lesson Studio answers itself.
+  let web = (address) => fetch(address);
+  function useWeb(fn) { web = fn; }
+  /** A search answer as {results, errors} or {error}, so an answer without results never crashes the search. */
+  function readSearch(httpStatus, d) {
+    if (httpStatus === 404) return {error: 'Picture search isn’t set up on this site yet. Choose a picture from your Mac, or copy one from a web page and paste it above.'};
+    if (httpStatus >= 400 || !Array.isArray(d?.results)) return {error: d?.error || 'The search didn’t answer. Try again.'};
+    return {results: d.results, errors: Array.isArray(d.errors) ? d.errors : []};
+  }
+  // At most 6 pictures at a time come through the site (a search can list close to 100).
+  let active = 0;
+  const waiting = [];
+  async function oneAtATime(job) {
+    if (active >= 6) await new Promise((go) => waiting.push(go));
+    active++;
+    try { return await job(); } finally { active--; waiting.shift()?.(); }
+  }
   /** The controls; onChange redraws the canvas. */
   function controls(onChange) {
     const box = h('details', {class: 'ref-box', open: R.img ? true : null});
@@ -41,9 +60,11 @@ window.DrawReference = (() => {
     };
     const fromLink = async (link) => {
       status.textContent = 'Getting the picture…';
-      const r = await fetch('/api/fetch-image?url=' + encodeURIComponent(link));
-      if (!r.ok) { const j = await r.json().catch(() => ({})); status.textContent = j.error || 'Couldn’t get that picture.'; return; }
-      use(URL.createObjectURL(await r.blob()), new URL(link).hostname);
+      try {
+        const r = await web('/api/fetch-image?url=' + encodeURIComponent(link));
+        if (!r.ok) { const j = await r.json().catch(() => ({})); status.textContent = j.error || 'Couldn’t get that picture.'; return; }
+        use(URL.createObjectURL(await r.blob()), new URL(link).hostname);
+      } catch (e) { status.textContent = 'Couldn’t get that picture: ' + e.message; }
     };
     const render = () => {
       const file = h('input', {type: 'file', accept: 'image/*', onchange: (e) => {
@@ -62,19 +83,30 @@ window.DrawReference = (() => {
       const results = h('div', {class: 'ref-results'});
       const more = h('button', {class: 'btn', type: 'button', text: 'Load more', hidden: true});
       let found = [], page = 0, term = '';
+      const thumbs = new Map(); // thumbnail address → its picture, fetched once through the site
+      const thumbImg = (r) => {
+        const img = h('img', {alt: r.title});
+        if (!thumbs.has(r.thumb)) thumbs.set(r.thumb, oneAtATime(() => web('/api/fetch-image?url=' + encodeURIComponent(r.thumb)))
+          .then((x) => (x.ok ? x.blob() : null)).then((b) => b && URL.createObjectURL(b)).catch(() => null));
+        thumbs.get(r.thumb).then((src) => { if (src) img.src = src; else img.closest('.ref-pick')?.setAttribute('hidden', ''); });
+        return img;
+      };
       const search = async (next) => {
         if (!next) { if (!q.value.trim()) return; term = q.value; page = 0; found = []; results.replaceChildren(); more.hidden = true; } else page++;
         status.textContent = next ? 'Loading more…' : 'Searching…';
         try {
-          const d = await (await fetch('/api/images/search?q=' + encodeURIComponent(term) + '&source=all&page=' + page)).json();
+          const res = await web('/api/images/search?q=' + encodeURIComponent(term) + '&source=all&page=' + page);
+          const got = readSearch(res.status, await res.json().catch(() => null));
+          if (got.error) { status.textContent = got.error; more.hidden = true; return; }
           const have = new Set(found.map((r) => r.source + ':' + r.id));
-          const fresh = d.results.filter((r) => !have.has(r.source + ':' + r.id));
+          const fresh = got.results.filter((r) => !have.has(r.source + ':' + r.id));
           found = found.concat(fresh); more.hidden = !fresh.length;
-          status.textContent = found.length ? 'Pick one' + (fresh.length ? ', or load more.' : '. That’s all there is.') : 'Nothing found; try other words.';
+          status.textContent = found.length ? 'Pick one' + (fresh.length ? ', or load more.' : '. That’s all there is.')
+            : got.errors.length ? 'The search didn’t work: ' + got.errors.join('; ') : 'Nothing found; try other words.';
           results.replaceChildren(...found.map((r) => h('button', {class: 'ref-pick', type: 'button', title: r.title, onclick: () => {
             // A big-enough copy (Wikimedia originals can be huge).
             fromLink(r.source === 'wikimedia' && r.thumb ? r.thumb.replace(/\/\d+px-/, '/1280px-') : r.full || r.thumb);
-          }}, [h('img', {src: r.thumb, alt: r.title, loading: 'lazy'})])));
+          }}, [thumbImg(r)])));
         } catch (e) { status.textContent = 'Search failed: ' + e.message; }
       };
       q.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); search(false); } });
@@ -102,7 +134,7 @@ window.DrawReference = (() => {
     render();
     return box;
   }
-  return {draw, controls};
+  return {draw, controls, readSearch, useWeb};
 })();
 
 // Her saved drawings, for the Pixel art and Sketch tabs: a grid of small moving thumbnails,

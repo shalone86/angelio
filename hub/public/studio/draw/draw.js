@@ -41,6 +41,9 @@ async function studio(path, body) {
 const sprites = () => Object.entries(art.drawings).map(([slug, d]) => ({ slug, favorite: art.favorites.includes(slug), at: Date.parse(d.saved) || 0, ...d }))
   .sort((a, b) => a.slug.localeCompare(b.slug));
 
+// The reference picture's search and pass-through (worker/images.js) are Studio routes, so they send the key.
+window.DrawReference.useWeb((address) => fetch(address.replace(/^\/api\//, "/api/admin/studio/"), { headers: { "x-admin-key": key } }));
+
 // The editor asks for the Lesson Studio's addresses; these answer them from angelio.org.
 const MAC_ONLY = "That only works in the Lesson Studio on your Mac.";
 async function api(path) {

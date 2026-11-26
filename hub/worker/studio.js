@@ -8,6 +8,7 @@
 // (apps/watch/public/data/library.json) every night and on "Back up now".
 
 import { validateLibrary, prepareForSave } from "../public/js/watch-content.js";
+import { imagesApi } from "./images.js";
 import { validateReading } from "../public/js/reading-content.js";
 import * as phonics from "../../apps/letters/public/js/phonics.js";
 import { checkDrawing, artSlug, emptyArt } from "../public/js/art-content.js";
@@ -126,6 +127,9 @@ async function studioRoutes(request, url, env) {
     return json({ error: "not found" }, 404);
   }
   const route = `${request.method} ${path}`;
+
+  // ── reference picture search for the Drawings page, and its picture pass-through (worker/images.js) ──
+  if (route === "GET /images/search" || route === "GET /fetch-image") return imagesApi(route, url);
 
   // ── uploads, in parts (each request stays small; R2 joins them) ──
   if (route === "POST /upload/start") {
