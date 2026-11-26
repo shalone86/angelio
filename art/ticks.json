@@ -8,7 +8,6 @@
   "priest-mass-idle": true,
   "priest-mass-walk": true,
   "server-idle": true,
-  "server-walk": true,
   "server-light": true,
   "server-candle-idle": true,
   "server-candle-walk": true,
@@ -44,6 +43,19 @@
   "man-idle": true,
   "man-beard-idle": true,
   "man-beard-walk": true,
-  "man-beard-kneel": true
+  "man-beard-kneel": true,
+  "server-walk": true,
+  "girl-idle": true,
+  "girl-walk": true,
+  "grandma-idle": true,
+  "grandpa-idle": true,
+  "guy-beard-idle": true,
+  "pp-loaf": true,
+  "pp-fish": true,
+  "pp-dove": true,
+  "pp-chalice": true,
+  "pp-cross": true,
+  "pp-white-dove": true,
+  "pp-blessing": true
  }
 }
