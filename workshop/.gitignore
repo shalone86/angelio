@@ -10,6 +10,7 @@ courses/*/*/camera/
 sources-local/
 studio/player/player.js
 sprites/.deleted/
+sprites/.replaced/
 songs/*/parts.json
 songs/*/song.beats.json
 songs/*/song.mp3

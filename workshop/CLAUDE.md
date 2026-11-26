@@ -163,6 +163,12 @@ If it's already running, `npm start` just opens the page.
   video is made (`recolorArt` in prepare.mjs); every pose follows.
   **Save as a character…** makes real drawings of every pose (`saveColors`, remembered in
   `.versions.json`) for one he'll reuse.
+- **Drawings shared with Angelio and Pico Parish** (`scripts/art-sync.mjs`, `syncDrawings` in studio/server.mjs): his pixel
+  drawings here, on angelio.org/studio/draw and on picoparish.com/studio/draw are one library (R2 `watch-media`,
+  `content/art/drawings.json`). A save here goes up at once (needs `ANGELIO_ADMIN_KEY` in .env); theirs come down when
+  the Pixel art tab lists drawings (at most every 20 s, or `npm run drawings-sync`). `sprites/.cloud.json` remembers the
+  last sync; when both sides changed, the newer wins and the other is kept (`sprites/.replaced/` here, the library's
+  history there). Sketches stay here, 3D models are never sent or changed, and deleting doesn't spread.
 - **Characters from a base** (Pixel art tab → New character from a base…): a
   base is a character with `-idle`, `-point`, `-look-up`, `-walk`, `-run` (his:
   thick-beard-guy, thick-guy, skinny-guy, guy-beard, vestment-guy, thick-woman,

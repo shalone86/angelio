@@ -65,7 +65,13 @@ async function readArt(env) {
   const obj = await env.WATCH_MEDIA.get(ART_LIVE);
   return { art: emptyArt(obj ? await obj.json() : null), version: obj?.etag ?? null };
 }
-const writeArt = (env, art) => env.WATCH_MEDIA.put(ART_LIVE, JSON.stringify(art), { httpMetadata: { contentType: "application/json" } });
+// Written back only if nobody saved in between (the Pico Parish Studio and the Lesson Studio share this library), so one
+// studio's save never wipes another's drawing or a 3D model; the loser is told to try again.
+async function writeArt(env, art, version) {
+  const put = await env.WATCH_MEDIA.put(ART_LIVE, JSON.stringify(art), { httpMetadata: { contentType: "application/json" }, ...(version ? { onlyIf: { etagMatches: version } } : {}) });
+  if (!put) throw Object.assign(new Error("Another studio saved at the same moment. Try again."), { status: 409 });
+  return put;
+}
 const stamp = () => new Date().toISOString().replace(/[:.]/g, "-");
 
 /** A document and its version (the R2 etag), or the app's own copy if the Studio hasn't saved it yet. */
@@ -76,6 +82,10 @@ async function current(env, doc) {
 }
 
 export async function studioApi(request, url, env) {
+  try { return await studioRoutes(request, url, env); }
+  catch (e) { if (e.status === 409) return json({ error: e.message }, 409); throw e; }
+}
+async function studioRoutes(request, url, env) {
   if (!env.WATCH_MEDIA) return json({ error: "The Studio's storage isn't connected (WATCH_MEDIA)." }, 503);
   const path = url.pathname.replace(/^\/api\/admin\/studio/, "");
   const q = (k) => url.searchParams.get(k);
@@ -170,22 +180,22 @@ export async function studioApi(request, url, env) {
     const old = await env.WATCH_MEDIA.get(voxKey(slug));
     if (old) await env.WATCH_MEDIA.put(`content/art/history/${slug}/${stamp()}.vox`, await old.arrayBuffer(), { httpMetadata: { contentType: "application/octet-stream" } });
     await env.WATCH_MEDIA.put(voxKey(slug), bytes, { httpMetadata: { contentType: "application/octet-stream" } });
-    const { art } = await readArt(env);
+    const { art, version } = await readArt(env);
     art.voxels[slug] = { saved: new Date().toISOString(), frames: vox.frames.length, size: vox.frames[0].size, bytes: bytes.length, fps: art.voxels[slug]?.fps ?? 4 };
-    await writeArt(env, art);
+    await writeArt(env, art, version);
     return json({ ok: true, slug, art });
   }
   if (request.method === "POST" && path.startsWith("/art/")) {
     const body = await request.json().catch(() => null);
     if (!body) return json({ error: "That wasn't readable." }, 400);
-    const { art } = await readArt(env);
+    const { art, version } = await readArt(env);
     if (route === "POST /art/save") {
       let checked;
       try { checked = checkDrawing(body); } catch (e) { return json({ error: e.message }, 400); }
       const { slug, drawing } = checked, old = art.drawings[slug];
       if (old) await env.WATCH_MEDIA.put(`content/art/history/${slug}/${stamp()}.json`, JSON.stringify(old), { httpMetadata: { contentType: "application/json" } });
       art.drawings[slug] = { ...drawing, saved: new Date().toISOString() };
-      await writeArt(env, art);
+      await writeArt(env, art, version);
       return json({ ok: true, slug, art });
     }
     const slug = artSlug(body.slug);
@@ -194,14 +204,14 @@ export async function studioApi(request, url, env) {
       if (!art.drawings[slug]) return json({ error: "That drawing isn't saved" }, 404);
       await env.WATCH_MEDIA.put(`content/art/trash/${slug}-${stamp()}.json`, JSON.stringify(art.drawings[slug]), { httpMetadata: { contentType: "application/json" } });
       delete art.drawings[slug]; art.favorites = art.favorites.filter((x) => x !== slug);
-      await writeArt(env, art);
+      await writeArt(env, art, version);
       return json({ ok: true, art });
     }
     // how fast its frames play in the games (frames a second; kept when the file is replaced)
     if (route === "POST /art/vox-speed") {
       if (!art.voxels[slug]) return json({ error: "That model isn't uploaded" }, 404);
       art.voxels[slug].fps = Math.max(1, Math.min(12, Math.round(Number(body.fps) || 4)));
-      await writeArt(env, art);
+      await writeArt(env, art, version);
       return json({ ok: true, art });
     }
     if (route === "POST /art/vox-delete") {
@@ -209,13 +219,13 @@ export async function studioApi(request, url, env) {
       if (obj) await env.WATCH_MEDIA.put(`content/art/trash/${slug}-${stamp()}.vox`, await obj.arrayBuffer(), { httpMetadata: { contentType: "application/octet-stream" } });
       await env.WATCH_MEDIA.delete?.(voxKey(slug));
       delete art.voxels[slug];
-      await writeArt(env, art);
+      await writeArt(env, art, version);
       return json({ ok: true, art });
     }
     if (route === "POST /art/favorite" || route === "POST /art/done") {
       if (route === "POST /art/favorite") art.favorites = body.on ? [...new Set([...art.favorites, slug])] : art.favorites.filter((x) => x !== slug);
       else if (body.on) art.done[slug] = true; else delete art.done[slug];
-      await writeArt(env, art);
+      await writeArt(env, art, version);
       return json({ ok: true, art });
     }
   }
