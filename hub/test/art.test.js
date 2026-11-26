@@ -11,7 +11,7 @@ function fakeR2() {
   return {
     files,
     async get(key) { const f = files.get(key); return f ? { etag: f.etag, httpEtag: `"${f.etag}"`, body: f.body, json: async () => JSON.parse(f.body), arrayBuffer: async () => (typeof f.body === "string" ? new TextEncoder().encode(f.body) : f.body).slice().buffer } : null; },
-    async put(key, body) { const etag = `e${++n}`; files.set(key, { body: body instanceof Uint8Array || body instanceof ArrayBuffer ? new Uint8Array(body) : String(body), etag }); return { etag }; },
+    async put(key, body, opts = {}) { if (opts.onlyIf?.etagMatches && files.get(key)?.etag !== opts.onlyIf.etagMatches) return null; const etag = `e${++n}`; files.set(key, { body: body instanceof Uint8Array || body instanceof ArrayBuffer ? new Uint8Array(body) : String(body), etag }); return { etag }; },
     async delete(key) { files.delete(key); },
   };
 }
@@ -174,4 +174,33 @@ test("MATL reader (Studio Drawings experiment): parses emit, glass, metal, cloud
   assert.equal(scene.length, 5);
   assert.equal(scene[0][4], null);
   assert.equal(scene[1][4]?.kind, "emit");
+});
+
+test("a save that lands while another studio saves is refused, never written over (3D models stay)", async () => {
+  const e = env();
+  await call(e, "/art/save", altar);
+  const voxels = { "priest-3d": { saved: "2026-11-20T00:00:00.000Z", frames: 1, size: [8, 8, 8], bytes: 9, fps: 4 } };
+  const doc = JSON.parse(e.WATCH_MEDIA.files.get("content/art/drawings.json").body);
+  await e.WATCH_MEDIA.put("content/art/drawings.json", JSON.stringify({ ...doc, voxels }));
+  // Another studio (Pico Parish, the Lesson Studio) saves between this save's read and its write.
+  const realGet = e.WATCH_MEDIA.get.bind(e.WATCH_MEDIA);
+  let once = true;
+  e.WATCH_MEDIA.get = async (key) => {
+    const got = await realGet(key);
+    if (once && key === "content/art/drawings.json") {
+      once = false;
+      const now = JSON.parse(e.WATCH_MEDIA.files.get(key).body);
+      now.drawings.lamp = { ...altar, name: "lamp", saved: "2026-11-26T00:00:00.000Z" };
+      await e.WATCH_MEDIA.put(key, JSON.stringify(now));
+    }
+    return got;
+  };
+  const r = await call(e, "/art/save", { ...altar, name: "dove" });
+  assert.equal(r.status, 409);
+  e.WATCH_MEDIA.get = realGet;
+  const after = JSON.parse(e.WATCH_MEDIA.files.get("content/art/drawings.json").body);
+  assert.ok(after.drawings.lamp, "the other studio's drawing is kept");
+  assert.deepEqual(after.voxels, voxels, "3D models are kept");
+  assert.equal((await call(e, "/art/save", { ...altar, name: "dove" })).status, 200, "trying again works");
+  assert.deepEqual(JSON.parse(e.WATCH_MEDIA.files.get("content/art/drawings.json").body).voxels, voxels);
 });
