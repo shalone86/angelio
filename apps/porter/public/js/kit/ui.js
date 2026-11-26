@@ -8,7 +8,7 @@ import { sfx } from "./sound.js";
 import { confetti } from "./fx.js";
 import { spoken } from "./speech.js";
 import { vary } from "./vary.js";
-import { STICKER_WORLD } from "./stickers.js";
+import { STICKER_WORLD, DIORAMA_WORLD, BOX_COST, bellsForRound, loadBells, awardBells } from "./stickers.js";
 
 const ESC = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
 export const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ESC[c]);
@@ -90,7 +90,7 @@ export function markDot(root, k, helped) {
  * when `byStars` is true, 3 stars earns a giant sticker (regardless of mistakes), 2 stars earns
  * a mini sticker, and <2 stars earns no new sticker. Otherwise 0 mistakes (or 3 stars) makes it giant.
  */
-export function showFinish(app, { id, stars, mistakes, title, done, again, next, onAgain, byStars = false, voxelStickers = byStars }) {
+export function showFinish(app, { id, stars, mistakes, title, done, again, next, onAgain, byStars = false, voxelStickers = byStars, bells = byStars }) {
   document.body.classList.remove("in-game");
   const big = byStars ? stars >= 3 : (stars >= 3 || mistakes === 0);
   const perfect = !byStars && mistakes === 0;
@@ -106,6 +106,22 @@ export function showFinish(app, { id, stars, mistakes, title, done, again, next,
   }
   const earn = byStars && stars < 2 ? null : pick(pool);
   const st = S.finishLevel(id, stars, earn, big);
+  const isDaily = String(id ?? "").startsWith("daily-");
+  const bellGain = bells ? awardBells(bellsForRound(stars, isDaily)) : null;
+  const bellNeed = bellGain ? Math.max(0, BOX_COST - bellGain.bells) : 0;
+  const bellPct = bellGain ? Math.min(100, Math.round((bellGain.bells / BOX_COST) * 100)) : 0;
+  const bellCard = bellGain ? `
+      <div class="bell-reward" style="max-width:440px;margin:12px auto 16px;padding:12px 16px;border-radius:18px;background:var(--surface);border:2px solid var(--yellow-dark);box-shadow:0 3px 0 var(--border);display:grid;gap:8px;text-align:left">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;font-weight:800">
+          <span>🔔 +${bellGain.added} Parish Bells${isDaily ? ` <small style="color:var(--yellow-ink)">· Daily bonus!</small>` : ""}</span>
+          <span style="color:var(--yellow-ink)">${bellGain.bells} 🔔</span>
+        </div>
+        <div style="height:10px;border-radius:99px;background:var(--yellow-soft);overflow:hidden;border:1px solid var(--border)"><i style="display:block;height:100%;width:${bellPct}%;background:linear-gradient(90deg,var(--yellow-dark),var(--yellow))"></i></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:.9rem;font-weight:700">
+          <span class="muted">${bellGain.ready ? "A 3D Prize Box is waiting for your Voxel Diorama!" : `${bellNeed} more 🔔 for a Prize Box!`}</span>
+          ${bellGain.ready ? `<a class="btn small primary" href="${DIORAMA_WORLD}#box">🎁 Open Prize Box!</a>` : `<a class="btn small" href="${DIORAMA_WORLD}">🧱 Diorama</a>`}
+        </div>
+      </div>` : "";
   sfx.fanfare();
   confetti(big ? 100 : st.e ? 45 : 20);
   const line = byStars
@@ -141,12 +157,13 @@ export function showFinish(app, { id, stars, mistakes, title, done, again, next,
       <h1>${heading}</h1>
       ${st.e ? `<p class="new-sticker ${st.big ? "big-sticker" : "mini-sticker"}${st.grew ? " grew" : ""}"><span>${stickerHtml(st.e)}</span><br>${label}</p>` : ""}
       ${line ? `<p class="muted">${esc(line)}</p>` : ""}
+      ${bellCard}
       <div class="row center">
         <a class="btn big${st.big ? "" : " primary"}" href="${again}" data-again>🔁 ${againLabel}</a>
         <a class="btn big" href="#/">🏠 Home</a>
         ${next ? `<a class="btn big${st.big ? " primary" : ""}" href="${next.href}">${next.label}</a>` : ""}
       </div>
-      <p class="finish-links" style="display:flex;flex-wrap:wrap;justify-content:center;align-items:stretch;gap:10px"><a class="btn world-link" href="https://angelio.org/"><img src="https://angelio.org/icon.svg" alt="" width="22" height="22" style="vertical-align:-5px;border-radius:6px"> All Angelio games</a>${STICKER_WORLD ? ` <a class="btn world-link" href="${STICKER_WORLD}">🌍 Sticker World</a>` : ""}</p>
+      <p class="finish-links" style="display:flex;flex-wrap:wrap;justify-content:center;align-items:stretch;gap:10px"><a class="btn world-link" href="https://angelio.org/"><img src="https://angelio.org/icon.svg" alt="" width="22" height="22" style="vertical-align:-5px;border-radius:6px"> All Angelio games</a>${bells ? ` <a class="btn world-link" href="${DIORAMA_WORLD}">🧱 Voxel Diorama</a>` : ""}${STICKER_WORLD ? ` <a class="btn world-link" href="${STICKER_WORLD}">🌍 Sticker World</a>` : ""}</p>
     </section>`;
   speak(spokenLine);
   if (onAgain) app.querySelector("[data-again]").onclick = (e) => { e.preventDefault(); onAgain(); };
@@ -159,11 +176,19 @@ export function stickerBook({ byStars = false } = {}) {
     : "Finish a level to get your first sticker! No mistakes makes it a giant one.";
   const title = byStars ? "My voxel stickers" : "My stickers";
   const count = byStars ? `${st.length} ${st.length === 1 ? "sticker" : "stickers"}` : `${S.solved()} solved`;
+  const worldLink = STICKER_WORLD && st.length ? `<a class="btn world-link" href="${STICKER_WORLD}">🌍 Play in Sticker World</a>` : "";
+  const bellAction = byStars ? (() => {
+    const b = loadBells();
+    return b.bells >= BOX_COST
+      ? `<a class="btn world-link" href="${DIORAMA_WORLD}#box" style="background:var(--yellow-soft);border-color:var(--yellow-dark);color:var(--yellow-ink)">🎁 Prize Box Ready! (${b.bells} 🔔)</a>`
+      : `<a class="btn world-link" href="${DIORAMA_WORLD}">🧱 Voxel Diorama · 🔔 ${b.bells}/${BOX_COST}</a>`;
+  })() : "";
+  const links = byStars ? `<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;align-items:center">${worldLink}${bellAction}</div>` : worldLink;
   return `<section class="sticker-book">
       <h2>${title} <small>${count}</small></h2>
       ${st.length ? `<div class="stickers">${st.map((s) => `<span class="${s.big ? "big" : "mini"}" title="${s.big ? "giant" : "mini"} sticker">${stickerHtml(s.e)}</span>`).join("")}</div>`
-        : `<p class="muted small">${emptyHint}</p>`}
-      ${STICKER_WORLD && st.length ? `<a class="btn world-link" href="${STICKER_WORLD}">🌍 Play in Sticker World</a>` : ""}
+        : `<p class="muted small" style="order:3">${emptyHint}</p>`}
+      ${links}
     </section>`;
 }
 

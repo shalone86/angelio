@@ -3,7 +3,8 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import { loadStickers, pointsFor, normalize, SHARED } from "../public/stickers/data.js";
 import { SCENES, PROPS } from "../public/stickers/scenes.js";
-import { VOX_STICKERS, VOX_NAMES } from "../../kit/ui.js";
+import { VOX_STICKERS, VOX_NAMES, stickerBook } from "../../kit/ui.js";
+import { bellsForRound, awardBells } from "../../kit/stickers.js";
 
 const fakeStore = (init = {}) => { const m = { ...init }; return { m, getItem: (k) => m[k] ?? null, setItem: (k, v) => { m[k] = String(v); } }; };
 
@@ -48,4 +49,16 @@ test("every voxel sticker in kit/ui.js has a baked SVG and Sticker World mapping
     const svg = fs.readFileSync(svgPath, "utf8");
     assert.ok(svg.includes("<svg ") && svg.includes("<polygon"), `${slug}.svg renders voxel polygons`);
   }
+});
+
+test("arcade stickerBook renders Parish Bells / Voxel Diorama link and learning book does not", () => {
+  const arcade = stickerBook({ byStars: true });
+  assert.match(arcade, /Voxel Diorama/);
+  const learn = stickerBook();
+  assert.doesNotMatch(learn, /Voxel Diorama/);
+
+  const store = fakeStore();
+  const r = awardBells(bellsForRound(3, true), store);
+  assert.equal(r.bells, 85);
+  assert.equal(r.ready, false);
 });

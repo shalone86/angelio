@@ -1,7 +1,7 @@
 // Offline support: network first for the app (updates show right away), cache first for fonts
 // and voice clips. Bump VERSION when you change files, and list new files in ASSETS.
 
-const VERSION = "v15";
+const VERSION = "v16";
 const APP = "garden";
 const SHELL = `${APP}-shell-${VERSION}`;
 const RUNTIME = `${APP}-runtime-v1`;

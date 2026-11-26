@@ -226,3 +226,41 @@ footer { text-align: center; color: var(--muted); font-size: .85rem; margin-top:
   }
   .sticker-world-button:active { box-shadow: none; }
 }
+
+/* Parish Bells & 3D Voxel Diorama banner on angelio.org/games/ */
+.section-header { display: flex; align-items: center; }
+.bell-pill {
+  margin-left: auto; display: inline-flex; align-items: center; gap: 6px; min-height: 44px;
+  padding: 6px 13px; border-radius: 999px; text-decoration: none; font-weight: 800; font-size: .95rem;
+  background: #fff4cc; color: #5a3c00; border: 2px solid #d99a12; box-shadow: 0 3px 0 #e6cf8f; white-space: nowrap;
+}
+.bell-ready { background: #ffc93c; color: #4a3300; padding: 2px 8px; border-radius: 99px; font-size: .82rem; }
+.diorama-banner {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 18px;
+  margin: 0 0 28px; padding: 16px 18px; border-radius: 24px;
+  background: linear-gradient(135deg, #fffdf5, #fff0c2); border: 2px solid #e5b744;
+  box-shadow: 0 7px 0 #e7cc88, 0 14px 28px rgb(160 110 30 / .14);
+}
+.dio-info { flex: 1 1 280px; min-width: 0; }
+.dio-title { display: flex; align-items: center; gap: 10px; }
+.dio-ic { font-size: 2.1rem; line-height: 1; }
+.dio-title b { display: block; font: 800 1.25rem/1.15 "Baloo 2", sans-serif; color: var(--ink); }
+.dio-title small { display: block; font-weight: 800; color: #7a5400; font-size: .86rem; }
+.dio-sub { margin: 6px 0 8px; color: var(--muted); font-size: .92rem; font-weight: 700; }
+.dio-bar { height: 10px; border-radius: 99px; background: rgb(255 255 255 / .75); border: 1px solid #e5c982; overflow: hidden; }
+.dio-bar i { display: block; height: 100%; background: linear-gradient(90deg, #d99a12, #ffc93c); }
+.dio-actions { display: flex; align-items: center; }
+.dio-cta {
+  display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 10px 18px;
+  border-radius: 16px; text-decoration: none; font: 800 1.05rem "Baloo 2", sans-serif;
+  background: #ffffff; color: var(--ink); border: 2px solid #e5b744; box-shadow: 0 4px 0 #e0c270; white-space: nowrap;
+}
+.dio-cta.ready { background: #ffc93c; color: #4a3300; border-color: #d99a12; box-shadow: 0 4px 0 #c98908; }
+.dio-cta:active { transform: translateY(3px); box-shadow: none; }
+@media (prefers-color-scheme: dark) {
+  .bell-pill { background: #3a3114; color: #ffe185; border-color: #b58214; box-shadow: 0 3px 0 #0b1526; }
+  .diorama-banner { background: linear-gradient(135deg, #1c2b45, #3a3014); border-color: #b58214; box-shadow: 0 7px 0 #0b1526; }
+  .dio-title small { color: #ffd975; }
+  .dio-bar { background: #14223a; border-color: #544520; }
+  .dio-cta { background: #223556; color: var(--ink); border-color: #b58214; box-shadow: 0 4px 0 #0b1526; }
+}

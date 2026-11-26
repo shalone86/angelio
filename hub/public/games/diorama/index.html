@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Voxel Diorama · Angelio Games</title>
+  <meta name="description" content="Collect 3D voxel figurines from Prize Boxes with your Parish Bells and build your own chapel, monastery garden, and courtyard dioramas.">
+  <meta name="theme-color" content="#3a8fd9">
+  <link rel="icon" href="/games/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" sizes="180x180" href="/games/icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="./diorama.css">
+</head>
+<body>
+  <header class="dio-top">
+    <a class="back-btn" href="/games/" aria-label="Back to Angelio Games">← Games</a>
+    <nav class="base-tabs" id="bases" aria-label="Diorama scenes"></nav>
+    <div class="top-actions">
+      <button type="button" class="prize-top-btn" id="prize-btn" aria-label="Open Prize Box">
+        <span id="top-bells">🔔 0</span>
+        <span class="prize-chip" id="prize-chip">🎁 Box</span>
+      </button>
+      <button type="button" class="icon-pill" id="sound-btn" aria-pressed="true" aria-label="Toggle sound">🔊</button>
+    </div>
+  </header>
+
+  <main class="dio-main">
+    <section class="dio-stage" aria-label="3D Voxel Diorama tabletop">
+      <canvas id="stage"></canvas>
+
+      <div class="hint-pill" id="hint" role="status" aria-live="polite">
+        <span id="hint-text">Tap a figurine below to place · Drag to spin</span>
+        <button type="button" class="hint-cancel" id="hint-cancel" hidden>Done</button>
+      </div>
+
+      <div class="cam-ctrls" aria-label="Camera controls">
+        <button type="button" class="cam-btn" id="cam-in" aria-label="Zoom in">＋</button>
+        <button type="button" class="cam-btn" id="cam-out" aria-label="Zoom out">－</button>
+        <button type="button" class="cam-btn" id="cam-reset" aria-label="Reset camera">↺</button>
+      </div>
+
+      <div class="sel-bar" id="sel-bar" hidden>
+        <span class="sel-name" id="sel-name"></span>
+        <div class="sel-btns">
+          <button type="button" data-act="rotate">🔄 Turn</button>
+          <button type="button" data-act="hop">💃 Hop</button>
+          <button type="button" data-act="move">👆 Move</button>
+          <button type="button" class="danger" data-act="remove">🗑️</button>
+        </div>
+      </div>
+    </section>
+
+    <aside class="dio-shelf" aria-label="Figurines collection">
+      <div class="shelf-head">
+        <div class="shelf-title">
+          <strong>My Figurines</strong>
+          <span class="count-pill" id="count-pill">4 / 30</span>
+        </div>
+        <button type="button" class="clear-btn" id="clear-btn">Clear scene</button>
+      </div>
+      <div class="cat-tabs" id="cats" role="tablist" aria-label="Figurine categories"></div>
+      <div class="shelf-grid" id="shelf"></div>
+    </aside>
+  </main>
+
+  <div class="prize-modal" id="prize-modal" role="dialog" aria-modal="true" aria-labelledby="prize-heading" hidden>
+    <div class="prize-backdrop" id="prize-backdrop"></div>
+    <section class="prize-dialog">
+      <header class="prize-head">
+        <span class="prize-stat" id="modal-count">4 / 30</span>
+        <span class="prize-stat gold" id="modal-bells">🔔 0</span>
+        <button type="button" class="prize-close" id="prize-close" aria-label="Close Prize Box">✕</button>
+      </header>
+      <div class="prize-body" id="prize-body"></div>
+    </section>
+  </div>
+
+  <script src="/vendor/three-r128.min.js"></script>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

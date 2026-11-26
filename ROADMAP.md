@@ -214,7 +214,7 @@ collection while giving every game "one more run" depth without heavy downloads:
 
 **2D Sticker World & 3D Voxel Room (confirmed Nov 24, 2026):** Keep **two separate places** rather than replacing the 2D board:
 - **2D Sticker World (`/stickers/`):** Keep as a dedicated 2D sticker playground (kids love placing flat stickers) and expand it with **more playset stages** and **even more stickers**.
-- **3D Voxel Room (in the Game Center `/games/` Parish Map):** A separate 3D voxel room / house / desk area right inside `/games/` where kids can see and arrange all the 3D voxel collectibles, characters, and props they've earned.
+- **3D Voxel Diorama & Prize Box (live Nov 26, 2026 at `/games/diorama/`):** Kids earn **Parish Bells (🔔)** across all 5 arcade games (`25 / 40 / 60` + `+25` Today's Challenge bonus) to open zero-duplicate **Prize Boxes** (`100 🔔`, plus 1 free Welcome Box) unlocking **30 3D figurines and church/garden props** to arrange freely (unlimited copies) across **Chapel, Monastery Garden, and Courtyard** 8×8 tabletop scenes.
 - **Collectible Tiers & Watch & Sing Rewards (Nov 24, 2026):** Learning games award 2D stickers (`art:` / emoji); the 5 arcade games now award 3D voxel stickers (`vox:`, 18 isometric SVGs baked from `art/vox/` via `tools/vox-stickers.mjs` as the genesis of the Voxel Desk). For **Watch & Sing** songs and videos (planned):
   - **Stained-glass medallions (`glass:`):** glowing stained-glass stickers tied to songs and videos.
   - **Video desk icons / figurines:** topic-based collectibles for each video — either designed in MagicaVoxel (`.vox`, serving double duty as both baked 2D Sticker World stickers and real 3D figurines that sit on the **3D Voxel Desk**) or generated as topic SVGs.
@@ -358,7 +358,10 @@ wherever a sound is marked `{{tuh}}` in spoken text (kit `tts.js` → `setClips`
   Read Aloud (short vowels, -ck/ll/ss/ff, sh/ch/th, blends, magic e, vowel teams, bossy r, endings), plus suffix
   rules (drop e, double, y → i, f → ves), silent letters, ABC order, and **My Words** (weekly school lists a
   parent types in). Next: guide words, homophones (their/there), sentences read aloud for each word.
-- **Writing skills** (1–4): build and expand sentences ("The dog ran." → "The big dog ran fast."), fix run-ons, order sentences into a paragraph, topic sentences.
+- ~~**Writing skills**~~ (1–4, built Nov 26, 2026 in `apps/write/`, `angelio.org/write/`, ready to deploy): 21 levels
+  across Grades 1–4 — complete sentences, building/finishing/expanding/combining sentences, fixing run-ons,
+  beginning/middle/end, how-to steps, friendly letters & envelopes, topic/closing sentences, "what doesn't belong",
+  transitions, fact vs. opinion + reasons, ordering paragraphs, "show don't tell", summaries, and editing drafts.
 - ~~**Fractions**~~: live as **Fraction Feast** (angelio.org/fractions/). Next ideas: animate equivalent fractions (cut each half into 2 → 4 quarters), fractions greater than 1, grade 4.
 - **Multiplication & division beyond Doubles** (folded into **Doubles**, G4–5 cap): arrays → area model, dealing into groups, remainders.
 - **Measurement, Time & Money** (K–3, optional G4–5 — expands A8 into 4 tabs): drag a ruler to measure (start at 0, not at the end!), inches and
@@ -436,7 +439,7 @@ Ship **PreK–3 essentials first** as the v1.0 finish line; treat the **Grade 4�
 - **Read Aloud** *(1–3, optional G4–5)*: Add **Sight / Heart words** (G1–2), **open vs. closed syllables**, **Short Stories with comprehension questions** (4–6 graded stories per grade covering sequence, main idea, character/setting, cause/effect, inference; G4–5 theme/POV/author's purpose), and **Word Meaning** (synonyms/antonyms, context clues, affix meanings; G4–5 Greek/Latin roots & similes/idioms).
 - **Grammar!** *(1–3, optional G4–5)*: Add **Proofreading marks** *(next up)*, **run-ons**, **4 sentence types**, **subject & predicate**, **helping/linking verbs & future tense**, **confused homophones** (`to/too/two`, `there/their/they're`, `your/you're`, `its/it's`), and **abbreviations/titles**. *(G4–5 cap: 6 compact levels — compound/complex sentences, prepositional phrases, progressive/perfect/modal verbs, reflexive/relative pronouns, adj vs. adv, title formatting.)*
 - **Spelling** *(built Nov 26, 2026 in `apps/spell/`, ready to deploy)*: Phonics-order spelling + parent lists + **suffix spelling rules** (drop `e`, double consonant, `y → i`, `-f/-fe`) + **ABC order** *(next: guide words)*.
-- **Writing Skills** *(planned)*: Sentence building/expanding/combining, paragraph ordering + **"doesn't belong"**, **topic & concluding sentences**, transitions, **fact vs. opinion + reasons**, friendly letters. *(G4–5 cap: short summarizing.)*
+- **Writing Skills** *(built Nov 26, 2026 in `apps/write/`, ready to deploy)*: Sentence building/expanding/combining, paragraph ordering + **"doesn't belong"**, **topic & concluding sentences**, transitions, **fact vs. opinion + reasons**, friendly letters & envelopes. *(G4 cap: show don't tell, short summarizing, editing.)*
 - **Articulate**: Keep as-is.
 
 ### Explicitly Out (to prevent bloat)

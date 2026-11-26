@@ -3,6 +3,8 @@
 // the coming-soon games. Later this page can become a map of a little parish, each game a building (ROADMAP.md).
 import { APP_LIST } from "/js/apps.js";
 import { jingleOnce } from "/js/jingle.js";
+import { BOX_COST, PIECES } from "/games/diorama/catalog.js";
+import { loadBells, loadDiorama, canOpenBox } from "/games/diorama/store.js";
 
 const ESC = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ESC[c]);
@@ -42,6 +44,47 @@ const tile = (a) => {
 document.getElementById("games").innerHTML = games.filter((a) => a.path).map(tile).join("");
 document.getElementById("soon").innerHTML = games.filter((a) => !a.path).map(tile).join("");
 document.getElementById("soon").addEventListener("click", (e) => { if (e.target.closest('a[aria-disabled="true"]')) e.preventDefault(); });
+
+// Parish Bells + Prize Box + 3D Voxel Diorama progress across the arcade games
+const bells = loadBells();
+const diorama = loadDiorama();
+const check = canOpenBox(bells, diorama);
+const pill = document.getElementById("bell-pill");
+if (pill) {
+  pill.href = check.ok ? "/games/diorama/#box" : "/games/diorama/";
+  pill.innerHTML = check.reason === "welcome"
+    ? `🔔 ${bells.bells} <span class="bell-ready">🎁 FREE!</span>`
+    : check.ok
+      ? `🔔 ${bells.bells} <span class="bell-ready">🎁 Open!</span>`
+      : `🔔 ${bells.bells}/${BOX_COST}`;
+}
+const banner = document.getElementById("diorama-banner");
+if (banner) {
+  const pct = check.reason === "welcome" || check.reason === "complete" ? 100 : Math.min(100, Math.round((bells.bells / BOX_COST) * 100));
+  const ctaHref = check.ok ? "/games/diorama/#box" : "/games/diorama/";
+  const ctaText = check.reason === "welcome"
+    ? "🎁 Open Welcome Box! (FREE)"
+    : check.ok
+      ? `🎁 Open Prize Box! (${BOX_COST} 🔔)`
+      : "🧱 Build Your Diorama";
+  const status = check.reason === "welcome"
+    ? "A free welcome figurine is waiting in your Prize Box!"
+    : check.ok
+      ? `You have ${bells.bells} 🔔 — ready to unlock a new figurine!`
+      : check.reason === "complete"
+        ? `All ${PIECES.length} figurines unlocked — arrange your 3D world!`
+        : `${check.need} more 🔔 from any game to open your next Prize Box!`;
+  banner.innerHTML = `
+    <div class="dio-info">
+      <div class="dio-title"><span class="dio-ic" aria-hidden="true">🧱</span><div><b>Voxel Diorama &amp; Prize Box</b><small>${diorama.unlocked.length} / ${PIECES.length} figurines · 🔔 ${bells.bells} Parish Bells</small></div></div>
+      <p class="dio-sub">${status}</p>
+      <div class="dio-bar" aria-hidden="true"><i style="width:${pct}%"></i></div>
+    </div>
+    <div class="dio-actions">
+      <a class="dio-cta${check.ok ? " ready" : ""}" href="${ctaHref}">${ctaText}</a>
+    </div>
+  `;
+}
 
 // 🔊: the games' own voice (any app's /api/tts works through the hub), or the device voice
 let playing;
