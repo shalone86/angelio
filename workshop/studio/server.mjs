@@ -25,6 +25,7 @@ import {listSongs, newSong, saveSong, setSongFile, songArt, songProps, songSlug}
 import {colorVersion, copyPose, deleteSprite, listSprites, puppetBases, puppetCast, saveColors, saveSprite, setFavorite} from '../scripts/sprites.mjs';
 import {addClosing, addSlide, newLesson, removeSlide} from '../scripts/slides.mjs';
 import {syncVoxels, listVoxels, voxelArt} from '../scripts/voxels.mjs';
+import {syncArt} from '../scripts/art-sync.mjs';
 
 const PORT = Number(process.env.STUDIO_PORT) || 5178; // (the env settings are only for trying a second copy)
 const URL_BASE = `http://localhost:${PORT}`;
@@ -481,6 +482,18 @@ const BACKUP_WAIT = 3 * 60 * 1000;
 const backup = {timers: new Map(), chain: Promise.resolve(), last: null};
 const lessonPaths = (id) => { const [course, lesson] = id.split('/'); return [`courses/${course}/${lesson}`, `courses/${course}/course.yml`]; };
 
+// His pixel drawings, shared with the Angelio and Pico Parish Studios (scripts/art-sync.mjs): new and changed ones here
+// go up, theirs come down (and get backed up like any drawing). 3D models aren't part of it.
+let warnedKey = false;
+function syncDrawings(force = false) {
+  return syncArt({force}).then((r) => {
+    if (r.pulled?.length) backupSoon('sprites', ['sprites'], 'drawings');
+    if (r.errors?.length) console.log('Drawings sync: ' + r.errors.join('; '));
+    if (r.needKey && !warnedKey) { warnedKey = true; console.log('Drawings sync: add ANGELIO_ADMIN_KEY to .env to send drawings to Angelio and Pico Parish.'); }
+    return r;
+  }).catch((e) => { console.log('Drawings sync: ' + e.message); return {}; });
+}
+
 function backupSoon(key, paths, label, now = false) {
   clearTimeout(backup.timers.get(key));
   const go = () => { backup.timers.delete(key); backup.chain = backup.chain.then(() => runBackup(paths, label)).catch(() => {}); };
@@ -594,7 +607,11 @@ async function handle(req, res) {
     if (p === '/api/job') return json(res, 200, job);
     if (p === '/api/timing') return json(res, 200, timingData(id));
     if (p === '/api/images/sources') return json(res, 200, sourceList());
-    if (p === '/api/sprites') return json(res, 200, listSprites());
+    if (p === '/api/sprites') {
+      // Bring theirs in first, but don't keep him waiting more than a few seconds (offline, slow).
+      await Promise.race([syncDrawings(), new Promise((ok) => setTimeout(ok, 3000))]);
+      return json(res, 200, listSprites());
+    }
     if (p === '/api/kids-thumb') return json(res, 200, kidsThumb(id));
     if (p === '/api/puppet-cast') return json(res, 200, puppetCast());
     // Music videos (studio/songs.js): songs/<name>/, scripts/songs.mjs.
@@ -843,24 +860,28 @@ async function handle(req, res) {
     if (p === '/api/sprite') {
       // (a sketch's frames are pictures, so this can be a few megabytes)
       const slug = saveSprite(JSON.parse(String(await readBody(req, 60e6)) || '{}'));
+      syncDrawings(true); // send it up now (sketches stay here)
       return json(res, 200, {slug, sprites: listSprites()});
     }
     if (p === '/api/sprite/version') {
       // A color version of a base character: his recolored idle, and the other poses made from it.
       let out;
       try { out = colorVersion(await readJson(req)); } catch (e) { throw httpError(409, e.message); }
+      syncDrawings(true);
       return json(res, 200, {...out, sprites: listSprites(), ...puppetBases()});
     }
     if (p === '/api/sprite/copy-pose') {
       // A pose he drew on one character, as drafts for others ({from, pose, to: [...], save}).
       let out;
       try { out = copyPose(await readJson(req)); } catch (e) { throw httpError(409, e.message); }
+      syncDrawings(true);
       return json(res, 200, {drafts: out, sprites: listSprites()});
     }
     if (p === '/api/sprite/save-colors') {
       // A scene's or an army's colors kept as a real character ({from, name, colors}).
       let out;
       try { out = saveColors(await readJson(req)); } catch (e) { throw httpError(409, e.message); }
+      syncDrawings(true);
       return json(res, 200, {...out, sprites: listSprites()});
     }
     if (p === '/api/sprite/gif') {

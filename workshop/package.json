@@ -12,6 +12,7 @@
     "check": "node scripts/check-quotes.mjs",
     "new": "node scripts/new.mjs",
     "voxels": "node scripts/voxels.mjs",
+    "drawings-sync": "node scripts/art-sync.mjs",
     "split": "node scripts/split-audio.mjs",
     "studio-autostart": "sh studio/launchd/install.sh",
     "studio-restart": "launchctl kickstart -k gui/$(id -u)/org.angelio.workshop",
