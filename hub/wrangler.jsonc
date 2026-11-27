@@ -14,6 +14,7 @@
     { "binding": "LETTERS", "service": "letters" },
     { "binding": "READALOUD", "service": "readaloud" },
     { "binding": "SPELLING", "service": "spelling" },
+    { "binding": "WRITING", "service": "writing" },
     { "binding": "WATCH", "service": "watch" },
     { "binding": "ARTICULATE", "service": "articulation" },
     { "binding": "CANDLES", "service": "candles" },

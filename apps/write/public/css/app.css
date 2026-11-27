@@ -1,0 +1,243 @@
+/* Writing Skills styles (base.css has the shared look). */
+.pic.big { font-size: 4rem; line-height: 1; }
+.scene-badge { font-size: 3.4rem; line-height: 1; }
+
+/* Home */
+.grade { margin-top: 18px; }
+.grade-title { font-size: 1.3rem; margin: 0; }
+.grade-blurb { margin: 2px 0 0; }
+.grade-jump { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin: 12px 0 4px; }
+.grade-chip { font: 800 .95rem var(--font-body); color: var(--text); background: var(--surface); border: 2px solid var(--border);
+  border-radius: 999px; padding: 6px 11px; box-shadow: var(--shadow); cursor: pointer; white-space: nowrap; }
+.grade-chip:active { transform: translateY(3px); box-shadow: none; }
+#grade-1, #grade-2, #grade-3, #grade-4 { scroll-margin-top: 70px; }
+.level-title { margin: 14px 0 8px; font: 800 1.05rem var(--font-display); display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.level-title span { font: 700 .88rem var(--font-body); color: var(--muted); }
+
+/* Back to Angelio / Reading */
+.hub-link { display: inline-grid; place-items: center; flex: none; width: 38px; height: 38px; border-radius: 12px;
+  background: linear-gradient(#5bb4ff, #bfe3ff); box-shadow: 0 2px 0 #3a8fd9; }
+.hub-link img { width: 30px; height: 30px; border-radius: 9px; }
+.hub-link:active { transform: translateY(2px); box-shadow: none; }
+@media (max-width: 560px) {
+  .topbar { flex-wrap: wrap; row-gap: 6px; }
+  .topbar .nav { margin-left: 0; width: 100%; overflow-x: auto; scrollbar-width: none; flex-wrap: nowrap; }
+  .topbar .nav::-webkit-scrollbar { display: none; }
+  .topbar .nav a { white-space: nowrap; }
+}
+
+/* Lesson examples */
+.ex-stack { display: flex; flex-direction: column; gap: 6px; align-items: center; }
+.ex-row { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.ex-pair { display: flex; gap: 12px; align-items: center; justify-content: center; flex-wrap: wrap; font-weight: 700; }
+.ex-line { font: 700 1.15rem/1.5 "Andika", var(--font-body); text-align: center; }
+.ex-chip { font: 700 1rem/1.35 "Andika", var(--font-body); padding: 6px 12px; border-radius: 12px; background: var(--surface); border: 2px solid var(--border); }
+.ex-chip.good { border-color: var(--green); background: var(--green-soft); color: var(--green-ink); }
+.ex-chip.warn { border-color: var(--red); background: var(--red-soft); color: var(--red-ink); }
+.word-pill { font: 700 1.15rem "Andika", var(--font-body); padding: 6px 12px; border-radius: 12px; background: var(--surface); border: 2px solid var(--blue); }
+.blank-demo { display: inline-block; padding: 1px 10px; border-radius: 8px; border: 2px dashed var(--accent-strong); background: var(--yellow-soft); color: var(--red-ink); }
+
+/* Board & Passages */
+.board { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 14px; }
+.passage { width: 100%; max-width: 640px; padding: 12px 16px; border-radius: 16px; background: var(--surface-2);
+  border-left: 5px solid var(--blue); font: 700 clamp(1.08rem, 3.3vw, 1.35rem)/1.55 "Andika", var(--font-body); color: var(--text); text-align: left; white-space: pre-line; }
+.tag-label { display: inline-block; font: 800 .78rem var(--font-body); text-transform: uppercase; letter-spacing: .06em;
+  color: var(--blue-ink); background: var(--blue-soft); padding: 2px 9px; border-radius: 999px; margin-bottom: 6px; }
+.passage-text { font: 700 clamp(1.08rem, 3.3vw, 1.35rem)/1.55 "Andika", var(--font-body); white-space: pre-line; }
+.blank { display: inline-block; min-width: 5.5em; height: 1.25em; vertical-align: -0.2em; margin: 0 4px; padding: 0 8px; border-radius: 8px;
+  border: 2.5px dashed var(--accent-strong); background: var(--yellow-soft); color: var(--red-ink); text-align: center; }
+.blank.filled { border-style: solid; border-color: var(--green); background: var(--green-soft); color: var(--green-ink); min-width: 0; height: auto; vertical-align: baseline; }
+
+/* Base pairs (g2-combine) */
+.base-pair { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; width: 100%; max-width: 640px; }
+.base-card { flex: 1 1 200px; padding: 10px 14px; border-radius: 14px; background: var(--surface-2); border: 2px solid var(--border);
+  font: 700 1.12rem/1.4 "Andika", var(--font-body); text-align: center; }
+.join-plus { font: 800 1.4rem var(--font-display); color: var(--accent-strong); }
+
+/* Friendly letter paper & Envelope */
+.letter-paper { width: 100%; max-width: 420px; padding: 14px 18px; border-radius: 14px; background: var(--surface);
+  border: 2px solid var(--border); box-shadow: inset 0 0 0 2px var(--surface-2); font: 700 1.05rem/1.55 "Andika", var(--font-body); text-align: left; }
+.letter-paper.mini { max-width: 300px; font-size: .92rem; padding: 10px 12px; }
+.lp-date { text-align: right; color: var(--muted); margin-bottom: 4px; }
+.lp-greet { margin-bottom: 6px; }
+.lp-body { margin-bottom: 10px; padding-left: 12px; }
+.lp-close, .lp-sig { padding-left: 55%; }
+.envelope { position: relative; width: 100%; max-width: 360px; padding: 26px 20px 18px; border-radius: 12px; background: var(--surface);
+  border: 3px solid var(--blue); font: 700 1.08rem/1.5 "Andika", var(--font-body); text-align: left; }
+.envelope .stamp { position: absolute; top: 8px; right: 10px; font-size: 1.5rem; }
+
+/* Choices in dock */
+.short-choices { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; width: 100%; max-width: 580px; margin: 0 auto; }
+.short-card { flex: 1 1 140px; min-height: 66px; padding: 10px 16px; font: 800 clamp(1.05rem, 3.6vw, 1.3rem) var(--font-body); }
+.sentence-choices { display: flex; flex-direction: column; gap: 8px; align-items: stretch; width: 100%; max-width: 680px; margin: 0 auto; }
+.pick-row { display: flex; gap: 8px; align-items: center; }
+.pick-row.used { opacity: .4; }
+.sentence-card, .order-card { flex: 1; text-align: left; justify-content: flex-start; font: 700 clamp(.98rem, 3vw, 1.18rem)/1.35 "Andika", var(--font-body);
+  padding: 10px 14px; min-height: 52px; }
+.say-row { flex: none; width: 46px; height: 46px; }
+
+/* Build a sentence (g1-build) */
+.build-head { display: flex; align-items: center; gap: 12px; }
+.word-slots { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; width: 100%; max-width: 640px; }
+.word-slot { min-width: 72px; min-height: 54px; padding: 6px 14px; border-radius: 14px; border: 3px solid var(--blue); background: var(--surface);
+  font: 700 1.35rem "Andika", var(--font-body); cursor: pointer; box-shadow: 0 3px 0 rgb(29 127 224 / .25); }
+.word-slot.empty { border-style: dashed; background: var(--blue-soft); box-shadow: none; }
+.word-slot.right { border-color: var(--green); background: var(--green-soft); color: var(--green-ink); }
+.word-tiles { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-width: 640px; }
+.word-tile { min-height: 56px; min-width: 68px; padding: 8px 16px; font: 700 1.3rem "Andika", var(--font-body); }
+.word-tile:disabled { opacity: .3; }
+
+/* Order steps / paragraphs */
+.order-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 10px; }
+.order-emoji { font-size: 2rem; line-height: 1; }
+.order-title { font: 800 1.15rem var(--font-display); }
+.order-slots { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 640px; }
+.order-row { display: flex; align-items: stretch; gap: 8px; }
+.order-label { flex: none; min-width: 112px; padding: 6px 10px; border-radius: 12px; background: var(--surface-2); color: var(--accent-strong);
+  font: 800 .88rem var(--font-body); display: grid; place-items: center; text-align: center; }
+.order-slot { flex: 1; min-height: 48px; padding: 8px 12px; border-radius: 14px; border: 3px solid var(--blue); background: var(--surface);
+  font: 700 1rem/1.35 "Andika", var(--font-body); text-align: left; cursor: pointer; }
+.order-slot.empty { border-style: dashed; background: var(--blue-soft); }
+.order-slot.right { border-color: var(--green); background: var(--green-soft); color: var(--green-ink); }
+.order-cards { display: flex; flex-direction: column; gap: 7px; width: 100%; max-width: 680px; margin: 0 auto; }
+.order-card:disabled { opacity: .45; }
+
+/* Tap what doesn't belong (g3-belong) */
+.para-list { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 640px; }
+.para-row { display: flex; gap: 8px; align-items: center; }
+.para-sent { flex: 1; text-align: left; justify-content: flex-start; font: 700 clamp(.98rem, 3vw, 1.18rem)/1.4 "Andika", var(--font-body);
+  padding: 10px 14px; min-height: 54px; }
+.para-sent.odd-hit { background: var(--good-soft); border-color: var(--good); color: var(--green-ink); }
+
+/* Keyboard writing track: home badge, inline word boxes, paper write box, Writer's Checklist, custom QWERTY */
+.write-pill { display: inline-block; margin-top: 2px; padding: 1px 8px; border-radius: 999px;
+  font: 800 .74rem var(--font-body); background: var(--blue-soft); color: var(--blue-ink); }
+.type-sentence-inline { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px;
+  font: 700 clamp(1.15rem, 3.8vw, 1.45rem)/1.45 "Andika", var(--font-body); text-align: center; max-width: 640px; }
+.type-boxes { display: inline-flex; gap: 6px; width: auto; flex-wrap: nowrap; vertical-align: middle; }
+.type-box { min-width: 44px; min-height: 52px; padding: 4px 10px; font-size: 1.55rem; text-transform: lowercase; }
+.ghost-letter { color: var(--muted); opacity: .38; }
+
+.write-box { width: 100%; max-width: 640px; min-height: 76px; max-height: 150px; overflow-y: auto;
+  padding: 12px 14px; border-radius: 16px; border: 3px solid var(--blue); background: var(--surface);
+  font: 700 clamp(1.06rem, 3.2vw, 1.32rem)/1.55 "Andika", var(--font-body); text-align: left;
+  cursor: text; white-space: pre-wrap; word-break: normal; overflow-wrap: break-word;
+  box-shadow: inset 0 2px 6px rgb(29 127 224 / .08); }
+.write-box.right { border-color: var(--green); background: var(--good-soft); color: var(--green-ink); }
+.wb-word { white-space: nowrap; }
+.wb-placeholder { color: var(--muted); opacity: .6; }
+.ghost-rest { color: var(--muted); opacity: .45; }
+.caret { display: inline-block; width: 2.5px; height: 1.15em; vertical-align: -0.18em; margin: 0 .5px;
+  background: var(--accent-strong); border-radius: 2px; animation: blink 1s steps(2) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.write-tools { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+
+.checklist { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; width: 100%; max-width: 640px; }
+.chk-pill { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 999px;
+  border: 2px solid var(--border); background: var(--surface-2); color: var(--muted); font: 800 .82rem var(--font-body); }
+.chk-pill.ok { border-color: var(--green); background: var(--green-soft); color: var(--green-ink); }
+
+.model-slot { width: 100%; max-width: 640px; }
+.model-box { padding: 10px 14px; border-radius: 16px; border: 2px solid var(--green); background: var(--green-soft); text-align: left; }
+.model-text { font: 700 clamp(1rem, 3vw, 1.2rem)/1.45 "Andika", var(--font-body); color: var(--green-ink); }
+
+body.has-qwerty .play { padding-bottom: 245px; }
+.dock:has(.qwerty) { padding: 8px 10px max(10px, env(safe-area-inset-bottom)); }
+.qwerty { display: flex; flex-direction: column; gap: 5px; width: 100%; max-width: 620px; }
+.qwerty-row { display: flex; justify-content: center; gap: 5px; width: 100%; }
+.qkey { position: relative; flex: 1 1 0; max-width: 54px; min-width: 0; min-height: 44px; padding: 0 4px;
+  border-radius: 12px; border: 2px solid var(--border); background: var(--surface); box-shadow: 0 3px 0 var(--border);
+  cursor: pointer; display: grid; place-items: center; touch-action: manipulation; font: 700 1.25rem "Andika", var(--font-body); }
+.qkey .abc { font-size: 1.35rem; line-height: 1; }
+.qkey:active { transform: translateY(3px); box-shadow: none; }
+.qkey:disabled { opacity: .38; cursor: default; transform: none; box-shadow: none; }
+.qkey.home-key::after { content: ""; position: absolute; bottom: 2px; width: 10px; height: 2px; border-radius: 2px; background: var(--border); opacity: .85; }
+.qkey-shift, .qkey-back { flex: 1.45 1 0; max-width: 78px; background: var(--surface-2); font-weight: 800; font-size: 1.15rem; }
+.qkey-shift.on { background: var(--accent); border-color: var(--accent-strong); color: var(--accent-ink); box-shadow: 0 3px 0 var(--accent-strong); }
+.qkey-punct { flex: .95 1 0; max-width: 48px; background: var(--surface-2); font-weight: 800; font-size: 1.3rem; }
+.qkey-space { flex: 3.4 1 0; max-width: 210px; font: 800 .9rem var(--font-body); color: var(--muted); letter-spacing: .04em; }
+.qkey-check { flex: 1.9 1 0; max-width: 112px; background: var(--green); border-color: var(--green-dark); color: #fff;
+  box-shadow: 0 3px 0 var(--green-dark); font: 800 .98rem var(--font-body); white-space: nowrap; }
+.qkey.guide { border-color: var(--accent-strong); background: var(--yellow-soft); color: var(--accent-strong);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 45%, transparent), 0 3px 0 var(--yellow-dark); animation: guide-pop 1s ease-in-out infinite; }
+.qkey-check.guide { background: var(--green); color: #fff; border-color: var(--yellow); }
+@keyframes guide-pop { 50% { transform: translateY(-2px); } }
+@media (prefers-reduced-motion: reduce) { .caret, .qkey.guide { animation: none; } }
+
+/* Small screens (portrait) */
+@media (max-width: 480px) {
+  .board { padding: 10px 8px; gap: 8px; }
+  .play { padding-bottom: max(260px, 48vh); }
+  body.has-qwerty .play { padding-bottom: 205px; }
+  .dock { max-height: 44vh; overflow-y: auto; padding: 6px 10px max(8px, env(safe-area-inset-bottom)); gap: 5px; }
+  .dock:has(.qwerty) { max-height: none; overflow: visible; padding: 6px 5px max(8px, env(safe-area-inset-bottom)); }
+  .qwerty { gap: 4px; }
+  .qwerty-row { gap: 3px; }
+  .qkey { min-height: 39px; border-radius: 9px; padding: 0 2px; }
+  .qkey .abc { font-size: 1.18rem; }
+  .qkey-shift, .qkey-back { font-size: 1.02rem; }
+  .qkey-punct { font-size: 1.1rem; }
+  .qkey-space { font-size: .78rem; }
+  .qkey-check { font-size: .84rem; }
+  .type-box { min-width: 38px; min-height: 44px; padding: 3px 8px; font-size: 1.35rem; }
+  .write-box { min-height: 64px; padding: 10px 12px; font-size: 1.02rem; }
+  .chk-pill { font-size: .76rem; padding: 3px 8px; }
+  .scene-badge { font-size: 2.8rem; }
+  .word-slot { min-width: 58px; min-height: 48px; padding: 4px 10px; font-size: 1.18rem; }
+  .word-tile { min-width: 56px; min-height: 50px; padding: 6px 12px; font-size: 1.15rem; }
+  .order-slots { gap: 5px; }
+  .order-row { gap: 6px; }
+  .order-label { width: 78px; min-width: 0; font-size: .74rem; line-height: 1.15; padding: 4px 5px; }
+  .order-slot { min-height: 40px; padding: 5px 10px; font-size: .92rem; line-height: 1.3; }
+  .sentence-choices, .order-cards { gap: 6px; }
+  .sentence-card, .order-card { font-size: .92rem; line-height: 1.28; padding: 7px 10px; min-height: 42px; }
+  .short-card { min-height: 54px; padding: 8px 12px; }
+  .lp-close, .lp-sig { padding-left: 40%; }
+  .say-row { width: 40px; height: 40px; }
+}
+
+/* Phones turned sideways (780x360): wider 300px right dock anchored strictly below play-top & bubble */
+@media (orientation: landscape) and (max-height: 520px) {
+  body.in-game main { padding-right: 312px; }
+  .play-top { width: 300px; height: 46px; background: var(--bg); border-left: 2px solid var(--border); }
+  .bubble { top: 46px; width: 300px; height: 58px; max-height: 58px; overflow-y: auto; border-width: 2px 0 2px 2px; }
+  .dock { top: 104px; bottom: 0; width: 300px; overflow-y: auto; justify-content: safe flex-end; padding: 6px 8px max(8px, env(safe-area-inset-bottom)); gap: 5px; }
+  .board { padding: 8px; gap: 6px; }
+  .scene-badge { font-size: 2.2rem; }
+  .passage { padding: 8px 12px; font-size: .96rem; line-height: 1.4; }
+  .passage-text { font-size: .96rem; line-height: 1.4; }
+  .letter-paper { padding: 8px 12px; font-size: .92rem; line-height: 1.4; }
+  .envelope { padding: 16px 14px 12px; font-size: .95rem; }
+  .word-slot { min-width: 54px; min-height: 44px; padding: 4px 10px; font-size: 1.12rem; }
+  .word-tile { min-width: 50px; min-height: 44px; padding: 4px 10px; font-size: 1.08rem; }
+  .sentence-choices, .order-cards { gap: 5px; }
+  .sentence-card, .order-card, .para-sent { font-size: .88rem; padding: 6px 9px; min-height: 38px; line-height: 1.26; }
+  .short-card { min-height: 46px; font-size: .95rem; padding: 6px 10px; }
+  .say-row { width: 36px; height: 36px; font-size: .95rem; }
+  .order-label { min-width: 82px; font-size: .78rem; padding: 4px 6px; }
+  .order-slot { min-height: 38px; font-size: .9rem; padding: 5px 8px; }
+
+  /* Landscape keyboard mode: full-width bottom QWERTY so all 10 keys stay roomy and clear of top bar */
+  body.has-qwerty main { padding: 4px 12px 158px; }
+  body.has-qwerty .play { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 4px 10px; padding-bottom: 4px; }
+  body.has-qwerty .play-top { position: static; width: auto; height: auto; border-left: none; grid-column: 1; padding: 0; background: transparent; }
+  body.has-qwerty .bubble { position: static; width: auto; height: auto; max-height: none; overflow: visible; grid-column: 2; min-height: 0; padding: 3px 10px; margin: 0; border-radius: 12px; border-width: 2px; }
+  body.has-qwerty .board { grid-column: 1 / -1; padding: 6px 10px; gap: 5px; }
+  body.has-qwerty .write-box { min-height: 44px; max-height: 92px; padding: 6px 10px; font-size: .95rem; line-height: 1.4; }
+  body.has-qwerty .type-box { min-width: 36px; min-height: 38px; font-size: 1.25rem; }
+  body.has-qwerty .chk-pill { font-size: .72rem; padding: 2px 7px; }
+  body.has-qwerty .dock { left: 0; right: 0; top: auto; bottom: 0; width: auto; height: auto; max-height: none; overflow: visible;
+    border-left: none; border-top: 2px solid var(--border); padding: 4px 10px max(5px, env(safe-area-inset-bottom)); }
+  body.has-qwerty .qwerty { max-width: 680px; gap: 3px; }
+  body.has-qwerty .qwerty-row { gap: 4px; }
+  body.has-qwerty .qkey { max-width: 62px; min-height: 31px; border-radius: 8px; }
+  body.has-qwerty .qkey .abc { font-size: 1.05rem; }
+  body.has-qwerty .qkey-shift, body.has-qwerty .qkey-back { max-width: 88px; font-size: .95rem; }
+  body.has-qwerty .qkey-space { max-width: 220px; font-size: .78rem; }
+  body.has-qwerty .qkey-check { max-width: 112px; font-size: .82rem; }
+}
+@media (max-width: 460px) {
+  .play-top { gap: 6px; }
+  .play-top .dots { gap: 4px; min-width: 0; }
+  .play-top .dots i { width: 10px; height: 10px; }
+}

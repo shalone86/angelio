@@ -48,6 +48,10 @@ export const APP_LIST = [
     blurb: "Hear a word and spell it: short vowels to magic e, vowel teams, the rules for endings, ABC order, and this week's words from school.",
   },
   {
+    name: "Writing Skills", path: "write", subject: "language", grades: "Grades 1–4", emoji: "📝",
+    blurb: "Build, fix, and type sentences on the keyboard, write friendly letters, organize paragraphs, and summarize.",
+  },
+  {
     name: "Watch & Sing", path: "watch", subject: "faith", grades: "All ages", emoji: "🎵",
     blurb: "Catholic video lessons with little quizzes, and songs to sing along with.",
   },
@@ -82,6 +86,5 @@ export const APP_LIST = [
     blurb: "Tap along in the choir loft",
     say: "Choir. Coming soon: tap along with the music in the choir loft as the beat gets faster.",
   },
-  { name: "Writing Skills", subject: "language", grades: "Grades 1–4", emoji: "📝", blurb: "From sentences to paragraphs: build, fix and grow your writing." },
   { name: "Catholic History", subject: "history", grades: "All ages", emoji: "⛪", blurb: "Saints, the early Church and the great moments, on drag-and-drop timelines." },
 ];

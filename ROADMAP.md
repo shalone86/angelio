@@ -358,10 +358,11 @@ wherever a sound is marked `{{tuh}}` in spoken text (kit `tts.js` → `setClips`
   Read Aloud (short vowels, -ck/ll/ss/ff, sh/ch/th, blends, magic e, vowel teams, bossy r, endings), plus suffix
   rules (drop e, double, y → i, f → ves), silent letters, ABC order, and **My Words** (weekly school lists a
   parent types in). Next: guide words, homophones (their/there), sentences read aloud for each word.
-- ~~**Writing skills**~~ (1–4, built Nov 26, 2026 in `apps/write/`, `angelio.org/write/`, ready to deploy): 21 levels
-  across Grades 1–4 — complete sentences, building/finishing/expanding/combining sentences, fixing run-ons,
-  beginning/middle/end, how-to steps, friendly letters & envelopes, topic/closing sentences, "what doesn't belong",
-  transitions, fact vs. opinion + reasons, ordering paragraphs, "show don't tell", summaries, and editing drafts.
+- ~~**Writing skills**~~ (1–4, live Nov 26, 2026 in `apps/write/`, `angelio.org/write/`): 29 levels across Grades 1–4
+  (21 concept/sentence/paragraph/letter levels + 8 dedicated `⌨️ Write` QWERTY keyboard levels with glowing beginner hints,
+  draft editing in place, and a live Grade 3–4 Writer's Checklist) — complete sentences, building/finishing/expanding/combining
+  sentences, fixing run-ons, beginning/middle/end, how-to steps, friendly letters & envelopes, topic/closing sentences,
+  "what doesn't belong", transitions, fact vs. opinion + reasons, ordering paragraphs, "show don't tell", summaries, and editing drafts.
 - ~~**Fractions**~~: live as **Fraction Feast** (angelio.org/fractions/). Next ideas: animate equivalent fractions (cut each half into 2 → 4 quarters), fractions greater than 1, grade 4.
 - **Multiplication & division beyond Doubles** (folded into **Doubles**, G4–5 cap): arrays → area model, dealing into groups, remainders.
 - **Measurement, Time & Money** (K–3, optional G4–5 — expands A8 into 4 tabs): drag a ruler to measure (start at 0, not at the end!), inches and
@@ -439,7 +440,7 @@ Ship **PreK–3 essentials first** as the v1.0 finish line; treat the **Grade 4�
 - **Read Aloud** *(1–3, optional G4–5)*: Add **Sight / Heart words** (G1–2), **open vs. closed syllables**, **Short Stories with comprehension questions** (4–6 graded stories per grade covering sequence, main idea, character/setting, cause/effect, inference; G4–5 theme/POV/author's purpose), and **Word Meaning** (synonyms/antonyms, context clues, affix meanings; G4–5 Greek/Latin roots & similes/idioms).
 - **Grammar!** *(1–3, optional G4–5)*: Add **Proofreading marks** *(next up)*, **run-ons**, **4 sentence types**, **subject & predicate**, **helping/linking verbs & future tense**, **confused homophones** (`to/too/two`, `there/their/they're`, `your/you're`, `its/it's`), and **abbreviations/titles**. *(G4–5 cap: 6 compact levels — compound/complex sentences, prepositional phrases, progressive/perfect/modal verbs, reflexive/relative pronouns, adj vs. adv, title formatting.)*
 - **Spelling** *(built Nov 26, 2026 in `apps/spell/`, ready to deploy)*: Phonics-order spelling + parent lists + **suffix spelling rules** (drop `e`, double consonant, `y → i`, `-f/-fe`) + **ABC order** *(next: guide words)*.
-- **Writing Skills** *(built Nov 26, 2026 in `apps/write/`, ready to deploy)*: Sentence building/expanding/combining, paragraph ordering + **"doesn't belong"**, **topic & concluding sentences**, transitions, **fact vs. opinion + reasons**, friendly letters & envelopes. *(G4 cap: show don't tell, short summarizing, editing.)*
+- **Writing Skills** *(live Nov 26, 2026 in `apps/write/`, `angelio.org/write/`, 29 levels)*: Sentence building/expanding/combining, scaffolded QWERTY typing (`⌨️ Write` track across Grades 1–4), paragraph ordering + **"doesn't belong"**, **topic & concluding sentences**, transitions, **fact vs. opinion + reasons**, friendly letters & envelopes. *(G4 cap: show don't tell, short summarizing, in-place draft editing & open-ended checklist writing.)*
 - **Articulate**: Keep as-is.
 
 ### Explicitly Out (to prevent bloat)
