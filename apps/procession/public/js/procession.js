@@ -315,49 +315,8 @@ export function tick(g, dt) {
   // Steer procession smoothly toward lane center
   const destProcX = LANE_X[g.procLane];
   const pdx = destProcX - g.procX;
-  const maxProcStep = 92 * step;
+  const maxProcStep = 56 * step;
   g.procX = Math.abs(pdx) <= maxProcStep ? destProcX : g.procX + Math.sign(pdx) * maxProcStep;
-
-  // Crew movement & facing: faces away up road (Math.PI) when idle, fixing, or running forward; faces camera (0) only when walking back toward procession!
-  const crewSpeed = g.crewInfo.perk === "speed" ? 45 : 36;
-  const crew = g.crew;
-  crew.fixingId = null;
-  if (crew.stickX !== 0 || crew.stickZ !== 0) {
-    crew.x += crew.stickX * crewSpeed * step;
-    crew.z += crew.stickZ * crewSpeed * step + targetRoadSpeed * step * 0.35;
-    crew.moving = true;
-    crew.dir = Math.atan2(crew.stickX, crew.stickZ);
-  } else if (crew.target) {
-    const tracked = crew.target.obId ? g.obs.find((o) => o.id === crew.target.obId && !o.done) : null;
-    if (crew.target.obId && !tracked) {
-      crew.target = null;
-      crew.moving = false;
-      crew.dir = Math.PI;
-    } else {
-      const tx = tracked ? tracked.x : crew.target.x;
-      const tz = tracked ? tracked.z : crew.target.z;
-      const dx = tx - crew.x, dz = tz - crew.z;
-      const d = Math.hypot(dx, dz);
-      const stopDist = tracked ? 4 : 1.0;
-      if (d > stopDist) {
-        const mv = Math.min(d, crewSpeed * step);
-        crew.x += (dx / d) * mv;
-        crew.z += (dz / d) * mv;
-        crew.moving = true;
-        crew.dir = Math.atan2(dx, dz);
-      } else {
-        if (!tracked) crew.target = null;
-        crew.moving = false;
-        crew.dir = Math.PI;
-      }
-    }
-  } else {
-    crew.moving = false;
-    crew.dir = Math.PI;
-    crew.z = Math.min(CREW_BOUNDS.maxZ, crew.z + targetRoadSpeed * step * 0.25);
-  }
-  crew.x = Math.max(CREW_BOUNDS.minX, Math.min(CREW_BOUNDS.maxX, crew.x));
-  crew.z = Math.max(CREW_BOUNDS.minZ, Math.min(CREW_BOUNDS.maxZ, crew.z));
 
   // Monsignor passive perk: rings Church Bell every 7s to clear closest regular hazard
   if (g.crewInfo.perk === "bell") {
@@ -373,10 +332,7 @@ export function tick(g, dt) {
     }
   }
 
-  // Advance obstacles, puddles, patrolling dogs/band, and check progress + collisions
-  const fixRate = g.crewInfo.perk === "fastFix" ? 1.5 : 1.0;
-  const reachPad = 5.8;
-
+  // Advance obstacles, puddles, and patrolling dogs/band first so tracked targets land cleanly on (x, z)
   for (const o of g.obs) {
     o.z += targetRoadSpeed * o.slow * step;
 
@@ -401,6 +357,62 @@ export function tick(g, dt) {
         else if (o.x > bound) { o.x = bound; o.vx = -Math.abs(o.vx); }
       }
     }
+  }
+
+  // Crew movement & facing: faces away up road (Math.PI) when idle, fixing, or running forward; faces camera (0) only when walking back toward procession!
+  const crewSpeed = g.crewInfo.perk === "speed" ? 45 : 36;
+  const crew = g.crew;
+  crew.fixingId = null;
+  if (crew.stickX !== 0 || crew.stickZ !== 0) {
+    crew.x += crew.stickX * crewSpeed * step;
+    crew.z += crew.stickZ * crewSpeed * step + targetRoadSpeed * step * 0.35;
+    crew.moving = true;
+    crew.dir = Math.atan2(crew.stickX, crew.stickZ);
+  } else if (crew.target) {
+    const tracked = crew.target.obId ? g.obs.find((o) => o.id === crew.target.obId && !o.done) : null;
+    if (crew.target.obId && !tracked) {
+      crew.target = null;
+      crew.moving = false;
+      crew.dir = Math.PI;
+    } else {
+      if (!tracked) {
+        crew.target.z = Math.min(CREW_BOUNDS.maxZ, crew.target.z + targetRoadSpeed * step);
+      }
+      const tx = Math.max(CREW_BOUNDS.minX, Math.min(CREW_BOUNDS.maxX, tracked ? tracked.x : crew.target.x));
+      const tz = Math.max(CREW_BOUNDS.minZ, Math.min(CREW_BOUNDS.maxZ, tracked ? tracked.z : crew.target.z));
+      const dx = tx - crew.x, dz = tz - crew.z;
+      const d = Math.hypot(dx, dz);
+      const stepReach = crewSpeed * step;
+      if (tracked && d <= stepReach) {
+        crew.x = tx;
+        crew.z = tz;
+        crew.moving = false;
+        crew.dir = Math.PI;
+      } else if (d > 0.8) {
+        const mv = Math.min(d, stepReach);
+        crew.x += (dx / d) * mv;
+        crew.z += (dz / d) * mv;
+        crew.moving = true;
+        crew.dir = Math.atan2(dx, dz);
+      } else {
+        crew.target = null;
+        crew.moving = false;
+        crew.dir = Math.PI;
+      }
+    }
+  } else {
+    crew.moving = false;
+    crew.dir = Math.PI;
+    crew.z = Math.min(CREW_BOUNDS.maxZ, crew.z + targetRoadSpeed * step * 0.25);
+  }
+  crew.x = Math.max(CREW_BOUNDS.minX, Math.min(CREW_BOUNDS.maxX, crew.x));
+  crew.z = Math.max(CREW_BOUNDS.minZ, Math.min(CREW_BOUNDS.maxZ, crew.z));
+
+  // Check obstacle fixing progress & procession collisions
+  const fixRate = g.crewInfo.perk === "fastFix" ? 1.5 : 1.0;
+  const reachPad = 5.8;
+
+  for (const o of g.obs) {
 
     if (!o.done) {
       const nearCrew = Math.abs(crew.x - o.x) <= o.halfW + reachPad && Math.abs(crew.z - o.z) <= o.halfZ + reachPad;

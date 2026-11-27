@@ -76,15 +76,35 @@ test("crew facing looks away (PI) when idle, walking ahead, or fixing, and faces
   tick(g, 0.05);
   assert.ok(Math.abs(Math.abs(g.crew.dir) - Math.PI) < 0.15, "faces away while running up to pothole");
 
-  // Finish fixing starter pothole -> points awarded, still faces away when stopped
+  // Reaches right on top of the clicked item (distance === 0), stays facing away while riding/fixing, and finishes in one tap
   let fixedEv = null;
+  let minStarterDist = Infinity;
+  let postArrivalBadDir = 0;
   for (let i = 0; i < 60; i++) {
     const ev = tick(g, 0.05);
     fixedEv ??= ev.find((e) => e.type === "fixed");
+    if (!starter.done) {
+      const dist = Math.hypot(g.crew.x - starter.x, g.crew.z - starter.z);
+      minStarterDist = Math.min(minStarterDist, dist);
+      if (dist <= 0.1 && Math.abs(g.crew.dir - Math.PI) >= 0.01) postArrivalBadDir++;
+    }
   }
   assert.ok(fixedEv);
+  assert.ok(minStarterDist <= 0.01, `lands squarely on top of item (got minDist=${minStarterDist})`);
+  assert.equal(postArrivalBadDir, 0, "keeps facing away (PI) while riding and fixing");
   assert.equal(g.score, 10);
   assert.ok(Math.abs(g.crew.dir - Math.PI) < 0.01, "faces away again once stopped");
+
+  // Dog chase (obId: null) goes to clicked spot (scrolling forward in z) without sideways heat-seeking
+  const dog = {
+    id: 200, kind: "dog", cat: "crowd", x: -16, z: -20, halfW: 3.4, halfZ: 3.4,
+    need: 1.5, pts: 30, hz: true, slow: 1, boss: false, moveOut: 14, pr: 0, done: false, miss: false, dodged: false, vx: 18, targetX: null, tintIdx: 0,
+  };
+  g.obs.push(dog);
+  const clickedX = dog.x;
+  setTarget(g, clickedX, dog.z, null);
+  for (let i = 0; i < 30; i++) tick(g, 0.05);
+  assert.ok(Math.abs(g.crew.x - clickedX) < 1.0 && Math.abs(dog.x - clickedX) > 4, "chases clicked dog spot without heat-seeking sideways");
 
   // Walk straight back toward the procession (+Z) -> faces toward camera (0)
   setTarget(g, g.crew.x, g.crew.z + 20, null);

@@ -191,34 +191,44 @@ function viewPlay(stageId) {
   app.querySelector("#steer-r").onclick = () => doSteer(1, true);
   app.querySelectorAll("[data-lane]").forEach((b) => { b.onclick = () => doSteer(Number(b.dataset.lane), false); });
 
-  let draggingRoad = false;
+  let dragStart = null;
+  let dragged = false;
   canvas.addEventListener("pointerdown", (e) => {
     if (!road || g.over) return;
-    draggingRoad = true;
+    dragStart = { x: e.clientX, y: e.clientY };
+    dragged = false;
     const pt = road.pickRoadPoint(e.clientX, e.clientY);
     if (pt) {
       if (pt.z >= FRONT_Z - 4) {
         const targetLane = pt.x < -10 ? 0 : pt.x > 10 ? 2 : 1;
         doSteer(targetLane, false);
       } else {
-        const nearOb = g.obs.find((o) => !o.done && Math.hypot(o.x - pt.x, o.z - pt.z) < Math.max(10, o.halfW + 4));
-        setTarget(g, pt.x, pt.z, nearOb?.id ?? null);
+        const nearOb = g.obs.reduce((best, o) => {
+          if (o.done) return best;
+          const d = Math.hypot(o.x - pt.x, o.z - pt.z);
+          return d < Math.max(10, o.halfW + 4) && (!best || d < best.d) ? { o, d } : best;
+        }, null)?.o;
+        const lockOb = nearOb && nearOb.kind !== "dog" ? nearOb : null;
+        setTarget(g, lockOb ? lockOb.x : pt.x, lockOb ? lockOb.z : pt.z, lockOb?.id ?? null);
       }
     }
   });
   canvas.addEventListener("pointermove", (e) => {
-    if (!draggingRoad || !road || g.over) return;
+    if (!dragStart || !road || g.over) return;
+    if (!dragged && Math.hypot(e.clientX - dragStart.x, e.clientY - dragStart.y) < 10) return;
+    dragged = true;
     const pt = road.pickRoadPoint(e.clientX, e.clientY);
     if (pt && pt.z < FRONT_Z - 3) setTarget(g, pt.x, pt.z, null);
   });
-  addEventListener("pointerup", () => { draggingRoad = false; });
-  addEventListener("pointercancel", () => { draggingRoad = false; });
+  const endRoadDrag = () => { dragStart = null; dragged = false; };
+  addEventListener("pointerup", endRoadDrag);
+  addEventListener("pointercancel", endRoadDrag);
 
   pins.addEventListener("click", (e) => {
     const btn = e.target.closest("[data-ob]");
     if (!btn || !road || g.over) return;
     const ob = g.obs.find((o) => o.id === Number(btn.dataset.ob) && !o.done);
-    if (ob) { sfx.tap(); setTarget(g, ob.x, ob.z, ob.id); }
+    if (ob) { sfx.tap(); setTarget(g, ob.x, ob.z, ob.kind === "dog" ? null : ob.id); }
   });
 
   function updateKeyMove() {
@@ -398,7 +408,9 @@ function viewPlay(stageId) {
   window.__procession = {
     getState: () => ({
       ready: !!road, score: g.score, procLane: g.procLane, candles: g.candles,
-      fixes: g.fixes, dir: g.crew.dir, z: g.crew.z, obs: g.obs.length,
+      fixes: g.fixes, dir: g.crew.dir, x: g.crew.x, z: g.crew.z, obs: g.obs.length,
+      targetOb: g.crew.target?.obId ?? null,
+      firstObDist: g.obs[0] ? Number(Math.hypot(g.crew.x - g.obs[0].x, g.crew.z - g.obs[0].z).toFixed(2)) : null,
     }),
     steer: (d, r = true) => doSteer(d, r),
     walkTo: (x, z) => setTarget(g, x, z, null),
