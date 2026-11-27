@@ -7,7 +7,7 @@
 // - One <audio> element is reused, and every playback promise settles (ended, paused, error or
 //   timeout), so a failed clip can never block the game.
 
-import { settings } from "./store.js";
+import { settings, setSetting } from "./store.js";
 import { numberToWords } from "./speech.js";
 import { health, serverTts } from "./api.js";
 
@@ -15,6 +15,65 @@ const cache = new Map(); // `${voice}|${text}` → Promise<object URL>
 const player = typeof Audio !== "undefined" ? new Audio() : null;
 let playId = 0;
 let utterance; // Chrome drops events for garbage-collected utterances
+
+export const CUTOFF_MUTE_LIMIT = 5;
+
+/** Tracks consecutive interrupted lines so fast readers auto-mute instead of stacking cut-off voice clips. */
+export function createCutoffTracker({ limit = CUTOFF_MUTE_LIMIT, minElapsedMs = 150, windowMs = 45000 } = {}) {
+  let active = false;
+  let startedAt = 0;
+  let streak = 0;
+  let lastCutAt = 0;
+
+  return {
+    onStart(now = Date.now()) {
+      active = true;
+      startedAt = now;
+    },
+    onFinish() {
+      active = false;
+      streak = 0;
+      lastCutAt = 0;
+    },
+    onStop({ count = true, now = Date.now() } = {}) {
+      if (!active) return { cutoff: false, streak, muted: false };
+      active = false;
+      if (!count) return { cutoff: false, streak, muted: false };
+      if (now - startedAt < minElapsedMs) return { cutoff: false, streak, muted: false };
+      if (lastCutAt && now - lastCutAt > windowMs) streak = 0;
+      streak += 1;
+      lastCutAt = now;
+      if (streak >= limit) {
+        streak = 0;
+        lastCutAt = 0;
+        return { cutoff: true, streak: limit, muted: true };
+      }
+      return { cutoff: true, streak, muted: false };
+    },
+    reset() {
+      active = false;
+      streak = 0;
+      lastCutAt = 0;
+    },
+    getStreak() {
+      return streak;
+    },
+  };
+}
+
+const cutoffs = createCutoffTracker();
+export function resetCutoffs() { cutoffs.reset(); }
+
+function autoMuteVoice() {
+  setSetting("readAloud", false);
+  if (typeof document !== "undefined") {
+    document.querySelectorAll("[data-voice]").forEach((b) => b.setAttribute("aria-pressed", "false"));
+    document.querySelectorAll('[data-k="readAloud"]').forEach((el) => { if ("checked" in el) el.checked = false; });
+  }
+  if (typeof window !== "undefined" && typeof CustomEvent !== "undefined") {
+    window.dispatchEvent(new CustomEvent("angelio:voice-auto-muted"));
+  }
+}
 
 export function browserVoices() {
   if (typeof speechSynthesis === "undefined") return [];
@@ -51,10 +110,16 @@ function serverUrl(text, voice) {
   return cache.get(key);
 }
 
-export function stop() {
+export function stop({ count = true } = {}) {
   playId++;
   if (player && !player.paused) player.pause();
   if (typeof speechSynthesis !== "undefined" && (speechSynthesis.speaking || speechSynthesis.pending)) speechSynthesis.cancel();
+  if (count && settings().readAloud) {
+    const res = cutoffs.onStop({ count: true });
+    if (res.muted) autoMuteVoice();
+  } else {
+    cutoffs.onStop({ count: false });
+  }
 }
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -269,13 +334,22 @@ export async function whenQuiet() {
 async function speakNow(raw, { force = false, rate: speed = 1 } = {}) {
   const text = cleanText(raw);
   if (!text || (!settings().readAloud && !force)) return;
-  stop();
+  if (force) {
+    cutoffs.reset();
+    stop({ count: false });
+  } else {
+    stop({ count: true });
+    if (!settings().readAloud) return;
+    cutoffs.onStart();
+  }
   const id = playId;
   const rate = (settings().slow ? 0.8 : 1) * speed;
   try {
     if (player && (await useServer())) {
       try {
-        return await playPieces(text, rate, id, true);
+        await playPieces(text, rate, id, true);
+        if (!force && id === playId) cutoffs.onFinish();
+        return;
       } catch (e) {
         if (!/play/i.test(String(e?.message))) serverFailedAt = Date.now();
         if (id !== playId) return;
@@ -283,6 +357,7 @@ async function speakNow(raw, { force = false, rate: speed = 1 } = {}) {
       }
     }
     await playPieces(text, rate, id, false);
+    if (!force && id === playId) cutoffs.onFinish();
   } catch (e) { console.warn(e); }
 }
 

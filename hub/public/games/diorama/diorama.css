@@ -10,6 +10,7 @@
   --gold-dark: #d99a12;
   --gold-soft: #fff4cc;
   --gold-ink: #5a3c00;
+  --on-gold: #3b2800;
   --teal: #16a374;
 }
 * { box-sizing: border-box; }
@@ -34,23 +35,44 @@ button, a { font: inherit; color: inherit; }
   border-radius: 12px; text-decoration: none; font-weight: 800;
   background: var(--soft); border: 1.5px solid var(--border); white-space: nowrap;
 }
+.world-bar {
+  display: flex; align-items: center; gap: 6px; min-width: 0;
+}
+.base-tabs {
+  display: inline-flex; align-items: center; gap: 6px; min-width: 0;
+  overflow-x: auto; scrollbar-width: none;
+}
+.base-tabs::-webkit-scrollbar { display: none; }
+.base-tab {
+  display: inline-flex; align-items: center; gap: 5px; min-height: 38px; padding: 5px 11px;
+  border-radius: 99px; border: 1.5px solid var(--border); background: var(--card); color: var(--ink);
+  font-weight: 800; font-size: .86rem; cursor: pointer; white-space: nowrap;
+}
+.base-tab[aria-pressed="true"] {
+  background: #2a6db3; border-color: #2a6db3; color: #fff; box-shadow: 0 2px 0 #194b82;
+}
+.tab-qty {
+  padding: 1px 6px; border-radius: 99px; font-size: .72rem; font-weight: 900;
+  background: var(--soft); color: var(--muted);
+}
+.base-tab[aria-pressed="true"] .tab-qty { background: rgb(255 255 255 / .24); color: #fff; }
 .worlds-btn {
-  display: inline-flex; align-items: center; gap: 6px; min-height: 40px; min-width: 0;
-  padding: 5px 11px; border-radius: 99px; border: 2px solid #2a6db3; background: #2a6db3; color: #fff;
-  font: 800 .92rem "Baloo 2", Nunito, sans-serif; cursor: pointer; box-shadow: 0 2px 0 #194b82; white-space: nowrap;
+  flex: none; display: inline-flex; align-items: center; gap: 5px; min-height: 38px;
+  padding: 5px 11px; border-radius: 99px; border: 1.5px solid var(--border); background: var(--soft); color: var(--ink);
+  font: 800 .86rem "Baloo 2", Nunito, sans-serif; cursor: pointer; white-space: nowrap;
 }
-.worlds-btn #world-label { overflow: hidden; text-overflow: ellipsis; }
 .worlds-count {
-  padding: 1px 7px; border-radius: 99px; background: rgb(255 255 255 / .24);
-  font-size: .76rem; font-weight: 900;
+  padding: 1px 7px; border-radius: 99px; background: var(--card); color: #2a6db3;
+  font-size: .74rem; font-weight: 900;
 }
-@media (max-width: 500px) {
-  .dio-top { gap: 5px; padding-left: 7px; padding-right: 7px; }
-  .back-btn { min-height: 36px; padding: 4px 8px; font-size: .82rem; }
-  .worlds-btn { min-height: 36px; padding: 4px 8px; font-size: .82rem; gap: 4px; }
-  .worlds-count { display: none; }
-  .prize-top-btn { min-height: 36px; padding: 3px 8px; gap: 5px; font-size: .82rem; }
-  .prize-chip { padding: 2px 7px; font-size: .76rem; }
+@media (max-width: 760px) {
+  .dio-top { flex-wrap: wrap; row-gap: 6px; gap: 6px; padding-left: 8px; padding-right: 8px; }
+  .world-bar { order: 3; flex: 1 0 100%; padding-bottom: 2px; }
+  .worlds-btn { margin-left: auto; }
+  .back-btn { min-height: 36px; padding: 4px 10px; font-size: .86rem; }
+  .base-tab, .worlds-btn { min-height: 35px; padding: 4px 9px; font-size: .82rem; }
+  .prize-top-btn { min-height: 36px; padding: 3px 9px; gap: 5px; font-size: .86rem; }
+  .prize-chip { padding: 2px 7px; font-size: .78rem; }
   .icon-pill { min-width: 36px; min-height: 36px; font-size: 1rem; }
 }
 .top-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; }
@@ -60,11 +82,21 @@ button, a { font: inherit; color: inherit; }
   font-weight: 800; cursor: pointer; box-shadow: 0 3px 0 var(--border); white-space: nowrap;
 }
 .prize-chip {
-  padding: 2px 9px; border-radius: 99px; background: var(--gold); color: var(--gold-ink);
+  padding: 2px 9px; border-radius: 99px; background: var(--gold); color: var(--on-gold);
   font: 800 .86rem "Baloo 2", Nunito, sans-serif;
 }
 .prize-top-btn.ready { animation: prizePulse 1.5s ease-in-out infinite; }
-.prize-top-btn:active, .back-btn:active, .base-tab:active { transform: translateY(2px); box-shadow: none; }
+.prize-top-btn:active, .back-btn:active, .base-tab:active, .worlds-btn:active { transform: translateY(2px); box-shadow: none; }
+.demo-bar {
+  flex: none; display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+  padding: 5px 12px; background: linear-gradient(90deg, #e7f0ff, #fff5d6);
+  border-bottom: 1.5px solid var(--border); font-size: .84rem; font-weight: 800; color: #183153;
+}
+.demo-bar[hidden] { display: none; }
+.demo-exit {
+  padding: 2px 10px; border-radius: 99px; text-decoration: none; font-weight: 800;
+  background: #ffffff; color: #183153; border: 1.5px solid var(--border);
+}
 @keyframes prizePulse { 50% { transform: scale(1.04); box-shadow: 0 0 0 5px rgb(255 201 60 / .35); } }
 .icon-pill {
   min-width: 42px; min-height: 42px; border-radius: 12px; border: 1.5px solid var(--border);
@@ -149,7 +181,7 @@ button, a { font: inherit; color: inherit; }
   flex: none; min-height: 36px; padding: 4px 11px; border-radius: 99px;
   border: 1.5px solid var(--border); background: var(--card); font-weight: 800; font-size: .85rem; cursor: pointer;
 }
-.cat-tab[aria-selected="true"] { background: var(--gold); border-color: var(--gold-dark); color: #3b2800; }
+.cat-tab[aria-selected="true"] { background: var(--gold); border-color: var(--gold-dark); color: var(--on-gold); }
 
 .shelf-grid {
   flex: 1; min-height: 0; overflow-y: auto; padding: 4px 12px max(16px, env(safe-area-inset-bottom));
@@ -285,13 +317,17 @@ button, a { font: inherit; color: inherit; }
 .prize-cta {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
   min-height: 48px; width: 100%; padding: 10px 18px; border-radius: 16px; border: 0;
-  background: var(--gold); color: #3b2800; font: 800 1.15rem "Baloo 2", Nunito, sans-serif;
+  background: var(--gold); color: var(--on-gold); font: 800 1.15rem "Baloo 2", Nunito, sans-serif;
   box-shadow: 0 5px 0 var(--gold-dark); cursor: pointer; text-decoration: none;
 }
 .prize-cta.teal { background: var(--teal); color: #fff; box-shadow: 0 5px 0 #0d7553; }
 .prize-cta.secondary {
   margin-top: 10px; background: var(--soft); color: var(--ink); box-shadow: 0 4px 0 var(--border);
 }
+.demo-prize-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px;
+}
+.demo-prize-row .prize-cta.secondary { margin-top: 0; font-size: .95rem; padding: 8px 10px; }
 .prize-cta:active { transform: translateY(3px); box-shadow: none; }
 .bell-bar { height: 14px; border-radius: 99px; background: var(--soft); overflow: hidden; border: 1.5px solid var(--border); margin: 10px 0 16px; }
 .bell-bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--gold-dark), var(--gold)); }
@@ -299,17 +335,36 @@ button, a { font: inherit; color: inherit; }
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   :root {
-    --ink: #eaf3ff; --muted: #b4c7e0; --bg: #0f1c33; --card: #1c2b45; --soft: #253a5c;
-    --border: #2f4970; --gold-soft: #3a3114; --gold-ink: #ffe185;
+    --ink: #eaf3ff; --muted: #c2d4ea; --bg: #0f1c33; --card: #1c2b45; --soft: #253a5c;
+    --border: #33507a; --gold-soft: #3a3114; --gold-ink: #ffe185;
   }
-  .base-tab[aria-pressed="true"] { background: #3b82f6; border-color: #3b82f6; box-shadow: none; }
+  .dio-stage { background: #13233d; }
+  .base-tab { background: #203252; color: #eaf3ff; }
+  .base-tab[aria-pressed="true"] { background: #3b82f6; border-color: #3b82f6; color: #ffffff; box-shadow: 0 2px 0 #184287; }
+  .tab-qty { background: #172742; color: #bfd4ee; }
+  .worlds-btn { background: #253a5c; color: #eaf3ff; }
+  .worlds-count { background: #172742; color: #9ecbff; }
+  .prize-top-btn { box-shadow: 0 3px 0 #0b1526; }
+  .demo-bar { background: linear-gradient(90deg, #172a4a, #332910); color: #eaf3ff; }
+  .demo-exit { background: #253a5c; color: #ffffff; border-color: #486999; }
   .hint-pill, .cam-btn, .sel-bar { background: rgb(28 43 69 / .94); }
   .hint-pill.active-mode { background: #133b2e; color: #8af0c6; }
+  .count-pill { background: #1e3a63; color: #a8d4ff; }
+  .clear-btn { background: #223556; color: #cfe0f5; }
   .piece-card.armed { background: #133b2e; }
   .piece-card.locked { background: #16243b; }
+  .piece-mystery { color: #a8c7eb; }
+  .sel-btns button { background: #253a5c; color: #eaf3ff; }
   .sel-btns button.danger { background: #4a2028; border-color: #7d3642; color: #ffb3b9; }
-  .gift-stage { background: radial-gradient(circle, #463a18 0%, #2b220d 100%); }
+  .prize-close { background: #253a5c; color: #eaf3ff; border-color: #466694; }
+  .gift-stage { background: radial-gradient(circle, #6b5219 0%, #2a200c 100%); }
+  .sunburst { background: repeating-conic-gradient(rgb(255 218 102 / .20) 0 15deg, transparent 15deg 30deg); }
   .reveal-stage { background: radial-gradient(circle, #2a3e63 0%, #15233b 100%); }
+  .rarity-tag { background: #144232; color: #8ff5cc; }
+  .rarity-tag.special { background: #1a3b6e; color: #a8d4ff; }
+  .rarity-tag.rare { background: #4f3a0c; color: #ffe07d; }
+  .world-card.locked { opacity: .92; background: #16243b; }
+  .world-chip { background: rgb(15 28 51 / .88); color: #eaf3ff; }
 }
 @media (prefers-reduced-motion: reduce) {
   .prize-top-btn.ready, .sunburst, .gift-crate { animation: none; }

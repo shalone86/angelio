@@ -259,8 +259,10 @@ footer { text-align: center; color: var(--muted); font-size: .85rem; margin-top:
 .dio-cta:active { transform: translateY(3px); box-shadow: none; }
 @media (prefers-color-scheme: dark) {
   .bell-pill { background: #3a3114; color: #ffe185; border-color: #b58214; box-shadow: 0 3px 0 #0b1526; }
+  .bell-ready { background: #ffc93c; color: #3b2800; }
   .diorama-banner { background: linear-gradient(135deg, #1c2b45, #3a3014); border-color: #b58214; box-shadow: 0 7px 0 #0b1526; }
   .dio-title small { color: #ffd975; }
   .dio-bar { background: #14223a; border-color: #544520; }
   .dio-cta { background: #223556; color: var(--ink); border-color: #b58214; box-shadow: 0 4px 0 #0b1526; }
+  .dio-cta.ready { background: #ffc93c; color: #3b2800; border-color: #d99a12; box-shadow: 0 4px 0 #9e6e06; }
 }

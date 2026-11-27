@@ -2,7 +2,7 @@
 // the grown-ups settings card, and a click sound for every button.
 
 import * as S from "./store.js";
-import { speak, stop, browserVoices, whenQuiet, chooseVoice, chosenVoice, familyVoices } from "./tts.js";
+import { speak, stop, resetCutoffs, browserVoices, whenQuiet, chooseVoice, chosenVoice, familyVoices } from "./tts.js";
 import { health } from "./api.js";
 import { sfx } from "./sound.js";
 import { confetti } from "./fx.js";
@@ -228,7 +228,11 @@ export async function viewGrownups(app, { extraToggles = [], about = "" } = {}) 
   const voiceSelect = app.querySelector('[data-k="voice"]');
   if (voiceSelect && s.voice) voiceSelect.value = s.voice;
   app.querySelectorAll("[data-k]").forEach((el) => {
-    el.onchange = () => S.setSetting(el.dataset.k, el.type === "checkbox" ? el.checked : el.value);
+    el.onchange = () => {
+      const val = el.type === "checkbox" ? el.checked : el.value;
+      S.setSetting(el.dataset.k, val);
+      if (el.dataset.k === "readAloud") resetCutoffs();
+    };
   });
   showVoicePicker(app.querySelector("[data-voice-picker]"));
   app.querySelector("[data-test]").onclick = () => speak("Hello! Let's learn something fun.", { force: true });
@@ -269,14 +273,41 @@ export function installClickSounds(skip = "[data-own-sound], .key, .choice-card,
   }, true);
 }
 
+let muteNoticeInstalled = false;
+let muteNoticeTimer = 0;
+function showVoiceAutoMutedNotice() {
+  if (typeof document === "undefined") return;
+  let el = document.getElementById("angelio-voice-toast");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "angelio-voice-toast";
+    el.setAttribute("role", "status");
+    el.style.cssText = "position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:9999;padding:8px 14px;border-radius:999px;background:#183153;color:#fff;border:2px solid #ffc93c;box-shadow:0 8px 24px rgb(0 0 0 /.28);font:800 14px/1.3 Nunito,system-ui,sans-serif;pointer-events:none;white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis";
+    document.body.appendChild(el);
+  }
+  el.textContent = "🔇 Voice muted for fast play — tap 🔊 anytime";
+  el.hidden = false;
+  clearTimeout(muteNoticeTimer);
+  muteNoticeTimer = setTimeout(() => { el.hidden = true; }, 3800);
+}
+
 /** A voice / read-aloud toggle button. */
 export function wireVoiceToggle(btn) {
+  if (!btn) return;
+  if (!muteNoticeInstalled && typeof window !== "undefined") {
+    muteNoticeInstalled = true;
+    window.addEventListener("angelio:voice-auto-muted", () => {
+      document.querySelectorAll("[data-voice]").forEach((b) => b.setAttribute("aria-pressed", "false"));
+      showVoiceAutoMutedNotice();
+    });
+  }
   btn.setAttribute("aria-pressed", S.settings().readAloud);
   btn.onclick = () => {
     const on = !S.settings().readAloud;
     S.setSetting("readAloud", on);
     btn.setAttribute("aria-pressed", on);
+    resetCutoffs();
     sfx.toggle();
-    if (!on) stop();
+    if (!on) stop({ count: false });
   };
 }

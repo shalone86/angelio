@@ -1,12 +1,18 @@
 // 3D Voxel Diorama & Prize Box controller (angelio.org/games/diorama/).
 import { BOX_COST, CATEGORIES, DEFAULT_BASES, PIECES, pieceById, baseById, mergeBases } from "./catalog.js";
 import {
-  loadBells, saveBells, loadDiorama, saveDiorama, canOpenBox, openPrizeBox,
-  placePiece, movePiece, rotatePiece, removePiece, clearBase, setBase,
+  loadBells, saveBells, loadDiorama, saveDiorama, demoDiorama, topWorldTabs,
+  canOpenBox, openPrizeBox, placePiece, movePiece, rotatePiece, removePiece, clearBase, setBase,
 } from "./store.js";
 import { loadModels, createDioramaScene, renderThumbnails, createSpotlight, createBaseSpotlight } from "./scene.js";
 
 const $ = (s, el = document) => el.querySelector(s);
+const DEMO = new URLSearchParams(location.search).has("demo") || location.hash === "#demo";
+const demoStore = (() => {
+  const m = {};
+  return { getItem: (k) => m[k] ?? null, setItem: (k, v) => { m[k] = String(v); } };
+})();
+const activeStore = DEMO ? demoStore : null;
 
 let soundOn = (() => {
   try { return localStorage.getItem("angelio:world-sound") !== "off"; } catch { return true; }
@@ -74,8 +80,8 @@ async function say(text) {
 
 // ───────── State ─────────
 let bases = mergeBases(DEFAULT_BASES, []);
-let bells = loadBells();
-let diorama = loadDiorama(null, bases);
+let bells = DEMO ? saveBells({ bells: 999, earned: 999, spent: 0 }, activeStore) : loadBells();
+let diorama = DEMO ? saveDiorama(demoDiorama(bases), activeStore) : loadDiorama(null, bases);
 let category = "all";
 let placingId = null;     // unlocked piece ID armed for tapping tiles
 let selectedUid = null;   // placed item UID currently selected on the board
@@ -107,7 +113,7 @@ const scene = createDioramaScene(stageCanvas, {
     if (movingUid) {
       const r = movePiece(diorama, diorama.base, movingUid, gx, gz, bases);
       if (r.ok) {
-        diorama = saveDiorama(r.diorama);
+        diorama = saveDiorama(r.diorama, activeStore);
         sfx.pop();
         selectedUid = movingUid;
         movingUid = null;
@@ -120,10 +126,11 @@ const scene = createDioramaScene(stageCanvas, {
     if (placingId) {
       const r = placePiece(diorama, diorama.base, placingId, gx, gz, 0, bases);
       if (r.ok) {
-        diorama = saveDiorama(r.diorama);
+        diorama = saveDiorama(r.diorama, activeStore);
         const p = pieceById(placingId);
         (sfx[p?.sound] ?? sfx.pop)();
         selectedUid = r.item.uid;
+        renderTopBar();
         renderBoard(r.item.uid);
         renderShelf();
       } else {
@@ -179,10 +186,25 @@ function syncSelectionUi() {
   setHint();
 }
 
+let lastCompactTop = typeof innerWidth === "number" && innerWidth <= 560;
 function renderTopBar() {
-  const activeBase = baseById(diorama.base, bases) ?? bases[0];
-  $("#world-label").textContent = `${activeBase.emoji} ${activeBase.short ?? activeBase.name}`;
+  lastCompactTop = typeof innerWidth === "number" && innerWidth <= 560;
+  const tabs = topWorldTabs(diorama, bases, lastCompactTop ? 2 : 3);
+  const showQty = diorama.unlockedBases.length > 1;
+  $("#base-tabs").innerHTML = tabs.map((b) => {
+    const active = diorama.base === b.id;
+    const count = (diorama.placed[b.id] ?? []).length;
+    return `<button type="button" class="base-tab" data-base="${b.id}" aria-pressed="${active}">
+      <span>${b.emoji} ${b.short ?? b.name}</span>
+      ${showQty && count ? `<span class="tab-qty">${count}</span>` : ""}
+    </button>`;
+  }).join("");
   $("#worlds-count").textContent = `${diorama.unlockedBases.length}/${bases.length}`;
+
+  if (DEMO) {
+    $("#demo-bar").hidden = false;
+    $("#demo-text").innerHTML = `✨ <strong>Demo Mode</strong> — All ${PIECES.length} figurines &amp; ${bases.length} worlds unlocked (local preview, real save untouched)`;
+  }
 
   const check = canOpenBox(bells, diorama, bases);
   $("#top-bells").textContent = `🔔 ${bells.bells}`;
@@ -253,7 +275,7 @@ function renderShelf() {
 function switchWorld(baseId) {
   const r = setBase(diorama, baseId, bases);
   if (!r.ok) return false;
-  diorama = saveDiorama(r.diorama);
+  diorama = saveDiorama(r.diorama, activeStore);
   selectedUid = null;
   movingUid = null;
   const info = baseById(diorama.base, bases);
@@ -361,8 +383,24 @@ function openPrizeModal(forceReveal = null) {
       <h2 id="prize-heading">Complete Collection!</h2>
       <p>You unlocked all ${PIECES.length} figurines and all ${bases.length} Voxel Diorama worlds!</p>
       <button type="button" class="prize-cta teal" id="done-prize">🧱 Build in Diorama</button>
+      ${DEMO ? `<div class="demo-prize-row">
+        <button type="button" class="prize-cta secondary" id="demo-preview-piece">🎁 Sample Figurine</button>
+        <button type="button" class="prize-cta secondary" id="demo-preview-base">🌍 Sample World</button>
+      </div>` : ""}
     `;
     $("#done-prize").onclick = closePrizeModal;
+    const pBtn = $("#demo-preview-piece");
+    if (pBtn) pBtn.onclick = () => {
+      const piece = PIECES[Math.floor(Math.random() * PIECES.length)];
+      sfx.fanfare();
+      openPrizeModal({ kind: "piece", piece });
+    };
+    const bBtn = $("#demo-preview-base");
+    if (bBtn) bBtn.onclick = () => {
+      const base = bases[Math.floor(Math.random() * bases.length)];
+      sfx.fanfare();
+      openPrizeModal({ kind: "base", base });
+    };
     return;
   }
 
@@ -397,8 +435,8 @@ function triggerUnbox() {
     openPrizeModal();
     return;
   }
-  bells = saveBells(res.bells);
-  diorama = saveDiorama(res.diorama);
+  bells = saveBells(res.bells, activeStore);
+  diorama = saveDiorama(res.diorama, activeStore);
   sfx.fanfare();
   if (res.kind === "base") {
     say(`You unlocked a new diorama world: ${res.base.name}! ${res.base.blurb}`);
@@ -416,6 +454,10 @@ function closePrizeModal() {
 }
 
 // ───────── Wire Events ─────────
+$("#base-tabs").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-base]");
+  if (b && b.dataset.base !== diorama.base) switchWorld(b.dataset.base);
+});
 $("#worlds-btn").onclick = openWorldsModal;
 $("#worlds-close").onclick = closeWorldsModal;
 $("#worlds-backdrop").onclick = closeWorldsModal;
@@ -464,7 +506,7 @@ $("#sel-bar").addEventListener("click", (e) => {
   if (act === "rotate") {
     const r = rotatePiece(diorama, diorama.base, selectedUid, 1, bases);
     if (r.ok) {
-      diorama = saveDiorama(r.diorama);
+      diorama = saveDiorama(r.diorama, activeStore);
       sfx.rotate();
       renderBoard();
     }
@@ -481,10 +523,11 @@ $("#sel-bar").addEventListener("click", (e) => {
   } else if (act === "remove") {
     const r = removePiece(diorama, diorama.base, selectedUid, bases);
     if (r.ok) {
-      diorama = saveDiorama(r.diorama);
+      diorama = saveDiorama(r.diorama, activeStore);
       selectedUid = null;
       movingUid = null;
       sfx.remove();
+      renderTopBar();
       renderBoard();
       renderShelf();
     }
@@ -505,10 +548,11 @@ $("#clear-btn").onclick = () => {
   if (!confirm(`Clear all figurines from ${info?.name ?? "this scene"}? Your unlocked collection stays saved.`)) return;
   const r = clearBase(diorama, diorama.base, bases);
   if (r.ok) {
-    diorama = saveDiorama(r.diorama);
+    diorama = saveDiorama(r.diorama, activeStore);
     selectedUid = null;
     movingUid = null;
     sfx.remove();
+    renderTopBar();
     renderBoard();
     renderShelf();
   }
@@ -529,7 +573,11 @@ $("#prize-btn").onclick = () => openPrizeModal();
 $("#prize-close").onclick = closePrizeModal;
 $("#prize-backdrop").onclick = closePrizeModal;
 
-addEventListener("resize", () => scene.resize());
+addEventListener("resize", () => {
+  scene.resize();
+  const compact = innerWidth <= 560;
+  if (compact !== lastCompactTop) renderTopBar();
+});
 addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
     if (!$("#prize-modal").hidden) closePrizeModal();
@@ -560,7 +608,13 @@ async function loadStudioScenes() {
 loadStudioScenes().then(async (custom) => {
   if (custom.length) {
     bases = mergeBases(DEFAULT_BASES, custom);
-    diorama = loadDiorama(null, bases);
+    if (DEMO) {
+      const placed = { ...diorama.placed };
+      for (const b of bases) placed[b.id] ??= [];
+      diorama = saveDiorama({ ...diorama, unlockedBases: bases.map((b) => b.id), placed }, activeStore);
+    } else {
+      diorama = loadDiorama(null, bases);
+    }
     renderTopBar();
     renderBoard();
   }
@@ -577,7 +631,11 @@ loadStudioScenes().then(async (custom) => {
 });
 
 window.__diorama = {
-  getState: () => ({ bells, diorama, bases: bases.length, models: Object.keys(models).length }),
+  getState: () => ({
+    demo: DEMO, bells, diorama, bases: bases.length,
+    tabs: topWorldTabs(diorama, bases, 3).map((b) => b.id),
+    models: Object.keys(models).length,
+  }),
   openBox: () => openPrizeModal(),
   openWorlds: () => openWorldsModal(),
   switchWorld: (id) => switchWorld(id),

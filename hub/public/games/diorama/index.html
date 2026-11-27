@@ -14,11 +14,13 @@
 <body>
   <header class="dio-top">
     <a class="back-btn" href="/games/" aria-label="Back to Angelio Games">← Games</a>
-    <button type="button" class="worlds-btn" id="worlds-btn" aria-haspopup="dialog" aria-label="Switch diorama world">
-      <span id="world-label">⛪ Chapel</span>
-      <span class="worlds-count" id="worlds-count">1/14</span>
-      <span aria-hidden="true">▾</span>
-    </button>
+    <div class="world-bar">
+      <div class="base-tabs" id="base-tabs" role="group" aria-label="Quick diorama worlds"></div>
+      <button type="button" class="worlds-btn" id="worlds-btn" aria-haspopup="dialog" aria-label="Browse all diorama worlds">
+        <span>🌍 All</span>
+        <span class="worlds-count" id="worlds-count">1/14</span>
+      </button>
+    </div>
     <div class="top-actions">
       <button type="button" class="prize-top-btn" id="prize-btn" aria-label="Open Prize Box">
         <span id="top-bells">🔔 0</span>
@@ -27,6 +29,10 @@
       <button type="button" class="icon-pill" id="sound-btn" aria-pressed="true" aria-label="Toggle sound">🔊</button>
     </div>
   </header>
+  <div class="demo-bar" id="demo-bar" hidden>
+    <span id="demo-text">✨ Demo Mode — Everything unlocked (local preview, real save untouched)</span>
+    <a class="demo-exit" href="/games/diorama/">Exit Demo</a>
+  </div>
 
   <main class="dio-main">
     <section class="dio-stage" aria-label="3D Voxel Diorama tabletop">

@@ -43,12 +43,14 @@ export function defaultDiorama(bases = BASES) {
       { uid: "s3", id: "parish-boy", gx: 5, gz: 4, rot: 3 },
     ];
   }
+  const start = unlockedBases[0];
   return {
     version: 2,
     unlocked: [...STARTER_IDS],
     unlockedBases,
     welcomeClaimed: false,
-    base: unlockedBases[0],
+    base: start,
+    views: { [start]: 1 },
     placed,
   };
 }
@@ -108,6 +110,14 @@ export function loadDiorama(store = null, bases = BASES) {
   }
 
   const base = unlockedBaseSet.has(raw.base) ? raw.base : starters[0];
+  const views = {};
+  if (raw.views && typeof raw.views === "object") {
+    for (const [k, v] of Object.entries(raw.views)) {
+      const n = clampInt(v);
+      if (n > 0) views[k] = n;
+    }
+  }
+  views[base] = Math.max(1, clampInt(views[base]));
 
   return {
     version: 2,
@@ -115,6 +125,7 @@ export function loadDiorama(store = null, bases = BASES) {
     unlockedBases: [...unlockedBaseSet],
     welcomeClaimed: !!raw.welcomeClaimed,
     base,
+    views,
     placed,
   };
 }
@@ -192,6 +203,7 @@ export function openPrizeBox(bellsState, dioramaState, rng = Math.random, bases 
     unlockedBases: nextBases,
     welcomeClaimed: true,
     base: dioramaState.base,
+    views: { ...(dioramaState.views ?? {}) },
     placed,
   };
 
@@ -276,5 +288,90 @@ export function clearBase(state, baseId, bases = BASES) {
 export function setBase(state, baseId, bases = BASES) {
   if (!baseById(baseId, bases)) return { ok: false, diorama: state, reason: "bad-base" };
   if (!(state.unlockedBases ?? starterBases(bases)).includes(baseId)) return { ok: false, diorama: state, reason: "locked" };
-  return { ok: true, diorama: { ...state, base: baseId } };
+  const views = { ...(state.views ?? {}) };
+  views[baseId] = clampInt(views[baseId]) + 1;
+  return { ok: true, diorama: { ...state, base: baseId, views } };
+}
+
+/** Pick up to `max` quick tabs from unlocked worlds: worlds with placed figures & most views first, always including active base. */
+export function topWorldTabs(state, bases = BASES, max = 3) {
+  const owned = new Set(state?.unlockedBases ?? starterBases(bases));
+  const unlocked = bases.filter((b) => owned.has(b.id));
+  if (max <= 0 || !unlocked.length) return [];
+  if (unlocked.length <= max) return unlocked;
+
+  const order = new Map(unlocked.map((b, i) => [b.id, i]));
+  const ranked = [...unlocked].sort((a, b) => {
+    const ac = state?.placed?.[a.id]?.length ?? 0;
+    const bc = state?.placed?.[b.id]?.length ?? 0;
+    const aHas = ac > 0 ? 1 : 0;
+    const bHas = bc > 0 ? 1 : 0;
+    if (aHas !== bHas) return bHas - aHas;
+    const av = clampInt(state?.views?.[a.id]);
+    const bv = clampInt(state?.views?.[b.id]);
+    if (av !== bv) return bv - av;
+    if (ac !== bc) return bc - ac;
+    return order.get(a.id) - order.get(b.id);
+  });
+
+  const picked = ranked.slice(0, max);
+  const active = unlocked.find((b) => b.id === state?.base);
+  if (active && !picked.some((b) => b.id === active.id)) picked[picked.length - 1] = active;
+  return picked;
+}
+
+/** Build an in-memory everything-unlocked diorama state for local previewing without altering kids' saves. */
+export function demoDiorama(bases = BASES) {
+  const unlockedBases = bases.map((b) => b.id);
+  const placed = {};
+  for (const b of bases) placed[b.id] = [];
+
+  const seeds = {
+    chapel: [
+      { uid: "d-ch-1", id: "prop-altar", gx: 3, gz: 1, rot: 0 },
+      { uid: "d-ch-2", id: "priest-feast", gx: 4, gz: 2, rot: 0 },
+      { uid: "d-ch-3", id: "server-candle", gx: 2, gz: 2, rot: 0 },
+      { uid: "d-ch-4", id: "prop-candle-rack", gx: 6, gz: 2, rot: 0 },
+      { uid: "d-ch-5", id: "prop-pew", gx: 2, gz: 5, rot: 0 },
+      { uid: "d-ch-6", id: "prop-pew", gx: 5, gz: 5, rot: 0 },
+      { uid: "d-ch-7", id: "parish-boy", gx: 2, gz: 6, rot: 3 },
+      { uid: "d-ch-8", id: "parish-girl", gx: 5, gz: 6, rot: 3 },
+    ],
+    fuji: [
+      { uid: "d-fj-1", id: "prop-bell-tower", gx: 3, gz: 1, rot: 0 },
+      { uid: "d-fj-2", id: "prop-lantern", gx: 1, gz: 3, rot: 0 },
+      { uid: "d-fj-3", id: "prop-flowers", gx: 6, gz: 3, rot: 0 },
+      { uid: "d-fj-4", id: "parish-grandpa", gx: 4, gz: 4, rot: 0 },
+      { uid: "d-fj-5", id: "prop-dog", gx: 2, gz: 5, rot: 1 },
+      { uid: "d-fj-6", id: "prop-pine", gx: 6, gz: 6, rot: 0 },
+    ],
+    moon: [
+      { uid: "d-mn-1", id: "prop-monstrance", gx: 3, gz: 2, rot: 0 },
+      { uid: "d-mn-2", id: "server-cross", gx: 4, gz: 3, rot: 0 },
+      { uid: "d-mn-3", id: "parish-boy", gx: 2, gz: 4, rot: 0 },
+      { uid: "d-mn-4", id: "prop-sheep", gx: 5, gz: 5, rot: 2 },
+      { uid: "d-mn-5", id: "prop-lantern", gx: 1, gz: 6, rot: 0 },
+    ],
+    islands: [
+      { uid: "d-is-1", id: "prop-well", gx: 3, gz: 2, rot: 0 },
+      { uid: "d-is-2", id: "prop-apple-tree", gx: 1, gz: 2, rot: 0 },
+      { uid: "d-is-3", id: "prop-wagon", gx: 5, gz: 4, rot: 1 },
+      { uid: "d-is-4", id: "parish-dad", gx: 3, gz: 5, rot: 0 },
+      { uid: "d-is-5", id: "parish-mom", gx: 4, gz: 5, rot: 0 },
+      { uid: "d-is-6", id: "prop-flowers", gx: 6, gz: 6, rot: 0 },
+    ],
+  };
+  for (const [bid, items] of Object.entries(seeds)) {
+    if (placed[bid]) placed[bid] = items;
+  }
+
+  return {
+    version: 2,
+    unlocked: PIECES.map((p) => p.id),
+    unlockedBases,
+    welcomeClaimed: true,
+    base: unlockedBases[0] ?? "chapel",
+    views: { chapel: 5, fuji: 4, moon: 3, islands: 2 },
+    placed,
+  };
 }

@@ -7,7 +7,7 @@ import {
 } from "../public/games/diorama/catalog.js";
 import {
   BELLS_KEY, DIORAMA_KEY, loadBells, saveBells, defaultDiorama, loadDiorama, saveDiorama,
-  canOpenBox, openPrizeBox, placePiece, movePiece, rotatePiece, removePiece, clearBase, setBase,
+  demoDiorama, topWorldTabs, canOpenBox, openPrizeBox, placePiece, movePiece, rotatePiece, removePiece, clearBase, setBase,
 } from "../public/games/diorama/store.js";
 import { bellsForRound, awardBells, loadBells as kitLoadBells } from "../../kit/stickers.js";
 
@@ -206,4 +206,50 @@ test("Studio Diorama API reads, cleans, backs up history, and serves public scen
 
   const pub = await (await worker.fetch(new Request("https://angelio.org/api/diorama/scenes"), env)).json();
   assert.equal(pub.scenes[0].name, "Nazareth Workshop");
+});
+
+test("topWorldTabs prioritizes populated and most-viewed unlocked worlds while keeping active world visible", () => {
+  let dio = defaultDiorama();
+  // Only starter chapel unlocked -> returns [chapel]
+  assert.deepEqual(topWorldTabs(dio).map((b) => b.id), ["chapel"]);
+
+  // Unlock 5 more worlds, empty except chapel and moon
+  dio = {
+    ...dio,
+    unlockedBases: ["chapel", "garden", "courtyard", "meadow", "moon", "fuji"],
+    views: { chapel: 1, garden: 10, courtyard: 8, moon: 4, fuji: 2 },
+  };
+  dio = placePiece(dio, "moon", "parish-boy", 1, 1).diorama;
+  dio = placePiece(dio, "fuji", "parish-boy", 2, 2).diorama;
+
+  // Populated worlds (chapel, moon, fuji) outrank empty garden/courtyard even when garden has more views
+  let tabs = topWorldTabs(dio, BASES, 3).map((b) => b.id);
+  assert.deepEqual(tabs, ["moon", "fuji", "chapel"]);
+
+  // Switching to courtyard bumps views and keeps active courtyard visible in top 3
+  dio = setBase(dio, "courtyard").diorama;
+  assert.equal(dio.views.courtyard, 9);
+  tabs = topWorldTabs(dio, BASES, 3).map((b) => b.id);
+  assert.ok(tabs.includes("courtyard"));
+  assert.equal(tabs.length, 3);
+});
+
+test("demoDiorama unlocks all 30 pieces and 14 worlds with valid seeded builds", () => {
+  const demo = demoDiorama(BASES);
+  assert.equal(demo.unlocked.length, 30);
+  assert.equal(demo.unlockedBases.length, 14);
+  assert.equal(demo.welcomeClaimed, true);
+  assert.deepEqual(topWorldTabs(demo, BASES, 3).map((b) => b.id), ["chapel", "fuji", "moon"]);
+
+  for (const [bid, items] of Object.entries(demo.placed)) {
+    assert.ok(baseById(bid, BASES));
+    const seen = new Set();
+    for (const it of items) {
+      assert.ok(pieceById(it.id), `valid piece ${it.id}`);
+      assert.ok(it.gx >= 0 && it.gx < GRID && it.gz >= 0 && it.gz < GRID);
+      const key = `${it.gx},${it.gz}`;
+      assert.ok(!seen.has(key), `duplicate tile ${bid}:${key}`);
+      seen.add(key);
+    }
+  }
 });
