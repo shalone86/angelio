@@ -36,10 +36,6 @@ export const APP_LIST = [
     blurb: "Fair shares, halves to eighths, the number line, equal fractions and comparing.",
   },
   {
-    name: "Maps & Grids", path: "maps", subject: "math", grades: "Grades K–5", emoji: "🗺️",
-    blurb: "Directions, grid addresses, compass maps, polygons, symmetry, lines, angles, coordinates, and 3D volume.",
-  },
-  {
     name: "Letter Lane", path: "letters", subject: "language", grades: "PreK–K", emoji: "🔤",
     blurb: "All 26 letters and their sounds, rhymes and beats, then short vowels, blending and building words, and little sentences.",
   },

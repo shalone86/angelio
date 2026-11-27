@@ -11,7 +11,6 @@
     { "binding": "DOUBLES", "service": "doubles" },
     { "binding": "GRAMMAR", "service": "grammar" },
     { "binding": "FRACTIONS", "service": "fractions" },
-    { "binding": "MAPS", "service": "maps" },
     { "binding": "LETTERS", "service": "letters" },
     { "binding": "READALOUD", "service": "readaloud" },
     { "binding": "SPELLING", "service": "spelling" },

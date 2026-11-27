@@ -13,7 +13,6 @@ export const APPS = {
   doubles: "DOUBLES", // Doubles (doubles Worker)
   grammar: "GRAMMAR", // Grammar (grammar Worker)
   fractions: "FRACTIONS", // Fraction Feast (fractions Worker)
-  maps: "MAPS", // Maps, Grids & Geometry (maps Worker)
   letters: "LETTERS", // Letter Lane (letters Worker)
   read: "READALOUD", // Read Aloud (readaloud Worker)
   spell: "SPELLING", // Spelling (spelling Worker)
