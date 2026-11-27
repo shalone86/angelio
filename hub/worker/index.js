@@ -13,6 +13,7 @@ export const APPS = {
   doubles: "DOUBLES", // Doubles (doubles Worker)
   grammar: "GRAMMAR", // Grammar (grammar Worker)
   fractions: "FRACTIONS", // Fraction Feast (fractions Worker)
+  maps: "MAPS", // Maps, Grids & Geometry (maps Worker)
   letters: "LETTERS", // Letter Lane (letters Worker)
   read: "READALOUD", // Read Aloud (readaloud Worker)
   spell: "SPELLING", // Spelling (spelling Worker)
@@ -25,6 +26,7 @@ export const APPS = {
   porter: "PORTER", // Monastery Porter (porter Worker): keeping the monastery door (a demo)
   match: "MATCH", // Saints Match (match Worker): arcade memory cards with the saints (a demo)
   garden: "GARDEN", // Garden Givers (garden Worker): protect crops & deliver to the food bank (a demo)
+  procession: "PROCESSION", // Procession! (procession Worker): clear the road ahead of the procession
 };
 
 import { normalizeCode, newCode, codeStatus, day, month } from "./codes.js";

@@ -36,6 +36,10 @@ export const APP_LIST = [
     blurb: "Fair shares, halves to eighths, the number line, equal fractions and comparing.",
   },
   {
+    name: "Maps & Grids", path: "maps", subject: "math", grades: "Grades K–5", emoji: "🗺️",
+    blurb: "Directions, grid addresses, compass maps, polygons, symmetry, lines, angles, coordinates, and 3D volume.",
+  },
+  {
     name: "Letter Lane", path: "letters", subject: "language", grades: "PreK–K", emoji: "🔤",
     blurb: "All 26 letters and their sounds, rhymes and beats, then short vowels, blending and building words, and little sentences.",
   },
@@ -80,11 +84,21 @@ export const APP_LIST = [
     blurb: "Guard crops & pack Food Bank baskets",
     say: "Garden Givers. Shoo critters off the monastery garden and orchard, pick ripe produce, and deliver baskets to the food bank.",
   },
-  // Coming soon (see ROADMAP.md)
   {
-    name: "Choir", subject: "games", grades: "All ages", emoji: "🎶",
-    blurb: "Tap along in the choir loft",
-    say: "Choir. Coming soon: tap along with the music in the choir loft as the beat gets faster.",
+    name: "Procession!", path: "procession", subject: "games", grades: "All ages", emoji: "🚩",
+    blurb: "Clear the road & guide the procession",
+    say: "Procession. Run ahead of the parish procession to fix potholes, light street lamps, and steer the parish safely down the road.",
+  },
+  // Coming soon (final 2 of the 8-game set in ROADMAP.md)
+  {
+    name: "Parish Kitchen", subject: "games", grades: "All ages", emoji: "🍞",
+    blurb: "Cook feast meals for pilgrims",
+    say: "Parish Kitchen. Coming soon: tap ingredients in order to cook warm meals for pilgrims and feast days.",
+  },
+  {
+    name: "Bell Tower", subject: "games", grades: "All ages", emoji: "🔔",
+    blurb: "Ring the church bells on the beat",
+    say: "Bell Tower. Coming soon: swing and ring the parish bells on the beat for Sunday Mass and feasts.",
   },
   { name: "Catholic History", subject: "history", grades: "All ages", emoji: "⛪", blurb: "Saints, the early Church and the great moments, on drag-and-drop timelines." },
 ];

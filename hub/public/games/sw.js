@@ -2,7 +2,7 @@
 // Navigations: network first, falling back to the saved page. Everything else: show what is saved,
 // refresh it in the background. Bump VERSION when you change files, and list new files in ASSETS.
 
-const VERSION = "v10";
+const VERSION = "v11";
 const CACHE = `games-shell-${VERSION}`;
 const RUNTIME = "games-runtime-v1";
 

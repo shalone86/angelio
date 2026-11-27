@@ -351,6 +351,19 @@ export const CHECKLISTS = [
       { slug: "diorama-flowers", label: "Flower bed planter", size: [16, 8], note: "Colorful voxel planter for gardens & courtyards." },
     ],
   },
+  {
+    id: "procession-props", title: "Procession!: road props", game: "Procession!",
+    note: "Clergy, crew, parishioners, and the parish pup reuse your existing .vox models. These road hazards render as clean voxel stand-ins until you draw custom ones.",
+    items: [
+      { slug: "procession-pothole", label: "Road pothole", size: [16, 8], note: "Dark dip on the street." },
+      { slug: "procession-lamp", label: "Street lamp", size: [8, 16], note: "Lights up at dusk and night." },
+      { slug: "procession-car", label: "Parked car", size: [16, 16], note: "Side-view sedan." },
+      { slug: "procession-truck", label: "Delivery truck", size: [24, 16], note: "Big boxy van across one lane." },
+      { slug: "procession-bridge", label: "Bridge plank", size: [16, 16], note: "Wooden plank spanning broken & washed-out bridges." },
+      { slug: "procession-band", label: "Marching band player", size: [8, 8], note: "Brass horn or drum marcher." },
+      { slug: "procession-angel", label: "Guardian angel", size: [8, 8], note: "Swoops in for the Guardian Angel upgrade." },
+    ],
+  },
 ];
 
 /** Every slug a checklist names (for the page). */

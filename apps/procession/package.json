@@ -1,0 +1,16 @@
+{
+  "name": "procession",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "icons": "node scripts/make-icons.cjs"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  },
+  "license": "MIT",
+  "description": "Procession!: clear the road ahead of the parish procession, steer past hazards, and pick upgrades."
+}

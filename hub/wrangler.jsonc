@@ -11,6 +11,7 @@
     { "binding": "DOUBLES", "service": "doubles" },
     { "binding": "GRAMMAR", "service": "grammar" },
     { "binding": "FRACTIONS", "service": "fractions" },
+    { "binding": "MAPS", "service": "maps" },
     { "binding": "LETTERS", "service": "letters" },
     { "binding": "READALOUD", "service": "readaloud" },
     { "binding": "SPELLING", "service": "spelling" },
@@ -21,7 +22,8 @@
     { "binding": "USHER", "service": "usher" },
     { "binding": "PORTER", "service": "porter" },
     { "binding": "MATCH", "service": "match" },
-    { "binding": "GARDEN", "service": "garden" }
+    { "binding": "GARDEN", "service": "garden" },
+    { "binding": "PROCESSION", "service": "procession" }
   ],
   // Family codes and daily safety caps, shared with the app Workers (worker/codes.js).
   // The admin page (/admin/) needs a secret: npx wrangler secret put ADMIN_KEY
