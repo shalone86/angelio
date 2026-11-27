@@ -1,10 +1,10 @@
 // 3D Voxel Diorama & Prize Box controller (angelio.org/games/diorama/).
-import { BOX_COST, CATEGORIES, BASES, PIECES, pieceById, baseById } from "./catalog.js";
+import { BOX_COST, CATEGORIES, DEFAULT_BASES, PIECES, pieceById, baseById, mergeBases } from "./catalog.js";
 import {
   loadBells, saveBells, loadDiorama, saveDiorama, canOpenBox, openPrizeBox,
   placePiece, movePiece, rotatePiece, removePiece, clearBase, setBase,
 } from "./store.js";
-import { loadModels, createDioramaScene, renderThumbnails, createSpotlight } from "./scene.js";
+import { loadModels, createDioramaScene, renderThumbnails, createSpotlight, createBaseSpotlight } from "./scene.js";
 
 const $ = (s, el = document) => el.querySelector(s);
 
@@ -73,8 +73,9 @@ async function say(text) {
 }
 
 // ───────── State ─────────
+let bases = mergeBases(DEFAULT_BASES, []);
 let bells = loadBells();
-let diorama = loadDiorama();
+let diorama = loadDiorama(null, bases);
 let category = "all";
 let placingId = null;     // unlocked piece ID armed for tapping tiles
 let selectedUid = null;   // placed item UID currently selected on the board
@@ -85,9 +86,8 @@ let spotlight = null;
 
 const stageCanvas = $("#stage");
 const scene = createDioramaScene(stageCanvas, {
-  onTapPiece: (uid, gx, gz) => {
+  onTapPiece: (uid) => {
     if (placingId || movingUid) {
-      // Gently tell the child that tile already has a figurine, or select the tapped piece when moving.
       setHint("That tile already has something! Tap an empty square.");
       sfx.rotate();
       return;
@@ -105,7 +105,7 @@ const scene = createDioramaScene(stageCanvas, {
   },
   onTapTile: (gx, gz) => {
     if (movingUid) {
-      const r = movePiece(diorama, diorama.base, movingUid, gx, gz);
+      const r = movePiece(diorama, diorama.base, movingUid, gx, gz, bases);
       if (r.ok) {
         diorama = saveDiorama(r.diorama);
         sfx.pop();
@@ -118,7 +118,7 @@ const scene = createDioramaScene(stageCanvas, {
       return;
     }
     if (placingId) {
-      const r = placePiece(diorama, diorama.base, placingId, gx, gz, 0);
+      const r = placePiece(diorama, diorama.base, placingId, gx, gz, 0, bases);
       if (r.ok) {
         diorama = saveDiorama(r.diorama);
         const p = pieceById(placingId);
@@ -180,33 +180,35 @@ function syncSelectionUi() {
 }
 
 function renderTopBar() {
-  const check = canOpenBox(bells, diorama);
+  const activeBase = baseById(diorama.base, bases) ?? bases[0];
+  $("#world-label").textContent = `${activeBase.emoji} ${activeBase.short ?? activeBase.name}`;
+  $("#worlds-count").textContent = `${diorama.unlockedBases.length}/${bases.length}`;
+
+  const check = canOpenBox(bells, diorama, bases);
   $("#top-bells").textContent = `🔔 ${bells.bells}`;
   const chip = $("#prize-chip");
   const btn = $("#prize-btn");
   if (check.reason === "welcome") {
-    chip.textContent = "🎁 FREE Gift!";
+    chip.textContent = "🎁 FREE!";
     btn.classList.add("ready");
   } else if (check.ok) {
     chip.textContent = `🎁 Open (${BOX_COST})`;
     btn.classList.add("ready");
   } else if (check.reason === "complete") {
-    chip.textContent = "🏆 All 30!";
+    chip.textContent = "🏆 All!";
     btn.classList.remove("ready");
   } else {
     chip.textContent = `🎁 ${bells.bells}/${BOX_COST}`;
     btn.classList.remove("ready");
   }
 
-  $("#bases").innerHTML = BASES.map((b) =>
-    `<button type="button" class="base-tab" data-base="${b.id}" aria-pressed="${diorama.base === b.id}">${b.emoji} ${b.short ?? b.name}</button>`
-  ).join("");
   $("#sound-btn").textContent = soundOn ? "🔊" : "🔇";
   $("#sound-btn").setAttribute("aria-pressed", String(soundOn));
 }
 
 function renderBoard(popUid = null) {
-  scene.setBase(diorama.base);
+  const activeBase = baseById(diorama.base, bases) ?? bases[0];
+  scene.setBase(activeBase, models);
   scene.syncPlaced(currentItems(), models, { popUid });
   syncSelectionUi();
 }
@@ -222,7 +224,6 @@ function renderShelf() {
 
   const unlockedSet = new Set(diorama.unlocked);
   const shown = PIECES.filter((p) => category === "all" || p.category === category);
-  // Show unlocked pieces first, then locked mystery boxes.
   shown.sort((a, b) => Number(unlockedSet.has(b.id)) - Number(unlockedSet.has(a.id)));
 
   $("#shelf").innerHTML = shown.map((p) => {
@@ -248,24 +249,89 @@ function renderShelf() {
   }).join("");
 }
 
+// ───────── Worlds Modal ─────────
+function switchWorld(baseId) {
+  const r = setBase(diorama, baseId, bases);
+  if (!r.ok) return false;
+  diorama = saveDiorama(r.diorama);
+  selectedUid = null;
+  movingUid = null;
+  const info = baseById(diorama.base, bases);
+  sfx.pop();
+  say(info?.say);
+  renderTopBar();
+  renderBoard();
+  renderShelf();
+  return true;
+}
+
+function openWorldsModal() {
+  const modal = $("#worlds-modal");
+  modal.hidden = false;
+  $("#worlds-modal-count").textContent = `${diorama.unlockedBases.length} / ${bases.length}`;
+
+  const owned = new Set(diorama.unlockedBases);
+  const ordered = [...bases].sort((a, b) => Number(owned.has(b.id)) - Number(owned.has(a.id)));
+
+  $("#worlds-grid").innerHTML = ordered.map((b) => {
+    const isOwned = owned.has(b.id);
+    const active = diorama.base === b.id;
+    const placedCount = (diorama.placed[b.id] ?? []).length;
+    const swatch = `background:linear-gradient(135deg, ${b.palette.sky} 0%, ${b.palette.tileA} 68%, ${b.palette.accent} 100%)`;
+    const badge = active ? "✓ Here" : isOwned ? `${placedCount} 🧱` : "🔒 Prize Box";
+    return `<button type="button" class="world-card${active ? " active" : ""}${isOwned ? "" : " locked"}" data-world="${b.id}" data-owned="${isOwned ? "1" : "0"}">
+      <div class="world-swatch" style="${swatch}">
+        <span>${b.emoji}</span>
+        <span class="world-chip">${badge}</span>
+      </div>
+      <b>${b.name}</b>
+      <small>${isOwned ? b.blurb : "Unlock inside the Prize Box!"}</small>
+    </button>`;
+  }).join("");
+}
+
+function closeWorldsModal() {
+  $("#worlds-modal").hidden = true;
+}
+
 // ───────── Crossy Road Prize Box Modal ─────────
 function cleanupSpotlight() {
   spotlight?.dispose();
   spotlight = null;
 }
 
-function openPrizeModal(forceRevealPiece = null) {
+function openPrizeModal(forceReveal = null) {
   cleanupSpotlight();
   const modal = $("#prize-modal");
   modal.hidden = false;
-  $("#modal-count").textContent = `${diorama.unlocked.length} / ${PIECES.length}`;
+  $("#modal-count").textContent = `${diorama.unlocked.length}/${PIECES.length} 🧱 · ${diorama.unlockedBases.length}/${bases.length} 🌍`;
   $("#modal-bells").textContent = `🔔 ${bells.bells}`;
 
   const body = $("#prize-body");
-  if (forceRevealPiece) {
-    const p = forceRevealPiece;
+  if (forceReveal) {
+    const nextCheck = canOpenBox(bells, diorama, bases);
+    if (forceReveal.kind === "base") {
+      const b = forceReveal.base;
+      body.innerHTML = `
+        <div class="reveal-stage"><canvas id="prize-canvas" class="world-spot" width="360" height="220"></canvas></div>
+        <span class="rarity-tag rare">🌍 NEW WORLD UNLOCKED!</span>
+        <h2 id="prize-heading">${b.emoji} ${b.name}</h2>
+        <p>${b.blurb}</p>
+        <button type="button" class="prize-cta teal" id="visit-won">🌍 Visit ${b.short ?? b.name}!</button>
+        ${nextCheck.ok ? `<button type="button" class="prize-cta secondary" id="open-another">🎁 Open Another (${nextCheck.cost} 🔔)</button>` : ""}
+      `;
+      spotlight = createBaseSpotlight($("#prize-canvas"), b, models);
+      $("#visit-won").onclick = () => {
+        closePrizeModal();
+        switchWorld(b.id);
+      };
+      const another = $("#open-another");
+      if (another) another.onclick = () => triggerUnbox();
+      return;
+    }
+
+    const p = forceReveal.piece ?? forceReveal;
     const rarityLabel = p.rarity === "rare" ? "🌟 FEAST RARE!" : p.rarity === "special" ? "💙 SPECIAL!" : "✨ NEW FIGURINE!";
-    const nextCheck = canOpenBox(bells, diorama);
     body.innerHTML = `
       <div class="reveal-stage"><canvas id="prize-canvas" width="240" height="220"></canvas></div>
       <span class="rarity-tag ${p.rarity}">${rarityLabel}</span>
@@ -288,12 +354,12 @@ function openPrizeModal(forceRevealPiece = null) {
     return;
   }
 
-  const check = canOpenBox(bells, diorama);
+  const check = canOpenBox(bells, diorama, bases);
   if (check.reason === "complete") {
     body.innerHTML = `
       <div class="gift-stage"><div class="sunburst"></div><div style="position:relative;font-size:4.2rem">🏆</div></div>
       <h2 id="prize-heading">Complete Collection!</h2>
-      <p>You unlocked all ${PIECES.length} figurines and props for your Voxel Diorama!</p>
+      <p>You unlocked all ${PIECES.length} figurines and all ${bases.length} Voxel Diorama worlds!</p>
       <button type="button" class="prize-cta teal" id="done-prize">🧱 Build in Diorama</button>
     `;
     $("#done-prize").onclick = closePrizeModal;
@@ -307,7 +373,7 @@ function openPrizeModal(forceRevealPiece = null) {
         <button type="button" class="gift-crate" id="crate-tap" aria-label="Tap to open Prize Box"><span class="gift-bow">🎀</span></button>
       </div>
       <h2 id="prize-heading">${check.free ? "Free Welcome Prize Box!" : "Parish Prize Box"}</h2>
-      <p>${check.free ? "Welcome! Tap the gift crate to unlock your first extra figurine." : `Spend ${BOX_COST} Parish Bells to unbox a brand-new figurine (${check.remaining} left to collect).`}</p>
+      <p>${check.free ? "Welcome! Tap the gift crate to unlock your first extra figurine or world." : `Spend ${BOX_COST} Parish Bells to unlock a new figurine or diorama world (${check.remaining} left).`}</p>
       <button type="button" class="prize-cta" id="open-now">🎁 ${check.free ? "Open FREE Box!" : `Open Box (${BOX_COST} 🔔)`}</button>
     `;
     $("#crate-tap").onclick = triggerUnbox;
@@ -326,7 +392,7 @@ function openPrizeModal(forceRevealPiece = null) {
 }
 
 function triggerUnbox() {
-  const res = openPrizeBox(bells, diorama);
+  const res = openPrizeBox(bells, diorama, Math.random, bases);
   if (!res.ok) {
     openPrizeModal();
     return;
@@ -334,10 +400,14 @@ function triggerUnbox() {
   bells = saveBells(res.bells);
   diorama = saveDiorama(res.diorama);
   sfx.fanfare();
-  say(`You unlocked ${res.piece.name}! ${res.piece.blurb}`);
+  if (res.kind === "base") {
+    say(`You unlocked a new diorama world: ${res.base.name}! ${res.base.blurb}`);
+  } else {
+    say(`You unlocked ${res.piece.name}! ${res.piece.blurb}`);
+  }
   renderTopBar();
   renderShelf();
-  openPrizeModal(res.piece);
+  openPrizeModal(res.kind === "base" ? { kind: "base", base: res.base } : { kind: "piece", piece: res.piece });
 }
 
 function closePrizeModal() {
@@ -346,20 +416,20 @@ function closePrizeModal() {
 }
 
 // ───────── Wire Events ─────────
-$("#bases").addEventListener("click", (e) => {
-  const b = e.target.closest("[data-base]");
-  if (!b) return;
-  const r = setBase(diorama, b.dataset.base);
-  if (!r.ok) return;
-  diorama = saveDiorama(r.diorama);
-  selectedUid = null;
-  movingUid = null;
-  const info = baseById(diorama.base);
-  sfx.pop();
-  say(info?.say);
-  renderTopBar();
-  renderBoard();
-  renderShelf();
+$("#worlds-btn").onclick = openWorldsModal;
+$("#worlds-close").onclick = closeWorldsModal;
+$("#worlds-backdrop").onclick = closeWorldsModal;
+$("#worlds-grid").addEventListener("click", (e) => {
+  const card = e.target.closest("[data-world]");
+  if (!card) return;
+  if (card.dataset.owned === "1") {
+    closeWorldsModal();
+    switchWorld(card.dataset.world);
+  } else {
+    closeWorldsModal();
+    sfx.rotate();
+    openPrizeModal();
+  }
 });
 
 $("#cats").addEventListener("click", (e) => {
@@ -392,7 +462,7 @@ $("#sel-bar").addEventListener("click", (e) => {
   const act = e.target.closest("[data-act]")?.dataset.act;
   if (!act || !selectedUid) return;
   if (act === "rotate") {
-    const r = rotatePiece(diorama, diorama.base, selectedUid, 1);
+    const r = rotatePiece(diorama, diorama.base, selectedUid, 1, bases);
     if (r.ok) {
       diorama = saveDiorama(r.diorama);
       sfx.rotate();
@@ -409,7 +479,7 @@ $("#sel-bar").addEventListener("click", (e) => {
     sfx.pop();
     syncSelectionUi();
   } else if (act === "remove") {
-    const r = removePiece(diorama, diorama.base, selectedUid);
+    const r = removePiece(diorama, diorama.base, selectedUid, bases);
     if (r.ok) {
       diorama = saveDiorama(r.diorama);
       selectedUid = null;
@@ -431,9 +501,9 @@ $("#hint-cancel").onclick = () => {
 
 $("#clear-btn").onclick = () => {
   if (!currentItems().length) return;
-  const info = baseById(diorama.base);
+  const info = baseById(diorama.base, bases);
   if (!confirm(`Clear all figurines from ${info?.name ?? "this scene"}? Your unlocked collection stays saved.`)) return;
-  const r = clearBase(diorama, diorama.base);
+  const r = clearBase(diorama, diorama.base, bases);
   if (r.ok) {
     diorama = saveDiorama(r.diorama);
     selectedUid = null;
@@ -460,7 +530,12 @@ $("#prize-close").onclick = closePrizeModal;
 $("#prize-backdrop").onclick = closePrizeModal;
 
 addEventListener("resize", () => scene.resize());
-addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("#prize-modal").hidden) closePrizeModal(); });
+addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    if (!$("#prize-modal").hidden) closePrizeModal();
+    if (!$("#worlds-modal").hidden) closeWorldsModal();
+  }
+});
 
 // ───────── Boot ─────────
 renderTopBar();
@@ -469,10 +544,31 @@ thumbs = renderThumbnails(PIECES, models);
 renderShelf();
 
 if (location.hash === "#box") openPrizeModal();
+else if (location.hash === "#worlds") openWorldsModal();
 
-// Load Shalone's .vox figurines from /api/art and seamlessly upgrade tabletop + thumbnails.
-const allSlugs = PIECES.flatMap((p) => p.vox ?? []);
-loadModels(allSlugs).then((loaded) => {
+async function loadStudioScenes() {
+  try {
+    const r = await fetch("/api/diorama/scenes");
+    if (!r.ok) return [];
+    const j = await r.json();
+    return Array.isArray(j?.scenes) ? j.scenes : [];
+  } catch {
+    return [];
+  }
+}
+
+loadStudioScenes().then(async (custom) => {
+  if (custom.length) {
+    bases = mergeBases(DEFAULT_BASES, custom);
+    diorama = loadDiorama(null, bases);
+    renderTopBar();
+    renderBoard();
+  }
+  const allSlugs = [
+    ...PIECES.flatMap((p) => p.vox ?? []),
+    ...bases.map((b) => b.backdropSlug).filter(Boolean),
+  ];
+  const loaded = await loadModels(allSlugs);
   if (!Object.keys(loaded).length) return;
   models = loaded;
   thumbs = renderThumbnails(PIECES, models);
@@ -481,8 +577,10 @@ loadModels(allSlugs).then((loaded) => {
 });
 
 window.__diorama = {
-  getState: () => ({ bells, diorama, models: Object.keys(models).length }),
+  getState: () => ({ bells, diorama, bases: bases.length, models: Object.keys(models).length }),
   openBox: () => openPrizeModal(),
+  openWorlds: () => openWorldsModal(),
+  switchWorld: (id) => switchWorld(id),
 };
 
 if ("serviceWorker" in navigator && location.protocol === "https:") {

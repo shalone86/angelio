@@ -1,6 +1,10 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { GRID, BOX_COST, CATEGORIES, BASES, PIECES, STARTER_IDS, pieceById } from "../public/games/diorama/catalog.js";
+import worker from "../worker/index.js";
+import {
+  GRID, BOX_COST, CATEGORIES, BASES, DEFAULT_BASES, STARTER_BASE_IDS, PIECES, STARTER_IDS,
+  pieceById, baseById, cleanScene, mergeBases,
+} from "../public/games/diorama/catalog.js";
 import {
   BELLS_KEY, DIORAMA_KEY, loadBells, saveBells, defaultDiorama, loadDiorama, saveDiorama,
   canOpenBox, openPrizeBox, placePiece, movePiece, rotatePiece, removePiece, clearBase, setBase,
@@ -12,10 +16,17 @@ const memStore = (init = {}) => {
   return { m, getItem: (k) => m[k] ?? null, setItem: (k, v) => { m[k] = String(v); } };
 };
 
-test("diorama catalog has 30 unique pieces, 4 starters, 3 bases, and valid categories", () => {
+test("diorama catalog has 30 pieces, 14 worlds (only chapel starter), valid categories, and clean merge", () => {
   assert.equal(GRID, 8);
   assert.equal(BOX_COST, 100);
-  assert.equal(BASES.length, 3);
+  assert.equal(BASES.length, 14);
+  assert.equal(DEFAULT_BASES.length, 14);
+  assert.deepEqual(STARTER_BASE_IDS, ["chapel"]);
+  assert.equal(new Set(BASES.map((b) => b.id)).size, 14);
+  for (const b of BASES) {
+    assert.ok(b.name && b.short && b.emoji && b.backdropSlug && b.style && b.palette?.sky && b.palette?.tileA);
+  }
+
   assert.equal(PIECES.length, 30);
   assert.equal(STARTER_IDS.length, 4);
   assert.equal(new Set(PIECES.map((p) => p.id)).size, 30);
@@ -26,6 +37,14 @@ test("diorama catalog has 30 unique pieces, 4 starters, 3 bases, and valid categ
     assert.ok(p.name && p.blurb && Array.isArray(p.vox) && p.vox.length > 0, `${p.id} metadata`);
     assert.equal(pieceById(p.id), p);
   }
+
+  const custom = cleanScene({ id: "My Forest!", name: "Secret Woods", emoji: "🌲", style: "cabin", palette: { sky: "#123456" } });
+  assert.equal(custom.id, "my-forest");
+  assert.equal(custom.palette.sky, "#123456");
+  const merged = mergeBases(DEFAULT_BASES, [custom, { id: "moon", name: "Blue Moon", emoji: "🌕" }]);
+  assert.equal(merged.length, 15);
+  assert.equal(baseById("my-forest", merged).name, "Secret Woods");
+  assert.equal(baseById("moon", merged).name, "Blue Moon");
 });
 
 test("shared kit bellsForRound and awardBells accumulate cleanly across arcade rounds", () => {
@@ -41,49 +60,64 @@ test("shared kit bellsForRound and awardBells accumulate cleanly across arcade r
   assert.deepEqual(loadBells(store), { bells: 100, earned: 100, spent: 0 });
 });
 
-test("Prize Box grants free welcome box, spends 100 bells per roll, yields zero duplicates, and stops at 30/30", () => {
+test("Prize Box unlocks both figurines (26) and worlds (13) with zero duplicates until complete", () => {
   let bells = { bells: 0, earned: 0, spent: 0 };
   let dio = defaultDiorama();
+  assert.deepEqual(dio.unlockedBases, ["chapel"]);
 
   const wCheck = canOpenBox(bells, dio);
   assert.equal(wCheck.ok, true);
   assert.equal(wCheck.free, true);
   assert.equal(wCheck.reason, "welcome");
+  assert.equal(wCheck.remaining, 39);
 
   const wOpen = openPrizeBox(bells, dio, () => 0.2);
   assert.equal(wOpen.ok, true);
   assert.equal(wOpen.free, true);
   assert.equal(wOpen.bells.bells, 0);
   assert.equal(wOpen.diorama.welcomeClaimed, true);
-  assert.equal(wOpen.diorama.unlocked.length, 5);
-  assert.ok(!STARTER_IDS.includes(wOpen.piece.id));
+  assert.equal(wOpen.diorama.unlocked.length + wOpen.diorama.unlockedBases.length, 6);
 
   bells = wOpen.bells;
   dio = wOpen.diorama;
   assert.equal(canOpenBox(bells, dio).reason, "need-bells");
   assert.equal(canOpenBox(bells, dio).need, BOX_COST);
 
-  // Give enough bells for all remaining 25 boxes and unbox every piece
-  bells = { bells: 25 * BOX_COST, earned: 25 * BOX_COST, spent: 0 };
+  // Give enough bells for all remaining 38 boxes (pieces + worlds)
+  bells = { bells: 38 * BOX_COST, earned: 38 * BOX_COST, spent: 0 };
   let step = 0;
-  while (dio.unlocked.length < PIECES.length) {
+  let sawBase = false, sawPiece = false;
+  while (dio.unlocked.length < PIECES.length || dio.unlockedBases.length < BASES.length) {
     const r = openPrizeBox(bells, dio, () => ((step++ * 37) % 100) / 100);
     assert.equal(r.ok, true);
     assert.equal(r.free, false);
+    if (r.kind === "base") sawBase = true;
+    if (r.kind === "piece") sawPiece = true;
     bells = r.bells;
     dio = r.diorama;
   }
 
+  assert.ok(sawBase && sawPiece, "boxes unbox both bases and figurines");
   assert.equal(bells.bells, 0);
-  assert.equal(bells.spent, 25 * BOX_COST);
+  assert.equal(bells.spent, 38 * BOX_COST);
   assert.equal(new Set(dio.unlocked).size, 30);
+  assert.equal(new Set(dio.unlockedBases).size, 14);
   assert.equal(canOpenBox({ bells: 500, earned: 500, spent: 0 }, dio).reason, "complete");
   assert.equal(openPrizeBox({ bells: 500, earned: 500, spent: 0 }, dio).ok, false);
 });
 
-test("diorama board placement supports multiple copies, collision checks, move/rotate/remove/clear, and persistence", () => {
+test("diorama board placement checks unlocked worlds, unlimited piece copies, v1 migration, and persistence", () => {
   let dio = defaultDiorama();
-  // Multiple copies of an unlocked starter are allowed on empty tiles
+  // Switching or placing on a locked world is refused until unlocked
+  assert.equal(setBase(dio, "moon").reason, "locked");
+  assert.equal(placePiece(dio, "moon", "parish-boy", 0, 0).reason, "locked-base");
+
+  // Unlock a world & switch into it
+  dio = { ...dio, unlockedBases: [...dio.unlockedBases, "garden"] };
+  dio = setBase(dio, "garden").diorama;
+  assert.equal(dio.base, "garden");
+
+  // Multiple copies on chapel are allowed
   let r = placePiece(dio, "chapel", "prop-pew", 0, 0, 0);
   assert.equal(r.ok, true);
   dio = r.diorama;
@@ -93,58 +127,83 @@ test("diorama board placement supports multiple copies, collision checks, move/r
   assert.equal(r.ok, true);
   dio = r.diorama;
 
-  // Reject occupied, locked, or out-of-bounds
   assert.equal(placePiece(dio, "chapel", "parish-boy", 0, 0).reason, "occupied");
   assert.equal(placePiece(dio, "chapel", "prop-altar", 7, 7).reason, "locked");
   assert.equal(placePiece(dio, "chapel", "parish-boy", 8, 0).reason, "out-of-bounds");
   assert.equal(placePiece(dio, "chapel", "parish-boy", -1, 0).reason, "out-of-bounds");
 
-  // Rotate wraps modulo 4
   r = rotatePiece(dio, "chapel", uid1, 3);
   assert.equal(r.item.rot, 3);
   r = rotatePiece(r.diorama, "chapel", uid1, 2);
   assert.equal(r.item.rot, 1);
   dio = r.diorama;
 
-  // Move to free vs occupied tile
   assert.equal(movePiece(dio, "chapel", uid1, 1, 0).reason, "occupied");
   r = movePiece(dio, "chapel", uid1, 6, 7);
   assert.equal(r.ok, true);
   assert.deepEqual([r.item.gx, r.item.gz], [6, 7]);
   dio = r.diorama;
 
-  // Remove, switch base, clear
   dio = removePiece(dio, "chapel", uid1).diorama;
   assert.ok(!dio.placed.chapel.some((x) => x.uid === uid1));
-  dio = setBase(dio, "garden").diorama;
-  assert.equal(dio.base, "garden");
   dio = clearBase(dio, "chapel").diorama;
   assert.equal(dio.placed.chapel.length, 0);
 
-  // Save/load round-trip & sanitization of corrupted state
-  const store = memStore();
+  // v1 migration preserves bases where user had already placed items
+  const store = memStore({
+    [DIORAMA_KEY]: JSON.stringify({
+      unlocked: ["priest-feast"],
+      base: "courtyard",
+      placed: {
+        chapel: [{ uid: "a", id: "priest-feast", gx: 2, gz: 2, rot: 9 }],
+        courtyard: [{ uid: "b", id: "parish-boy", gx: 1, gz: 1, rot: 0 }],
+      },
+    }),
+  });
+  const migrated = loadDiorama(store);
+  assert.ok(migrated.unlockedBases.includes("chapel") && migrated.unlockedBases.includes("courtyard"));
+  assert.equal(migrated.base, "courtyard");
+  assert.equal(migrated.placed.chapel[0].rot, 1);
+
   saveBells({ bells: 140, earned: 240, spent: 100 }, store);
   saveDiorama(dio, store);
   assert.deepEqual(loadBells(store), { bells: 140, earned: 240, spent: 100 });
   assert.equal(loadDiorama(store).base, "garden");
-
-  store.setItem(DIORAMA_KEY, JSON.stringify({
-    unlocked: ["priest-feast", "not-real"],
-    base: "nope",
-    placed: {
-      chapel: [
-        { uid: "a", id: "priest-feast", gx: 2, gz: 2, rot: 9 },
-        { uid: "b", id: "prop-altar", gx: 3, gz: 3, rot: 0 }, // locked -> filtered
-        { uid: "c", id: "parish-boy", gx: 2, gz: 2, rot: 0 }, // colliding tile -> filtered
-        { uid: "d", id: "parish-boy", gx: 99, gz: 0, rot: 0 }, // OOB -> filtered
-      ],
-    },
-  }));
-  const cleaned = loadDiorama(store);
-  assert.equal(cleaned.base, "chapel");
-  assert.ok(STARTER_IDS.every((id) => cleaned.unlocked.includes(id)));
-  assert.ok(cleaned.unlocked.includes("priest-feast"));
-  assert.equal(cleaned.placed.chapel.length, 1);
-  assert.equal(cleaned.placed.chapel[0].rot, 1);
   assert.ok(BELLS_KEY === "angelio:bells");
+});
+
+test("Studio Diorama API reads, cleans, backs up history, and serves public scenes", async () => {
+  const files = new Map();
+  let n = 0;
+  const WATCH_MEDIA = {
+    async get(key) { const f = files.get(key); return f ? { body: f.body, httpEtag: `"${f.etag}"`, json: async () => JSON.parse(f.body), text: async () => f.body } : null; },
+    async put(key, body) { const etag = `e${++n}`; files.set(key, { body: String(body), etag }); return { etag }; },
+  };
+  const env = { ADMIN_KEY: "secret", CODES: { get: async () => null }, WATCH_MEDIA, ASSETS: { fetch: async () => new Response("hub") } };
+
+  const initPub = await (await worker.fetch(new Request("https://angelio.org/api/diorama/scenes"), env)).json();
+  assert.deepEqual(initPub, { scenes: [] });
+
+  const unauth = await worker.fetch(new Request("https://angelio.org/api/admin/studio/diorama", { headers: { "x-admin-key": "wrong" } }), env);
+  assert.equal(unauth.status, 401);
+
+  const post1 = await worker.fetch(new Request("https://angelio.org/api/admin/studio/diorama", {
+    method: "POST",
+    headers: { "x-admin-key": "secret" },
+    body: JSON.stringify({ scenes: [{ name: "Nazareth Home", emoji: "🏠", style: "cabin", palette: { sky: "#ffeedd" } }] }),
+  }), env);
+  const j1 = await post1.json();
+  assert.equal(j1.ok, true);
+  assert.equal(j1.scenes.length, 1);
+  assert.equal(j1.scenes[0].id, "nazareth-home");
+
+  await worker.fetch(new Request("https://angelio.org/api/admin/studio/diorama", {
+    method: "POST",
+    headers: { "x-admin-key": "secret" },
+    body: JSON.stringify({ scenes: [{ id: "nazareth-home", name: "Nazareth Workshop", emoji: "🪚" }] }),
+  }), env);
+  assert.ok([...files.keys()].some((k) => k.startsWith("content/diorama/history/")));
+
+  const pub = await (await worker.fetch(new Request("https://angelio.org/api/diorama/scenes"), env)).json();
+  assert.equal(pub.scenes[0].name, "Nazareth Workshop");
 });

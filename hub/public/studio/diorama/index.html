@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Voxel Diorama · Angelio Studio</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#2b2b2e">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="../draw/pixel.css">
+  <style>
+    body { padding: 0 max(16px, env(safe-area-inset-left)) 0 max(16px, env(safe-area-inset-right)); }
+    .sd { max-width: 1020px; margin: 0 auto; padding: calc(14px + env(safe-area-inset-top)) 0 calc(40px + env(safe-area-inset-bottom)); display: grid; gap: 14px; }
+    .sd h1 { font: 800 28px/1.1 var(--serif); margin: 0; }
+    .sd nav { display: flex; gap: 14px; flex-wrap: wrap; font: 600 14px var(--sans); }
+    .sd nav a { color: var(--muted); }
+    .sd-grid { display: grid; gap: 14px; }
+    @media (min-width: 820px) { .sd-grid { grid-template-columns: 1.05fr .95fr; align-items: start; } }
+    .preview-card { background: var(--paper); border: 1px solid var(--rule); border-radius: 16px; padding: 12px; display: grid; gap: 10px; }
+    .preview-stage { position: relative; width: 100%; aspect-ratio: 4 / 3; border-radius: 12px; overflow: hidden; background: #dbeeff; border: 1px solid var(--rule); }
+    .preview-stage canvas { width: 100%; height: 100%; display: block; touch-action: none; }
+    .scene-list { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+    .pill { font: 700 14px/1 var(--sans); padding: 9px 13px; border-radius: 99px; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); cursor: pointer; min-height: 40px; }
+    .pill[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+    .form-card { background: var(--paper); border: 1px solid var(--rule); border-radius: 16px; padding: 14px; display: grid; gap: 10px; }
+    .f-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .form-card label { display: grid; gap: 3px; font: 700 13px var(--sans); color: var(--muted); }
+    .form-card input[type="text"], .form-card select { width: 100%; font: 600 15px var(--sans); padding: 8px 10px; border-radius: 8px; border: 1px solid var(--rule); background: var(--bg); color: var(--ink); }
+    .colors { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .colors input[type="color"] { width: 100%; height: 38px; border: 1px solid var(--rule); border-radius: 8px; padding: 2px; background: var(--bg); cursor: pointer; }
+    .check-row { display: flex !important; align-items: center; gap: 8px; cursor: pointer; font-size: 14px !important; color: var(--ink) !important; }
+    .save { background: var(--ok); color: #fff; border-color: var(--ok); }
+    .status { font: 600 14px var(--sans); color: var(--muted); }
+    .key { position: fixed; inset: 0; display: grid; place-items: center; background: rgb(0 0 0 / .5); z-index: 20; }
+    .key[hidden] { display: none; }
+    .key > div { background: var(--paper); color: var(--ink); padding: 20px; border-radius: 16px; display: grid; gap: 10px; width: min(92vw, 360px); }
+    .key input { font: 16px var(--sans); padding: 10px; border-radius: 10px; border: 1px solid var(--rule); }
+  </style>
+</head>
+<body>
+  <main class="sd">
+    <nav><a href="/studio/">← Studio</a><a href="/studio/draw/">🎨 Drawings</a><a href="/studio/candles/">🕯️ Candle Rack</a><a href="/games/diorama/" target="_blank">🧱 Open Diorama ↗</a></nav>
+    <h1>🧱 Voxel Diorama scenes</h1>
+    <p class="small muted" style="margin:0">Design new 8 × 8 diorama worlds (or tweak built-in ones). Recommended backdrop size: <b>80 × 12 × 28</b> voxels (1:1 beside your 8 × 8 × 8 people) or <b>40 × 8 × 18</b> half-scale. <b>Save &amp; Publish</b> sends scenes live at once.</p>
+
+    <div class="scene-list" id="scene-bar"></div>
+
+    <div class="sd-grid">
+      <section class="preview-card">
+        <div class="preview-stage"><canvas id="stage"></canvas></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <button type="button" class="btn" id="dl-template">⬇ Starter 80×12×28 .vox</button>
+          <label class="btn" style="cursor:pointer">⬆ Upload .vox backdrop <input type="file" accept=".vox" id="vox-up" hidden></label>
+        </div>
+        <p class="small muted" id="vox-info" style="margin:0"></p>
+      </section>
+
+      <section class="form-card" id="editor-form">
+        <div class="f-row">
+          <label>Scene Name<input type="text" id="f-name" maxlength="40" placeholder="St. Francis Woods"></label>
+          <label>Short Tab Label<input type="text" id="f-short" maxlength="16" placeholder="Woods"></label>
+        </div>
+        <div class="f-row">
+          <label>Emoji Icon<input type="text" id="f-emoji" maxlength="8" placeholder="🌲"></label>
+          <label>Scene ID (URL slug)<input type="text" id="f-id" maxlength="40" placeholder="francis-woods"></label>
+        </div>
+        <div class="f-row">
+          <label>Rarity (Prize Box)
+            <select id="f-rarity">
+              <option value="common">✨ Common</option>
+              <option value="special">💙 Special</option>
+              <option value="rare">🌟 Rare</option>
+            </select>
+          </label>
+          <label>Built-in Style Preset
+            <select id="f-style"></select>
+          </label>
+        </div>
+        <label>Backdrop .vox Slug (auto-swaps in 3D when uploaded!)
+          <input type="text" id="f-backdrop" maxlength="50" list="vox-list" placeholder="diorama-bg-my-scene">
+          <datalist id="vox-list"></datalist>
+        </label>
+        <label>Spoken Welcome Line<input type="text" id="f-say" maxlength="120" placeholder="Welcome to the woods!"></label>
+        <label>Short Card Blurb<input type="text" id="f-blurb" maxlength="160" placeholder="Tall pines and a cozy wooden bench."></label>
+        <label class="check-row"><input type="checkbox" id="f-starter"> Free Starter World (unlocked right away instead of Prize Box)</label>
+
+        <div class="colors">
+          <label>Sky<input type="color" id="c-sky"></label>
+          <label>Tile A<input type="color" id="c-tileA"></label>
+          <label>Tile B<input type="color" id="c-tileB"></label>
+          <label>Rim<input type="color" id="c-rim"></label>
+          <label>Plinth<input type="color" id="c-slab"></label>
+          <label>Accent<input type="color" id="c-accent"></label>
+        </div>
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:4px">
+          <button type="button" class="pill save" id="save-btn">Save &amp; Publish</button>
+          <button type="button" class="pill" id="dup-btn">Duplicate Built-in…</button>
+          <button type="button" class="pill" id="del-btn" style="color:var(--accent)">Remove</button>
+          <span class="status" id="status"></span>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div class="key" id="key" hidden><div>
+    <strong>Studio key</strong>
+    <span class="small muted">The same admin key as the Drawings page.</span>
+    <input id="keyIn" type="password" autocomplete="current-password" placeholder="Admin key">
+    <span class="small bad" id="keyErr"></span>
+    <button class="pill save" id="keyGo">Open</button>
+  </div></div>
+
+  <script src="/vendor/three-r128.min.js"></script>
+  <script type="module" src="diorama.js"></script>
+</body>
+</html>

@@ -28,3 +28,26 @@ export function pewVox() {
   for (let y = 0; y < 4; y++) for (let z = 0; z < 4; z++) v.push([L, y, z, END]);
   return writeVox([L + 1, 4, 4], v);
 }
+
+/** Starter 80 × 12 × 28 Voxel Diorama backdrop guide: 8 tiles of 10 voxels across X, facing -Y like his people. */
+export function dioramaBackdropVox() {
+  const W = 80, D = 12, H = 28, v = [];
+  for (let x = 0; x < W; x++) {
+    v.push([x, 0, 0, Math.floor(x / 10) % 2 ? "#b9aa8e" : "#d8ccb4"]); // 8-tile ruler along front edge
+    v.push([x, D - 1, 0, "#c9bda6"]); // back base sill
+    v.push([x, D - 1, 24, "#d9d0be"]); // top guideline bar
+  }
+  for (let y = 1; y < D - 1; y++) {
+    v.push([0, y, 0, "#c9bda6"]);
+    v.push([W - 1, y, 0, "#c9bda6"]);
+  }
+  for (let z = 1; z < 25; z++) {
+    v.push([0, D - 1, z, "#d9d0be"]);
+    v.push([W - 1, D - 1, z, "#d9d0be"]);
+  }
+  for (let z = 25; z < H; z++) {
+    v.push([0, D - 1, z, "#e4b23c"]);
+    v.push([W - 1, D - 1, z, "#e4b23c"]);
+  }
+  return writeVox([W, D, H], v);
+}

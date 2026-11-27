@@ -12,6 +12,7 @@ import { imagesApi } from "./images.js";
 import { validateReading } from "../public/js/reading-content.js";
 import * as phonics from "../../apps/letters/public/js/phonics.js";
 import { checkDrawing, artSlug, emptyArt } from "../public/js/art-content.js";
+import { cleanScene } from "../public/games/diorama/catalog.js";
 import { readVox, MAX_VOX_BYTES } from "../public/js/vox.js";
 
 const TYPES = { "video/mp4": "mp4", "video/quicktime": "mov", "video/webm": "webm", "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp", "image/gif": "gif", "audio/mpeg": "mp3", "audio/mp4": "m4a", "audio/wav": "wav", "application/pdf": "pdf" };
@@ -41,6 +42,17 @@ export const ART_LIVE = "content/art/drawings.json";
 // Candle Rack's placements: for each church, spots by name, each only {x, y, z, turn} numbers in range (anything else is
 // dropped, so a bad save can never break the game; the game lays these over its own, apps/candles/public/js/church.js).
 export const CANDLES_LAYOUT = "content/candles/layout.json";
+export const DIORAMA_SCENES = "content/diorama/scenes.json";
+export function cleanDioramaScenes(list) {
+  const out = [], seen = new Set();
+  for (const raw of Array.isArray(list) ? list : []) {
+    const clean = cleanScene(raw);
+    if (!clean || seen.has(clean.id)) continue;
+    seen.add(clean.id);
+    out.push(clean);
+  }
+  return out;
+}
 const CANDLE_SPOTS = ["priestHome", "serverHome", "big", "lamp", "priestStart", "endPriest", "endCross", "endCandleL", "endCandleR"];
 const RANGE = { x: [-24, 24], y: [0, 22], z: [-16, 16], turn: [-7, 7] };
 export function cleanLayout(layout) {
@@ -169,6 +181,22 @@ async function studioRoutes(request, url, env) {
     if (old) await env.WATCH_MEDIA.put(`content/candles/history/${stamp()}.json`, await old.text(), { httpMetadata: { contentType: "application/json" } });
     await env.WATCH_MEDIA.put(CANDLES_LAYOUT, JSON.stringify(layout), { httpMetadata: { contentType: "application/json" } });
     return json({ ok: true, layout });
+  }
+
+  // ── Voxel Diorama: custom worlds (public at /api/diorama/scenes); history kept for undo ──
+  if (route === "GET /diorama") {
+    const obj = await env.WATCH_MEDIA.get(DIORAMA_SCENES);
+    const doc = obj ? await obj.json() : { scenes: [] };
+    return json({ scenes: cleanDioramaScenes(doc?.scenes) });
+  }
+  if (route === "POST /diorama") {
+    let body;
+    try { body = JSON.parse(await request.text()); } catch { return json({ error: "That wasn't readable." }, 400); }
+    const scenes = cleanDioramaScenes(body.scenes);
+    const old = await env.WATCH_MEDIA.get(DIORAMA_SCENES);
+    if (old) await env.WATCH_MEDIA.put(`content/diorama/history/${stamp()}.json`, await old.text(), { httpMetadata: { contentType: "application/json" } });
+    await env.WATCH_MEDIA.put(DIORAMA_SCENES, JSON.stringify({ scenes, saved: new Date().toISOString() }), { httpMetadata: { contentType: "application/json" } });
+    return json({ ok: true, scenes });
   }
 
   // ── drawings ──

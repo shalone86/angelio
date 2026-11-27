@@ -6,10 +6,13 @@ import { CHECKLISTS } from "/js/art-content.js";
 import { readVox } from "/js/vox.js";
 import { readVoxMaterials, usedMaterials } from "./voxmat.js";
 import { voxThumb, voxViewer } from "./voxview.js";
-import { pewVox } from "/js/voxwrite.js";
+import { pewVox, dioramaBackdropVox } from "/js/voxwrite.js";
 
 // Pieces the games already draw themselves, ready to download as .vox (to try his people beside them in MagicaVoxel)
-const GAME_PIECES = { pew: { make: pewVox, file: "game-pew.vox", label: "Download the game's pew (.vox)" } };
+const GAME_PIECES = {
+  pew: { make: pewVox, file: "game-pew.vox", label: "Download the game's pew (.vox)", note: "The game's own pew, until you upload yours." },
+  backdrop: { make: dioramaBackdropVox, file: "diorama-backdrop-80x12x28.vox", label: "Download starter backdrop (80 × 12 × 28 .vox)", note: "Starter 80 × 12 × 28 guide (each 10 voxels = 1 diorama tile), until you upload yours." },
+};
 function download(bytes, name) {
   const url = URL.createObjectURL(new Blob([bytes], { type: "application/octet-stream" }));
   const a = h("a", { href: url, download: name }); document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 2000);
@@ -235,7 +238,7 @@ function renderDetail() {
     startViewer();
   }).catch((e) => { stageEl.textContent = "Couldn't show it: " + e.message; });
   else if (art.drawings[it.slug]) { const c = thumb(art.drawings[it.slug]); c.className = "dt-pixels"; stageEl.replaceChildren(c); }
-  else if (GAME_PIECES[it.download]) { viewer = voxViewer(stageEl, readVox(GAME_PIECES[it.download].make()), { fps: 4 }); stageEl.append(h("p", { class: "small muted center", text: "The game's own pew, until you upload yours." })); }
+  else if (GAME_PIECES[it.download]) { viewer = voxViewer(stageEl, readVox(GAME_PIECES[it.download].make()), { fps: 4 }); stageEl.append(h("p", { class: "small muted center", text: GAME_PIECES[it.download].note ?? "The game's own pew, until you upload yours." })); }
   else stageEl.replaceChildren(h("span", { class: "muted", text: "Nothing here yet. Upload the model from MagicaVoxel, or draw it in pixels." }));
 }
 addEventListener("popstate", () => { if (detail && !tab) render(); });

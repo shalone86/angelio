@@ -6,9 +6,14 @@ import { GRID, BOX_COST, BASES, PIECES, STARTER_IDS, pieceById, baseById } from 
 export const BELLS_KEY = "angelio:bells";
 export const DIORAMA_KEY = "angelio:diorama";
 
-const RARITY_WEIGHT = { common: 4, special: 3, rare: 2 };
+const PIECE_WEIGHT = { common: 4, special: 3, rare: 2 };
+const BASE_WEIGHT = { common: 4, special: 4, rare: 3 };
 const clampInt = (v) => (Number.isFinite(Number(v)) ? Math.max(0, Math.floor(Number(v))) : 0);
 const getStore = (store) => store ?? (typeof localStorage !== "undefined" ? localStorage : null);
+const starterBases = (bases) => {
+  const starters = bases.filter((b) => b.starter).map((b) => b.id);
+  return starters.length ? starters : [bases[0]?.id ?? "chapel"];
+};
 
 export function loadBells(store = null) {
   const s = getStore(store);
@@ -27,25 +32,28 @@ export function saveBells(b, store = null) {
   return clean;
 }
 
-export function defaultDiorama() {
+export function defaultDiorama(bases = BASES) {
+  const unlockedBases = starterBases(bases);
+  const placed = {};
+  for (const b of bases) placed[b.id] = [];
+  if (placed.chapel) {
+    placed.chapel = [
+      { uid: "s1", id: "prop-pew", gx: 2, gz: 4, rot: 0 },
+      { uid: "s2", id: "server-candle", gx: 4, gz: 2, rot: 0 },
+      { uid: "s3", id: "parish-boy", gx: 5, gz: 4, rot: 3 },
+    ];
+  }
   return {
-    version: 1,
+    version: 2,
     unlocked: [...STARTER_IDS],
+    unlockedBases,
     welcomeClaimed: false,
-    base: "chapel",
-    placed: {
-      chapel: [
-        { uid: "s1", id: "prop-pew", gx: 2, gz: 4, rot: 0 },
-        { uid: "s2", id: "server-candle", gx: 4, gz: 2, rot: 0 },
-        { uid: "s3", id: "parish-boy", gx: 5, gz: 4, rot: 3 },
-      ],
-      garden: [],
-      courtyard: [],
-    },
+    base: unlockedBases[0],
+    placed,
   };
 }
 
-export function loadDiorama(store = null) {
+export function loadDiorama(store = null, bases = BASES) {
   const s = getStore(store);
   let raw = null;
   try {
@@ -53,17 +61,28 @@ export function loadDiorama(store = null) {
   } catch {
     raw = null;
   }
-  if (!raw || typeof raw !== "object") return defaultDiorama();
+  if (!raw || typeof raw !== "object") return defaultDiorama(bases);
 
   const unlockedSet = new Set(STARTER_IDS);
   if (Array.isArray(raw.unlocked)) {
     for (const id of raw.unlocked) if (pieceById(id)) unlockedSet.add(id);
   }
-  const base = baseById(raw.base)?.id ?? "chapel";
+
+  const starters = starterBases(bases);
+  const unlockedBaseSet = new Set(starters);
+  if (Array.isArray(raw.unlockedBases)) {
+    for (const bid of raw.unlockedBases) if (baseById(bid, bases)) unlockedBaseSet.add(bid);
+  } else {
+    // v1 migration: keep any base unlocked that already holds placed items so no child build is lost.
+    for (const b of bases) {
+      if (Array.isArray(raw.placed?.[b.id]) && raw.placed[b.id].length > 0) unlockedBaseSet.add(b.id);
+    }
+  }
+
   const placed = {};
   const seenUids = new Set();
 
-  for (const b of BASES) {
+  for (const b of bases) {
     const list = Array.isArray(raw.placed?.[b.id]) ? raw.placed[b.id] : [];
     const seenTiles = new Set();
     placed[b.id] = [];
@@ -81,10 +100,19 @@ export function loadDiorama(store = null) {
       placed[b.id].push({ uid, id: item.id, gx, gz, rot: Math.floor(rot) });
     }
   }
+  // Preserve placed items for any saved custom Studio base temporarily absent (e.g. offline first load)
+  if (raw.placed && typeof raw.placed === "object") {
+    for (const [k, list] of Object.entries(raw.placed)) {
+      if (!(k in placed) && Array.isArray(list)) placed[k] = list.map((x) => ({ ...x }));
+    }
+  }
+
+  const base = unlockedBaseSet.has(raw.base) ? raw.base : starters[0];
 
   return {
-    version: 1,
+    version: 2,
     unlocked: [...unlockedSet],
+    unlockedBases: [...unlockedBaseSet],
     welcomeClaimed: !!raw.welcomeClaimed,
     base,
     placed,
@@ -102,116 +130,151 @@ export const lockedPieces = (state) => {
   return PIECES.filter((p) => !owned.has(p.id));
 };
 
-export function canOpenBox(bellsState, dioramaState) {
-  const locked = lockedPieces(dioramaState);
-  if (!locked.length) return { ok: false, free: false, cost: BOX_COST, remaining: 0, need: 0, reason: "complete" };
-  if (!dioramaState?.welcomeClaimed) return { ok: true, free: true, cost: 0, remaining: locked.length, need: 0, reason: "welcome" };
+export const lockedBases = (state, bases = BASES) => {
+  const owned = new Set(state?.unlockedBases ?? starterBases(bases));
+  return bases.filter((b) => !owned.has(b.id));
+};
+
+export const lockedRewards = (state, bases = BASES) => [
+  ...lockedPieces(state).map((p) => ({ kind: "piece", item: p, weight: PIECE_WEIGHT[p.rarity] ?? 2 })),
+  ...lockedBases(state, bases).map((b) => ({ kind: "base", item: b, weight: BASE_WEIGHT[b.rarity] ?? 3 })),
+];
+
+export function canOpenBox(bellsState, dioramaState, bases = BASES) {
+  const rewards = lockedRewards(dioramaState, bases);
+  if (!rewards.length) return { ok: false, free: false, cost: BOX_COST, remaining: 0, need: 0, reason: "complete" };
+  if (!dioramaState?.welcomeClaimed) return { ok: true, free: true, cost: 0, remaining: rewards.length, need: 0, reason: "welcome" };
   const bells = clampInt(bellsState?.bells);
-  if (bells >= BOX_COST) return { ok: true, free: false, cost: BOX_COST, remaining: locked.length, need: 0, reason: "bells" };
-  return { ok: false, free: false, cost: BOX_COST, remaining: locked.length, need: BOX_COST - bells, reason: "need-bells" };
+  if (bells >= BOX_COST) return { ok: true, free: false, cost: BOX_COST, remaining: rewards.length, need: 0, reason: "bells" };
+  return { ok: false, free: false, cost: BOX_COST, remaining: rewards.length, need: BOX_COST - bells, reason: "need-bells" };
 }
 
-const clonePlaced = (placed) => {
+const clonePlaced = (placed, bases = BASES) => {
   const out = {};
-  for (const b of BASES) out[b.id] = (placed?.[b.id] ?? []).map((x) => ({ ...x }));
+  for (const b of bases) out[b.id] = (placed?.[b.id] ?? []).map((x) => ({ ...x }));
+  for (const [k, list] of Object.entries(placed ?? {})) {
+    if (!(k in out) && Array.isArray(list)) out[k] = list.map((x) => ({ ...x }));
+  }
   return out;
 };
 
-export function openPrizeBox(bellsState, dioramaState, rng = Math.random) {
-  const check = canOpenBox(bellsState, dioramaState);
+export function openPrizeBox(bellsState, dioramaState, rng = Math.random, bases = BASES) {
+  const check = canOpenBox(bellsState, dioramaState, bases);
   if (!check.ok) return { ok: false, reason: check.reason, need: check.need };
 
-  const locked = lockedPieces(dioramaState);
-  const total = locked.reduce((sum, p) => sum + (RARITY_WEIGHT[p.rarity] ?? 2), 0);
+  const rewards = lockedRewards(dioramaState, bases);
+  const total = rewards.reduce((sum, r) => sum + r.weight, 0);
   let roll = Math.max(0, Math.min(0.999999999, Number(rng()))) * total;
-  let picked = locked[locked.length - 1];
-  for (const p of locked) {
-    roll -= RARITY_WEIGHT[p.rarity] ?? 2;
-    if (roll <= 0) { picked = p; break; }
+  let picked = rewards[rewards.length - 1];
+  for (const r of rewards) {
+    roll -= r.weight;
+    if (roll <= 0) { picked = r; break; }
   }
 
   const nextBells = check.free
     ? { bells: clampInt(bellsState?.bells), earned: clampInt(bellsState?.earned), spent: clampInt(bellsState?.spent) }
     : { bells: clampInt(bellsState?.bells) - BOX_COST, earned: clampInt(bellsState?.earned), spent: clampInt(bellsState?.spent) + BOX_COST };
 
+  const placed = clonePlaced(dioramaState.placed, bases);
+  const nextUnlocked = [...(dioramaState.unlocked ?? STARTER_IDS)];
+  const nextBases = [...(dioramaState.unlockedBases ?? starterBases(bases))];
+
+  if (picked.kind === "base") {
+    if (!nextBases.includes(picked.item.id)) nextBases.push(picked.item.id);
+    placed[picked.item.id] ??= [];
+  } else {
+    if (!nextUnlocked.includes(picked.item.id)) nextUnlocked.push(picked.item.id);
+  }
+
   const nextDiorama = {
-    version: 1,
-    unlocked: [...dioramaState.unlocked, picked.id],
+    version: 2,
+    unlocked: nextUnlocked,
+    unlockedBases: nextBases,
     welcomeClaimed: true,
     base: dioramaState.base,
-    placed: clonePlaced(dioramaState.placed),
+    placed,
   };
 
-  return { ok: true, piece: picked, free: check.free, bells: nextBells, diorama: nextDiorama, remaining: locked.length - 1 };
+  return {
+    ok: true,
+    kind: picked.kind,
+    ...(picked.kind === "base" ? { base: picked.item } : { piece: picked.item }),
+    free: check.free,
+    bells: nextBells,
+    diorama: nextDiorama,
+    remaining: rewards.length - 1,
+  };
 }
 
 const validTile = (gx, gz) => Number.isInteger(gx) && Number.isInteger(gz) && gx >= 0 && gx < GRID && gz >= 0 && gz < GRID;
 
-export function placePiece(state, baseId, pieceId, gx, gz, rot = 0) {
-  if (!baseById(baseId)) return { ok: false, diorama: state, reason: "bad-base" };
+export function placePiece(state, baseId, pieceId, gx, gz, rot = 0, bases = BASES) {
+  if (!baseById(baseId, bases)) return { ok: false, diorama: state, reason: "bad-base" };
+  if (!(state.unlockedBases ?? starterBases(bases)).includes(baseId)) return { ok: false, diorama: state, reason: "locked-base" };
   if (!pieceById(pieceId) || !state.unlocked.includes(pieceId)) return { ok: false, diorama: state, reason: "locked" };
   if (!validTile(gx, gz)) return { ok: false, diorama: state, reason: "out-of-bounds" };
 
   const list = state.placed?.[baseId] ?? [];
   if (list.some((x) => x.gx === gx && x.gz === gz)) return { ok: false, diorama: state, reason: "occupied" };
 
-  const existingUids = new Set(BASES.flatMap((b) => (state.placed?.[b.id] ?? []).map((x) => x.uid)));
+  const existingUids = new Set(Object.values(state.placed ?? {}).flat().map((x) => x.uid));
   let uid = `p-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
   while (existingUids.has(uid)) uid += "x";
 
   const cleanRot = (((Math.floor(Number(rot) || 0)) % 4) + 4) % 4;
   const item = { uid, id: pieceId, gx, gz, rot: cleanRot };
-  const placed = clonePlaced(state.placed);
+  const placed = clonePlaced(state.placed, bases);
   placed[baseId].push(item);
 
   return { ok: true, diorama: { ...state, placed }, item };
 }
 
-export function movePiece(state, baseId, uid, gx, gz) {
-  if (!baseById(baseId)) return { ok: false, diorama: state, reason: "bad-base" };
+export function movePiece(state, baseId, uid, gx, gz, bases = BASES) {
+  if (!baseById(baseId, bases)) return { ok: false, diorama: state, reason: "bad-base" };
   if (!validTile(gx, gz)) return { ok: false, diorama: state, reason: "out-of-bounds" };
   const list = state.placed?.[baseId] ?? [];
   const idx = list.findIndex((x) => x.uid === uid);
   if (idx < 0) return { ok: false, diorama: state, reason: "missing" };
   if (list.some((x) => x.uid !== uid && x.gx === gx && x.gz === gz)) return { ok: false, diorama: state, reason: "occupied" };
 
-  const placed = clonePlaced(state.placed);
+  const placed = clonePlaced(state.placed, bases);
   const item = { ...placed[baseId][idx], gx, gz };
   placed[baseId][idx] = item;
   return { ok: true, diorama: { ...state, placed }, item };
 }
 
-export function rotatePiece(state, baseId, uid, delta = 1) {
-  if (!baseById(baseId)) return { ok: false, diorama: state, reason: "bad-base" };
+export function rotatePiece(state, baseId, uid, delta = 1, bases = BASES) {
+  if (!baseById(baseId, bases)) return { ok: false, diorama: state, reason: "bad-base" };
   const list = state.placed?.[baseId] ?? [];
   const idx = list.findIndex((x) => x.uid === uid);
   if (idx < 0) return { ok: false, diorama: state, reason: "missing" };
 
-  const placed = clonePlaced(state.placed);
+  const placed = clonePlaced(state.placed, bases);
   const rot = (((placed[baseId][idx].rot + Math.floor(Number(delta) || 0)) % 4) + 4) % 4;
   const item = { ...placed[baseId][idx], rot };
   placed[baseId][idx] = item;
   return { ok: true, diorama: { ...state, placed }, item };
 }
 
-export function removePiece(state, baseId, uid) {
-  if (!baseById(baseId)) return { ok: false, diorama: state, reason: "bad-base" };
+export function removePiece(state, baseId, uid, bases = BASES) {
+  if (!baseById(baseId, bases)) return { ok: false, diorama: state, reason: "bad-base" };
   const list = state.placed?.[baseId] ?? [];
   if (!list.some((x) => x.uid === uid)) return { ok: false, diorama: state, reason: "missing" };
 
-  const placed = clonePlaced(state.placed);
+  const placed = clonePlaced(state.placed, bases);
   placed[baseId] = placed[baseId].filter((x) => x.uid !== uid);
   return { ok: true, diorama: { ...state, placed } };
 }
 
-export function clearBase(state, baseId) {
-  if (!baseById(baseId)) return { ok: false, diorama: state, reason: "bad-base" };
-  const placed = clonePlaced(state.placed);
+export function clearBase(state, baseId, bases = BASES) {
+  if (!baseById(baseId, bases)) return { ok: false, diorama: state, reason: "bad-base" };
+  const placed = clonePlaced(state.placed, bases);
   placed[baseId] = [];
   return { ok: true, diorama: { ...state, placed } };
 }
 
-export function setBase(state, baseId) {
-  if (!baseById(baseId)) return { ok: false, diorama: state, reason: "bad-base" };
+export function setBase(state, baseId, bases = BASES) {
+  if (!baseById(baseId, bases)) return { ok: false, diorama: state, reason: "bad-base" };
+  if (!(state.unlockedBases ?? starterBases(bases)).includes(baseId)) return { ok: false, diorama: state, reason: "locked" };
   return { ok: true, diorama: { ...state, base: baseId } };
 }

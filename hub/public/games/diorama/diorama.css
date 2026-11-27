@@ -25,7 +25,7 @@ button, a { font: inherit; color: inherit; }
 
 /* ── Top bar ── */
 .dio-top {
-  flex: none; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  flex: none; display: flex; align-items: center; gap: 8px; flex-wrap: nowrap;
   padding: max(8px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) 8px max(12px, env(safe-area-inset-left));
   background: var(--card); border-bottom: 2px solid var(--border); z-index: 10;
 }
@@ -34,20 +34,24 @@ button, a { font: inherit; color: inherit; }
   border-radius: 12px; text-decoration: none; font-weight: 800;
   background: var(--soft); border: 1.5px solid var(--border); white-space: nowrap;
 }
-.base-tabs { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
-.base-tabs::-webkit-scrollbar { display: none; }
-.base-tab {
-  min-height: 40px; padding: 6px 12px; border-radius: 99px; border: 1.5px solid var(--border);
-  background: var(--card); font: 800 .9rem "Baloo 2", Nunito, sans-serif; cursor: pointer;
-  white-space: nowrap; transition: transform .08s, background .12s;
+.worlds-btn {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 40px; min-width: 0;
+  padding: 5px 11px; border-radius: 99px; border: 2px solid #2a6db3; background: #2a6db3; color: #fff;
+  font: 800 .92rem "Baloo 2", Nunito, sans-serif; cursor: pointer; box-shadow: 0 2px 0 #194b82; white-space: nowrap;
 }
-.base-tab[aria-pressed="true"] {
-  background: #2a6db3; color: #fff; border-color: #2a6db3; box-shadow: 0 2px 0 #194b82;
+.worlds-btn #world-label { overflow: hidden; text-overflow: ellipsis; }
+.worlds-count {
+  padding: 1px 7px; border-radius: 99px; background: rgb(255 255 255 / .24);
+  font-size: .76rem; font-weight: 900;
 }
-@media (max-width: 720px) {
-  .dio-top { gap: 6px; padding-top: max(6px, env(safe-area-inset-top)); padding-bottom: 6px; }
-  .base-tabs { order: 3; width: 100%; }
-  .base-tab { flex: 1; text-align: center; min-height: 36px; padding: 4px 8px; font-size: .85rem; }
+@media (max-width: 500px) {
+  .dio-top { gap: 5px; padding-left: 7px; padding-right: 7px; }
+  .back-btn { min-height: 36px; padding: 4px 8px; font-size: .82rem; }
+  .worlds-btn { min-height: 36px; padding: 4px 8px; font-size: .82rem; gap: 4px; }
+  .worlds-count { display: none; }
+  .prize-top-btn { min-height: 36px; padding: 3px 8px; gap: 5px; font-size: .82rem; }
+  .prize-chip { padding: 2px 7px; font-size: .76rem; }
+  .icon-pill { min-width: 36px; min-height: 36px; font-size: 1rem; }
 }
 .top-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; }
 .prize-top-btn {
@@ -145,7 +149,7 @@ button, a { font: inherit; color: inherit; }
   flex: none; min-height: 36px; padding: 4px 11px; border-radius: 99px;
   border: 1.5px solid var(--border); background: var(--card); font-weight: 800; font-size: .85rem; cursor: pointer;
 }
-.cat-tab[aria-selected="true"] { background: var(--gold); border-color: var(--gold-dark); color: var(--gold-ink); }
+.cat-tab[aria-selected="true"] { background: var(--gold); border-color: var(--gold-dark); color: #3b2800; }
 
 .shelf-grid {
   flex: 1; min-height: 0; overflow-y: auto; padding: 4px 12px max(16px, env(safe-area-inset-bottom));
@@ -243,9 +247,34 @@ button, a { font: inherit; color: inherit; }
 
 .reveal-stage {
   position: relative; height: 220px; display: grid; place-items: center; margin: 4px 0 8px;
-  border-radius: 22px; background: radial-gradient(circle, #fffbe8 0%, #dceeff 100%);
+  border-radius: 22px; overflow: hidden; background: radial-gradient(circle, #fffbe8 0%, #dceeff 100%);
 }
 .reveal-stage canvas { width: 240px; height: 220px; display: block; }
+.reveal-stage canvas.world-spot { width: 100%; height: 220px; }
+
+/* Worlds picker dialog */
+.worlds-dialog { width: min(100%, 560px); border-color: #2a6db3; text-align: left; }
+#worlds-heading { font: 800 1.25rem "Baloo 2", Nunito, sans-serif; }
+.worlds-sub { margin: 0 0 12px; color: var(--muted); font-size: .9rem; font-weight: 700; }
+.worlds-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.world-card {
+  position: relative; display: flex; flex-direction: column; gap: 5px; padding: 10px;
+  border-radius: 18px; border: 2px solid var(--border); background: var(--card); text-align: left;
+  cursor: pointer; box-shadow: 0 3px 0 var(--border); transition: transform .08s;
+}
+.world-card:active { transform: translateY(2px); box-shadow: none; }
+.world-card.active { border-color: #2a6db3; box-shadow: 0 0 0 3px rgb(42 109 179 / .22); }
+.world-card.locked { border-style: dashed; box-shadow: none; opacity: .78; background: var(--soft); }
+.world-swatch {
+  height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 10px; font-size: 1.45rem; border: 1.5px solid rgb(0 0 0 / .08);
+}
+.world-chip {
+  font-size: .7rem; font-weight: 900; padding: 2px 7px; border-radius: 99px;
+  background: rgb(255 255 255 / .88); color: #183153;
+}
+.world-card b { font: 800 .95rem/1.15 "Baloo 2", Nunito, sans-serif; }
+.world-card small { font-size: .78rem; color: var(--muted); font-weight: 700; }
 .rarity-tag {
   display: inline-block; padding: 3px 12px; border-radius: 99px; font-weight: 900; font-size: .82rem;
   letter-spacing: .04em; background: #e8fbf4; color: #0c6b49;
@@ -256,7 +285,7 @@ button, a { font: inherit; color: inherit; }
 .prize-cta {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
   min-height: 48px; width: 100%; padding: 10px 18px; border-radius: 16px; border: 0;
-  background: var(--gold); color: var(--gold-ink); font: 800 1.15rem "Baloo 2", Nunito, sans-serif;
+  background: var(--gold); color: #3b2800; font: 800 1.15rem "Baloo 2", Nunito, sans-serif;
   box-shadow: 0 5px 0 var(--gold-dark); cursor: pointer; text-decoration: none;
 }
 .prize-cta.teal { background: var(--teal); color: #fff; box-shadow: 0 5px 0 #0d7553; }

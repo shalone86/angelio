@@ -323,6 +323,34 @@ export const CHECKLISTS = [
       { slug: "garden-foodbank", label: "Food bank cart", size: [24, 16], note: "Striped awning wagon on the right side of the path." },
     ],
   },
+  {
+    id: "diorama-backdrops", title: "Voxel Diorama: backdrops", game: "Voxel Diorama",
+    note: "Design custom 3D backdrops for the 8 × 8 Voxel Diorama tabletop. Recommended 1:1 size: 80 wide (X) × 12–20 deep (Y) × 24–36 tall (Z), facing forward (-Y) just like your people — or draw half-scale (40 × 8–10 × 16–20) and the diorama auto-fits it along the back edge. Download the starter 80 × 12 × 28 guide on any item below.",
+    items: [
+      { slug: "diorama-bg-chapel", label: "Backdrop: Little Chapel", size: [64, 32], download: "backdrop", note: "Sandstone sanctuary wall & glowing stained-glass windows." },
+      { slug: "diorama-bg-garden", label: "Backdrop: Monastery Garden", size: [64, 32], download: "backdrop", note: "Mossy stone garden wall & blooms." },
+      { slug: "diorama-bg-courtyard", label: "Backdrop: Parish Courtyard", size: [64, 32], download: "backdrop", note: "Carved sandstone arches or colonnade pillars." },
+      { slug: "diorama-bg-byzantine", label: "Backdrop: Byzantine Church", size: [64, 32], download: "backdrop", note: "Golden iconostasis with Royal Doors & icons." },
+      { slug: "diorama-bg-meadow", label: "Backdrop: Shepherd's Meadow", size: [64, 32], download: "backdrop", note: "Rolling pasture fence beside a clear blue brook." },
+      { slug: "diorama-bg-hall", label: "Backdrop: Parish Hall", size: [64, 32], download: "backdrop", note: "Cozy brick hearth & parish bunting banners." },
+      { slug: "diorama-bg-snow", label: "Backdrop: Midnight Christmas", size: [64, 32], download: "backdrop", note: "Snowy night chapel under the golden star." },
+      { slug: "diorama-bg-hilltop", label: "Backdrop: Hilltop Shrine", size: [64, 32], download: "backdrop", note: "Stone hilltop grotto nestled among soft clouds." },
+      { slug: "diorama-bg-moon", label: "Backdrop: The Moon", size: [64, 32], download: "backdrop", note: "Lunar crater ridge with planet Earth in the stars." },
+      { slug: "diorama-bg-clouds", label: "Backdrop: Cloud Kingdom", size: [64, 32], download: "backdrop", note: "Fluffy cloud banks beneath a bright voxel rainbow." },
+      { slug: "diorama-bg-cabin", label: "Backdrop: Woodland Cabin", size: [64, 32], download: "backdrop", note: "Timber cabin beside tall pines and a forest stream." },
+      { slug: "diorama-bg-suburb", label: "Backdrop: Sunny Suburb", size: [64, 32], download: "backdrop", note: "Neighborhood homes behind a white picket fence." },
+      { slug: "diorama-bg-fuji", label: "Backdrop: Mount Fuji", size: [64, 32], download: "backdrop", note: "Snow-capped Mount Fuji, crimson Torii gate & sakura trees." },
+      { slug: "diorama-bg-islands", label: "Backdrop: Tropical Islands", size: [64, 32], download: "backdrop", note: "Turquoise surf, swaying palm trees & distant volcano island." },
+    ],
+  },
+  {
+    id: "diorama-props", title: "Voxel Diorama: props", game: "Voxel Diorama",
+    note: "Extra voxel props made especially for the 3D Voxel Diorama (8 × 8 × 8 or up to 16 × 16 × 24; sits inside one 10 × 10 diorama tile).",
+    items: [
+      { slug: "diorama-pine", label: "Evergreen pine tree", size: [16, 24], note: "Starter nature tree in the Voxel Diorama." },
+      { slug: "diorama-flowers", label: "Flower bed planter", size: [16, 8], note: "Colorful voxel planter for gardens & courtyards." },
+    ],
+  },
 ];
 
 /** Every slug a checklist names (for the page). */

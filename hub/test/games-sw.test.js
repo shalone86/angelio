@@ -17,6 +17,7 @@ test("the Games page service worker exists and every precached file exists", () 
   assert.ok(paths.includes("/games/diorama/") && paths.includes("/games/diorama/scene.js") && paths.includes("/vendor/three-r128.min.js"));
   assert.match(sw, /navKey = url\.pathname\.startsWith\("\/games\/diorama"\)/);
   assert.match(sw, /artNetworkFirst/);
+  assert.match(sw, /diorama\\\/scenes/);
   const reg = readFileSync(join(pub, "games/games.js"), "utf8");
   assert.match(reg, /register\("\/games\/sw\.js", \{ scope: "\/games\/" \}\)/);
 });

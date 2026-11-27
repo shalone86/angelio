@@ -2,7 +2,7 @@
 // Navigations: network first, falling back to the saved page. Everything else: show what is saved,
 // refresh it in the background. Bump VERSION when you change files, and list new files in ASSETS.
 
-const VERSION = "v7";
+const VERSION = "v8";
 const CACHE = `games-shell-${VERSION}`;
 const RUNTIME = "games-runtime-v1";
 
@@ -45,7 +45,7 @@ self.addEventListener("fetch", (e) => {
   const req = e.request;
   if (req.method !== "GET") return;
   const url = new URL(req.url);
-  if (url.origin === location.origin && /^\/api\/art(\/vox)?$/.test(url.pathname)) return e.respondWith(artNetworkFirst(req));
+  if (url.origin === location.origin && /^\/api\/(art(\/vox)?|diorama\/scenes)$/.test(url.pathname)) return e.respondWith(artNetworkFirst(req));
   if (url.origin !== location.origin || url.pathname.startsWith("/api/")) return;
   if (req.mode === "navigate") {
     if (!url.pathname.startsWith("/games")) return;

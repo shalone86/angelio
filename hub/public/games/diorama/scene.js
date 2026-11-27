@@ -3,7 +3,7 @@
 // garden props (auto-upgrading to his custom .vox slugs whenever uploaded) plus tidy chibi stand-ins offline.
 
 import { readVox, toScene } from "/js/vox.js";
-import { GRID, BASES, pieceById } from "./catalog.js";
+import { GRID, BASES, pieceById, baseById } from "./catalog.js";
 
 const CELL = 10;
 const BOARD_W = GRID * CELL;
@@ -427,13 +427,265 @@ export function buildPieceObject(piece, models = {}, mats = new Map()) {
   return wrap;
 }
 
-const BASE_PALETTE = {
-  chapel: { slab: "#b59d7e", rim: "#8a6745", tileA: "#efe4cf", tileB: "#e4d5ba", bg: "#dbeeff" },
-  garden: { slab: "#73583a", rim: "#7c887d", tileA: "#76b960", tileB: "#68ab53", bg: "#dff6e8" },
-  courtyard: { slab: "#8f857a", rim: "#a59b8e", tileA: "#ddd0b8", tileB: "#cfbfa3", bg: "#f4ebd9" },
-};
-
 const tileCoord = (g) => (g - GRID / 2 + 0.5) * CELL;
+
+/** Build an uploaded MagicaVoxel (.vox) backdrop sized 1:1 (80×12–20×24–36) or half-scale auto-fit along North rim. */
+function buildBackdropVox(model) {
+  const all = model.vox.frames.flatMap((_, f) => toScene(model.vox, f));
+  if (!all.length) return null;
+  const minX = Math.min(...all.map((c) => c[0])), maxX = Math.max(...all.map((c) => c[0]));
+  const minY = Math.min(...all.map((c) => c[1]));
+  const minZ = Math.min(...all.map((c) => c[2])), maxZ = Math.max(...all.map((c) => c[2]));
+  const cx = (minX + maxX) / 2, cz = (minZ + maxZ) / 2, baseY = minY - 0.5;
+  const spanX = maxX - minX + 1, spanZ = maxZ - minZ + 1;
+  const scale = spanX >= 60 ? Math.min(1, 96 / spanX) : (BOARD_W / Math.max(1, spanX));
+
+  const g = new THREE.Group();
+  g.scale.setScalar(scale);
+  g.position.set(0, 0, -BOARD_W / 2 - (spanZ * scale) / 2 - 0.6);
+
+  const box = getBox(), o = new THREE.Object3D(), col = new THREE.Color();
+  const frames = model.vox.frames.map((_, f) => {
+    const cells = toScene(model.vox, f).map(([x, y, z, c]) => [x - cx, y - baseY, z - cz, c]);
+    const fr = new THREE.Group();
+    if (cells.length) {
+      const im = new THREE.InstancedMesh(box, new THREE.MeshLambertMaterial(), cells.length);
+      cells.forEach(([x, y, z, c], i) => {
+        o.position.set(x, y, z);
+        o.updateMatrix();
+        im.setMatrixAt(i, o.matrix);
+        im.setColorAt(i, col.set(c));
+      });
+      im.instanceMatrix.needsUpdate = true;
+      if (im.instanceColor) im.instanceColor.needsUpdate = true;
+      fr.add(im);
+    }
+    fr.visible = f === 0;
+    g.add(fr);
+    return fr;
+  });
+  g.userData.frames = frames;
+  g.userData.fps = model.fps ?? 4;
+  return g;
+}
+
+/** Populate a tabletop boardGroup for `baseObj`, preferring custom uploaded `.vox` backdrop with 14 procedural worlds. */
+function populateBoardGroup(boardGroup, baseObj, models, mats) {
+  while (boardGroup.children.length) boardGroup.remove(boardGroup.children[0]);
+  boardGroup.userData.backdropFrames = [];
+  boardGroup.userData.backdropFps = 4;
+
+  const base = baseObj ?? BASES[0];
+  const pal = base.palette ?? BASES[0].palette;
+  const { vox } = createInstancedBuilder(mats);
+  const BZ = -BOARD_W / 2 - 1.3;
+
+  // Tabletop plinth (distinct non-overlapping Y layers so WebGL never z-fights)
+  vox(boardGroup, BOARD_W + 6, 4.0, BOARD_W + 6, 0, -4.6, 0, pal.slab);
+  vox(boardGroup, BOARD_W + 4.4, 0.45, BOARD_W + 4.4, 0, -0.6, 0, pal.rim);
+
+  // 8×8 checkerboard grid tiles sitting flush at y = 0
+  for (let gx = 0; gx < GRID; gx++) {
+    for (let gz = 0; gz < GRID; gz++) {
+      const col = (gx + gz) % 2 === 0 ? pal.tileA : pal.tileB;
+      vox(boardGroup, CELL - 0.35, 0.15, CELL - 0.35, tileCoord(gx), -0.15, tileCoord(gz), col);
+    }
+  }
+
+  // Flat floor accents always belong to the scene (e.g. chapel aisle carpet / stepping stones / clouds puff rim)
+  const style = base.style ?? "plain";
+  if (style === "chapel") {
+    for (let gz = 1; gz < GRID; gz++) vox(boardGroup, 5.2, 0.08, CELL - 0.5, 0, 0.02, tileCoord(gz), pal.accent || "#b2323b");
+  } else if (style === "garden") {
+    for (let gx = 0; gx < GRID; gx++) if (gx % 2 === 0) vox(boardGroup, 4.6, 0.08, 4.6, tileCoord(gx), 0.02, tileCoord(3), pal.accent || "#c7c0b0");
+  } else if (style === "byzantine") {
+    for (let gz = 1; gz < GRID; gz++) {
+      vox(boardGroup, 6.2, 0.05, CELL - 0.4, 0, 0.01, tileCoord(gz), "#e4b23c");
+      vox(boardGroup, 4.6, 0.08, CELL - 0.5, 0, 0.02, tileCoord(gz), pal.accent || "#c8262f");
+    }
+  } else if (style === "moon") {
+    for (const [cx, cz] of [[-35, -35], [35, 35], [-35, 35]]) {
+      vox(boardGroup, 7.2, 0.4, 1.2, cx, 0.01, cz - 3.2, "#8c94a8");
+      vox(boardGroup, 7.2, 0.4, 1.2, cx, 0.01, cz + 3.2, "#8c94a8");
+      vox(boardGroup, 1.2, 0.4, 5.2, cx - 3.0, 0.01, cz, "#8c94a8");
+      vox(boardGroup, 1.2, 0.4, 5.2, cx + 3.0, 0.01, cz, "#8c94a8");
+    }
+  } else if (style === "clouds") {
+    for (const [px, pz, pw] of [[-41, -18, 8], [41, -12, 8], [-39, 18, 9], [40, 22, 8]]) {
+      vox(boardGroup, pw, 2.2, 10, px, -0.4, pz, "#ffffff");
+      vox(boardGroup, pw - 2, 1.6, 7, px, 1.8, pz, "#f2f8ff");
+    }
+  } else if (style === "suburb") {
+    vox(boardGroup, BOARD_W + 4, 0.12, 4.2, 0, 0.01, BOARD_W / 2 - 2.2, "#cfd6de");
+  }
+
+  // Custom Studio/Checklist `.vox` backdrop overrides the procedural north wall when uploaded!
+  const customModel = base.backdropSlug ? models?.[base.backdropSlug] : null;
+  if (customModel) {
+    const built = buildBackdropVox(customModel);
+    if (built) {
+      boardGroup.add(built);
+      boardGroup.userData.backdropFrames = built.userData.frames;
+      boardGroup.userData.backdropFps = built.userData.fps;
+      return;
+    }
+  }
+
+  if (style === "chapel") {
+    vox(boardGroup, BOARD_W + 2, 11, 1.8, 0, 0, BZ, "#e4d8be");
+    [-24, 0, 24].forEach((gx, i) => {
+      const col = ["#4b8be0", "#e65b65", "#f0c846"][i];
+      vox(boardGroup, 7.6, 6.2, 2.0, gx, 2.6, BZ, col, { emissive: col, emissiveIntensity: 0.25 });
+    });
+  } else if (style === "garden") {
+    vox(boardGroup, BOARD_W + 2, 2.4, 1.6, 0, 0, BZ, "#8c968b");
+    for (const sx of [-BOARD_W / 2 - 1.2, BOARD_W / 2 + 1.2]) vox(boardGroup, 1.6, 2.2, 26, sx, 0, -26, "#8c968b");
+    for (const [fx, fcol] of [[-32, "#e85d7c"], [-16, "#ffcb3c"], [16, "#55a3ff"], [32, "#e85d7c"]]) {
+      vox(boardGroup, 2.4, 1.2, 2.0, fx, 2.4, BZ, "#4e9442");
+      vox(boardGroup, 1.1, 0.9, 1.1, fx, 3.5, BZ, fcol);
+    }
+  } else if (style === "courtyard") {
+    vox(boardGroup, BOARD_W + 2, 2.0, 1.6, 0, 0, BZ, "#b8ae9f");
+    for (const px of [-36, -12, 12, 36]) {
+      vox(boardGroup, 2.6, 8.2, 2.6, px, 2.0, BZ, "#d8cebe");
+      vox(boardGroup, 3.2, 1.0, 3.2, px, 10.2, BZ, "#c6bba8");
+    }
+  } else if (style === "byzantine") {
+    vox(boardGroup, BOARD_W + 2, 14, 2.0, 0, 0, BZ, "#d4a438");
+    vox(boardGroup, BOARD_W + 4, 1.6, 2.4, 0, 14, BZ, "#b8841c");
+    vox(boardGroup, 9.2, 11.2, 2.2, 0, 0.4, BZ, "#783c1c");
+    vox(boardGroup, 0.7, 3.4, 0.7, 0, 15.6, BZ, "#ffd85e");
+    vox(boardGroup, 2.6, 0.65, 0.65, 0, 17.5, BZ, "#ffd85e");
+    [[-30, "#2e4f9a"], [-16, "#9a2b2b"], [16, "#4d7a3a"], [30, "#6f3b96"]].forEach(([ix, icol]) => {
+      vox(boardGroup, 7.6, 8.6, 2.2, ix, 3.0, BZ, icol, { emissive: icol, emissiveIntensity: 0.14 });
+    });
+  } else if (style === "meadow") {
+    vox(boardGroup, BOARD_W + 2, 1.4, 5.2, 0, 0, BZ - 1.5, pal.accent || "#429ae0");
+    vox(boardGroup, 18, 0.4, 1.4, -14, 1.3, BZ - 1.4, "#c9ebff");
+    vox(boardGroup, 22, 0.4, 1.4, 18, 1.3, BZ - 1.6, "#c9ebff");
+    for (let x = -36; x <= 36; x += 12) vox(boardGroup, 1.4, 4.6, 1.4, x, 0, BZ + 0.8, "#8c5c2e");
+    vox(boardGroup, BOARD_W, 0.9, 0.8, 0, 3.1, BZ + 0.8, "#a6703b");
+    vox(boardGroup, BOARD_W, 0.9, 0.8, 0, 1.6, BZ + 0.8, "#a6703b");
+  } else if (style === "hall") {
+    vox(boardGroup, BOARD_W + 2, 13, 2.0, 0, 0, BZ, "#9e483c");
+    // Stone hearth + glowing fire in center
+    vox(boardGroup, 14, 9.5, 2.6, 0, 0, BZ + 0.2, "#8f8980");
+    vox(boardGroup, 7.6, 5.2, 2.8, 0, 0.6, BZ + 0.3, "#2a1d1a");
+    vox(boardGroup, 5.2, 2.4, 1.4, 0, 0.8, BZ + 1.0, "#ff781f", { emissive: "#ff5500", emissiveIntensity: 0.8 });
+    vox(boardGroup, 2.6, 1.6, 1.4, 0, 2.8, BZ + 1.0, "#ffe46a", { emissive: "#ffb326", emissiveIntensity: 0.7 });
+    const flagCols = ["#e05252", "#4e8fe0", "#f2c641", "#3ea666"];
+    for (let i = -5; i <= 5; i++) vox(boardGroup, 4.2, 2.4, 0.6, i * 6.8, 10.6 - (Math.abs(i) % 2), BZ + 1.2, flagCols[Math.abs(i) % 4]);
+  } else if (style === "snow") {
+    // Twinkling star cubes + snow-roofed chapel + bright Christmas star
+    for (const [sx, sy] of [[-32, 21], [-18, 26], [22, 25], [34, 19], [-8, 28], [14, 29]]) {
+      vox(boardGroup, 1.1, 1.1, 1.1, sx, sy, BZ - 2, "#fff5c0", { emissive: "#ffd24c", emissiveIntensity: 0.8 });
+    }
+    vox(boardGroup, 36, 12, 3.0, 0, 0, BZ - 0.6, "#d2dfee");
+    vox(boardGroup, 40, 2.4, 4.0, 0, 12, BZ - 0.6, "#ffffff"); // snow roof
+    vox(boardGroup, 14, 17, 3.0, 0, 0, BZ - 0.6, "#dce8f5"); // steeple
+    vox(boardGroup, 16, 2.6, 3.6, 0, 17, BZ - 0.6, "#ffffff");
+    for (const wx of [-12, 12]) vox(boardGroup, 4.2, 5.6, 3.2, wx, 4.2, BZ - 0.6, "#ffcb47", { emissive: "#ffaa1c", emissiveIntensity: 0.75 });
+    // Christmas star above steeple
+    vox(boardGroup, 2.2, 6.2, 1.2, 0, 22, BZ, "#ffd84d", { emissive: "#ffb300", emissiveIntensity: 0.85 });
+    vox(boardGroup, 6.2, 2.2, 1.2, 0, 24, BZ, "#ffd84d", { emissive: "#ffb300", emissiveIntensity: 0.85 });
+    for (const px of [-29, 29]) {
+      vox(boardGroup, 2.2, 3.0, 2.2, px, 0, BZ, "#5e3d22");
+      vox(boardGroup, 8.6, 4.0, 6.0, px, 2.8, BZ, "#2d6e46");
+      vox(boardGroup, 6.4, 3.2, 4.6, px, 6.8, BZ, "#ffffff");
+    }
+  } else if (style === "hilltop") {
+    vox(boardGroup, BOARD_W + 2, 3.6, 3.0, 0, 0, BZ - 0.4, "#8a8278");
+    vox(boardGroup, 24, 12, 3.6, 0, 3.6, BZ - 0.4, "#9e968c");
+    vox(boardGroup, 12, 8.6, 2.2, 0, 4.2, BZ + 0.6, "#5a9fe0", { emissive: "#2f6db5", emissiveIntensity: 0.25 });
+    vox(boardGroup, 1.2, 2.2, 1.2, -3.5, 4.4, BZ + 1.8, "#ffe26a", { emissive: "#ff9d00", emissiveIntensity: 0.75 });
+    vox(boardGroup, 1.2, 2.2, 1.2, 3.5, 4.4, BZ + 1.8, "#ffe26a", { emissive: "#ff9d00", emissiveIntensity: 0.75 });
+    for (const cx of [-28, 28]) {
+      vox(boardGroup, 16, 4.2, 4.2, cx, 11, BZ - 1, "#ffffff");
+      vox(boardGroup, 10, 3.0, 3.0, cx + (cx < 0 ? 3 : -3), 15.2, BZ - 1, "#f2f8ff");
+    }
+  } else if (style === "moon") {
+    // Jagged lunar ridge + glowing planet Earth in the cosmos
+    [[-34, 7], [-22, 11], [-10, 6], [8, 9], [24, 12], [35, 8]].forEach(([rx, rh]) => {
+      vox(boardGroup, 14, rh, 4.0, rx, 0, BZ - 0.8, "#6a7284");
+    });
+    // Voxel Earth floating high behind the Moon
+    vox(boardGroup, 14, 14, 10, 0, 15, BZ - 4, "#2d7ce6", { emissive: "#16489c", emissiveIntensity: 0.28 });
+    vox(boardGroup, 6, 5, 10.6, -2.5, 20, BZ - 4, "#4cb85b", { emissive: "#2c7a38", emissiveIntensity: 0.22 });
+    vox(boardGroup, 5, 4, 10.6, 3.0, 17, BZ - 4, "#4cb85b", { emissive: "#2c7a38", emissiveIntensity: 0.22 });
+    vox(boardGroup, 8, 2.2, 10.8, 1.0, 25.5, BZ - 4, "#ffffff");
+    vox(boardGroup, 6, 1.8, 10.8, -3.5, 16.5, BZ - 4, "#ffffff");
+  } else if (style === "clouds") {
+    // Seven-band voxel rainbow arch + fluffy cloud banks
+    const rainbow = ["#ff5a65", "#ff9a3c", "#ffd93c", "#54c86a", "#4da6ff", "#6e6be8", "#c46ce8"];
+    rainbow.forEach((col, band) => {
+      const r = 34 - band * 2.2;
+      for (let step = -7; step <= 7; step++) {
+        const a = (step / 7) * 1.25;
+        vox(boardGroup, 4.2, 2.4, 2.4, Math.sin(a) * r, Math.cos(a) * r - 4, BZ - 1.2, col, { emissive: col, emissiveIntensity: 0.22 });
+      }
+    });
+    for (const cx of [-30, 30]) {
+      vox(boardGroup, 18, 5.2, 6.2, cx, 0, BZ, "#ffffff");
+      vox(boardGroup, 11, 4.2, 4.6, cx, 5.2, BZ, "#eff6ff");
+    }
+  } else if (style === "cabin") {
+    // Sparkling stream + cozy log cabin + pines
+    vox(boardGroup, BOARD_W + 2, 0.8, 4.8, 0, 0, BZ - 1.0, "#3b95d9");
+    vox(boardGroup, 26, 11, 5.0, -4, 0.8, BZ - 2.2, "#85522d");
+    vox(boardGroup, 30, 3.6, 6.0, -4, 11.8, BZ - 2.2, "#5c3518"); // gable base
+    vox(boardGroup, 18, 3.4, 5.0, -4, 15.4, BZ - 2.2, "#4b2b12");
+    vox(boardGroup, 3.2, 7.6, 3.2, 6, 12.2, BZ - 2.2, "#8c877f"); // chimney
+    vox(boardGroup, 6.2, 5.2, 5.2, -9, 4.2, BZ - 2.2, "#ffd95e", { emissive: "#ffad1c", emissiveIntensity: 0.6 });
+    vox(boardGroup, 4.2, 7.8, 5.2, 1.5, 0.8, BZ - 2.2, "#4f2c14"); // cabin door
+    for (const px of [24, 34, -30]) {
+      vox(boardGroup, 2.2, 3.2, 2.2, px, 0, BZ - 1, "#5c381c");
+      vox(boardGroup, 9.2, 4.8, 6.0, px, 3.2, BZ - 1, "#2d6d3f");
+      vox(boardGroup, 6.4, 4.6, 4.4, px, 8.0, BZ - 1, "#37854b");
+    }
+  } else if (style === "suburb") {
+    // Crisp white picket fence + 3 colorful houses
+    vox(boardGroup, BOARD_W + 2, 1.0, 0.8, 0, 1.2, BZ + 1.2, "#ffffff");
+    for (let x = -38; x <= 38; x += 4) vox(boardGroup, 1.4, 3.2, 1.0, x, 0, BZ + 1.2, "#ffffff");
+    [[-26, "#f4e3c3", "#d84c44"], [0, "#dbeeff", "#3c6cb0"], [26, "#ffe4d9", "#d98b26"]].forEach(([hx, wall, roof]) => {
+      vox(boardGroup, 15, 9.2, 5.0, hx, 0, BZ - 2.4, wall);
+      vox(boardGroup, 17, 3.4, 6.0, hx, 9.2, BZ - 2.4, roof);
+      vox(boardGroup, 10, 2.8, 4.6, hx, 12.6, BZ - 2.4, roof);
+      vox(boardGroup, 3.4, 3.4, 5.2, hx - 3.6, 3.8, BZ - 2.4, "#fff29e", { emissive: "#ffbe3b", emissiveIntensity: 0.4 });
+      vox(boardGroup, 2.8, 5.0, 5.2, hx + 3.2, 0, BZ - 2.4, "#6d4224");
+    });
+  } else if (style === "fuji") {
+    // Crimson Torii gate centered + cherry blossom corner trees + grand snow-capped Mount Fuji
+    vox(boardGroup, 58, 10, 4.0, 0, 0, BZ - 4.0, "#4b6b9e");
+    vox(boardGroup, 42, 8.2, 4.0, 0, 10, BZ - 4.0, "#597bb0");
+    vox(boardGroup, 26, 6.6, 4.0, 0, 18.2, BZ - 4.0, "#ffffff");
+    vox(boardGroup, 14, 3.4, 4.0, 0, 24.8, BZ - 4.0, "#ffffff");
+    // Crimson Torii Gate in foreground of north border
+    for (const tx of [-7.5, 7.5]) vox(boardGroup, 2.2, 12, 2.2, tx, 0, BZ + 0.6, "#d93535");
+    vox(boardGroup, 21, 1.6, 2.2, 0, 9.2, BZ + 0.6, "#d93535");
+    vox(boardGroup, 25, 2.0, 2.8, 0, 12.0, BZ + 0.6, "#2a2424");
+    for (const sx of [-31, 31]) {
+      vox(boardGroup, 2.2, 5.4, 2.2, sx, 0, BZ, "#664228");
+      vox(boardGroup, 10, 5.2, 5.6, sx, 5.2, BZ, "#ff9ec7");
+      vox(boardGroup, 6.8, 3.2, 4.2, sx, 10.4, BZ, "#ffc9df");
+    }
+  } else if (style === "islands") {
+    // Turquoise ocean surf strip + twin curved palms + distant lush green volcano island
+    vox(boardGroup, BOARD_W + 4, 1.0, 6.2, 0, -0.2, BZ - 1.8, "#26b7d4");
+    vox(boardGroup, 36, 0.4, 1.4, -14, 0.8, BZ - 0.6, "#bdf7ff");
+    vox(boardGroup, 28, 0.4, 1.4, 20, 0.8, BZ - 1.2, "#bdf7ff");
+    vox(boardGroup, 26, 6.5, 4.0, 0, 0.8, BZ - 4.4, "#3ea354");
+    vox(boardGroup, 14, 5.5, 4.0, 0, 7.3, BZ - 4.4, "#54b868");
+    for (const px of [-31, 31]) {
+      const lean = px < 0 ? 1 : -1;
+      vox(boardGroup, 1.8, 4.2, 1.8, px, 0, BZ, "#7a542e");
+      vox(boardGroup, 1.7, 4.4, 1.7, px + lean * 1.2, 4.2, BZ, "#875f37");
+      vox(boardGroup, 1.6, 3.6, 1.6, px + lean * 2.2, 8.6, BZ, "#91683d");
+      vox(boardGroup, 10.4, 1.6, 4.0, px + lean * 2.4, 12.2, BZ, "#4ca64a");
+      vox(boardGroup, 4.0, 1.6, 10.4, px + lean * 2.4, 12.2, BZ, "#5ab858");
+      vox(boardGroup, 1.2, 1.2, 1.2, px + lean * 1.2, 11.0, BZ, "#5a3918");
+    }
+  }
+}
 
 export function createDioramaScene(canvas, { onTapTile, onTapPiece } = {}) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
@@ -479,12 +731,12 @@ export function createDioramaScene(canvas, { onTapTile, onTapPiece } = {}) {
 
   const placedMap = new Map();
   const puffs = [];
-  let currentBase = null;
+  let currentSig = null;
   let time = 0;
 
   // Orbit camera state
-  const target = { theta: 0.64, phi: 0.72, dist: 128 };
-  const camState = { theta: 0.64, phi: 0.72, dist: 128 };
+  const target = { theta: 0.64, phi: 0.72, dist: 140 };
+  const camState = { theta: 0.64, phi: 0.72, dist: 140 };
   const updateCamera = () => {
     const r = camState.dist;
     const sinPhi = Math.sin(camState.phi);
@@ -493,57 +745,17 @@ export function createDioramaScene(canvas, { onTapTile, onTapPiece } = {}) {
       Math.cos(camState.phi) * r,
       Math.cos(camState.theta) * sinPhi * r
     );
-    camera.lookAt(0, 3, 0);
+    camera.lookAt(0, 6, -3);
   };
 
-  function setBase(baseId) {
-    if (currentBase === baseId) return;
-    currentBase = baseId;
-    while (boardGroup.children.length) boardGroup.remove(boardGroup.children[0]);
-    const pal = BASE_PALETTE[baseId] ?? BASE_PALETTE.chapel;
-    scene.background = new THREE.Color(pal.bg);
-    const { vox } = createInstancedBuilder(mats);
-
-    // Tabletop plinth (distinct non-overlapping Y layers to prevent any WebGL z-fighting)
-    vox(boardGroup, BOARD_W + 6, 4.0, BOARD_W + 6, 0, -4.6, 0, pal.slab);
-    vox(boardGroup, BOARD_W + 4.4, 0.45, BOARD_W + 4.4, 0, -0.6, 0, pal.rim);
-
-    // 8×8 checkerboard grid tiles sitting cleanly atop the rim (top flush at y = 0)
-    for (let gx = 0; gx < GRID; gx++) {
-      for (let gz = 0; gz < GRID; gz++) {
-        const col = (gx + gz) % 2 === 0 ? pal.tileA : pal.tileB;
-        vox(boardGroup, CELL - 0.35, 0.15, CELL - 0.35, tileCoord(gx), -0.15, tileCoord(gz), col);
-      }
-    }
-
-    // Scenic backdrop strip along north rim (outside the playable 8×8 squares)
-    if (baseId === "chapel") {
-      // Red aisle carpet line + back sandstone stained-glass wall strip
-      for (let gz = 1; gz < GRID; gz++) {
-        vox(boardGroup, 5.2, 0.08, CELL - 0.5, 0, 0.02, tileCoord(gz), "#b2323b");
-      }
-      vox(boardGroup, BOARD_W + 2, 11, 1.8, 0, 0, -BOARD_W / 2 - 1.3, "#e4d8be");
-      const glassColors = ["#4b8be0", "#e65b65", "#f0c846"];
-      [-24, 0, 24].forEach((gx, i) => {
-        vox(boardGroup, 7.6, 6.2, 2.0, gx, 2.6, -BOARD_W / 2 - 1.3, glassColors[i], { emissive: glassColors[i], emissiveIntensity: 0.25 });
-      });
-    } else if (baseId === "garden") {
-      // Stepping stones across row 4 + low mossy cobble wall corners
-      for (let gx = 0; gx < GRID; gx++) {
-        if (gx % 2 === 0) vox(boardGroup, 4.6, 0.1, 4.6, tileCoord(gx), 0.01, tileCoord(3), "#c7c0b0");
-      }
-      vox(boardGroup, BOARD_W + 2, 2.2, 1.6, 0, 0, -BOARD_W / 2 - 1.2, "#8c968b");
-      for (const sx of [-BOARD_W / 2 - 1.2, BOARD_W / 2 + 1.2]) {
-        vox(boardGroup, 1.6, 2.0, 26, sx, 0, -26, "#8c968b");
-      }
-    } else if (baseId === "courtyard") {
-      // Low stone colonnade corner pillars along north border
-      vox(boardGroup, BOARD_W + 2, 2.0, 1.6, 0, 0, -BOARD_W / 2 - 1.2, "#b8ae9f");
-      for (const px of [-36, -12, 12, 36]) {
-        vox(boardGroup, 2.6, 8.2, 2.6, px, 2.0, -BOARD_W / 2 - 1.2, "#d8cebe");
-        vox(boardGroup, 3.2, 1.0, 3.2, px, 10.2, -BOARD_W / 2 - 1.2, "#c6bba8");
-      }
-    }
+  function setBase(baseOrId, models = {}) {
+    const baseObj = typeof baseOrId === "string" ? (baseById(baseOrId) ?? BASES[0]) : (baseOrId ?? BASES[0]);
+    const hasCustom = !!(baseObj.backdropSlug && models?.[baseObj.backdropSlug]);
+    const sig = `${baseObj.id}:${baseObj.style}:${baseObj.backdropSlug}:${hasCustom ? "vox" : "proc"}:${JSON.stringify(baseObj.palette)}`;
+    if (currentSig === sig) return;
+    currentSig = sig;
+    scene.background = new THREE.Color(baseObj.palette?.sky ?? "#dbeeff");
+    populateBoardGroup(boardGroup, baseObj, models, mats);
   }
 
   function syncPlaced(items, models, { popUid = null } = {}) {
@@ -704,6 +916,12 @@ export function createDioramaScene(canvas, { onTapTile, onTapPiece } = {}) {
       ringGroup.scale.set(pulse, 1, pulse);
     }
 
+    const bgFrames = boardGroup.userData.backdropFrames;
+    if (bgFrames?.length > 1) {
+      const k = Math.floor(time * (boardGroup.userData.backdropFps ?? 4)) % bgFrames.length;
+      bgFrames.forEach((f, i) => { f.visible = i === k; });
+    }
+
     for (const rec of placedMap.values()) {
       const ud = rec.group.userData;
       const frames = ud.frames;
@@ -777,8 +995,8 @@ export function createDioramaScene(canvas, { onTapTile, onTapPiece } = {}) {
     syncPlaced,
     setSelection,
     hop,
-    zoomBy: (delta) => { target.dist = Math.max(76, Math.min(176, target.dist + delta)); },
-    resetCamera: () => { target.theta = 0.64; target.phi = 0.72; target.dist = 128; },
+    zoomBy: (delta) => { target.dist = Math.max(76, Math.min(186, target.dist + delta)); },
+    resetCamera: () => { target.theta = 0.64; target.phi = 0.72; target.dist = 140; },
     resize,
     dispose: () => {
       cancelAnimationFrame(raf);
@@ -897,6 +1115,54 @@ export function createSpotlight(canvas, piece, models) {
       const b = sp.userData.flameBase ?? 2.0;
       const s = b * (0.9 + 0.2 * Math.sin(angle * 8 + sp.id));
       sp.scale.set(s, s, 1);
+    }
+    renderer.render(scene, cam);
+    raf = requestAnimationFrame(tick);
+  };
+  raf = requestAnimationFrame(tick);
+
+  return {
+    dispose: () => {
+      cancelAnimationFrame(raf);
+      renderer.dispose();
+      renderer.forceContextLoss?.();
+    },
+  };
+}
+
+/** Rotating miniature 3D tabletop preview of an unlocked diorama world inside the Prize Box modal. */
+export function createBaseSpotlight(canvas, baseObj, models = {}) {
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+  const w = canvas.clientWidth || 240, h = canvas.clientHeight || 220;
+  renderer.setSize(w, h, false);
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(baseObj?.palette?.sky ?? "#dbeeff");
+  scene.add(new THREE.HemisphereLight("#fff8eb", "#566378", 0.98));
+  const sun = new THREE.DirectionalLight("#ffe8be", 0.6);
+  sun.position.set(36, 70, 42);
+  scene.add(sun);
+
+  const boardGroup = new THREE.Group();
+  const mats = new Map();
+  populateBoardGroup(boardGroup, baseObj, models, mats);
+  scene.add(boardGroup);
+
+  const cam = new THREE.PerspectiveCamera(36, w / h, 1, 500);
+  cam.position.set(0, 88, 122);
+  cam.lookAt(0, 5, -6);
+
+  let raf = 0, last = performance.now(), angle = 0.45;
+  const tick = (now) => {
+    const dt = Math.min(0.08, (now - last) / 1000);
+    last = now;
+    angle += dt * 0.65;
+    boardGroup.rotation.y = angle;
+    const bgFrames = boardGroup.userData.backdropFrames;
+    if (bgFrames?.length > 1) {
+      const k = Math.floor((now / 1000) * (boardGroup.userData.backdropFps ?? 4)) % bgFrames.length;
+      bgFrames.forEach((f, i) => { f.visible = i === k; });
     }
     renderer.render(scene, cam);
     raf = requestAnimationFrame(tick);

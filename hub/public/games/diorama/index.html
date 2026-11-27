@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Voxel Diorama · Angelio Games</title>
-  <meta name="description" content="Collect 3D voxel figurines from Prize Boxes with your Parish Bells and build your own chapel, monastery garden, and courtyard dioramas.">
+  <meta name="description" content="Collect 3D voxel figurines and worlds from Prize Boxes with your Parish Bells and build your own custom dioramas.">
   <meta name="theme-color" content="#3a8fd9">
   <link rel="icon" href="/games/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" sizes="180x180" href="/games/icons/apple-touch-icon.png">
@@ -14,7 +14,11 @@
 <body>
   <header class="dio-top">
     <a class="back-btn" href="/games/" aria-label="Back to Angelio Games">← Games</a>
-    <nav class="base-tabs" id="bases" aria-label="Diorama scenes"></nav>
+    <button type="button" class="worlds-btn" id="worlds-btn" aria-haspopup="dialog" aria-label="Switch diorama world">
+      <span id="world-label">⛪ Chapel</span>
+      <span class="worlds-count" id="worlds-count">1/14</span>
+      <span aria-hidden="true">▾</span>
+    </button>
     <div class="top-actions">
       <button type="button" class="prize-top-btn" id="prize-btn" aria-label="Open Prize Box">
         <span id="top-bells">🔔 0</span>
@@ -63,11 +67,24 @@
     </aside>
   </main>
 
+  <div class="prize-modal" id="worlds-modal" role="dialog" aria-modal="true" aria-labelledby="worlds-heading" hidden>
+    <div class="prize-backdrop" id="worlds-backdrop"></div>
+    <section class="prize-dialog worlds-dialog">
+      <header class="prize-head">
+        <strong id="worlds-heading">🌍 Diorama Worlds</strong>
+        <span class="prize-stat" id="worlds-modal-count">1 / 14</span>
+        <button type="button" class="prize-close" id="worlds-close" aria-label="Close Worlds">✕</button>
+      </header>
+      <p class="worlds-sub">Pick an unlocked world to decorate, or win new worlds inside the Prize Box!</p>
+      <div class="worlds-grid" id="worlds-grid"></div>
+    </section>
+  </div>
+
   <div class="prize-modal" id="prize-modal" role="dialog" aria-modal="true" aria-labelledby="prize-heading" hidden>
     <div class="prize-backdrop" id="prize-backdrop"></div>
     <section class="prize-dialog">
       <header class="prize-head">
-        <span class="prize-stat" id="modal-count">4 / 30</span>
+        <span class="prize-stat" id="modal-count">4 🧱 · 1 🌍</span>
         <span class="prize-stat gold" id="modal-bells">🔔 0</span>
         <button type="button" class="prize-close" id="prize-close" aria-label="Close Prize Box">✕</button>
       </header>

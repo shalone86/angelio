@@ -28,7 +28,7 @@ export const APPS = {
 
 import { normalizeCode, newCode, codeStatus, day, month } from "./codes.js";
 import { stripeApi } from "./stripe.js";
-import { studioApi, backupToGitHub, READING_LIVE, ART_LIVE, CANDLES_LAYOUT, voxKey } from "./studio.js";
+import { studioApi, backupToGitHub, READING_LIVE, ART_LIVE, CANDLES_LAYOUT, DIORAMA_SCENES, voxKey } from "./studio.js";
 import { artSlug } from "../public/js/art-content.js";
 import { voiceSet, publicClips, isPrivate, putClip, deleteClip, voiceLinkApi, voicesAdminApi } from "./voices.js";
 
@@ -167,6 +167,11 @@ async function api(request, url, env) {
   if (route === "GET /api/candles/layout") {
     const obj = env.WATCH_MEDIA ? await env.WATCH_MEDIA.get(CANDLES_LAYOUT) : null;
     return new Response(obj ? obj.body : "{}", { headers: { "content-type": "application/json", "cache-control": "public, max-age=20", "access-control-allow-origin": "*" } });
+  }
+  // Custom Voxel Diorama scenes created in Angelio Studio (/studio/diorama/)
+  if (route === "GET /api/diorama/scenes") {
+    const obj = env.WATCH_MEDIA ? await env.WATCH_MEDIA.get(DIORAMA_SCENES) : null;
+    return new Response(obj ? obj.body : '{"scenes":[]}', { headers: { "content-type": "application/json", "cache-control": "public, max-age=20", "access-control-allow-origin": "*" } });
   }
   if (route === "GET /api/art/vox") {
     const slug = artSlug(url.searchParams.get("slug"));

@@ -48,6 +48,10 @@ test("every checklist item has a good name, a size the editor allows, and no rep
   for (const i of matchItems) if (i.slug !== "saint-halo") assert.match(i.slug, /^saint-[a-z0-9-]+-idle$/);
   const gardenItems = CHECKLISTS.filter((c) => c.game === "Garden Givers").flatMap((c) => c.items);
   assert.ok(gardenItems.some((i) => i.slug === "bug-idle") && gardenItems.some((i) => i.slug === "garden-foodbank"));
+  const dioramaItems = CHECKLISTS.filter((c) => c.game === "Voxel Diorama").flatMap((c) => c.items);
+  for (const s of ["diorama-bg-chapel", "diorama-bg-moon", "diorama-bg-fuji", "diorama-bg-islands", "diorama-pine", "diorama-flowers"]) {
+    assert.ok(dioramaItems.some((i) => i.slug === s), s);
+  }
 });
 
 test("save, keep the old version, favorite, tick, delete to the trash; anyone can read them", async () => {
