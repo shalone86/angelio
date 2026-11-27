@@ -223,12 +223,13 @@ export function createRoad(canvas, { models = {}, crewInfo }) {
   addProc(["child-girl-walk", "child-girl-idle"], 0, 13.2, randomLook(Math.random, { clothes: true }));
   addProc(["grandfather-walk", "man-beard-walk"], 4.5, 13.0, randomLook(Math.random, { older: true, clothes: true }));
 
-  // Player Advance Crew actor
+  // Player Advance Crew actor — starts facing away (-Z, Math.PI) up the road
   const crewLook = { ...randomLook(), shirt: "#2e5fa8", dress: "#c8262f", belt: "#f4efe2" };
   const crewActor = makePerson([crewInfo.voxWalk, crewInfo.voxIdle], crewLook, 1.12, SEASON_VESTMENT);
+  crewActor.g.rotation.y = Math.PI;
   scene.add(crewActor.g);
 
-  // Reach / Thurible / Holy Water expanding visual rings around crew
+  // Subtle reach ring around advance crew
   const reachRing = new THREE.Mesh(
     new THREE.RingGeometry(8.5, 9.2, 32),
     new THREE.MeshBasicMaterial({ color: "#fff1a8", side: THREE.DoubleSide, transparent: true, opacity: 0.45, depthWrite: false })
@@ -237,19 +238,8 @@ export function createRoad(canvas, { models = {}, crewInfo }) {
   reachRing.position.y = 0.25;
   scene.add(reachRing);
 
-  const waterRing = new THREE.Mesh(
-    new THREE.RingGeometry(2, 3.6, 36),
-    new THREE.MeshBasicMaterial({ color: "#7ad6ff", side: THREE.DoubleSide, transparent: true, opacity: 0.75, depthWrite: false })
-  );
-  waterRing.rotation.x = -Math.PI / 2;
-  waterRing.position.y = 0.35;
-  waterRing.visible = false;
-  scene.add(waterRing);
-
-  // Helper actors + obstacle pool
-  const helperActors = new Map();
   const obMeshes = new Map();
-  let lastHoly = 0, holyTimer = 0, lastBellFx = 0, bellFxTimer = 0;
+  let bellFxTimer = 0;
 
   // Church bell gold beam flash
   const bellBeam = new THREE.Mesh(
@@ -429,58 +419,27 @@ export function createRoad(canvas, { models = {}, crewInfo }) {
     procGroup.position.x = g.procX;
     const lean = (LANE_X[g.procLane] - g.procX) * 0.014;
     procGroup.rotation.z = g.wobble > 0 ? Math.sin(time * 28) * 0.08 : -lean;
-    const walkingProc = g.freezeTimer <= 0 && !g.over;
+    const walkingProc = !g.over;
     for (const pm of procMembers) {
       pm.setWalk(walkingProc);
       if (walkingProc) animFrames(pm.walkMesh, time);
     }
 
-    // Crew position & reach indicator
+    // Crew position, smooth facing rotation, & reach ring
     crewActor.g.position.set(g.crew.x, 0, g.crew.z);
-    crewActor.g.rotation.y = g.crew.dir;
+    const diff = Math.atan2(Math.sin(g.crew.dir - crewActor.g.rotation.y), Math.cos(g.crew.dir - crewActor.g.rotation.y));
+    crewActor.g.rotation.y += diff * Math.min(1, dt * 18);
     crewActor.setWalk(g.crew.moving);
     animFrames(g.crew.moving ? crewActor.walkMesh : crewActor.idleMesh, time);
 
-    const reachScale = (8.5 + (g.lv.longArms ?? 0) * 4.2) / 9.0;
     reachRing.position.set(g.crew.x, 0.25, g.crew.z);
-    reachRing.scale.setScalar(reachScale);
-    reachRing.material.opacity = g.lv.longArms > 0 ? 0.55 : g.crew.fixingId ? 0.5 : 0.22;
-
-    if (g.holyRings !== lastHoly) { lastHoly = g.holyRings; holyTimer = 0.7; }
-    if (holyTimer > 0) {
-      holyTimer -= dt;
-      waterRing.visible = true;
-      waterRing.position.set(g.crew.x, 0.35, g.crew.z);
-      waterRing.scale.setScalar(1 + (0.7 - holyTimer) * 26);
-      waterRing.material.opacity = Math.max(0, holyTimer * 1.1);
-    } else waterRing.visible = false;
+    reachRing.material.opacity = g.crew.fixingId ? 0.55 : 0.24;
 
     if (bellFxTimer > 0) {
       bellFxTimer -= dt;
       bellBeam.visible = true;
       bellBeam.material.opacity = Math.max(0, bellFxTimer * 1.2);
     } else bellBeam.visible = false;
-
-    // Helpers
-    const liveHelpers = new Set(g.helpers.map((h) => h.id));
-    for (const [id, actor] of helperActors) {
-      if (!liveHelpers.has(id)) { scene.remove(actor.g); helperActors.delete(id); }
-    }
-    for (const h of g.helpers) {
-      let actor = helperActors.get(h.id);
-      if (!actor) {
-        const slugs = h.upId === "server" ? ["server-walk", "server-idle"]
-          : h.upId === "deacon" ? ["man-walk", "man-idle"]
-          : ["woman-walk", "woman-idle"];
-        const robe = h.upId === "server" ? "#e8e3d5" : h.upId === "deacon" ? "#5a667a" : "#2f8a4c";
-        actor = makePerson(slugs, { ...randomLook(), shirt: robe, dress: robe }, 0.96);
-        scene.add(actor.g);
-        helperActors.set(h.id, actor);
-      }
-      actor.g.position.set(h.x, 0, h.z);
-      actor.setWalk(h.moving);
-      animFrames(h.moving ? actor.walkMesh : actor.idleMesh, time);
-    }
 
     // Obstacles sync
     const liveObs = new Set(g.obs.map((o) => o.id));

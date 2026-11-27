@@ -1,14 +1,14 @@
 // Offline support: network first for the app (updates show right away), cache first for fonts
 // and voice clips. Bump VERSION when you change files, and list new files in ASSETS.
 
-const VERSION = "v1";
+const VERSION = "v2";
 const APP = "procession";
 const SHELL = `${APP}-shell-${VERSION}`;
 const RUNTIME = `${APP}-runtime-v1`;
 
 const ASSETS = [
   "./", "index.html", "manifest.webmanifest", "icon.svg", "icons/icon-192.png", "icons/apple-touch-icon.png",
-  "css/base.css", "css/app.css", "js/app.js", "js/procession.js", "js/stages.js", "js/crew.js", "js/upgrades.js",
+  "css/base.css", "css/app.css", "js/app.js", "js/procession.js", "js/stages.js", "js/crew.js",
   "js/road.js", "js/vox.js", "js/looks.js", "vendor/three-r128.min.js",
   "js/kit/api.js", "js/kit/dock.js", "js/kit/fx.js", "js/kit/router.js", "js/kit/sound.js", "js/kit/speech.js",
   "js/kit/store.js", "js/kit/tts.js", "js/kit/ui.js", "js/kit/lesson.js", "js/kit/vary.js", "js/kit/stickers.js", "js/kit/jingle.js",

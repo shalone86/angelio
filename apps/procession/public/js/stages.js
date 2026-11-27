@@ -44,7 +44,7 @@ export const STAGES = [
     stretch: "town",
     kinds: ["pothole", "person", "car", "dog", "truck", "puddle"], gap: [2.7, 0.9], speedStart: 11.0,
     windEvery: 22, bridgeEvery: 28, bossEvery: 85,
-    blurb: "Endless Feast route! Every minute speeds up & shifts towns — face bosses & collect synergies.",
+    blurb: "Endless Feast route! Every minute speeds up & shifts towns — face all four boss waves.",
     rule: "Keep the candles burning! Every 60s shifts the route and boss waves test your crew.",
   },
 ];

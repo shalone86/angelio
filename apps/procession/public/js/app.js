@@ -1,4 +1,4 @@
-// Procession!: run ahead of the parish procession, clear hazards, steer around trouble, and pick upgrades.
+// Procession!: run ahead of the parish procession, clear hazards, and steer past trouble.
 import * as S from "./kit/store.js";
 import { jingleOnce } from "./kit/jingle.js";
 S.init("procession:v1", { best: 0 });
@@ -7,17 +7,18 @@ import { createRouter } from "./kit/router.js";
 import { speak, stop } from "./kit/tts.js";
 import { sfx } from "./kit/sound.js";
 import * as FX from "./kit/fx.js";
-import { showLesson } from "./kit/lesson.js";
 import { todayKey, todayLabel, dailySeed, dailyStage } from "./kit/vary.js";
 import { esc, say, showFinish, stickerBook, viewGrownups, installClickSounds, wireVoiceToggle } from "./kit/ui.js";
 import { STAGES, stageById, isOpen } from "./stages.js";
 import { CREW, crewById, crewOpen } from "./crew.js";
-import { SYNERGIES } from "./upgrades.js";
 import {
-  newGame, tick, steerProcession, setTarget, setStick, pickUpgrade,
+  newGame, tick, steerProcession, setTarget, setStick,
   starsFor, multiplierOf, FRONT_Z, SPAWN_Z,
 } from "./procession.js";
 import { createRoad, loadModels, MODELS } from "./road.js";
+
+// Preload Shalone's .vox art immediately on launch so starting a stage never flashes stand-ins.
+const modelsPromise = loadModels(MODELS);
 
 const app = document.getElementById("app");
 const GAMES = "https://angelio.org/games/";
@@ -25,7 +26,7 @@ const route = createRouter([
   [/^$/, viewHome],
   [/^play(?:\/([a-z]+))?$/, viewPlay],
   [/^grownups$/, () => viewGrownups(app, { about: `<p><b>Procession!</b> is a fast, gentle touch arcade game built from the
-    Pico Parish PICO-8 game. Walk ahead of the procession to patch potholes, light street lamps, repair broken bridges, and wave cars &amp; pups off the road — or tap <b>◀ / ▶</b> to steer the procession cleanly around single-lane hazards! Level up to pick 1 of 3 upgrades and unlock synergies like Thurifer and The Angelus. Nothing is collected; best scores and Parish Bells stay on this device.</p>` })],
+    Pico Parish PICO-8 game. Walk ahead of the procession to patch potholes, light street lamps, repair broken bridges, and wave cars &amp; pups off the road — or tap <b>◀ / ▶</b> to steer the procession cleanly around single-lane hazards! Unlock five helpers with special skills. Nothing is collected; best scores and Parish Bells stay on this device.</p>` })],
 ], { before() { stop(); FX.clearFx(); document.body.classList.remove("proc-game"); } });
 
 const progressId = (st) => st.progress ?? `procession-${st.id}`;
@@ -128,8 +129,6 @@ function viewPlay(stageId) {
       </div>
       <div class="sub-hud">
         <div class="candles-pill" data-candles aria-label="Candles"></div>
-        <div class="xp-wrap"><span data-lvl>Lv 1</span><div class="xp-bar"><i data-xp style="width:0%"></i></div></div>
-        <div class="perk-strip" data-perks></div>
       </div>
       <div class="proc-bottom">
         <div class="steer-bar" aria-label="Steer procession lanes">
@@ -144,15 +143,7 @@ function viewPlay(stageId) {
         <div class="bubble proc-bubble" aria-live="polite"><span class="mascot" aria-hidden="true">🚩</span><p class="say"></p></div>
       </div>
       <div class="pops" aria-hidden="true"></div>
-      <div class="proc-lesson" hidden></div>
-    </section>
-    <div class="up-modal" id="up-modal" role="dialog" aria-modal="true" hidden>
-      <section class="up-dialog">
-        <h2 id="up-title">Level Up! Pick 1</h2>
-        <p class="up-sub">Tap an upgrade to help the procession!</p>
-        <div class="up-cards" id="up-cards"></div>
-      </section>
-    </div>`;
+    </section>`;
 
   wireVoiceToggle(app.querySelector("[data-voice]"));
   const canvas = app.querySelector("canvas.road");
@@ -163,15 +154,10 @@ function viewPlay(stageId) {
   const scoreEl = app.querySelector("[data-score]");
   const multEl = app.querySelector("[data-mult]");
   const candlesEl = app.querySelector("[data-candles]");
-  const lvlEl = app.querySelector("[data-lvl]");
-  const xpEl = app.querySelector("[data-xp]");
-  const perksEl = app.querySelector("[data-perks]");
-  const upModal = app.querySelector("#up-modal");
-  const upCards = app.querySelector("#up-cards");
 
   const rng = daily ? dailySeed("procession", dateKey) : Math.random;
   const g = newGame(stage, { crewId: who.id, rng });
-  let road = createRoad(canvas, { models: {}, crewInfo: who });
+  let road = null;
   let alive = true, ended = false, raf = 0, prevTime = performance.now();
   const keysHeld = new Set();
 
@@ -195,7 +181,7 @@ function viewPlay(stageId) {
   renderSteering();
 
   function doSteer(dir, rel = true) {
-    if (g.pickOffer || g.over) return;
+    if (!road || g.over) return;
     if (steerProcession(g, dir, rel)) {
       sfx.tap();
       renderSteering();
@@ -205,78 +191,32 @@ function viewPlay(stageId) {
   app.querySelector("#steer-r").onclick = () => doSteer(1, true);
   app.querySelectorAll("[data-lane]").forEach((b) => { b.onclick = () => doSteer(Number(b.dataset.lane), false); });
 
-  function showUpgradeModal(offer) {
-    upCards.innerHTML = offer.map((u, idx) => {
-      const cur = g.lv[u.id] ?? 0;
-      const dots = u.max <= 5
-        ? `<div class="up-dots">${Array.from({ length: u.max }, (_, i) => `<i class="${i < cur ? "on" : i === cur ? "next" : ""}"></i>`).join("")}</div>`
-        : "";
-      const syn = SYNERGIES.find((s) => s.parts.includes(u.id));
-      return `<button type="button" class="up-card" data-up="${idx}">
-        <span class="up-ic">${u.icon}</span>
-        <div>
-          <b>${esc(u.name)}</b>
-          <small>${esc(u.blurb)}</small>
-          ${syn ? `<span class="up-syn">✨ Pairs for ${esc(syn.name)}</span>` : ""}
-        </div>
-        ${dots}
-      </button>`;
-    }).join("");
-    upModal.hidden = false;
-  }
-
-  function applyPick(idx) {
-    const res = pickUpgrade(g, idx);
-    if (!res.ok) return;
-    upModal.hidden = true;
-    sfx.win();
-    for (const ev of res.events) {
-      if (ev.type === "synergy") {
-        sfx.fanfare?.();
-        say(bubble, `✨ Synergy: <b>${esc(ev.synergy.name)}!</b> ${esc(ev.synergy.blurb)}`, { speakText: false });
-      } else if (ev.type === "upgrade") {
-        say(bubble, `${ev.upgrade.icon} <b>${esc(ev.upgrade.name)}</b>!`, { speakText: false });
-      }
-    }
-    syncHud();
-  }
-
-  upCards.addEventListener("click", (e) => {
-    const b = e.target.closest("[data-up]");
-    if (b) applyPick(Number(b.dataset.up));
-  });
-
-  // Pointer steering/tapping on the 3D road canvas
-  let draggingRoad = false, pointerDown = null;
+  let draggingRoad = false;
   canvas.addEventListener("pointerdown", (e) => {
-    if (g.pickOffer || g.over) return;
-    pointerDown = { x: e.clientX, y: e.clientY, t: performance.now() };
+    if (!road || g.over) return;
     draggingRoad = true;
     const pt = road.pickRoadPoint(e.clientX, e.clientY);
     if (pt) {
       if (pt.z >= FRONT_Z - 4) {
-        // Tapped near the procession itself: snap lane to left/mid/right!
         const targetLane = pt.x < -10 ? 0 : pt.x > 10 ? 2 : 1;
         doSteer(targetLane, false);
       } else {
-        // Snap onto nearest nearby unfixed obstacle if close to tap
         const nearOb = g.obs.find((o) => !o.done && Math.hypot(o.x - pt.x, o.z - pt.z) < Math.max(10, o.halfW + 4));
         setTarget(g, pt.x, pt.z, nearOb?.id ?? null);
       }
     }
   });
   canvas.addEventListener("pointermove", (e) => {
-    if (!draggingRoad || g.pickOffer || g.over) return;
+    if (!draggingRoad || !road || g.over) return;
     const pt = road.pickRoadPoint(e.clientX, e.clientY);
     if (pt && pt.z < FRONT_Z - 3) setTarget(g, pt.x, pt.z, null);
   });
-  addEventListener("pointerup", () => { draggingRoad = false; pointerDown = null; });
-  addEventListener("pointercancel", () => { draggingRoad = false; pointerDown = null; });
+  addEventListener("pointerup", () => { draggingRoad = false; });
+  addEventListener("pointercancel", () => { draggingRoad = false; });
 
-  // Obstacle progress pin clicks
   pins.addEventListener("click", (e) => {
     const btn = e.target.closest("[data-ob]");
-    if (!btn || g.pickOffer || g.over) return;
+    if (!btn || !road || g.over) return;
     const ob = g.obs.find((o) => o.id === Number(btn.dataset.ob) && !o.done);
     if (ob) { sfx.tap(); setTarget(g, ob.x, ob.z, ob.id); }
   });
@@ -287,12 +227,8 @@ function viewPlay(stageId) {
     setStick(g, dx, dz);
   }
   const onKeyDown = (e) => {
-    if (!alive) return;
+    if (!alive || !road) return;
     const k = e.key.toLowerCase();
-    if (g.pickOffer) {
-      if (["1", "2", "3"].includes(k)) applyPick(Number(k) - 1);
-      return;
-    }
     if (k === "q" || k === "[") { doSteer(-1, true); return; }
     if (k === "e" || k === "]") { doSteer(1, true); return; }
     if (["arrowleft", "arrowright", "arrowup", "arrowdown", "w", "a", "s", "d"].includes(k)) {
@@ -312,7 +248,7 @@ function viewPlay(stageId) {
   addEventListener("resize", onResize);
 
   const pinMap = new Map();
-  let lastHudKey = "";
+  let lastCandlesKey = "";
 
   function syncHud() {
     const sec = stage.endless ? Math.floor(g.elapsed) : Math.max(0, Math.ceil(stage.length - g.elapsed));
@@ -320,27 +256,18 @@ function viewPlay(stageId) {
     scoreEl.textContent = g.score;
     const mult = multiplierOf(g);
     multEl.textContent = mult > 1 ? ` ×${mult}` : "";
-    const xpPct = Math.min(100, Math.round((g.xp / Math.max(1, g.xpNeed)) * 100));
-    xpEl.style.width = `${xpPct}%`;
 
-    const hudKey = `${g.candles}|${g.maxCandles}|${g.lvl}|${Object.entries(g.lv).map(([k, v]) => `${k}:${v}`).join(",")}|${Object.entries(g.syn).filter(([, v]) => v).map(([k]) => k).join(",")}`;
-    if (hudKey === lastHudKey) return;
-    lastHudKey = hudKey;
-
-    candlesEl.innerHTML = Array.from({ length: g.maxCandles }, (_, i) =>
-      i < g.candles ? `<span>🕯️</span>` : i < 5 ? `<span class="off">🕯️</span>` : ""
-    ).join("");
-    lvlEl.textContent = `Lv ${g.lvl}`;
-
-    const chips = [];
-    for (const s of SYNERGIES) if (g.syn[s.id]) chips.push(`<span class="perk-chip syn">${s.icon} ${s.name}</span>`);
-    for (const [id, v] of Object.entries(g.lv)) {
-      if (v > 0 && id !== "candle") chips.push(`<span class="perk-chip">${id === "coffee" ? "☕" : id === "server" ? "🕯️" : id === "deacon" ? "🛠️" : id === "usher" ? "🙋" : id === "longArms" ? "⭕" : id === "quickHands" ? "⚡" : id === "slowHymn" ? "🎵" : id === "incense" ? "💨" : id === "banner" ? "🚩" : id === "bell" ? "🔔" : id === "holyWater" ? "💧" : id === "wheelbarrow" ? "🛞" : id === "angel" ? "👼" : id === "thurible" ? "🟡" : "🏅"}${v > 1 ? `×${v}` : ""}</span>`);
+    const ck = `${g.candles}|${g.maxCandles}`;
+    if (ck !== lastCandlesKey) {
+      lastCandlesKey = ck;
+      candlesEl.innerHTML = Array.from({ length: g.maxCandles }, (_, i) =>
+        i < g.candles ? `<span>🕯️</span>` : i < 5 ? `<span class="off">🕯️</span>` : ""
+      ).join("");
     }
-    perksEl.innerHTML = chips.slice(0, 8).join("");
   }
 
   function renderPins() {
+    if (!road) return;
     const liveIds = new Set();
     for (const o of g.obs) {
       if (o.done || o.z <= SPAWN_Z + 8 || o.z >= FRONT_Z - 2) continue;
@@ -391,18 +318,15 @@ function viewPlay(stageId) {
         const pt = road.project(g.procX, 8, FRONT_Z);
         popAt(pt.x, pt.y, "-1 🕯️", "oops");
         say(bubble, esc(ev.msg), { speakText: false });
-      } else if (ev.type === "blocked" || ev.type === "boss" || ev.type === "stretch" || ev.type === "angelus" || ev.type === "warning" || ev.type === "wind" || ev.type === "stormClear") {
+      } else if (ev.type === "boss" || ev.type === "stretch" || ev.type === "warning" || ev.type === "wind" || ev.type === "stormClear") {
         say(bubble, esc(ev.msg || ev.say), { speakText: false });
         if (ev.type === "boss") sfx.oops();
-        else if (ev.type === "stretch" || ev.type === "angelus") sfx.win();
+        else if (ev.type === "stretch") sfx.win();
       } else if (ev.type === "bell") {
         sfx.chime?.();
         road.flashBellAt(ev.o.x, ev.o.z);
-      } else if (ev.type === "levelup") {
-        sfx.win();
-        showUpgradeModal(ev.offer);
       } else if (ev.type === "end") {
-        finishRound(ev);
+        finishRound();
       }
     }
   }
@@ -471,23 +395,30 @@ function viewPlay(stageId) {
     if (alive) raf = requestAnimationFrame(frame);
   }
 
-  // Load models asynchronously & upgrade 3D actors cleanly when ready
-  loadModels(MODELS).then((models) => {
-    if (!alive || !canvas.isConnected || !Object.keys(models).length) return;
-    road?.dispose();
-    road = createRoad(canvas, { models, crewInfo: who });
-  });
-
-  say(bubble, stage.rule);
-  raf = requestAnimationFrame(frame);
-
   window.__procession = {
-    getState: () => ({ score: g.score, procLane: g.procLane, candles: g.candles, fixes: g.fixes, lvl: g.lvl, pickOffer: !!g.pickOffer, obs: g.obs.length }),
+    getState: () => ({
+      ready: !!road, score: g.score, procLane: g.procLane, candles: g.candles,
+      fixes: g.fixes, dir: g.crew.dir, z: g.crew.z, obs: g.obs.length,
+    }),
     steer: (d, r = true) => doSteer(d, r),
-    pickUpgrade: (idx) => applyPick(idx),
+    walkTo: (x, z) => setTarget(g, x, z, null),
   };
 
-  void showLesson;
+  syncHud();
+  say(bubble, "Getting the road ready…", { speakText: false });
+
+  // Wait for decoded .vox models BEFORE building the 3D scene so stand-in characters never flash.
+  modelsPromise.then((models) => {
+    if (!alive || !canvas.isConnected) return;
+    road = createRoad(canvas, { models, crewInfo: who });
+    road.sync(g);
+    syncHud();
+    renderPins();
+    say(bubble, stage.rule);
+    prevTime = performance.now();
+    raf = requestAnimationFrame(frame);
+  });
+
   return cleanup;
 }
 

@@ -127,19 +127,6 @@ body.proc-game .topbar { display: none; }
   background: rgb(24 38 62 / .82); color: #fff; font-size: 1rem; box-shadow: 0 2px 0 rgb(0 0 0 / .25);
 }
 .candles-pill .off { opacity: .28; filter: grayscale(1); }
-.xp-wrap {
-  display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 99px;
-  background: rgb(255 248 235 / .92); color: #1f2b3d; font-weight: 800; font-size: .82rem;
-  box-shadow: 0 2px 0 rgb(0 0 0 / .2);
-}
-.xp-bar { width: 72px; height: 8px; border-radius: 99px; background: rgb(0 0 0 / .14); overflow: hidden; }
-.xp-bar i { display: block; height: 100%; background: linear-gradient(90deg, #2b6cb0, #38b2ac); transition: width .2s; }
-.perk-strip { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; }
-.perk-chip {
-  padding: 2px 7px; border-radius: 99px; background: rgb(255 255 255 / .92); color: #1f2b3d;
-  font-size: .78rem; font-weight: 800; box-shadow: 0 2px 0 rgb(0 0 0 / .16);
-}
-.perk-chip.syn { background: #ffd4f0; color: #6a114f; }
 
 /* Obstacle progress bars & tap pins projected over the 3D road */
 .pins { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 4; }
@@ -187,43 +174,12 @@ body.proc-game .topbar { display: none; }
 .lane-pill[aria-pressed="true"] { background: #ffc93c; border-color: #d99a12; color: #3b2800; }
 .proc-bubble { position: static !important; width: min(94vw, 520px); margin: 0 !important; }
 
-/* Pick-1-of-3 Upgrade modal */
-.up-modal {
-  position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; padding: 16px;
-  background: rgb(15 26 48 / .72); backdrop-filter: blur(4px);
-}
-.up-modal[hidden] { display: none; }
-.up-dialog {
-  width: min(100%, 480px); border-radius: 26px; background: var(--surface); color: var(--text);
-  border: 3px solid var(--yellow-dark); box-shadow: 0 18px 44px rgb(0 0 0 / .35); padding: 16px 18px 18px;
-}
-.up-dialog h2 { margin: 0 0 4px; font-size: 1.45rem; text-align: center; }
-.up-sub { margin: 0 0 12px; text-align: center; color: var(--muted); font-size: .9rem; font-weight: 700; }
-.up-cards { display: grid; gap: 9px; }
-.up-card {
-  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px;
-  width: 100%; text-align: left; padding: 11px 13px; border-radius: 18px;
-  border: 2px solid var(--border); background: var(--bg); color: var(--text);
-  box-shadow: 0 3px 0 var(--border); cursor: pointer;
-}
-.up-card:hover { border-color: var(--yellow-dark); }
-.up-card:active { transform: translateY(2px); box-shadow: none; }
-.up-ic { font-size: 2rem; line-height: 1; }
-.up-card b { display: block; font: 800 1.02rem/1.15 var(--font-display); }
-.up-card small { display: block; color: var(--muted); font-size: .84rem; font-weight: 700; line-height: 1.25; margin-top: 2px; }
-.up-syn { display: inline-block; margin-top: 4px; padding: 1px 7px; border-radius: 99px; background: #ffd4f0; color: #6a114f; font-size: .74rem; font-weight: 900; }
-.up-dots { display: flex; gap: 4px; }
-.up-dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--border); }
-.up-dots i.on { background: var(--yellow-dark); }
-.up-dots i.next { background: var(--green); }
-
 @media (prefers-color-scheme: dark) {
   .home-title { color: #8ac4ff; }
   .steer-bar { background: rgb(22 36 58 / .94); color: #eaf3ff; border-color: #4f8de3; }
   .lane-dots { color: #eaf3ff; }
   .lane-pill { background: #1c2c47; border-color: #3d5b86; color: #c8dbf4; }
   .lane-pill[aria-pressed="true"] { background: #ffc93c; border-color: #d99a12; color: #3b2800; }
-  .up-syn { background: #5a1c47; color: #ffc6ee; }
 }
 
 /* Back to Angelio & finish card matching Garden/Usher */
