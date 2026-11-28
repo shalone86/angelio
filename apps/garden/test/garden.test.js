@@ -6,6 +6,7 @@ import { STAGES, stageById, isOpen } from "../public/js/stages.js";
 import { GARDENERS, gardenerById, gardenerOpen } from "../public/js/gardeners.js";
 import { newGame, tick, tapSpot, tapPest, orderReward, starsFor, timeLeft } from "../public/js/garden.js";
 import { stepWithCollisions, clearTarget, TREE_COLLIDER_R } from "../public/js/plot.js";
+import { GARDEN_CRITTERS, variantsOf, critterVariantById, buildCritterGroup } from "../public/js/critters.js";
 import { stickerHtml, stickerBook, VOX_STICKERS } from "../public/js/kit/ui.js";
 import { todayKey, todayLabel, dailySeed, dailyStage } from "../public/js/kit/vary.js";
 import { dailyRecord, saveDaily } from "../public/js/kit/store.js";
@@ -412,4 +413,45 @@ test("Today's Challenge daily seed, stage selection, determinism, storage, and w
     assert.ok(appSrc.includes("dailySeed") && appSrc.includes("dailyStage") && appSrc.includes("#/play/daily") && appSrc.includes("saveDaily"), `${game} wires Today's Challenge`);
     assert.ok(cssSrc.includes(".daily-card"), `${game} styles .daily-card`);
   }
+});
+
+test("Garden Givers sculpted critters catalog matches Shalone's 10 picks and is precached & wired", () => {
+  assert.equal(GARDEN_CRITTERS.length, 10);
+  assert.deepEqual(variantsOf("bug").map((c) => c.id), ["bug-a", "bug-b", "bug-c"]);
+  assert.deepEqual(variantsOf("bird").map((c) => c.id), ["bird-b", "bird-c"]);
+  assert.deepEqual(variantsOf("squirrel").map((c) => c.id), ["squirrel-a", "squirrel-b", "squirrel-c"]);
+  assert.deepEqual(variantsOf("raccoon").map((c) => c.id), ["raccoon-a", "raccoon-c"]);
+  assert.equal(variantsOf("unknown-species")[0].species, "bug");
+  assert.equal(critterVariantById("bird-b")?.name, "Orchard Blue Jay");
+
+  class FakeObj {
+    constructor() {
+      this.children = [];
+      this.userData = {};
+      this.scale = { set: (...v) => { this.s = v; } };
+      this.position = { set: (...v) => { this.p = v; } };
+    }
+    add(c) { this.children.push(c); }
+  }
+  const fakeTHREE = { Group: FakeObj, Mesh: FakeObj };
+  for (const v of GARDEN_CRITTERS) {
+    assert.ok(v.boxes.length >= 4, `${v.id} has sculpted voxel parts`);
+    for (const [w, h, d, , , , color] of v.boxes) {
+      assert.ok(w > 0 && h > 0 && d > 0, `${v.id} dimensions positive`);
+      assert.match(color, /^#[0-9a-f]{6}$/i, `${v.id} color ${color} is hex`);
+    }
+    const built = buildCritterGroup(fakeTHREE, v, {
+      box: {},
+      mat: (c) => ({ lambert: c }),
+      basicMat: (c) => ({ basic: c }),
+    });
+    assert.deepEqual(built.userData.frames, []);
+    assert.equal(built.userData.variantId, v.id);
+    assert.equal(built.children.length, v.boxes.length);
+  }
+
+  const swSrc = fs.readFileSync(new URL("../public/sw.js", import.meta.url), "utf8");
+  const plotSrc = fs.readFileSync(new URL("../public/js/plot.js", import.meta.url), "utf8");
+  assert.match(swSrc, /"js\/critters\.js"/);
+  assert.match(plotSrc, /from\s+"\.\/critters\.js"/);
 });

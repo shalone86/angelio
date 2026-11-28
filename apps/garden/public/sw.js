@@ -9,7 +9,7 @@ const RUNTIME = `${APP}-runtime-v1`;
 const ASSETS = [
   "./", "index.html", "manifest.webmanifest", "icon.svg", "icons/icon-192.png", "icons/apple-touch-icon.png",
   "css/base.css", "css/app.css", "js/app.js", "js/garden.js", "js/crops.js", "js/stages.js", "js/gardeners.js",
-  "js/plot.js", "js/vox.js", "js/looks.js", "vendor/three-r128.min.js",
+  "js/plot.js", "js/critters.js", "js/vox.js", "js/looks.js", "vendor/three-r128.min.js",
   "js/kit/api.js", "js/kit/dock.js", "js/kit/fx.js", "js/kit/router.js", "js/kit/sound.js", "js/kit/speech.js",
   "js/kit/store.js", "js/kit/tts.js", "js/kit/ui.js", "js/kit/lesson.js", "js/kit/vary.js", "js/kit/stickers.js", "js/kit/jingle.js",
 ];
