@@ -441,7 +441,9 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
   const critterVisual = (type) => {
     const model = meshFor(`${type}-walk`, randomLook()) ?? meshFor(`${type}-idle`, randomLook());
     if (model) return model;
-    return buildCritterGroup(THREE, pickCritterVariant(type), { box, mat, basicMat });
+    const g = buildCritterGroup(THREE, pickCritterVariant(type), { box, mat, basicMat });
+    if (type === "bug") g.scale.setScalar(0.6); // bugs are small next to the vegetables
+    return g;
   };
   const pestMap = new Map();
   const fleeing = [];
@@ -452,7 +454,11 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
     pestMap.delete(pestId);
     const idx = hitTargets.indexOf(entry.hit);
     if (idx >= 0) hitTargets.splice(idx, 1);
-    fleeing.push({ ...entry, vy: entry.type === "bird" ? 16 : 5, vx: (Math.random() < 0.5 ? -1 : 1) * 18, t: 0 });
+    // birds fly up and away; land animals turn and run off along the ground
+    const land = entry.type !== "bird", side = Math.random() < 0.5 ? -1 : 1;
+    const vx = side * (land ? 15 : 18), vz = land ? (Math.random() - 0.5) * 10 : 0;
+    if (land) entry.g.rotation.y = Math.atan2(vx, vz);
+    fleeing.push({ ...entry, land, vy: land ? 0 : 16, vx, vz, t: 0 });
   }
 
   function nudgePest(pestId) {
@@ -641,8 +647,10 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
       const f = fleeing[i];
       f.t += dt;
       f.g.position.x += f.vx * dt;
-      f.g.position.y += f.vy * dt;
-      if (f.t > 0.55) {
+      f.g.position.z += (f.vz ?? 0) * dt;
+      if (f.land) f.g.position.y = f.baseY + Math.abs(Math.sin(f.t * 20)) * 0.5; // scampering hops
+      else f.g.position.y += f.vy * dt;
+      if (f.t > (f.land ? 0.9 : 0.55)) {
         scene.remove(f.g);
         fleeing.splice(i, 1);
       }
