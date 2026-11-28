@@ -56,6 +56,10 @@
   "pp-chalice": true,
   "pp-cross": true,
   "pp-white-dove": true,
-  "pp-blessing": true
+  "pp-blessing": true,
+  "pp-floppy-fish": true,
+  "pp-tax-collector": true,
+  "pp-pilgrim": true,
+  "pp-helper": true
  }
 }
