@@ -6,7 +6,8 @@ import { PLACES, WORLDS, OPS, STAGES, stageById, makeStage, exampleFor, starsFor
 import { Game } from "./game.js";
 import { viewMat } from "./mat.js";
 import * as B from "./board.js";
-import { speak, stop, browserVoices, preload, whenQuiet } from "./kit/tts.js";
+import { speak, stop, clearAutoMute, browserVoices, preload, whenQuiet } from "./kit/tts.js";
+import { wireVoiceToggle } from "./kit/ui.js";
 import { health } from "./kit/api.js";
 import { sfx } from "./kit/sound.js";
 import * as S from "./kit/store.js";
@@ -68,7 +69,8 @@ const routes = [
 function route() {
   try { cleanup?.(); } catch (e) { console.warn(e); }
   cleanup = null;
-  stop();
+  stop({ count: false });
+  clearAutoMute();
   B.clearFx();
   B.setSlow(1);
   document.body.classList.remove("in-game");
@@ -231,13 +233,7 @@ function wireToggles(shell, getGame) {
     getGame()?.setBlocks(blocks);
     sfx.toggle();
   };
-  shell.voiceBtn.onclick = () => {
-    const on = !S.settings().readAloud;
-    S.setSetting("readAloud", on);
-    shell.voiceBtn.setAttribute("aria-pressed", on);
-    sfx.toggle();
-    if (!on) stop();
-  };
+  wireVoiceToggle(shell.voiceBtn);
   shell.els.bubble.querySelector(".replay").onclick = () => {
     const g = getGame();
     if (g?.lastSaid) speak(g.lastSaid, { force: true });

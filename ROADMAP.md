@@ -412,9 +412,11 @@ wherever a sound is marked `{{tuh}}` in spoken text (kit `tts.js` → `setClips`
 - **Measurement, Time & Money** (K–3, optional G4–5 — expands A8 into 4 tabs): drag a ruler to measure (start at 0, not at the end!), inches and
   centimeters, longer/shorter; liquids: pour between cups and jugs to compare and measure capacity (cups,
   quarts, liters); weight on a balance scale; clocks, elapsed time & calendars; money (coins, bills, making change); and charts & graphs (tallies, picture/bar graphs, line plots).
-- **Maps, Grids & Geometry** (K–3, optional G4–5 — expands A7): left/right/above/below, follow directions on a grid ("3 steps right, 2 up"), find
-  things by row and column (A3, B5), simple coordinates / `(x, y)` coordinate plane, map key and compass rose (N, S, E, W), plus lines, angles, polygons, symmetry, and (G5) unit-cube volume.
-  Pairs well with the history apps' maps later.
+- ~~**Maps, Grids & Geometry**~~ (K–5, built Nov 27, 2026 in `apps/maps/`, `angelio.org/maps/`, ready to deploy): 23 levels across Grades K–5 (18 core levels + 5 Montessori-style concept introductions before polygons, lines, angles, quadrilaterals, and protractors), plus animated **🎬 Watch how** problem walkthroughs on every level and K–1 answer audio previews —
+  position words (`Find the picture left of the kitten`), grid step paths, sides & corners, Match/No match symmetry + lines of symmetry, town/parish map keys, grid addresses (`A3`, `B4`),
+  compass rose (`The School is ___ of the Bakery`) & block scale (exit-edge dashed trail starting past the start square), polygons, varied-prompt mirror grid, points/segments/rays/lines,
+  angles with Corner Tester, quadrilaterals, reading & plotting Quadrant I `(x, y)` coordinates, protractors & missing angles,
+  and 3D unit-cube volume (`L × W × H` + interactive layer builder). Pairs well with the history apps' maps later.
 - **Catholic history**: saints, the early Church, councils and great moments on drag-and-drop timelines; maps of missions and pilgrimages.
 - **World history**: build timelines and maps yourself (drag events, place civilizations), memory games.
 - **U.S. history**: interactive maps and timelines from the first peoples to today.
@@ -465,19 +467,19 @@ Topics only: we write all our own sentences, pictures and wording.
 
 Reviewed against PreK–5 Math & ELA scopes (IXL PreK–Grade 5). Core rule: **zero new Reading/Writing tiles** (stay at 6: the 4 live + Spelling and Writing Skills already on the hub) and **at most 2 new Math tiles** (Measurement and Maps & Grids already on the roadmap, making 6 Math tiles total). Drop standalone *Word Workshop*, *Comprehension*, *Geometry*, and *Multiplication 3–4* app ideas by folding them into existing apps.
 
-Ship **PreK–3 essentials first** as the v1.0 finish line; treat the **Grade 4–5 cap** as optional final levels inside the same apps (never new apps).
+**All learning apps extend through Grades 4–5 (owner note, Nov 27, 2026):** Rather than leaving Grades 4–5 as an optional maybe-later extra, extend all existing K–3/1–4 learning apps (`Regroup!`, `Doubles`, `Fraction Feast`, `Read Aloud`, `Grammar!`, `Spelling`, `Writing Skills` → Grade 5) and finish **Measurement, Time & Money** through Grade 5 as well, keeping each subject inside the existing 6-tile footprint (never new apps).
 
 ### Math (6 tiles total)
 - **PreK Math** (was Snap & Split) *(PreK → PreK–K)*: Add **count to 20 / teen numbers**, **Make 10 & bridge to 20** (two ten-frames), **3D solid shapes**, **sides & corners**, and **position words**.
-- **Regroup!** *(1–3, optional G4–5)*: Add **compare (`< > =`) & order**, **even/odd**, **rounding (10/100)**, and **word problems**. *(G4–5 cap: a **Decimals** world using the same colored trading lanes.)*
-- **Doubles** *(1–3, optional G4–5)*: Add **`×0, 1, 3, 6, 7, 8, 9` strategy levels** (facts to 12), **Area & Perimeter** on the existing array grid, and **word problems**. *(G4–5 cap: area-model multi-digit ×, division with remainders, factors/primes, order of operations.)*
-- **Fraction Feast** *(1–3, optional G4–5)*: Add **fractions = whole numbers** and ordering. *(G4–5 cap: mixed numbers / fractions > 1, add/subtract fractions, multiply fractions, fractions ↔ decimals.)*
-- **Measurement, Time & Money** *(K–3, optional G4–5 — expands planned A8 into 4 tabs)*:
+- **Regroup!** *(1–3 → extend to 4–5)*: Add **compare (`< > =`) & order**, **even/odd**, **rounding (10/100)**, and **word problems**, plus **G4–5 cap** (**Decimals** world using the same colored trading lanes, multi-digit arithmetic).
+- **Doubles** *(1–3 → extend to 4–5)*: Add **`×0, 1, 3, 6, 7, 8, 9` strategy levels** (facts to 12), **Area & Perimeter** on the existing array grid, and **word problems**, plus **G4–5 cap** (area-model multi-digit ×, division with remainders, factors/primes, order of operations).
+- **Fraction Feast** *(1–3 → extend to 4–5)*: Add **fractions = whole numbers** and ordering, plus **G4–5 cap** (mixed numbers / fractions > 1, add/subtract fractions, multiply fractions, fractions ↔ decimals).
+- **Measurement, Time & Money** *(K–5 — expands planned A8 into 4 tabs)*:
   1. **Rulers, Weight & Volume** *(+ G4–5 unit conversions)*
   2. **Clocks, Elapsed Time & Calendars**
   3. **Money** *(coins, bills, counting, making change)*
   4. **Charts & Graphs** *(tallies, picture/bar graphs, line plots; G4–5 mean/median/mode)*
-- **Maps, Grids & Geometry** *(K–3, optional G4–5 — expands planned A7)*: Directions, grids, compass rose, plus **lines, angles, polygons & symmetry**. *(G4–5 cap: `(x, y)` coordinate plane and unit-cube volume.)*
+- **Maps, Grids & Geometry** *(K–5, built Nov 27, 2026 in `apps/maps/`, ready to deploy)*: Directions, grid paths & addresses, compass rose & block scale, polygons, mirror grid & lines of symmetry, points/segments/rays/lines, angles (+ Corner Tester), quadrilaterals, Quadrant I `(x, y)` coordinates, protractors & missing angles, and 3D unit-cube volume.
 
 ### Reading & Writing (6 tiles total — no new tiles)
 - **Letter Lane** *(PreK–K)*: Add **Sight / Heart words**, **ending & middle sounds**, **Swap-a-Sound** (phoneme manipulation), **confused letters** (`b/d`, `p/q`), **vowels vs. consonants**, and `wh/qu/x` + `-ff/-ll/-ss/-zz`.

@@ -62,14 +62,42 @@ export function createCutoffTracker({ limit = CUTOFF_MUTE_LIMIT, minElapsedMs = 
 }
 
 const cutoffs = createCutoffTracker();
-export function resetCutoffs() { cutoffs.reset(); }
+let autoMuted = false;
+
+export const isAutoMuted = () => autoMuted;
+export const isVoiceActive = () => Boolean(settings().readAloud && !autoMuted);
+
+function syncVoiceButtons() {
+  if (typeof document === "undefined") return;
+  const active = isVoiceActive();
+  document.querySelectorAll("[data-voice]").forEach((b) => b.setAttribute("aria-pressed", String(active)));
+}
+
+export function resetCutoffs() {
+  autoMuted = false;
+  cutoffs.reset();
+  syncVoiceButtons();
+}
+
+/** Clear temporary 5-cutoff auto-mute when entering a new game/level without touching saved manual mute. */
+export function clearAutoMute() {
+  cutoffs.reset();
+  if (!autoMuted) return false;
+  autoMuted = false;
+  syncVoiceButtons();
+  if (typeof window !== "undefined" && typeof CustomEvent !== "undefined") {
+    window.dispatchEvent(new CustomEvent("angelio:voice-auto-unmuted"));
+  }
+  return true;
+}
+
+if (typeof window !== "undefined") {
+  window.addEventListener("hashchange", () => clearAutoMute());
+}
 
 function autoMuteVoice() {
-  setSetting("readAloud", false);
-  if (typeof document !== "undefined") {
-    document.querySelectorAll("[data-voice]").forEach((b) => b.setAttribute("aria-pressed", "false"));
-    document.querySelectorAll('[data-k="readAloud"]').forEach((el) => { if ("checked" in el) el.checked = false; });
-  }
+  autoMuted = true;
+  syncVoiceButtons();
   if (typeof window !== "undefined" && typeof CustomEvent !== "undefined") {
     window.dispatchEvent(new CustomEvent("angelio:voice-auto-muted"));
   }
@@ -114,7 +142,7 @@ export function stop({ count = true } = {}) {
   playId++;
   if (player && !player.paused) player.pause();
   if (typeof speechSynthesis !== "undefined" && (speechSynthesis.speaking || speechSynthesis.pending)) speechSynthesis.cancel();
-  if (count && settings().readAloud) {
+  if (count && isVoiceActive()) {
     const res = cutoffs.onStop({ count: true });
     if (res.muted) autoMuteVoice();
   } else {
@@ -309,7 +337,7 @@ export function preload(texts) {
   const worker = async () => {
     while (queue.length && failures < 3) {
       const text = queue.shift();
-      if (!settings().readAloud || !(await useServer())) return;
+      if (!isVoiceActive() || !(await useServer())) return;
       try { await serverUrl(text, settings().voice); } catch { failures++; }
     }
   };
@@ -333,13 +361,13 @@ export async function whenQuiet() {
 
 async function speakNow(raw, { force = false, rate: speed = 1 } = {}) {
   const text = cleanText(raw);
-  if (!text || (!settings().readAloud && !force)) return;
+  if (!text || (!isVoiceActive() && !force)) return;
   if (force) {
     cutoffs.reset();
     stop({ count: false });
   } else {
     stop({ count: true });
-    if (!settings().readAloud) return;
+    if (!isVoiceActive()) return;
     cutoffs.onStart();
   }
   const id = playId;

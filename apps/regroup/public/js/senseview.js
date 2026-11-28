@@ -5,7 +5,8 @@
 import { PLACES } from "./math.js";
 import { wordParts, expandedParts, makeRound, explain, words, senseLevel, SENSE_LEVELS, QUESTIONS_PER_ROUND } from "./sense.js";
 import * as B from "./board.js";
-import { speak, stop } from "./kit/tts.js";
+import { speak } from "./kit/tts.js";
+import { wireVoiceToggle } from "./kit/ui.js";
 import { sfx } from "./kit/sound.js";
 import * as S from "./kit/store.js";
 import { showLesson } from "./kit/lesson.js";
@@ -76,13 +77,7 @@ export function viewSense(app, id, { finish }) {
   const dock = $(".dock");
 
   const say = (text) => { $(".say").textContent = text; lastSaid = text; B.pop($(".bubble"), 1.03); speak(text); };
-  $("[data-voice]").onclick = (e) => {
-    const on = !S.settings().readAloud;
-    S.setSetting("readAloud", on);
-    e.currentTarget.setAttribute("aria-pressed", on);
-    sfx.toggle();
-    if (!on) stop();
-  };
+  wireVoiceToggle($("[data-voice]"));
   $(".replay").onclick = () => speak(lastSaid, { force: true });
 
   function show() {

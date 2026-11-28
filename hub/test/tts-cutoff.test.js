@@ -1,6 +1,16 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { CUTOFF_MUTE_LIMIT, createCutoffTracker } from "../../kit/tts.js";
+import {
+  CUTOFF_MUTE_LIMIT,
+  createCutoffTracker,
+  speak,
+  stop,
+  isAutoMuted,
+  isVoiceActive,
+  clearAutoMute,
+  resetCutoffs,
+} from "../../kit/tts.js";
+import { settings, setSetting } from "../../kit/store.js";
 
 test("createCutoffTracker auto-mutes after 5 consecutive cutoffs while protecting slow players and single programmatic stops", () => {
   assert.equal(CUTOFF_MUTE_LIMIT, 5);
@@ -44,4 +54,63 @@ test("createCutoffTracker auto-mutes after 5 consecutive cutoffs while protectin
   assert.equal(t.onStop({ now: 30500 }).streak, 1);
   t.onStart(90000);
   assert.equal(t.onStop({ now: 90500 }).streak, 1);
+});
+
+test("auto-mute is temporary per level and resets on clearAutoMute without overriding manual mute", async () => {
+  const prevSynth = globalThis.speechSynthesis;
+  const prevUtt = globalThis.SpeechSynthesisUtterance;
+  let currentUtt = null;
+  const mockSynth = {
+    speaking: false,
+    pending: false,
+    getVoices: () => [{ name: "Test English", lang: "en-US" }],
+    resume: () => {},
+    speak: (u) => {
+      currentUtt = u;
+      mockSynth.speaking = true;
+      u.onstart?.();
+    },
+    cancel: () => {
+      mockSynth.speaking = false;
+      const u = currentUtt;
+      currentUtt = null;
+      u?.onend?.();
+    },
+  };
+  globalThis.SpeechSynthesisUtterance = class { constructor(text) { this.text = text; } };
+  globalThis.speechSynthesis = mockSynth;
+
+  try {
+    setSetting("readAloud", true);
+    resetCutoffs();
+    assert.equal(isAutoMuted(), false);
+    assert.equal(isVoiceActive(), true);
+
+    for (let i = 0; i < 5; i++) {
+      speak(`Fast skip line ${i}`);
+      await new Promise((r) => setTimeout(r, 175));
+      stop({ count: true });
+    }
+
+    assert.equal(isAutoMuted(), true);
+    assert.equal(isVoiceActive(), false);
+    // Saved readAloud preference stays true while autoMuted
+    assert.equal(settings().readAloud, true);
+
+    // Entering a new game/level clears temporary auto-mute
+    assert.equal(clearAutoMute(), true);
+    assert.equal(isAutoMuted(), false);
+    assert.equal(isVoiceActive(), true);
+    assert.equal(clearAutoMute(), false);
+
+    // Intentional manual mute remains off even across clearAutoMute()
+    setSetting("readAloud", false);
+    clearAutoMute();
+    assert.equal(isVoiceActive(), false);
+  } finally {
+    setSetting("readAloud", true);
+    resetCutoffs();
+    globalThis.speechSynthesis = prevSynth;
+    globalThis.SpeechSynthesisUtterance = prevUtt;
+  }
 });

@@ -38,7 +38,7 @@ export function addSoundVoiceSetting(app) {
 
 /** Home-page picker: "Who says the sounds? 👩 Mom · 👨 Dad". Tapping one picks it and plays a sample in that voice. */
 export function voicePickerHtml() {
-  const v = S.settings().soundVoice === "m" ? "m" : "f";
+  const v = pickVoice() === "m" ? "m" : "f";
   return `<div class="voice-pick" role="group" aria-label="Who says the sounds?">
       <span class="vp-label">Who says the sounds?</span>
       <button type="button" class="vp${v === "f" ? " on" : ""}" data-voice-pick="f" aria-pressed="${v === "f"}"><span aria-hidden="true">👩</span> Mom</button>

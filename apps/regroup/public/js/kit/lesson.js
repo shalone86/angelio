@@ -9,11 +9,12 @@
 //     voice: "When you have ten ones, ...",
 //   });
 
-import { speak, stop } from "./tts.js";
+import { speak, stop, clearAutoMute } from "./tts.js";
 import { sfx } from "./sound.js";
 
 export function showLesson(container, intro) {
   if (!intro) return Promise.resolve();
+  clearAutoMute();
   container.innerHTML = `
     <div class="lesson-card" role="dialog" aria-label="How it works">
       <div class="lesson-head">
@@ -50,7 +51,7 @@ export function showLesson(container, intro) {
     const done = () => {
       timers.splice(0).forEach(clearTimeout);
       document.removeEventListener("keydown", onKey);
-      stop();
+      stop({ count: false });
       container.innerHTML = "";
       resolve();
     };

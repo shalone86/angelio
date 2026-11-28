@@ -6,7 +6,7 @@ S.init("spelling:v1", { myWords: "", qwerty: false });
 
 import { createRouter } from "./kit/router.js";
 import { speak, stop, unmark, preloadSounds } from "./kit/tts.js";
-import { addSoundVoiceSetting } from "./clips.js"; // Mom's and Dad's recorded sounds ({{ay}}, {{shh}}) in the lessons
+import { addSoundVoiceSetting, voicePickerHtml, wireVoicePicker } from "./clips.js"; // Mom's and Dad's recorded sounds ({{ay}}, {{shh}}) in the lessons
 import { sfx } from "./kit/sound.js";
 import * as FX from "./kit/fx.js";
 import { keepDockVisible } from "./kit/dock.js";
@@ -60,6 +60,7 @@ function viewHome() {
       <h1 class="title">Spelling</h1>
       <p class="lede">Hear a word, then spell it, letter by letter!</p>
       <a class="btn big primary play-btn" href="#/play/${next.id}">▶ Play</a>
+      ${voicePickerHtml()}
       <div class="my-words-card">
         ${mine.length
           ? `<a class="level-card mine" href="#/play/${MINE.id}"><span class="emoji">${MINE.emoji}</span>My Words <span class="muted small">(${mine.length})</span>${starsHtml(S.progress(MINE.id).stars)}</a>
@@ -84,6 +85,7 @@ function viewHome() {
         </div>`).join("")}
       </section>`).join("")}
     ${stickerBook()}`;
+  wireVoicePicker(app, speak);
   app.querySelectorAll("[data-grade]").forEach((btn) => {
     btn.onclick = () => {
       S.setSetting("lastGrade", Number(btn.dataset.grade));

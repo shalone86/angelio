@@ -2,12 +2,15 @@
 // the next view. (Lesson learned in Regroup: an async view returns a Promise, not a cleanup,
 // so only real functions are kept, and a failing cleanup can never block navigation.)
 
+import { clearAutoMute } from "./tts.js";
+
 export function createRouter(routes, { before } = {}) {
   let cleanup = null;
   function route() {
     try { cleanup?.(); } catch (e) { console.warn(e); }
     cleanup = null;
     try { before?.(); } catch (e) { console.warn(e); }
+    clearAutoMute();
     const path = location.hash.replace(/^#\/?/, "");
     for (const [re, fn] of routes) {
       const m = path.match(re);

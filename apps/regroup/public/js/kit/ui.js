@@ -2,7 +2,7 @@
 // the grown-ups settings card, and a click sound for every button.
 
 import * as S from "./store.js";
-import { speak, stop, resetCutoffs, browserVoices, whenQuiet, chooseVoice, chosenVoice, familyVoices } from "./tts.js";
+import { speak, stop, resetCutoffs, clearAutoMute, isVoiceActive, browserVoices, whenQuiet, chooseVoice, chosenVoice, familyVoices } from "./tts.js";
 import { health } from "./api.js";
 import { sfx } from "./sound.js";
 import { confetti } from "./fx.js";
@@ -285,7 +285,7 @@ function showVoiceAutoMutedNotice() {
     el.style.cssText = "position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:9999;padding:8px 14px;border-radius:999px;background:#183153;color:#fff;border:2px solid #ffc93c;box-shadow:0 8px 24px rgb(0 0 0 /.28);font:800 14px/1.3 Nunito,system-ui,sans-serif;pointer-events:none;white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis";
     document.body.appendChild(el);
   }
-  el.textContent = "🔇 Voice muted for fast play — tap 🔊 anytime";
+  el.textContent = "🔇 Voice paused for this level — tap 🔊 anytime";
   el.hidden = false;
   clearTimeout(muteNoticeTimer);
   muteNoticeTimer = setTimeout(() => { el.hidden = true; }, 3800);
@@ -294,6 +294,7 @@ function showVoiceAutoMutedNotice() {
 /** A voice / read-aloud toggle button. */
 export function wireVoiceToggle(btn) {
   if (!btn) return;
+  clearAutoMute();
   if (!muteNoticeInstalled && typeof window !== "undefined") {
     muteNoticeInstalled = true;
     window.addEventListener("angelio:voice-auto-muted", () => {
@@ -301,12 +302,12 @@ export function wireVoiceToggle(btn) {
       showVoiceAutoMutedNotice();
     });
   }
-  btn.setAttribute("aria-pressed", S.settings().readAloud);
+  btn.setAttribute("aria-pressed", String(isVoiceActive()));
   btn.onclick = () => {
-    const on = !S.settings().readAloud;
+    const on = !isVoiceActive();
     S.setSetting("readAloud", on);
-    btn.setAttribute("aria-pressed", on);
     resetCutoffs();
+    btn.setAttribute("aria-pressed", String(on));
     sfx.toggle();
     if (!on) stop({ count: false });
   };
