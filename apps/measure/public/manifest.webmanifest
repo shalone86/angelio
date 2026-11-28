@@ -1,0 +1,21 @@
+{
+  "id": "./",
+  "name": "Measurement, Time & Money",
+  "short_name": "Measure & Time",
+  "description": "Free grades K to 5 measurement with rulers, clocks, coins, bills, liquids, mass, perimeter & area, conversions, and line plots. Everything read aloud.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#fffaf0",
+  "theme_color": "#ff8a00",
+  "categories": ["education", "kids"],
+  "lang": "en-US",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
