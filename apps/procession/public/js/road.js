@@ -2,7 +2,7 @@
 // Loads Shalone's .vox models from /api/art with crisp procedural 3D stand-ins for road hazards & helpers.
 import { readVox, toScene } from "./vox.js";
 import { randomLook, recolor } from "./looks.js";
-import { LANE_X, FRONT_Z, SPAWN_Z, ROAD_HALF, stretchOf, isNight } from "./procession.js";
+import { LANE_X, FRONT_Z, SPAWN_Z, ROAD_HALF, CHURCH_STOP_Z, stretchOf, isNight } from "./procession.js";
 
 const ART = typeof location !== "undefined" && /(^|\.)angelio\.org$/.test(location.hostname) ? "" : "https://angelio.org";
 
@@ -130,6 +130,62 @@ export function createRoad(canvas, { models = {}, crewInfo }) {
     sceneries.push(g);
   }
 
+  // Destination parish church (rolls in at end of timed stages; doorways sit at local z = 0)
+  const churchGroup = new THREE.Group();
+  churchGroup.visible = false;
+  const churchRoofMat = new THREE.MeshLambertMaterial({ color: "#9c4338" });
+  block(86, 0.24, 38, 0, 0.20, -12, mat("#d8cfb9"), churchGroup); // limestone plaza apron
+  block(20, 0.25, 2.2, 0, 0.24, 5.0, mat("#cbc1aa"), churchGroup); // step 1
+  block(18, 0.45, 2.0, 0, 0.24, 3.4, mat("#dfd6c0"), churchGroup); // step 2
+  block(16, 0.65, 2.0, 0, 0.24, 1.8, mat("#ebe3cf"), churchGroup); // threshold step
+  block(38, 17, 26, 0, 0.6, -13, mat("#efe6d2"), churchGroup);      // stone nave
+  block(40, 2.4, 28, 0, 17.6, -13, churchRoofMat, churchGroup);   // roof eaves
+  block(30, 2.6, 26, 0, 20.0, -13, churchRoofMat, churchGroup);   // upper gable
+  block(14, 14, 13, 0, 17.0, -4.5, mat("#f2ead8"), churchGroup);  // bell tower
+  block(15.2, 2.2, 14.2, 0, 31.0, -4.5, churchRoofMat, churchGroup); // tower crown
+  block(10.5, 2.8, 9.5, 0, 33.2, -4.5, churchRoofMat, churchGroup);
+  block(6.0, 3.0, 5.5, 0, 36.0, -4.5, churchRoofMat, churchGroup);
+  block(1.1, 7.0, 1.1, 0, 39.0, -4.5, mat("#f0c040"), churchGroup); // gold cross
+  block(4.6, 1.1, 1.1, 0, 43.2, -4.5, mat("#f0c040"), churchGroup);
+  // Warm rose window & belfry arch glow
+  block(6.2, 6.2, 0.5, 0, 10.6, 0.1, mat("#7a5c32"), churchGroup);
+  const roseCols = ["#f5c242", "#e0483e", "#3d82d6", "#f5c242"];
+  for (let i = 0; i < 4; i++) {
+    block(2.1, 2.1, 0.55, (i % 2 ? 1.2 : -1.2), 11.4 + Math.floor(i / 2) * 2.4, 0.2,
+      new THREE.MeshBasicMaterial({ color: roseCols[i] }), churchGroup);
+  }
+  block(5.4, 6.2, 0.5, 0, 22.0, 2.1, new THREE.MeshBasicMaterial({ color: "#ffe184" }), churchGroup);
+  // Warm golden doorway interior + two hinged church doors + wall lanterns
+  block(8.2, 8.8, 0.6, 0, 0.8, -0.9, new THREE.MeshBasicMaterial({ color: "#ffe39a" }), churchGroup);
+  block(1.4, 9.6, 1.2, -4.8, 0.6, 0.1, mat("#c9bda4"), churchGroup);
+  block(1.4, 9.6, 1.2, 4.8, 0.6, 0.1, mat("#c9bda4"), churchGroup);
+  block(11.4, 1.4, 1.4, 0, 9.8, 0.1, mat("#c9bda4"), churchGroup);
+  const doorPivots = [-1, 1].map((s) => {
+    const pv = new THREE.Group();
+    pv.position.set(s * 4.2, 0.8, 0.05);
+    churchGroup.add(pv);
+    block(4.2, 9.0, 0.7, -s * 2.1, 0, 0, mat("#6e411f"), pv);
+    block(3.4, 0.5, 0.9, -s * 2.1, 2.2, 0, mat("#3b2616"), pv);
+    block(3.4, 0.5, 0.9, -s * 2.1, 6.4, 0, mat("#3b2616"), pv);
+    block(0.55, 1.1, 0.95, -s * 0.6, 4.2, 0, mat("#e0b03b"), pv);
+    return { pv, s };
+  });
+  for (const sx of [-6.6, 6.6]) {
+    block(1.2, 1.6, 1.2, sx, 7.0, 0.8, mat("#2e333f"), churchGroup);
+    block(0.8, 0.9, 0.8, sx, 7.35, 0.8, new THREE.MeshBasicMaterial({ color: "#ffd570" }), churchGroup);
+    const halo = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: getHaloTex(), blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: 0.9,
+    }));
+    halo.position.set(sx, 7.9, 1.1);
+    halo.scale.set(6.5, 6.5, 1);
+    churchGroup.add(halo);
+  }
+  const churchLight = new THREE.PointLight("#ffd075", 0, 48, 1.4);
+  churchLight.position.set(0, 7, 3);
+  churchGroup.add(churchLight);
+  let churchDoorOpen = 0;
+  scene.add(churchGroup);
+
   // .vox helper (lights held candle tips like apps/candles)
   const candleHalos = [];
   const meshFor = (name, look, vestment = null) => {
@@ -243,6 +299,7 @@ export function createRoad(canvas, { models = {}, crewInfo }) {
   const procMembers = [];
   const addProc = (slugs, ox, oz, look, vestment = null) => {
     const p = makePerson(slugs, look, 0.96, vestment);
+    p.baseZ = oz;
     p.g.position.set(ox, 0, oz);
     p.g.rotation.y = Math.PI; // face forward (-Z) up the road
     procGroup.add(p.g);
@@ -462,6 +519,16 @@ export function createRoad(canvas, { models = {}, crewInfo }) {
     sun.intensity = night ? 0.36 : 0.58;
     grassMat.color.setHex(night ? 0x2d4a3a : stId === "wind" ? 0x5c8b4e : 0x68ac52);
     roadMat.color.setHex(night ? 0x3b4559 : 0x4e5766);
+    churchRoofMat.color.setHex(night ? 0x5c353a : 0x9c4338);
+
+    // Show destination parish church when approaching or arriving
+    const hasChurch = g.churchZ != null && g.churchZ > -145;
+    churchGroup.visible = hasChurch;
+    if (hasChurch) churchGroup.position.set(0, 0, g.churchZ);
+    const wantDoor = g.arriving ? 1 : (g.churchZ != null && g.churchZ > -45 ? 0.35 : 0);
+    churchDoorOpen += (wantDoor - churchDoorOpen) * Math.min(1, dt * 6);
+    for (const dp of doorPivots) dp.pv.rotation.y = dp.s * churchDoorOpen * 1.45;
+    churchLight.intensity = hasChurch ? (night ? 2.2 : 1.1) * (0.4 + 0.6 * churchDoorOpen) : 0;
 
     // Scroll lane dashes & roadside trees smoothly
     const dashSpan = dashes.length * DASH_STEP;
@@ -470,6 +537,7 @@ export function createRoad(canvas, { models = {}, crewInfo }) {
       let z = -112 + i * DASH_STEP + offset;
       while (z > 56) z -= dashSpan;
       dashes[i].position.z = z;
+      dashes[i].visible = g.churchZ == null || z > g.churchZ + 8;
     }
     const scSpan = sceneries.length * 22;
     const scOff = g.dist % scSpan;
@@ -477,14 +545,17 @@ export function createRoad(canvas, { models = {}, crewInfo }) {
       let z = -110 + i * 22 + scOff;
       while (z > 66) z -= scSpan;
       sceneries[i].position.z = z;
+      sceneries[i].visible = g.churchZ == null || Math.abs(z - g.churchZ + 12) > 22;
     }
 
-    // Update procession column + steering bank + stumble wobble
-    procGroup.position.x = g.procX;
+    // Update procession column + steering bank + church entrance march
+    const procZ = g.arriving ? FRONT_Z - Math.min(1, g.arriveT / 2.0) * (FRONT_Z - CHURCH_STOP_Z) : FRONT_Z;
+    procGroup.position.set(g.procX, 0, procZ);
     const lean = (LANE_X[g.procLane] - g.procX) * 0.014;
     procGroup.rotation.z = g.wobble > 0 ? Math.sin(time * 28) * 0.08 : -lean;
     const walkingProc = !g.over;
     for (const pm of procMembers) {
+      pm.g.visible = !g.arriving || procZ + pm.baseZ >= CHURCH_STOP_Z - 1.5;
       pm.setWalk(walkingProc);
       if (walkingProc) animFrames(pm.walkMesh, time);
     }

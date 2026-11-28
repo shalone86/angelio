@@ -3,7 +3,6 @@
 .home-title-wrap { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; min-width: 0; }
 .home-title { margin: 0; font-size: clamp(1.35rem, 4.5vw, 1.85rem); line-height: 1.1; color: #2b6cb0; }
 .home-sub { margin: 0; font-size: .88rem; color: var(--muted); font-weight: 700; }
-.demo-chip { display: inline-flex; align-items: center; font-weight: 800; font-size: .8rem; padding: 4px 10px; border-radius: 99px; background: var(--surface); border: 1.5px solid var(--border); color: var(--muted); margin: 0; }
 
 .daily-card { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px;
   margin: 2px 0 10px; padding: 9px 13px; border-radius: 16px; text-decoration: none; color: var(--text);
@@ -66,7 +65,6 @@ a.stage:active { transform: translateY(2px); box-shadow: none; }
   .home-head { padding: 12px 0 16px; }
   .home-title { font-size: 2.35rem; }
   .home-sub { font-size: 1.06rem; }
-  .demo-chip { font-size: .92rem; padding: 6px 14px; }
   .daily-card { margin: 4px 0 14px; padding: 12px 18px; border-radius: 20px; border-width: 2px; box-shadow: 0 4px 0 var(--border); }
   .daily-badge { font-size: .88rem; padding: 3px 10px; }
   .daily-stage { font-size: 1.12rem; }

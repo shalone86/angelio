@@ -45,7 +45,6 @@ function viewHome() {
         <h1 class="home-title">Procession!</h1>
         <p class="home-sub">Clear the road &amp; guide the parish</p>
       </div>
-      <span class="demo-chip">✨ New</span>
     </section>
     <a class="daily-card" href="#/play/daily">
       <span class="daily-left">
@@ -181,7 +180,7 @@ function viewPlay(stageId) {
   renderSteering();
 
   function doSteer(dir, rel = true) {
-    if (!road || g.over) return;
+    if (!road || g.over || g.arriving) return;
     if (steerProcession(g, dir, rel)) {
       sfx.tap();
       renderSteering();
@@ -194,7 +193,7 @@ function viewPlay(stageId) {
   let dragStart = null;
   let dragged = false;
   canvas.addEventListener("pointerdown", (e) => {
-    if (!road || g.over) return;
+    if (!road || g.over || g.arriving) return;
     dragStart = { x: e.clientX, y: e.clientY };
     dragged = false;
     const pt = road.pickRoadPoint(e.clientX, e.clientY);
@@ -214,7 +213,7 @@ function viewPlay(stageId) {
     }
   });
   canvas.addEventListener("pointermove", (e) => {
-    if (!dragStart || !road || g.over) return;
+    if (!dragStart || !road || g.over || g.arriving) return;
     if (!dragged && Math.hypot(e.clientX - dragStart.x, e.clientY - dragStart.y) < 10) return;
     dragged = true;
     const pt = road.pickRoadPoint(e.clientX, e.clientY);
@@ -226,7 +225,7 @@ function viewPlay(stageId) {
 
   pins.addEventListener("click", (e) => {
     const btn = e.target.closest("[data-ob]");
-    if (!btn || !road || g.over) return;
+    if (!btn || !road || g.over || g.arriving) return;
     const ob = g.obs.find((o) => o.id === Number(btn.dataset.ob) && !o.done);
     if (ob) { sfx.tap(); setTarget(g, ob.x, ob.z, MOVING_KINDS.has(ob.kind) ? null : ob.id); }
   });
@@ -237,7 +236,7 @@ function viewPlay(stageId) {
     setStick(g, dx, dz);
   }
   const onKeyDown = (e) => {
-    if (!alive || !road) return;
+    if (!alive || !road || g.over || g.arriving) return;
     const k = e.key.toLowerCase();
     if (k === "q" || k === "[") { doSteer(-1, true); return; }
     if (k === "e" || k === "]") { doSteer(1, true); return; }
@@ -337,6 +336,9 @@ function viewPlay(stageId) {
       } else if (ev.type === "bell") {
         sfx.chime?.();
         road.flashBellAt(ev.o.x, ev.o.z);
+      } else if (ev.type === "church") {
+        sfx.win();
+        say(bubble, `⛪ ${esc(ev.msg)}`, { speakText: false });
       } else if (ev.type === "end") {
         finishRound();
       }
@@ -414,11 +416,13 @@ function viewPlay(stageId) {
     getState: () => ({
       ready: !!road, score: g.score, procLane: g.procLane, candles: g.candles,
       fixes: g.fixes, dir: g.crew.dir, x: g.crew.x, z: g.crew.z, obs: g.obs.length,
+      arriving: g.arriving, churchZ: g.churchZ,
       targetOb: g.crew.target?.obId ?? null,
       firstObDist: g.obs[0] ? Number(Math.hypot(g.crew.x - g.obs[0].x, g.crew.z - g.obs[0].z).toFixed(2)) : null,
     }),
     steer: (d, r = true) => doSteer(d, r),
     walkTo: (x, z) => setTarget(g, x, z, null),
+    toChurch: () => { if (!stage.endless) { g.elapsed = Math.max(0, stage.length - 3.0); g.obs = []; } },
     finish: (score = g.score) => { g.score = score; g.won = true; g.over = true; finishRound(); },
     spawnTest: (kind, x = 0, z = -42) => {
       const q = KINDS[kind];

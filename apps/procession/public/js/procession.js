@@ -8,6 +8,7 @@ export const ROAD_HALF = 30;
 export const SIDEWALK_X = 34.5;
 export const SPAWN_Z = -100;
 export const FRONT_Z = 34;
+export const CHURCH_STOP_Z = FRONT_Z - 20;
 export const PROC_HALF_W = 8.2;
 export const CREW_BOUNDS = { minX: -35, maxX: 35, minZ: -86, maxZ: 22 };
 export const MAX_CANDLES = 7;
@@ -107,6 +108,9 @@ export function newGame(stage, { crewId = "sacristan", rng = Math.random } = {})
     bellTimer: who.perk === "bell" ? 7.0 : Infinity,
     stormTimer: 0,
     stormTick: 0,
+    churchZ: null,
+    arriving: false,
+    arriveT: 0,
     over: false,
     won: false,
   };
@@ -276,13 +280,51 @@ export function tick(g, dt) {
   if (g.over || dt <= 0) return events;
   const step = Math.min(dt, 0.08);
   g.t += step;
+
+  // Arrival finale at the parish church doors on timed stages
+  if (g.arriving) {
+    g.speedNow = 0;
+    g.wobble = Math.max(0, g.wobble - step);
+    g.arriveT += step;
+    g.churchZ = CHURCH_STOP_Z;
+    const pdx = LANE_X[1] - g.procX;
+    const maxProcStep = 56 * step;
+    g.procX = Math.abs(pdx) <= maxProcStep ? LANE_X[1] : g.procX + Math.sign(pdx) * maxProcStep;
+    const dx = 0 - g.crew.x;
+    const dz = CHURCH_STOP_Z - 1 - g.crew.z;
+    const d = Math.hypot(dx, dz);
+    if (d > 1) {
+      const mv = Math.min(d, 36 * step);
+      g.crew.x += (dx / d) * mv;
+      g.crew.z += (dz / d) * mv;
+      g.crew.moving = true;
+      g.crew.dir = Math.atan2(dx, dz);
+    } else {
+      g.crew.moving = false;
+      g.crew.dir = Math.PI;
+    }
+    if (g.arriveT >= 2.2) {
+      g.over = true;
+      g.won = g.candles > 0;
+      events.push({ type: "end", won: g.won, score: g.score, reason: "finish" });
+    }
+    return events;
+  }
+
   g.elapsed += step;
 
-  // Timed stage completion
+  // Timed stage completion -> procession reaches the parish church
   if (!g.stage.endless && g.elapsed >= g.stage.length) {
-    g.over = true;
-    g.won = g.candles > 0;
-    events.push({ type: "end", won: g.won, score: g.score, reason: "finish" });
+    g.arriving = true;
+    g.arriveT = 0;
+    g.churchZ = CHURCH_STOP_Z;
+    g.procLane = 1;
+    g.speedNow = 0;
+    g.obs = [];
+    g.crew.target = null;
+    g.crew.stickX = 0;
+    g.crew.stickZ = 0;
+    events.push({ type: "church", msg: "We made it to church! The parish bells are ringing!" });
     return events;
   }
 
@@ -319,6 +361,8 @@ export function tick(g, dt) {
   const targetRoadSpeed = g.speed * slowHymn;
   g.speedNow = targetRoadSpeed;
   g.dist += targetRoadSpeed * step;
+  const timeLeft = g.stage.endless ? Infinity : Math.max(0, g.stage.length - g.elapsed);
+  g.churchZ = !g.stage.endless && timeLeft <= 12 ? CHURCH_STOP_Z - timeLeft * targetRoadSpeed : null;
 
   // Steer procession smoothly toward lane center
   const destProcX = LANE_X[g.procLane];
@@ -471,16 +515,18 @@ export function tick(g, dt) {
 
   g.obs = g.obs.filter((o) => o.z < FRONT_Z + 38 && Math.abs(o.x) < 62);
 
+  const canSpawn = timeLeft > 6.5 && (g.churchZ == null || g.churchZ < SPAWN_Z - 12);
+
   // Regular obstacle spawns
   g.spawnTimer -= step;
-  if (g.spawnTimer <= 0 && !g.over) {
+  if (g.spawnTimer <= 0 && !g.over && canSpawn) {
     g.spawnTimer = stepSpawnInterval(g);
     spawnNextWave(g);
   }
 
   // Street lamps along sidewalks
   g.lampTimer -= step;
-  if (g.lampTimer <= 0 && !g.over) {
+  if (g.lampTimer <= 0 && !g.over && canSpawn) {
     g.lampTimer = isNight(g) ? (4.4 + g.rng() * 1.8) : (3.4 + g.rng() * 2.2);
     const lx = g.rng() < 0.5 ? -SIDEWALK_X : SIDEWALK_X;
     spawnOb(g, "lamp", lx, SPAWN_Z);
@@ -489,7 +535,7 @@ export function tick(g, dt) {
   // Broken bridges
   if (g.stage.bridgeEvery || stretchOf(g) === "river") {
     g.bridgeTimer -= step;
-    if (g.bridgeTimer <= 0 && !g.over) {
+    if (g.bridgeTimer <= 0 && !g.over && canSpawn) {
       g.bridgeTimer = (g.stage.bridgeEvery || 26) + g.rng() * 8;
       const openLane = Math.floor(g.rng() * 3);
       for (let li = 0; li < 3; li++) {
@@ -502,7 +548,7 @@ export function tick(g, dt) {
   // Wind gusts extinguish at most one lit lamp well up the road so night runs stay readable & fair
   if (g.stage.windEvery || stretchOf(g) === "wind" || stretchOf(g) === "night") {
     g.windTimer -= step;
-    if (g.windTimer <= 0 && !g.over) {
+    if (g.windTimer <= 0 && !g.over && canSpawn) {
       g.windTimer = (g.stage.windEvery || 24) + g.rng() * 7;
       const lit = g.obs.filter((o) => o.kind === "lamp" && o.done && !o.miss && o.z < FRONT_Z - 26)
         .sort((a, b) => a.z - b.z);

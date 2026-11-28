@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { STAGES, stageById, isOpen } from "../public/js/stages.js";
 import { CREW, crewById, crewOpen } from "../public/js/crew.js";
 import {
-  LANE_X, ROAD_HALF, FRONT_Z, SPAWN_Z, SIDEWALK_X,
+  LANE_X, ROAD_HALF, FRONT_Z, SPAWN_Z, SIDEWALK_X, CHURCH_STOP_Z,
   KINDS, MOVING_KINDS,
   newGame, tick, steerProcession, setTarget, setStick,
   starsFor, multiplierOf,
@@ -186,4 +186,36 @@ test("Candlelight Vigil has fair lamp intervals and wind gust blows out at most 
   assert.equal(windEv.count, 1, "at most 1 far lamp blown dark per gust");
   assert.equal(g.obs.find((o) => o.id === 401).done, false, "further up-road lamp blown dark");
   assert.equal(g.obs.find((o) => o.id === 402).done, true, "closer lamp stays lit");
+});
+
+test("timed stages end at the parish church while Endless never spawns a finish church", () => {
+  const g = newGame(stageById("town"));
+  g.elapsed = g.stage.length - 6;
+  tick(g, 0.05);
+  assert.ok(g.churchZ != null && g.churchZ < CHURCH_STOP_Z, "church appears down the road near stage end");
+  const z1 = g.churchZ;
+  const d1 = g.dist;
+  tick(g, 0.05);
+  assert.ok(Math.abs((g.churchZ - z1) - (g.dist - d1)) < 0.01, "church approaches 1:1 with road scroll");
+
+  // Crossing stage length starts church arrival finale and ends with win after 2.2s
+  g.elapsed = g.stage.length - 0.02;
+  const evArrive = tick(g, 0.05);
+  assert.equal(g.arriving, true);
+  assert.equal(g.churchZ, CHURCH_STOP_Z);
+  assert.equal(g.procLane, 1);
+  assert.ok(evArrive.some((e) => e.type === "church"));
+
+  let endEv = null;
+  for (let i = 0; i < 60; i++) {
+    const ev = tick(g, 0.05);
+    endEv ??= ev.find((e) => e.type === "end");
+  }
+  assert.ok(endEv && endEv.won === true && endEv.reason === "finish");
+
+  const gEnd = newGame(stageById("endless"));
+  gEnd.elapsed = 120;
+  tick(gEnd, 0.05);
+  assert.equal(gEnd.churchZ, null);
+  assert.equal(gEnd.arriving, false);
 });
