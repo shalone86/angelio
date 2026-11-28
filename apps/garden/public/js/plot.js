@@ -4,6 +4,7 @@
 import { readVox, toScene } from "./vox.js";
 import { randomLook, recolor } from "./looks.js";
 import { cropById } from "./crops.js";
+import { variantsOf, buildCritterGroup } from "./critters.js";
 
 const ART = typeof location !== "undefined" && /(^|\.)angelio\.org$/.test(location.hostname) ? "" : "https://angelio.org";
 
@@ -101,6 +102,11 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
   const mat = (hex) => {
     if (!mats.has(hex)) mats.set(hex, new THREE.MeshLambertMaterial({ color: hex }));
     return mats.get(hex);
+  };
+  const basicMats = new Map();
+  const basicMat = (hex) => {
+    if (!basicMats.has(hex)) basicMats.set(hex, new THREE.MeshBasicMaterial({ color: hex }));
+    return basicMats.get(hex);
   };
   const block = (w, h, d, x, y, z, m, parent = scene) => {
     const o = new THREE.Mesh(box, m);
@@ -293,72 +299,149 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
     g.position.set(s.x, 0, s.z);
     scene.add(g);
     const hit = new THREE.Mesh(box, new THREE.MeshBasicMaterial({ visible: false }));
-    if (s.kind === "bed") {
-      block(5.4, 1.0, 4.4, 0, 0, 0, mat("#7a4e28"), g);
-      block(4.8, 0.3, 3.8, 0, 0.9, 0, mat("#4a2e19"), g);
-      hit.scale.set(5.8, 4.5, 4.8);
-      hit.position.set(0, 2.2, 0);
-    } else if (s.kind === "tree") {
-      block(1.6, 5.2, 1.6, 0, 0, 0, mat("#6b4423"), g);
-      block(5.4, 3.4, 5.4, 0, 4.8, 0, mat(night ? "#26522e" : "#388e3c"), g);
-      block(3.8, 2.0, 3.8, 0, 8.2, 0, mat(night ? "#2d5f36" : "#43a047"), g);
-      hit.scale.set(5.8, 10.5, 5.8);
-      hit.position.set(0, 5.2, 0);
-      treeColliders.push({ x: s.x, z: s.z, r: TREE_COLLIDER_R });
-    } else {
-      block(3.8, 1.3, 3.8, 0, 0, 0, mat("#9e9480"), g);
-      block(3.2, 0.3, 3.2, 0, 1.2, 0, mat("#4a2e19"), g);
-      hit.scale.set(4.5, 4.5, 4.5);
-      hit.position.set(0, 2.2, 0);
-    }
-    g.add(hit);
-    registerHit(hit, { spotId: s.id });
-
-    // Growing/ripe produce group
     const cropGroup = new THREE.Group();
     const fruitMeshes = [];
-    const col = cropById(s.crop).color;
-    if (s.kind === "bed") {
-      for (const ox of [-1.2, 0, 1.2]) {
-        block(0.8, 1.4, 0.8, ox, 1.1, 0.6, mat("#2e8b44"), cropGroup);
-        fruitMeshes.push(block(0.95, 0.95, 0.95, ox, 1.0, -0.5, mat(col), cropGroup));
+    let topY = 3.8, pestBaseY = 2.9, pestTopY = 5.0, cropBaseY = 0;
+
+    if (s.kind === "tree") {
+      if (s.crop === "apple") {
+        block(2.2, 0.9, 2.2, 0, 0, 0, mat("#5c391b"), g);
+        block(1.5, 4.8, 1.5, 0, 0.5, 0, mat("#6e4624"), g);
+        block(0.6, 0.8, 1.6, -1.0, 4.4, 0, mat("#6e4624"), g);
+        block(0.6, 0.8, 1.6, 1.0, 4.6, 0, mat("#6e4624"), g);
+        const leaves = night ? ["#214c2a", "#2b5e35", "#387243"] : ["#2f7d38", "#3d9646", "#50b058"];
+        block(6.0, 2.6, 6.0, 0, 4.6, 0, mat(leaves[0]), g);
+        block(5.0, 2.4, 5.0, 0, 6.8, 0, mat(leaves[1]), g);
+        block(3.2, 1.5, 3.2, 0, 8.8, 0, mat(leaves[2]), g);
+        hit.scale.set(6.0, 11.2, 6.0);
+        hit.position.set(0, 5.6, 0);
+        for (const [fx, fy, fz] of [[-2.0, 5.0, 2.75], [1.8, 6.0, 2.6], [-0.2, 7.6, 2.3], [2.4, 5.3, -1.7], [-2.5, 6.2, -1.5]]) {
+          const fg = new THREE.Group();
+          fg.position.set(fx, fy, fz);
+          block(1.1, 1.05, 1.1, 0, 0, 0, mat("#df2935"), fg);
+          block(0.28, 0.35, 0.28, 0, 1.0, 0, mat("#543216"), fg);
+          block(0.45, 0.22, 0.35, 0.2, 1.08, 0, mat("#73cf58"), fg);
+          cropGroup.add(fg);
+          fruitMeshes.push(fg);
+        }
+        topY = 10.8; pestBaseY = 10.2; pestTopY = 12.8;
+      } else {
+        block(2.0, 0.8, 2.0, 0, 0, 0, mat("#5c3a1d"), g);
+        block(1.4, 5.0, 1.4, 0, 0.4, 0, mat("#754c28"), g);
+        const leaves = night ? ["#234d30", "#2f613d", "#3c754b"] : ["#367d47", "#469658", "#58ad68"];
+        block(5.4, 2.4, 5.4, 0, 4.5, 0, mat(leaves[0]), g);
+        block(4.6, 2.6, 4.6, 0, 6.6, 0, mat(leaves[1]), g);
+        block(3.0, 2.0, 3.0, 0, 8.9, 0, mat(leaves[2]), g);
+        hit.scale.set(5.8, 11.6, 5.8);
+        hit.position.set(0, 5.8, 0);
+        for (const [fx, fy, fz] of [[-1.8, 4.8, 2.55], [1.6, 6.1, 2.4], [-0.1, 7.7, 2.05], [2.1, 5.1, -1.7]]) {
+          const fg = new THREE.Group();
+          fg.position.set(fx, fy, fz);
+          block(1.05, 0.85, 1.05, 0, 0, 0, mat("#cadb3b"), fg);
+          block(0.68, 0.65, 0.68, 0, 0.78, 0, mat("#b5c72e"), fg);
+          block(0.24, 0.32, 0.24, 0, 1.38, 0, mat("#543216"), fg);
+          cropGroup.add(fg);
+          fruitMeshes.push(fg);
+        }
+        topY = 11.4; pestBaseY = 10.8; pestTopY = 13.4;
       }
-    } else if (s.kind === "tree") {
-      for (const [fx, fy, fz] of [[-1.6, 5.4, 2.4], [1.4, 6.2, 2.4], [0, 7.6, 2.2], [-0.5, 5.8, -2.2]]) {
-        fruitMeshes.push(block(1.05, 1.05, 1.05, fx, fy, fz, mat(col), cropGroup));
+      treeColliders.push({ x: s.x, z: s.z, r: TREE_COLLIDER_R });
+    } else if (s.kind === "bed") {
+      hit.scale.set(5.8, 4.5, 4.8);
+      hit.position.set(0, 2.2, 0);
+      if (s.crop === "carrot") {
+        cropBaseY = 1.25;
+        block(5.6, 1.0, 4.4, 0, 0, 0, mat("#7d4f27"), g);
+        block(4.8, 0.35, 3.6, 0, 0.9, 0, mat("#3d2412"), g);
+        for (const ox of [-1.5, 0, 1.5]) {
+          block(1.2, 0.35, 2.6, ox, 1.15, 0, mat("#5c381f"), g);
+          block(0.5, 1.7, 0.5, ox, 0.25, 0.25, mat("#329648"), cropGroup);
+          block(0.95, 0.55, 0.4, ox - 0.2, 1.7, 0.25, mat("#4dc260"), cropGroup);
+          block(0.8, 0.45, 0.75, ox + 0.2, 1.6, 0.15, mat("#287a3b"), cropGroup);
+          fruitMeshes.push(block(0.92, 0.8, 0.92, ox, 0.2, 0.25, mat("#ff7218"), cropGroup));
+        }
+      } else if (s.crop === "tomato") {
+        cropBaseY = 1.15;
+        block(5.6, 1.0, 4.4, 0, 0, 0, mat("#8a572c"), g);
+        block(4.8, 0.35, 3.6, 0, 0.9, 0, mat("#422714"), g);
+        for (const ox of [-1.45, 0, 1.45]) {
+          block(1.25, 1.65, 1.35, ox, 0, 0, mat("#2d8740"), cropGroup);
+          block(0.95, 0.75, 0.95, ox, 1.6, 0, mat("#3ea652"), cropGroup);
+          fruitMeshes.push(
+            block(0.9, 0.85, 0.9, ox, 0.7, 0.68, mat("#e6322e"), cropGroup),
+            block(0.32, 0.24, 0.32, ox, 1.53, 0.68, mat("#5cd16a"), cropGroup),
+            block(0.85, 0.8, 0.85, ox, 0.95, -0.68, mat("#e6322e"), cropGroup),
+            block(0.3, 0.22, 0.3, ox, 1.73, -0.68, mat("#5cd16a"), cropGroup),
+          );
+        }
+      } else {
+        cropBaseY = 1.15;
+        block(5.6, 1.0, 4.4, 0, 0, 0, mat("#7a4e28"), g);
+        block(4.8, 0.35, 3.6, 0, 0.9, 0, mat("#3d2412"), g);
+        for (const ox of [-1.45, 0, 1.45]) {
+          block(1.05, 0.55, 1.05, ox, 0, 0, mat("#e2f5bd"), cropGroup);
+          block(0.38, 1.25, 0.75, ox - 0.32, 0.5, 0, mat("#8ed156"), cropGroup);
+          block(0.38, 1.45, 0.75, ox + 0.32, 0.5, 0, mat("#7ec449"), cropGroup);
+          block(0.38, 1.6, 0.75, ox, 0.5, 0.25, mat("#9ce063"), cropGroup);
+          fruitMeshes.push(block(1.3, 0.75, 1.2, ox, 1.7, 0, mat("#388f41"), cropGroup));
+        }
       }
     } else {
-      for (const [ox, oz] of [[-0.8, -0.7], [0.8, -0.7], [-0.8, 0.7], [0.8, 0.7]]) {
-        fruitMeshes.push(block(0.9, 1.2, 0.9, ox, 1.4, oz, mat(col), cropGroup));
+      hit.scale.set(4.5, 4.5, 4.5);
+      hit.position.set(0, 2.2, 0);
+      topY = 3.6; pestBaseY = 2.8; pestTopY = 4.9;
+      if (s.crop === "basil") {
+        cropBaseY = 1.4;
+        block(3.8, 1.3, 3.8, 0, 0, 0, mat("#8f8776"), g);
+        block(4.1, 0.35, 4.1, 0, 1.15, 0, mat("#b4aa96"), g);
+        block(3.1, 0.3, 3.1, 0, 1.25, 0, mat("#4a2e19"), g);
+        for (const [ox, oz] of [[-0.8, -0.7], [0.8, 0.7]]) {
+          block(0.3, 1.0, 0.3, ox, 0, oz, mat("#205c34"), cropGroup);
+          fruitMeshes.push(block(1.25, 0.6, 1.25, ox, 0.95, oz, mat("#2f9450"), cropGroup));
+        }
+        for (const [ox, oz] of [[0.8, -0.7], [-0.8, 0.7]]) {
+          block(0.3, 1.1, 0.3, ox, 0, oz, mat("#5c2444"), cropGroup);
+          fruitMeshes.push(block(1.15, 0.6, 1.15, ox, 1.05, oz, mat("#7a305b"), cropGroup));
+        }
+      } else {
+        cropBaseY = 1.35;
+        block(3.8, 1.3, 3.8, 0, 0, 0, mat("#9e9480"), g);
+        block(4.1, 0.35, 4.1, 0, 1.15, 0, mat("#b4aa96"), g);
+        block(3.1, 0.3, 3.1, 0, 1.25, 0, mat("#4a2e19"), g);
+        for (const [ox, oz, h] of [[-0.75, -0.65, 1.0], [0.75, -0.65, 1.35], [-0.75, 0.65, 1.25], [0.75, 0.65, 0.95]]) {
+          block(0.28, h, 0.28, ox, 0, oz, mat("#2b8a58"), cropGroup);
+          block(1.2, 0.35, 0.75, ox, h, oz, mat("#45cc84"), cropGroup);
+          fruitMeshes.push(block(0.75, 0.35, 1.2, ox, h + 0.2, oz, mat("#68e6a2"), cropGroup));
+        }
       }
     }
+
+    g.add(hit);
+    registerHit(hit, { spotId: s.id });
+    cropGroup.position.y = cropBaseY;
     g.add(cropGroup);
-    spotMeshes.set(s.id, { spot: s, g, cropGroup, fruitMeshes, topY: s.kind === "tree" ? 9.5 : 3.4 });
+    spotMeshes.set(s.id, { spot: s, g, cropGroup, fruitMeshes, topY, pestBaseY, pestTopY, cropBaseY });
   }
 
-  // Pest sprites & shoo-off animations
+  // Pest sprites & shoo-off animations (prefers Shalone's uploaded .vox models, else cycles approved sculpted variants)
+  const critterBags = new Map();
+  const pickCritterVariant = (type) => {
+    const pool = variantsOf(type);
+    let bag = critterBags.get(type);
+    if (!bag?.length) {
+      bag = [...pool];
+      for (let i = bag.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [bag[i], bag[j]] = [bag[j], bag[i]];
+      }
+      critterBags.set(type, bag);
+    }
+    return bag.pop();
+  };
   const critterVisual = (type) => {
     const model = meshFor(`${type}-walk`, randomLook()) ?? meshFor(`${type}-idle`, randomLook());
     if (model) return model;
-    const g = new THREE.Group();
-    if (type === "bug") {
-      block(1.8, 0.9, 2.2, 0, 0.2, 0, mat("#2e5f2e"), g);
-      block(0.9, 0.6, 0.8, 0, 0.3, 1.3, mat("#1b1b1b"), g);
-    } else if (type === "bird") {
-      block(1.6, 1.3, 2.2, 0, 0.6, 0, mat("#222530"), g);
-      block(2.8, 0.4, 1.0, 0, 1.3, 0, mat("#363b4a"), g);
-      block(0.7, 0.4, 0.9, 0, 1.4, 1.3, mat("#f0b62a"), g);
-    } else if (type === "squirrel") {
-      block(1.5, 1.4, 2.0, 0, 0.3, 0, mat("#a85b28"), g);
-      block(0.9, 1.9, 1.1, 0, 0.9, -1.2, mat("#c9773a"), g);
-      block(1.1, 1.0, 1.1, 0, 1.3, 1.1, mat("#a85b28"), g);
-    } else {
-      block(2.0, 1.5, 2.6, 0, 0.3, 0, mat("#6f747d"), g);
-      block(1.6, 1.2, 1.2, 0, 1.2, 1.3, mat("#23252a"), g);
-      block(0.9, 0.8, 1.8, 0, 0.8, -1.6, mat("#35373d"), g);
-    }
-    g.userData.frames = [];
-    return g;
+    return buildCritterGroup(THREE, pickCritterVariant(type), { box, mat, basicMat });
   };
   const pestMap = new Map();
   const fleeing = [];
@@ -390,7 +473,7 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
   }
 
   // Responsive framing via view offset (same pattern as Porter & Usher)
-  const KEEP = [[-22, 0, -17], [25, 0, 6], [-22, 0, 6], [25, 0, -17], [0, 11, -13]];
+  const KEEP = [[-22, 0, -17], [25, 0, 6], [-22, 0, 6], [25, 0, -17], [0, 13.5, -13]];
   let pad = { top: 105, bottom: 70 };
   function resize(newPad) {
     if (newPad) pad = newPad;
@@ -451,10 +534,22 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
     for (const s of g.spots) {
       const m = spotMeshes.get(s.id);
       if (!m) continue;
-      const sc = 0.28 + s.grow * 0.72;
-      m.cropGroup.scale.set(sc, sc, sc);
-      m.cropGroup.position.y = s.kind === "tree" ? 0 : (1 - sc) * -0.4;
-      m.fruitMeshes.forEach((fm) => { fm.visible = s.ripe || s.grow > 0.65; });
+      if (s.kind === "tree") {
+        m.cropGroup.scale.set(1, 1, 1);
+        m.cropGroup.position.y = 0;
+        const showFruit = s.ripe || s.grow > 0.65;
+        const fsc = s.ripe ? 1 : 0.62 + ((s.grow - 0.65) / 0.35) * 0.38;
+        m.fruitMeshes.forEach((fm) => {
+          fm.visible = showFruit;
+          if (showFruit) fm.scale.set(fsc, fsc, fsc);
+        });
+      } else {
+        const sc = 0.28 + s.grow * 0.72;
+        m.cropGroup.scale.set(sc, sc, sc);
+        m.cropGroup.position.y = m.cropBaseY;
+        const showFruit = s.ripe || s.grow > 0.65;
+        m.fruitMeshes.forEach((fm) => { fm.visible = showFruit; });
+      }
     }
     const activeIds = new Set(g.pests.map((p) => p.id));
     for (const p of g.pests) {
@@ -462,8 +557,9 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
         const sp = spotMeshes.get(p.spotId);
         const visual = critterVisual(p.type);
         const gRoot = new THREE.Group();
-        const baseY = sp ? (sp.spot.kind === "tree" ? 8.8 : 2.3) : 2.5;
+        const baseY = sp ? sp.pestBaseY : 2.9;
         gRoot.position.set(p.x, baseY, p.z);
+        gRoot.rotation.y = (p.id % 2 ? 1 : -1) * 0.42;
         gRoot.add(visual);
         const hit = new THREE.Mesh(box, new THREE.MeshBasicMaterial({ visible: false }));
         hit.scale.set(4.5, 4.5, 4.5);
@@ -571,7 +667,7 @@ export function createPlot(canvas, { models = {}, stage, gardener }) {
     },
     pestTop(p) {
       const sp = spotMeshes.get(p.spotId);
-      const y = sp ? (sp.spot.kind === "tree" ? 10.6 : 4.2) : 4.5;
+      const y = sp ? sp.pestTopY : 5.0;
       return project(p.x, y, p.z);
     },
     dispose() {
