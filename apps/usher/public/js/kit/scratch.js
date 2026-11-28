@@ -30,7 +30,7 @@ const CSS = `
   background: rgb(255 249 219 / .55); box-shadow: inset 0 0 0 3px rgb(217 106 0 / .35); }
 .kit-scratch[hidden] { display: none; }
 .kit-scratch-canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
-.kit-scratch-bar { position: absolute; top: 6px; right: 6px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-end;
+.kit-scratch-bar { position: absolute; bottom: 6px; right: 6px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-end;
   padding: 4px; border-radius: 16px; background: var(--surface, #fff); border: 2px solid var(--border, #f1e0c6); box-shadow: 0 3px 0 var(--border, #f1e0c6); max-width: calc(100% - 12px); }
 .kit-scratch-bar button { width: 48px; height: 48px; min-width: 48px; border-radius: 14px; border: 2px solid var(--border, #f1e0c6); background: var(--surface-2, #fff1d9);
   display: inline-grid; place-items: center; font-size: 1.35rem; cursor: pointer; color: var(--text, #2b2340); padding: 0; }
