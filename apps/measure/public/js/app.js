@@ -12,8 +12,10 @@ import { leadIn, praise, tryAgain } from "./kit/vary.js";
 import { jingleOnce } from "./kit/jingle.js";
 import {
   PER_LEVEL, GRADES, LEVELS, levelById, makeLevel, starsFor,
-  formatTime, formatMoney, checkMoney,
+  formatTime, formatMoney, checkMoney, plural, wantsScratch,
 } from "./measure.js";
+import { mountScratchpad } from "./kit/scratch.js";
+import { levelScenes, sceneKey } from "./scenes.js";
 import {
   MONEY_META, fracLabel, compareLengthSvg, rulerSvg, clockSvg, coinSvg,
   moneyTraySvg, scaleSvg, pitcherSvg, chartSvg, calendarSvg, rectGridSvg,
@@ -169,9 +171,9 @@ function showMontessoriExplorer(stage, dock, bubble, level, isAlive) {
   });
 }
 
-function showAnimatedLesson(stage, dock, bubble, level, isAlive) {
+function showAnimatedLesson(stage, dock, bubble, level, isAlive, seen) {
   return new Promise((resolve) => {
-    showMsg(bubble, `<b>${esc(level.emoji)} ${esc(level.title)}</b> — watch how it works first!`, level.say, { doSpeak: isVoiceActive() });
+    showMsg(bubble, `<b>${esc(level.emoji)} ${esc(level.title)}</b> — watch how it works first!`, level.say, { doSpeak: false });
 
     stage.innerHTML = `
       <div class="card anim-lesson">
@@ -188,12 +190,30 @@ function showAnimatedLesson(stage, dock, bubble, level, isAlive) {
         <div class="anim-demo-slot" data-demo-slot></div>
       </div>`;
 
-    const cleanupDemo = mountAnimatedDemo(stage.querySelector("[data-demo-slot]"), level, { autoplay: true, compact: true });
+    const cleanupDemo = mountAnimatedDemo(stage.querySelector("[data-demo-slot]"), level, { autoplay: true, compact: true, onSceneDone: (k) => seen.add(k) });
     stage.querySelector("[data-hear-lesson]").onclick = () => speak(level.say, { force: true });
 
     dock.innerHTML = `<button type="button" class="btn big primary pulse" data-go>▶ Let's Practice!</button>`;
     dock.querySelector("[data-go]").onclick = () => {
       cleanupDemo();
+      if (!isAlive()) return;
+      sfx.go();
+      resolve();
+    };
+  });
+}
+
+// A new kind of question: show its animated walkthrough first, in a card the child can dismiss.
+function showWatchHow(stage, dock, bubble, level, key, isAlive) {
+  return new Promise((resolve) => {
+    const title = levelScenes(level).find((s) => s.key === key)?.title || "this kind of question";
+    showMsg(bubble, `<b>👀 Watch how:</b> ${esc(title)}`, `Here comes a new kind of question. Watch how to do it!`, { doSpeak: isVoiceActive() });
+    stage.innerHTML = `<div class="card watch-how"><div class="lesson-kicker">👀 Watch how</div><div data-slot></div></div>`;
+    const stopDemo = mountAnimatedDemo(stage.querySelector("[data-slot]"), level, { autoplay: true, compact: true, only: key });
+    dock.innerHTML = `<button type="button" class="btn big primary pulse" data-got>▶ I've got it!</button>`;
+    dock.querySelector("[data-got]").onclick = () => {
+      stopDemo();
+      stop({ count: false });
       if (!isAlive()) return;
       sfx.go();
       resolve();
@@ -613,14 +633,15 @@ async function askPourJug(stage, dock, bubble, q, ctx) {
   let mistakesHere = 0;
   let helped = false;
   let solved = false;
+  let showGoal = false; // the red Goal line is a hint: it appears after a wrong Check or when 💡 is tapped
 
   const drawJug = () => {
     stage.innerHTML = `
       <div class="jug-stage">
-        <div class="vis-box">${pitcherSvg({ capacity: q.capacity, fill, target: q.target, unit: q.unit, size: 196 })}</div>
+        <div class="vis-box">${pitcherSvg({ capacity: q.capacity, fill, target: showGoal || solved ? q.target : null, unit: q.unit, tickStep: q.step, size: 196 })}</div>
         <div class="jug-controls">
-          <button type="button" class="btn" data-pour="-1" ${fill <= 0 || solved ? "disabled" : ""}>− Pour Out ${q.step} ${esc(q.unit)}</button>
-          <button type="button" class="btn primary" data-pour="1" ${fill >= q.capacity || solved ? "disabled" : ""}>+ Pour In ${q.step} ${esc(q.unit)}</button>
+          <button type="button" class="btn" data-pour="-1" ${fill <= 0 || solved ? "disabled" : ""}>− Pour Out ${esc(plural(q.step, q.unit))}</button>
+          <button type="button" class="btn primary" data-pour="1" ${fill >= q.capacity || solved ? "disabled" : ""}>+ Pour In ${esc(plural(q.step, q.unit))}</button>
         </div>
       </div>`;
 
@@ -635,6 +656,7 @@ async function askPourJug(stage, dock, bubble, q, ctx) {
       };
     });
   };
+  ctx.onHint?.(() => { if (!showGoal && !solved) { showGoal = true; drawJug(); } });
 
   drawJug();
 
@@ -652,7 +674,9 @@ async function askPourJug(stage, dock, bubble, q, ctx) {
         sfx.oops();
         mistakesHere++;
         helped = true;
-        const msg = `The pitcher holds ${fill} ${q.unit} — line the water up with the red ${q.target} ${q.unit} Goal line!`;
+        showGoal = true;
+        drawJug();
+        const msg = `The pitcher holds ${plural(fill, q.unit)}. Here is a red Goal line to help: line the water up with ${plural(q.target, q.unit)}!`;
         showMsg(bubble, esc(msg), msg, { doSpeak: isVoiceActive() });
       }
     };
@@ -737,7 +761,7 @@ const ASK = {
 
 // ───────── round orchestrator ─────────
 
-async function play(id, { skipIntro = false } = {}) {
+async function play(id, { skipIntro = false, replay = false } = {}) {
   const token = ++activeRun;
   const isAlive = () => token === activeRun;
   const level = levelById(id) || LEVELS[0];
@@ -750,13 +774,14 @@ async function play(id, { skipIntro = false } = {}) {
         <div class="dots">${Array.from({ length: PER_LEVEL }, (_, i) => `<i data-dot="${i}"></i>`).join("")}</div>
         <button type="button" class="icon-btn" data-repeat aria-label="Say again">💬</button>
         <button type="button" class="icon-btn" data-hint aria-label="Hint">💡</button>
+        <button type="button" class="icon-btn" data-scratch aria-label="Scratchpad" hidden>✏️</button>
         <button type="button" class="icon-btn toggle" data-voice aria-label="Read aloud">🔊</button>
       </div>
       <div class="bubble">
         <span class="mascot" aria-hidden="true">🧭</span>
         <p class="say"></p>
       </div>
-      <div class="stage" data-stage></div>
+      <div class="stage-wrap" data-stagewrap><div class="stage" data-stage></div></div>
       <div class="dock" data-dock></div>
     </section>`;
 
@@ -766,6 +791,10 @@ async function play(id, { skipIntro = false } = {}) {
   const dock = app.querySelector("[data-dock]");
   const voiceBtn = app.querySelector("[data-voice]");
   wireVoiceToggle(voiceBtn);
+  const pad = mountScratchpad({ host: app.querySelector("[data-stagewrap]"), button: app.querySelector("[data-scratch]") });
+  const seenModes = new Set(replay ? levelScenes(level).map((s) => s.key) : []);
+  if (level.introCards) { seenModes.add("intro-find"); seenModes.add("intro-name"); }
+  let hintHook = null;
 
   let currentQ = null;
   let currentHelped = false;
@@ -776,13 +805,14 @@ async function play(id, { skipIntro = false } = {}) {
   app.querySelector("[data-hint]").onclick = () => {
     if (!currentQ) { speak(level.say, { force: true }); return; }
     currentHelped = true;
+    hintHook?.();
     const h = currentQ.hint || level.say;
     showMsg(bubble, `💡 ${esc(h)}`, h, { doSpeak: true, force: true });
   };
 
   if (!skipIntro) {
     if (level.introCards) await showMontessoriExplorer(stage, dock, bubble, level, isAlive);
-    else await showAnimatedLesson(stage, dock, bubble, level, isAlive);
+    else await showAnimatedLesson(stage, dock, bubble, level, isAlive, seenModes);
     if (!isAlive()) return;
   }
 
@@ -793,6 +823,15 @@ async function play(id, { skipIntro = false } = {}) {
     if (!isAlive()) return;
     currentQ = questions[i];
     currentHelped = false;
+    hintHook = null;
+    pad.reset();
+    pad.setEnabled(wantsScratch(level, currentQ));
+    const key = sceneKey(currentQ);
+    if (!seenModes.has(key) && levelScenes(level).some((s) => s.key === key)) {
+      seenModes.add(key);
+      await showWatchHow(stage, dock, bubble, level, key, isAlive);
+      if (!isAlive()) return;
+    }
     topEl.querySelectorAll("[data-dot]").forEach((d, idx) => d.classList.toggle("now", idx === i));
 
     const askFn = ASK[currentQ.type] || askChoose;
@@ -801,6 +840,7 @@ async function play(id, { skipIntro = false } = {}) {
       level,
       lead,
       isAlive,
+      onHint: (fn) => { hintHook = fn; },
       onSolved: async (helped, mistakesHere) => {
         if (!isAlive()) return;
         totalMistakes += mistakesHere;
@@ -811,6 +851,7 @@ async function play(id, { skipIntro = false } = {}) {
     });
   }
 
+  pad.destroy();
   if (!isAlive()) return;
   const idx = LEVELS.findIndex((x) => x.id === level.id);
   const nextLvl = LEVELS[idx + 1] || null;
@@ -822,7 +863,7 @@ async function play(id, { skipIntro = false } = {}) {
     title: level.title,
     done: `Completed ${level.title}!`,
     again: `#/play/${level.id}/go`,
-    onAgain: () => play(level.id, { skipIntro: true }),
+    onAgain: () => play(level.id, { skipIntro: true, replay: true }),
     next: nextLvl ? { href: `#/play/${nextLvl.id}`, label: `Next: ${nextLvl.emoji} ${nextLvl.title} →` } : null,
   });
 }

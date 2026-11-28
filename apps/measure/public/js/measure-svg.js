@@ -24,6 +24,26 @@ export function fracLabel(v) {
   return whole > 0 ? `${whole}${nice}` : nice;
 }
 
+const UNIT_FORMS = {
+  cup: ["cup", "cups"], quart: ["quart", "quarts"], pint: ["pint", "pints"], gallon: ["gallon", "gallons"],
+  liter: ["liter", "liters"], minute: ["minute", "minutes"], hour: ["hour", "hours"], day: ["day", "days"],
+  week: ["week", "weeks"], dollar: ["dollar", "dollars"], foot: ["foot", "feet"], yard: ["yard", "yards"],
+  meter: ["meter", "meters"], centimeter: ["centimeter", "centimeters"], pound: ["pound", "pounds"],
+  ounce: ["ounce", "ounces"], gram: ["gram", "grams"], kilogram: ["kilogram", "kilograms"], inch: ["inch", "inches"],
+};
+const UNIT_LOOKUP = new Map();
+for (const forms of Object.values(UNIT_FORMS)) for (const f of forms) UNIT_LOOKUP.set(f.toLowerCase(), forms);
+
+/** "cups" for 3, "cup" for 1: the word for a unit. Short units (mL, L, g, kg, oz, lb, in, cm) and unknown words stay as they are. */
+export function unitWord(n, unit) {
+  const forms = UNIT_LOOKUP.get(String(unit).toLowerCase());
+  if (!forms) return String(unit);
+  const word = Math.abs(Number(n)) === 1 ? forms[0] : forms[1];
+  return /^[A-Z]/.test(String(unit)) ? word[0].toUpperCase() + word.slice(1) : word;
+}
+/** "1 cup", "3 cups", "250 mL". */
+export const plural = (n, unit) => `${n} ${unitWord(n, unit)}`;
+
 /** Draw an everyday measurable object of exact pixel width `w` starting at `(x, y)` center baseline. */
 export function objectArt(kind, x, y, w, h = 28) {
   const x2 = x + w;
@@ -78,32 +98,63 @@ export function objectArt(kind, x, y, w, h = 28) {
 }
 
 /** Side-by-side length/height comparison SVG (`vertical: false` horizontal, `true` vertical towers/candles). */
-export function compareLengthSvg(a, b, { vertical = false, size = 290 } = {}) {
+/** Where things sit in compareLengthSvg (viewBox units), so animations can point at them. */
+export const COMPARE_GEOM = {
+  h: { W: 320, H: 156, leftX: 36, pxPer: 32, barY: [58, 118], labelY: [40, 100] },
+  v: { W: 250, H: 190, baseY: 166, perUnit: 22, cx: [78, 172], half: 26 },
+};
+
+/**
+ * Two objects lined up on a start line (or two towers on the floor).
+ * Horizontal labels sit ABOVE their bar, starting at the start line, so they can never run off the card.
+ * shiftA/shiftB slide a bar sideways (px) and grow (0..1) raises towers, for animations; hilite is "a" or "b".
+ */
+export function compareLengthSvg(a, b, { vertical = false, size = 290, shiftA = 0, shiftB = 0, grow = 1, hilite = null, ends = false } = {}) {
   if (vertical) {
-    const W = 250, H = 190, baseY = 166;
-    const drawTower = (it, cx) => {
-      const th = Math.round(it.units * 22);
+    const { W, H, baseY, perUnit, cx, half } = COMPARE_GEOM.v;
+    const drawTower = (it, x, key) => {
+      const th = Math.max(1, Math.round(it.units * perUnit * grow));
       const col = it.color ?? "#1d7fe0";
       const rim = it.stroke ?? "#135ea9";
-      return `<rect x="${cx - 26}" y="${baseY - th}" width="52" height="${th}" rx="8" fill="${col}" stroke="${rim}" stroke-width="3"/>
-        <line x1="${cx - 26}" y1="${baseY - th * 0.5}" x2="${cx + 26}" y2="${baseY - th * 0.5}" stroke="#fff" stroke-width="1.5" opacity=".45"/>
-        <text x="${cx}" y="${baseY + 18}" text-anchor="middle" font-size="13" font-weight="800" fill="#2b2340">${esc(it.label)}</text>`;
+      const hi = hilite === key;
+      return `<rect x="${x - half}" y="${baseY - th}" width="${half * 2}" height="${th}" rx="8" fill="${col}" stroke="${hi ? "#16a34a" : rim}" stroke-width="${hi ? 5 : 3}"/>
+        <line x1="${x - half}" y1="${baseY - th * 0.5}" x2="${x + half}" y2="${baseY - th * 0.5}" stroke="#fff" stroke-width="1.5" opacity=".45"/>
+        <text x="${x}" y="${baseY + 18}" text-anchor="middle" font-size="13" font-weight="800" fill="#2b2340">${esc(it.label)}</text>`;
     };
     return `<svg ${NS} viewBox="0 0 ${W} ${H}" width="${size}" height="${Math.round(size * (H / W))}" class="geo-svg" aria-hidden="true">
       <line x1="20" y1="${baseY}" x2="${W - 20}" y2="${baseY}" stroke="#c2d6ed" stroke-width="3" stroke-linecap="round"/>
-      ${drawTower(a, 78)}${drawTower(b, 172)}
+      ${drawTower(a, cx[0], "a")}${drawTower(b, cx[1], "b")}
     </svg>`;
   }
 
-  const W = 320, H = 152, leftX = 36, pxPer = 32;
+  const { W, H, leftX, pxPer, barY, labelY } = COMPARE_GEOM.h;
+  const row = (it, i, shift, key) => {
+    const w = it.units * pxPer, x = leftX + shift, hi = hilite === key;
+    return `${hi ? `<rect x="${x - 6}" y="${barY[i] - 20}" width="${w + 12}" height="40" rx="12" fill="#dcfce7" stroke="#16a34a" stroke-width="2.4"/>` : ""}
+    <text x="${leftX}" y="${labelY[i]}" font-size="13" font-weight="800" fill="#2b2340">${esc(it.label)}</text>
+    ${objectArt(it.kind, x, barY[i], w, 26)}
+    ${ends ? `<line x1="${(x + w).toFixed(1)}" y1="${barY[i] - 22}" x2="${(x + w).toFixed(1)}" y2="${barY[i] + 22}" stroke="#e5484d" stroke-width="2.6" stroke-dasharray="4 3"/>` : ""}`;
+  };
   return `<svg ${NS} viewBox="0 0 ${W} ${H}" width="${size}" height="${Math.round(size * (H / W))}" class="geo-svg" aria-hidden="true">
-    <line x1="${leftX}" y1="16" x2="${leftX}" y2="138" stroke="#135ea9" stroke-width="2.5" stroke-dasharray="5 4"/>
+    <line x1="${leftX}" y1="18" x2="${leftX}" y2="${H - 8}" stroke="#135ea9" stroke-width="2.5" stroke-dasharray="5 4"/>
     <text x="${leftX + 4}" y="14" font-size="11" font-weight="800" fill="#135ea9">Start line</text>
-    ${objectArt(a.kind, leftX, 52, a.units * pxPer, 26)}
-    <text x="${leftX + a.units * pxPer + 8}" y="56" font-size="13" font-weight="800" fill="#2b2340">${esc(a.label)}</text>
-    ${objectArt(b.kind, leftX, 108, b.units * pxPer, 26)}
-    <text x="${leftX + b.units * pxPer + 8}" y="112" font-size="13" font-weight="800" fill="#2b2340">${esc(b.label)}</text>
+    ${row(a, 0, shiftA, "a")}
+    ${row(b, 1, shiftB, "b")}
   </svg>`;
+}
+
+/** Where things sit in rulerSvg (viewBox units). `rulerOffset` shifts the ruler in CAP-sized steps. */
+export function rulerGeom({ max = 6, hasObj = true, rulerOffset = 0 } = {}) {
+  const W = 380, H = hasObj ? 148 : 96;
+  const OBJ_LEFT_X = 64;
+  const CAP = 22; // plastic margin before the 0 line
+  const maxSpan = max <= 6 ? 264 : 272;
+  const stepPx = maxSpan / max;
+  const zeroX = OBJ_LEFT_X + rulerOffset * CAP;
+  const rX = zeroX - CAP;
+  const rW = CAP + max * stepPx + 14;
+  const rY = hasObj ? 66 : 20, rH = 54;
+  return { W, H, OBJ_LEFT_X, CAP, maxSpan, stepPx, zeroX, rX, rW, rY, rH };
 }
 
 /**
@@ -115,15 +166,7 @@ export function rulerSvg({
   unit = "in", max = 6, quarterTicks = false, obj = null,
   rulerOffset = 0, showZeroGuide = false, showAnswer = false, size = 340,
 } = {}) {
-  const W = 380, H = obj ? 148 : 96;
-  const OBJ_LEFT_X = 64;
-  const CAP = 22; // plastic margin before the 0 line
-  const maxSpan = max <= 6 ? 264 : 272;
-  const stepPx = maxSpan / max;
-  const zeroX = OBJ_LEFT_X + rulerOffset * CAP;
-  const rX = zeroX - CAP;
-  const rW = CAP + max * stepPx + 14;
-  const rY = obj ? 66 : 20, rH = 54;
+  const { W, H, OBJ_LEFT_X, CAP, stepPx, zeroX, rX, rW, rY, rH } = rulerGeom({ max, hasObj: !!obj, rulerOffset });
 
   let ticks = "";
   const sub = quarterTicks ? 4 : unit === "cm" ? 2 : 2;
@@ -158,6 +201,13 @@ export function rulerSvg({
     <rect x="${rX + 1.5}" y="${rY + 1.5}" width="${Math.max(4, CAP - 2)}" height="${rH - 3}" rx="6" fill="#ffd45c" opacity=".65"/>
     ${ticks}${unitTag}
   </svg>`;
+}
+
+/** Centre/radius of clockSvg and a point at `deg` degrees (0 = 12 o'clock) `rr` from the centre, in viewBox units. */
+export const CLOCK = { cx: 110, cy: 110, r: 86 };
+export function clockPoint(deg, rr) {
+  const a = ((deg - 90) * Math.PI) / 180;
+  return [CLOCK.cx + rr * Math.cos(a), CLOCK.cy + rr * Math.sin(a)];
 }
 
 /** Analog clock SVG (`1–12`), proportional red hour hand & blue minute hand, optional outer 05..60 helper ring. */
@@ -211,7 +261,7 @@ export const MONEY_META = {
   d20: { label: "$20 Bill", cents: 2000, tag: "$20", bill: true },
 };
 
-function drawCurrencyShape(kind, cx, cy, s = 1) {
+export function drawCurrencyShape(kind, cx, cy, s = 1) {
   const m = MONEY_META[kind];
   if (!m) return "";
   if (m.bill) {
@@ -245,26 +295,37 @@ export function coinSvg(kind, { size = 64 } = {}) {
   </svg>`;
 }
 
-/** Light-paper tray holding US coins and/or bills (`counts` = `{ quarter: 1, dime: 2, ... }`). */
-export function moneyTraySvg(counts, { size = 320 } = {}) {
-  const order = ["d20", "d10", "d5", "d1", "quarter", "dime", "nickel", "penny"];
-  const items = [];
-  for (const k of order) for (let i = 0; i < (counts?.[k] || 0); i++) items.push(k);
-  const cols = Math.max(1, Math.min(5, items.length || 1));
-  const rows = Math.max(1, Math.ceil(items.length / cols));
+const TRAY_ORDER = ["d20", "d10", "d5", "d1", "quarter", "dime", "nickel", "penny"];
+/** Tray grid (viewBox units). `cols`/`rows` fix the size so a tray does not change shape while coins are added. */
+export function trayGeom(count, { cols: fixCols, rows: fixRows } = {}) {
+  const cols = fixCols ?? Math.max(1, Math.min(5, count || 1));
+  const rows = fixRows ?? Math.max(1, Math.ceil(count / cols) || 1);
   const cellW = 70, cellH = 56, pad = 16;
   const W = Math.max(200, cols * cellW + pad * 2);
   const H = Math.max(82, rows * cellH + pad * 2);
+  const slot = (idx) => ({ x: pad + (idx % cols) * cellW + cellW / 2, y: pad + Math.floor(idx / cols) * cellH + cellH / 2 });
+  return { cols, rows, cellW, cellH, pad, W, H, slot };
+}
+/** Coins in tray order (biggest first). */
+export const trayItems = (counts) => {
+  const items = [];
+  for (const k of TRAY_ORDER) for (let i = 0; i < (counts?.[k] || 0); i++) items.push(k);
+  return items;
+};
+
+/** Light-paper tray holding US coins and/or bills (`counts` = `{ quarter: 1, dime: 2, ... }`). `extra` is more SVG drawn on top, `extraH` more room below. */
+export function moneyTraySvg(counts, { size = 320, cols, rows, extra = "", extraH = 0, hint = true } = {}) {
+  const items = trayItems(counts);
+  const g = trayGeom(items.length, { cols, rows });
+  const { W, H } = g;
   const drawn = items.map((k, idx) => {
-    const r = Math.floor(idx / cols), c = idx % cols;
-    const x = pad + c * cellW + cellW / 2;
-    const y = pad + r * cellH + cellH / 2;
+    const { x, y } = g.slot(idx);
     return drawCurrencyShape(k, x, y, 0.88);
   }).join("");
-  const empty = !items.length ? `<text x="${W / 2}" y="${H / 2 + 5}" text-anchor="middle" font-size="14" font-weight="800" fill="#6d6680">Tap coins/bills below to add them here</text>` : "";
-  return `<svg ${NS} viewBox="0 0 ${W} ${H}" width="${size}" height="${Math.round(size * (H / W))}" class="geo-svg" aria-hidden="true">
+  const empty = !items.length && hint ? `<text x="${W / 2}" y="${H / 2 + 5}" text-anchor="middle" font-size="14" font-weight="800" fill="#6d6680">Tap coins/bills below to add them here</text>` : "";
+  return `<svg ${NS} viewBox="0 0 ${W} ${H + extraH}" width="${size}" height="${Math.round(size * ((H + extraH) / W))}" class="geo-svg" aria-hidden="true">
     <rect x="4" y="4" width="${W - 8}" height="${H - 8}" rx="18" fill="#fffdf7" stroke="#d9c6a5" stroke-width="2.5" stroke-dasharray="6 5"/>
-    ${drawn}${empty}
+    ${drawn}${empty}${extra}
   </svg>`;
 }
 
@@ -293,17 +354,23 @@ export function scaleSvg({ left = { e: "🍎", label: "Apple" }, right = { e: "�
 }
 
 /** Graduated liquid measuring pitcher SVG (`target` optional dashed guide line). */
-export function pitcherSvg({ capacity = 4, fill = 2, unit = "cups", label = "", target = null, size = 165 } = {}) {
+export const PITCHER = { jX: 46, jY: 26, jW: 86, jH: 118, r: 10 };
+/** y (viewBox units) of the water level `v` in a pitcher that holds `capacity`. */
+export const pitcherY = (v, capacity) => PITCHER.jY + PITCHER.jH - (Math.max(0, Math.min(capacity, v)) / capacity) * PITCHER.jH;
+
+/** `tickStep` sets how often the side is numbered (the pouring game numbers every pour step, so no goal line is needed to read it). */
+export function pitcherSvg({ capacity = 4, fill = 2, unit = "cups", label = "", target = null, size = 165, tickStep: tickOverride = null } = {}) {
   const ratio = Math.max(0, Math.min(1, fill / capacity));
-  const jX = 46, jY = 26, jW = 86, jH = 118, r = 10;
+  const { jX, jY, jW, jH, r } = PITCHER;
   const waterH = jH * ratio;
   const waterY = jY + jH - waterH;
-  const tickStep = capacity <= 6 ? 1 : capacity <= 12 ? 2 : capacity / 4;
+  const tickStep = tickOverride ?? (capacity <= 6 ? 1 : capacity <= 12 ? 2 : capacity / 4);
+  const tickFont = capacity / tickStep > 6 ? 9 : 11;
   let ticks = "";
   for (let v = tickStep; v <= capacity + 1e-6; v += tickStep) {
     const ty = jY + jH - (v / capacity) * jH;
     ticks += `<line x1="${jX + jW - 18}" y1="${ty.toFixed(1)}" x2="${jX + jW}" y2="${ty.toFixed(1)}" stroke="#135ea9" stroke-width="2"/>
-      <text x="${jX + jW - 22}" y="${(ty + 4).toFixed(1)}" text-anchor="end" font-size="11" font-weight="800" fill="#135ea9">${Math.round(v)}</text>`;
+      <text x="${jX + jW - 22}" y="${(ty + tickFont / 3).toFixed(1)}" text-anchor="end" font-size="${tickFont}" font-weight="800" fill="#135ea9">${Math.round(v)}</text>`;
   }
   const targY = target != null ? jY + jH - (target / capacity) * jH : null;
   const targetGuide = targY != null ? `<line x1="${jX - 6}" y1="${targY.toFixed(1)}" x2="${jX + jW + 6}" y2="${targY.toFixed(1)}" stroke="#e5484d" stroke-width="2.8" stroke-dasharray="5 4"/>
@@ -318,14 +385,47 @@ export function pitcherSvg({ capacity = 4, fill = 2, unit = "cups", label = "", 
     <rect x="${jX}" y="${jY}" width="${jW}" height="${jH}" rx="${r + 2}" fill="#f3f8ff" stroke="#135ea9" stroke-width="3.5"/>
     ${water}
     ${ticks}${targetGuide}
-    <text x="${jX + jW / 2}" y="164" text-anchor="middle" font-size="12.5" font-weight="900" fill="#2b2340">${esc(label || `${fill} ${unit}`)}</text>
+    <text x="${jX + jW / 2}" y="164" text-anchor="middle" font-size="12.5" font-weight="900" fill="#2b2340">${esc(label || plural(Math.round(fill * 100) / 100, unit))}</text>
   </svg>`;
 }
 
-/** Tally, picture, bar charts, and fractional line plots. */
+const r8 = (v) => Math.round(v * 8) / 8;
+/** Line plot layout (viewBox units): `px(v)` is the x of a value, `baseY` the number line, stacks grow up from baseY - 17. */
+export function lineplotGeom({ range = [0, 4], points = [], minStack = 2 } = {}) {
+  const [rMin, rMax] = range;
+  const counts = {};
+  for (const p of points) { const key = r8(p).toFixed(3); counts[key] = (counts[key] || 0) + 1; }
+  const maxStack = Math.max(2, minStack, ...Object.values(counts));
+  const W = 350, H = 76 + maxStack * 20;
+  const baseY = H - 38, xL = 28, xR = W - 28;
+  const px = (v) => xL + ((v - rMin) / Math.max(0.25, rMax - rMin)) * (xR - xL);
+  const stackY = (k) => baseY - 17 - k * 19;
+  return { W, H, baseY, xL, xR, px, stackY, counts };
+}
+/** Bar chart layout (viewBox units): `bar(i)` is the box of bar i, `y(v)` the height of value v. */
+export function barGeom({ rows = [], scale = 1 } = {}) {
+  const W = 320, H = 195, padL = 42, padB = 34, padT = 32, padR = 16;
+  const rowVal = (r) => r.value ?? r.count ?? 0;
+  const maxVal = Math.max(4, ...rows.map(rowVal));
+  const rawStep = Math.max(1, scale || 1);
+  const tickStep = Math.ceil(maxVal / rawStep) > 6 ? rawStep * 2 : rawStep;
+  const ceilVal = Math.ceil(maxVal / tickStep) * tickStep;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+  const barSlot = plotW / Math.max(1, rows.length), bw = Math.min(46, barSlot * 0.62);
+  const y = (v) => padT + plotH - (v / ceilVal) * plotH;
+  const bar = (i) => {
+    const bh = (rowVal(rows[i]) / ceilVal) * plotH;
+    return { x: padL + i * barSlot + (barSlot - bw) / 2, y: padT + plotH - bh, w: bw, h: bh };
+  };
+  return { W, H, padL, padB, padT, padR, tickStep, ceilVal, plotW, plotH, barSlot, bw, y, bar };
+}
+/** Row layout of the tally and picture charts. */
+export const chartRowY = (i) => 52 + i * 38;
+
+/** Tally, picture, bar charts, and fractional line plots. `minStack` keeps a line plot's height fixed while Xs are added. */
 export function chartSvg({
   kind = "bar", title = "", rows = [], scale = 1, icon = "⭐", unit = "",
-  points = [], range = [0, 4], step = 0.25, interactive = false, size = 320,
+  points = [], range = [0, 4], step = 0.25, interactive = false, size = 320, minStack = 2,
 } = {}) {
   if (kind === "tally") {
     const W = 310, H = 44 + rows.length * 38 + 12;
@@ -371,13 +471,7 @@ export function chartSvg({
   }
 
   if (kind === "bar") {
-    const W = 320, H = 195, padL = 42, padB = 34, padT = 32, padR = 16;
-    const rowVal = (r) => r.value ?? r.count ?? 0;
-    const maxVal = Math.max(4, ...rows.map(rowVal));
-    const rawStep = Math.max(1, scale || 1);
-    const tickStep = Math.ceil(maxVal / rawStep) > 6 ? rawStep * 2 : rawStep;
-    const ceilVal = Math.ceil(maxVal / tickStep) * tickStep;
-    const plotW = W - padL - padR, plotH = H - padT - padB;
+    const { W, H, padL, padT, padR, tickStep, ceilVal, plotH, bw, bar } = barGeom({ rows, scale });
     const colors = ["#1d7fe0", "#1ea55b", "#ff8a00", "#8b46d6"];
     let grid = "";
     const steps = Math.max(2, Math.round(ceilVal / tickStep));
@@ -387,11 +481,8 @@ export function chartSvg({
       grid += `<line x1="${padL}" y1="${gy.toFixed(1)}" x2="${W - padR}" y2="${gy.toFixed(1)}" stroke="${i === 0 ? "#135ea9" : "#d7e6f7"}" stroke-width="${i === 0 ? 2.4 : 1.3}"/>
         <text x="${padL - 8}" y="${(gy + 4).toFixed(1)}" text-anchor="end" font-size="11.5" font-weight="800" fill="#4f4668">${val}</text>`;
     }
-    const barSlot = plotW / Math.max(1, rows.length), bw = Math.min(46, barSlot * 0.62);
     const bars = rows.map((r, i) => {
-      const bh = (rowVal(r) / ceilVal) * plotH;
-      const bx = padL + i * barSlot + (barSlot - bw) / 2;
-      const by = padT + plotH - bh;
+      const { x: bx, y: by, h: bh } = bar(i);
       return `<rect x="${bx.toFixed(1)}" y="${by.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" rx="6" fill="${colors[i % colors.length]}"/>
         <text x="${(bx + bw / 2).toFixed(1)}" y="${H - 12}" text-anchor="middle" font-size="12" font-weight="800" fill="#2b2340">${esc(r.label)}</text>`;
     }).join("");
@@ -406,15 +497,7 @@ export function chartSvg({
   // kind === "lineplot"
   const [rMin, rMax] = range;
   const ticksCount = Math.round((rMax - rMin) / step);
-  const counts = {};
-  for (const p of points) {
-    const key = (Math.round(p * 8) / 8).toFixed(3);
-    counts[key] = (counts[key] || 0) + 1;
-  }
-  const maxStack = Math.max(2, ...Object.values(counts));
-  const W = 350, H = 76 + maxStack * 20;
-  const baseY = H - 38, xL = 28, xR = W - 28;
-  const px = (v) => xL + ((v - rMin) / Math.max(0.25, rMax - rMin)) * (xR - xL);
+  const { W, H, baseY, xL, xR, px, stackY, counts } = lineplotGeom({ range, points, minStack });
 
   let marks = "", xs = "", hits = "";
   for (let i = 0; i <= ticksCount; i++) {
@@ -428,7 +511,7 @@ export function chartSvg({
     }
     const c = counts[val.toFixed(3)] || 0;
     for (let k = 0; k < c; k++) {
-      const xy = baseY - 17 - k * 19;
+      const xy = stackY(k);
       xs += `<text x="${x.toFixed(1)}" y="${xy}" text-anchor="middle" font-size="16" font-weight="900" fill="#e5484d">✕</text>`;
     }
     if (interactive) {
@@ -473,17 +556,28 @@ export function calendarSvg({ month = "October", startDow = 2, days = 31, highli
   </svg>`;
 }
 
-/** Unit-square rectangle showing Perimeter (orange outline) and/or Area (blue interior squares). */
-export function rectGridSvg({ rows = 3, cols = 4, unit = "ft", mode = "both", showDims = true, size = 215 } = {}) {
+/** Layout of rectGridSvg (viewBox units). */
+export function rectGeom({ rows = 3, cols = 4 } = {}) {
   const step = 30, padL = 36, padT = 26, padR = 24, padB = 30;
-  const W = padL + cols * step + padR, H = padT + rows * step + padB;
+  return { step, padL, padT, W: padL + cols * step + padR, H: padT + rows * step + padB, w: cols * step, h: rows * step };
+}
+
+/**
+ * Unit-square rectangle showing Perimeter (orange outline) and/or Area (blue interior squares).
+ * For animations: `fillCount` colors only that many squares (row by row), `trace` (0..1) draws only that much of the outline.
+ */
+export function rectGridSvg({ rows = 3, cols = 4, unit = "ft", mode = "both", showDims = true, size = 215, fillCount = null, trace = null } = {}) {
+  const { step, padL, padT, W, H } = rectGeom({ rows, cols });
   let sq = "";
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
-      sq += `<rect x="${padL + c * step}" y="${padT + r * step}" width="${step}" height="${step}" fill="${mode === "perimeter" ? "#fffdf7" : "#bfe3ff"}" stroke="#7cb6ee" stroke-width="1.4"/>`;
+      const on = fillCount == null ? mode !== "perimeter" : r * cols + c < fillCount;
+      sq += `<rect x="${padL + c * step}" y="${padT + r * step}" width="${step}" height="${step}" fill="${on ? "#bfe3ff" : "#fffdf7"}" stroke="#7cb6ee" stroke-width="1.4"/>`;
     }
   }
-  const outline = `<rect x="${padL}" y="${padT}" width="${cols * step}" height="${rows * step}" fill="none" stroke="${mode === "area" ? "#135ea9" : "#e56b00"}" stroke-width="${mode === "area" ? 3 : 4.5}" stroke-linejoin="round"/>`;
+  const per = 2 * (cols + rows) * step;
+  const dash = trace == null ? "" : ` stroke-dasharray="${(per * Math.max(0, Math.min(1, trace))).toFixed(1)} ${per}"`;
+  const outline = `<rect x="${padL}" y="${padT}" width="${cols * step}" height="${rows * step}" fill="none" stroke="${mode === "area" ? "#135ea9" : "#e56b00"}" stroke-width="${mode === "area" ? 3 : 4.5}" stroke-linejoin="round"${dash}/>`;
   const dims = showDims ? `
     <text x="${padL + (cols * step) / 2}" y="${padT - 8}" text-anchor="middle" font-size="13.5" font-weight="900" fill="#2b2340">${cols} ${esc(unit)}</text>
     <text x="${padL - 8}" y="${padT + (rows * step) / 2 + 4}" text-anchor="end" font-size="13.5" font-weight="900" fill="#2b2340">${rows} ${esc(unit)}</text>` : "";

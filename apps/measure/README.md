@@ -1,15 +1,18 @@
 # Measurement, Time & Money
 
-Free interactive **Measurement, Time & Money** learning app for **Grades K–5**, part of [Angelio](https://angelio.org/math/).
+Free **K–5** measurement, time and money practice, part of [Angelio](https://angelio.org/math/). 23 levels, everything read aloud, works offline, no accounts.
 
-- **23 levels across 4 grade bands (including 5 Montessori-style intro levels & animated `🎬 Watch how` demos):**
-  - **Grades K–1:** Longer/taller/heavier comparison with balance scales, Meet the Coins + counting `1¢/5¢/10¢` trays, Meet the Clock + hours & half-hours, calendars & tally charts.
-  - **2nd Grade:** Meet the Ruler (start at **`0`**!) + measuring in `in`/`cm`, coins up to `$1.00`, time to 5 minutes (`a.m./p.m.`), picture & bar graphs, and choosing units/tools.
-  - **3rd Grade:** Exact & elapsed time, dollars & making change, quarter-inch rulers & line plots, Meet Liquids & Mass + pitcher pouring & balance scales, and perimeter vs. area.
-  - **Grades 4–5:** Meet Unit Conversions + converting customary/metric units, multi-step schedules, decimal prices & change, and fractional (`⅛`/`¼`/`½`) line plots.
-- **Zero accounts, works offline, everything read aloud (with K–1 choice audio previews).**
+**What it does**
+- 🎬 **Animated walkthroughs, one for every kind of question** (ruler, clock, coins, pitcher, line plot, scales, graphs…). A 👆 finger taps and the art moves, step by step, with a spoken caption. It loops like a GIF. Shown before practice, on `#/watch/:id`, and as a dismissible "Watch how" card the first time a new kind of question appears.
+- ✏️ **Scratchpad** (grades 2–5, questions with numbers): write your math over the question with a finger or pen. Cleared on the next question, never saved. It lives in the shared kit (`kit/scratch.js`).
+- 🫗 **Pouring**: no goal line to copy; the amount is said in words, and the red Goal line shows only as a hint (💡 or a wrong Check).
+
+**What it doesn't do**
+- No saving of scribbles, no accounts, no timers.
 
 ```sh
-npm test                 # run all tests
-npm run deploy -- measure # deploy Cloudflare Worker (at repo root)
+npm test                  # all tests
+npm run deploy -- measure # deploy the Worker (from the repo root)
 ```
+
+Code map: `measure.js` (levels, questions) · `measure-svg.js` (all drawings) · `scenes.js` (the walkthroughs, pure) · `watch.js` (the player) · `app.js` (screens).

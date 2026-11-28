@@ -13,7 +13,9 @@ import {
   moneyTraySvg, scaleSvg, pitcherSvg, chartSvg, calendarSvg, rectGridSvg,
   conversionCardSvg,
 } from "../public/js/measure-svg.js";
-import { DEMOS, DEMO_IDS } from "../public/js/watch.js";
+import { plural, unitWord, wantsScratch } from "../public/js/measure.js";
+import { COMPARE_GEOM } from "../public/js/measure-svg.js";
+import { levelScenes, buildScene, sceneKey, evalStep, endOfStep, plainTarget, stepAnimMs, SCENE_TITLES } from "../public/js/scenes.js";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const PUB = path.resolve(HERE, "../public");
@@ -27,9 +29,8 @@ test("curriculum structure: 4 grade bands, 23 unique levels, 5 Montessori intros
   assert.equal(new Set(ids).size, 23, "every level has a unique id");
   for (const id of ids) {
     assert.equal(levelById(id)?.id, id);
-    assert.ok(DEMO_IDS.includes(id), `watch demo exists for ${id}`);
+    assert.ok(levelScenes(levelById(id)).length >= 1, `animated scene exists for ${id}`);
   }
-  assert.equal(DEMO_IDS.length, 23);
 
   const intros = LEVELS.filter((l) => Array.isArray(l.introCards));
   assert.equal(intros.length, 5);
@@ -148,16 +149,104 @@ test("SVG renderers produce valid vector markup with zero NaN/undefined", () => 
   }
 });
 
-test("worked-example DEMOS render cleanly across all 23 levels", () => {
+test("every mode a level asks has an animated scene that builds, evaluates and draws cleanly", () => {
   for (const lvl of LEVELS) {
-    const spec = DEMOS[lvl.id];
-    assert.ok(spec && Array.isArray(spec.steps) && spec.steps.length >= 2, `${lvl.id} demo has steps`);
-    for (const st of spec.steps) {
-      assert.ok(st.caption && !/NaN|undefined/.test(st.caption), `${lvl.id} step caption clean`);
-      const html = st.render();
-      assert.ok(html.includes("<svg ") && !/NaN|undefined/.test(html), `${lvl.id} demo SVG clean`);
+    const found = new Set();
+    for (let seed = 1; seed <= 60; seed++) for (const q of makeLevel(lvl, seed)) found.add(sceneKey(q));
+    const scenes = levelScenes(lvl);
+    for (const k of found) assert.ok(scenes.some((s) => s.key === k), `${lvl.id} has a scene for ${k}`);
+    for (const { key, q } of scenes) {
+      assert.ok(SCENE_TITLES[key], `${key} has a title`);
+      const scene = buildScene(key, q, lvl);
+      assert.ok(scene.steps.length >= 2, `${lvl.id}/${key} has steps`);
+      let base = { state: { ...scene.state0 }, finger: null };
+      let total = 0;
+      for (const st of scene.steps) {
+        assert.ok(st.caption && !/NaN|undefined/.test(st.caption), `${lvl.id}/${key} caption`);
+        total += Math.max(3000, stepAnimMs(st.acts) + 400);
+        for (const t of [0, 400, 1200, 2500, 4000, Infinity]) {
+          const ev = evalStep(base, st.acts, t);
+          const html = scene.render(ev.state) + (scene.hud?.(ev.state) ?? "");
+          assert.ok(html.includes("<") && !/NaN|undefined/.test(html), `${lvl.id}/${key} draws at ${t}`);
+          for (const d of [ev.finger.from, ev.finger.to]) {
+            const p = plainTarget(d, ev.state);
+            if (p?.svg) assert.ok(p.svg.every(Number.isFinite), `${lvl.id}/${key} finger point is a number`);
+          }
+        }
+        base = endOfStep(base, st.acts);
+      }
+      assert.ok(total >= 9000 && total <= 40000, `${lvl.id}/${key} lasts ${total} ms`);
     }
   }
+});
+
+test("scene timeline: tweens are eased and finish exactly", () => {
+  const acts = [{ finger: { pct: [0.5, 0.5] }, tap: true, to: { x: 10 }, ms: 1000 }];
+  const base = { state: { x: 0 }, finger: null };
+  assert.equal(evalStep(base, acts, 0).state.x, 0);
+  const mid = evalStep(base, acts, 800 + 300 + 500).state.x;
+  assert.ok(mid > 0 && mid < 10);
+  assert.equal(evalStep(base, acts, Infinity).state.x, 10);
+});
+
+test("plural helper: 1 cup, 2 cups; short units stay", () => {
+  assert.equal(plural(1, "cups"), "1 cup");
+  assert.equal(plural(2, "cup"), "2 cups");
+  assert.equal(plural(1, "quarts"), "1 quart");
+  assert.equal(plural(3, "gallon"), "3 gallons");
+  assert.equal(plural(1, "Liters"), "1 Liter");
+  assert.equal(plural(1, "liters"), "1 liter");
+  assert.equal(plural(1, "pints"), "1 pint");
+  for (const u of ["mL", "L", "g", "kg", "oz", "lb", "in", "cm"]) assert.equal(plural(1, u), `1 ${u}`);
+  assert.equal(unitWord(2, "mL"), "mL");
+});
+
+test("no question, button or hint says '1 cups' or any other '1 <plural>'", () => {
+  const bad = /\b1 (cups|quarts|pints|gallons|liters|Liters|days|hours|minutes|weeks|dollars|feet inches|yards|meters|pounds|ounces|grams)\b/;
+  for (const lvl of LEVELS) for (let seed = 1; seed <= 60; seed++) for (const q of makeLevel(lvl, seed)) {
+    const text = [q.prompt, q.say, q.hint, q.why, q.text, ...(q.choices || [])].join(" | ");
+    assert.ok(!bad.test(text), `${lvl.id}: ${text.match(bad)?.[0]}`);
+    if (q.type === "pour-jug") {
+      assert.ok(!bad.test(pitcherSvg({ capacity: q.capacity, fill: 1, unit: q.unit })), "pitcher label");
+    }
+  }
+  assert.match(pitcherSvg({ capacity: 4, fill: 1, unit: "cups" }), />1 cup</);
+});
+
+test("pour jug: the Goal line is hidden until a hint, and the goal is said in words and numbers", () => {
+  const plain = pitcherSvg({ capacity: 4, fill: 1, unit: "cups", tickStep: 1 });
+  assert.ok(!plain.includes("Goal"));
+  assert.ok(pitcherSvg({ capacity: 4, fill: 1, unit: "cups", target: 3 }).includes("Goal"));
+  let seen = 0;
+  for (let seed = 1; seed <= 20; seed++) for (const q of makeLevel(levelById("g3-pour-weigh"), seed)) {
+    if (q.type !== "pour-jug") continue;
+    seen++;
+    assert.ok(q.prompt.includes(plural(q.target, q.unit)), "prompt names the target");
+    assert.match(q.hint, /Goal line/);
+    assert.ok(!/Goal line/.test(q.prompt + q.say), "the goal line is only mentioned in the hint");
+  }
+  assert.ok(seen > 0);
+});
+
+test("compare art: labels sit above their bar, inside the viewBox", () => {
+  const svg = compareLengthSvg({ kind: "bookmark", label: "Bookmark (6 in)", units: 6 }, { kind: "leaf", label: "Leaf (2 in)", units: 2 });
+  const G = COMPARE_GEOM.h;
+  const labels = [...svg.matchAll(/<text x="([\d.]+)" y="([\d.]+)"[^>]*>([^<]+)<\/text>/g)].filter((m) => /in\)/.test(m[3]));
+  assert.equal(labels.length, 2);
+  for (const m of labels) {
+    const end = Number(m[1]) + m[3].length * 8.5; // generous: 13px bold text
+    assert.ok(end <= G.W, `label "${m[3]}" ends at ${end} (viewBox ${G.W})`);
+  }
+  const barTop = Math.min(...G.barY) - 20;
+  assert.ok(Number(labels[0][2]) < G.barY[0] - 13 && Number(labels[0][2]) > 16 && barTop > 16);
+});
+
+test("scratchpad button: grades 2-5 questions with numbers, never K-1 or intros", () => {
+  const lvl = (id) => levelById(id);
+  for (const q of makeLevel(lvl("g3-money-change"), 3)) assert.ok(wantsScratch(lvl("g3-money-change"), q));
+  for (const q of makeLevel(lvl("k1-coins-count"), 3)) assert.ok(!wantsScratch(lvl("k1-coins-count"), q));
+  for (const q of makeLevel(lvl("g2-ruler-intro"), 3)) assert.ok(!wantsScratch(lvl("g2-ruler-intro"), q));
+  assert.ok(makeLevel(lvl("g4-convert-units"), 3).every((q) => wantsScratch(lvl("g4-convert-units"), q)));
 });
 
 test("service worker ASSETS all exist on disk in public/", () => {
@@ -166,6 +255,7 @@ test("service worker ASSETS all exist on disk in public/", () => {
   assert.ok(match, "ASSETS array present in sw.js");
   const items = [...match[1].matchAll(/"([^"]+)"/g)].map((m) => m[1]);
   assert.ok(items.length >= 20);
+  assert.ok(items.includes("js/scenes.js") && items.includes("js/kit/scratch.js"));
   for (const rel of items) {
     if (rel === "./") continue;
     const abs = path.join(PUB, rel);

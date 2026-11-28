@@ -1,5 +1,7 @@
 // Measurement, Time & Money (Grades K to 5, 23 levels). Pure logic & generators (no DOM); tested in test/measure.test.js.
-import { fracLabel } from "./measure-svg.js";
+import { fracLabel, plural, unitWord } from "./measure-svg.js";
+
+export { plural, unitWord };
 
 export const PER_LEVEL = 6;
 
@@ -685,6 +687,7 @@ function genG3ElapsedTime(rand) {
     const sStr = formatTime(w.sh, w.sm);
     return {
       type: "choose", clock: { hour: w.sh, minute: w.sm },
+      elapsed: { sh: w.sh, sm: w.sm, add: w.add },
       prompt: `${w.act} starts at ${sStr} and lasts ${w.add} minutes. When does it end?`,
       say: `${w.act} starts at ${sStr} and lasts ${w.add} minutes. What time does it finish?`,
       choices: uniqueChoices(ans, [formatTime(end.hour, (end.minute + 10) % 60), formatTime(end.hour, (end.minute + 50) % 60), formatTime(w.sh, w.sm + 20)], rand, 3),
@@ -803,6 +806,7 @@ function genG3QuarterLinePlot(rand) {
     {
       type: "choose",
       chart: { kind: "lineplot", title: "Leaf Lengths", unit: "in", range: [1, 4], step: 0.25, points: basePlot.points },
+      focus: [basePlot.qCountTarget],
       prompt: `How many leaves measured exactly ${fracLabel(basePlot.qCountTarget)} inches?`,
       say: `Count all the X marks stacked above ${fracLabel(basePlot.qCountTarget)} inches!`,
       choices: uniqueChoices(String(basePlot.qCount), ["1", "2", "3", "4"], rand, 3),
@@ -813,6 +817,7 @@ function genG3QuarterLinePlot(rand) {
     {
       type: "choose",
       chart: { kind: "lineplot", title: "Twig Lengths", unit: "in", range: [1, 4], step: 0.25, points: [1.5, 1.75, 2.25, 2.25, 3.5, 3.5, 3.5] },
+      focus: [3.5],
       prompt: "Which length happened MOST often?",
       say: "Look for the tallest stack of X marks on this line plot!",
       choices: shuffle(["3½ in", "2¼ in", "1¾ in"], rand),
@@ -825,20 +830,38 @@ function genG3QuarterLinePlot(rand) {
   return shuffle([...rulerItems, ...plotItems, ...readPlotItems], rand);
 }
 
+const NUM_WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"];
+/** An amount said out loud: "three cups", "1 cup", "600 milliliters". */
+export function sayAmount(n, unit) {
+  if (unit === "mL") return `${n} ${n === 1 ? "milliliter" : "milliliters"}`;
+  if (unit === "L") return `${n} ${n === 1 ? "liter" : "liters"}`;
+  return `${NUM_WORDS[n] ?? n} ${unitWord(n, unit)}`;
+}
+
 function genG3PourWeigh(rand) {
   const POURS = shuffle([
-    { cap: 4, start: 1, step: 1, target: 3, unit: "cups", prompt: "Start with 1 cup. Pour until the pitcher reaches 3 cups!", say: "Tap Add cup until the measuring jug reaches 3 cups!" },
-    { cap: 4, start: 4, step: 1, target: 2, unit: "cups", prompt: "Too much water! Pour out down to 2 cups.", say: "Start at 4 cups and pour out until only 2 cups remain!" },
-    { cap: 1000, start: 200, step: 100, target: 600, unit: "mL", prompt: "Fill the beaker from 200 mL up to 600 mL!", say: "Each pour adds 100 milliliters. Fill the beaker to 600 mL!" },
-    { cap: 1000, start: 900, step: 100, target: 500, unit: "mL", prompt: "Pour out until 500 mL (half a liter) remains!", say: "Start at 900 milliliters and pour out down to 500 milliliters." },
+    { cap: 4, start: 1, step: 1, target: 3, unit: "cups" },
+    { cap: 4, start: 4, step: 1, target: 2, unit: "cups" },
+    { cap: 1000, start: 200, step: 100, target: 600, unit: "mL" },
+    { cap: 1000, start: 900, step: 100, target: 500, unit: "mL" },
   ], rand);
 
-  const pourItems = POURS.slice(0, 3).map((p) => ({
-    type: "pour-jug", capacity: p.cap, start: p.start, step: p.step, target: p.target, unit: p.unit,
-    prompt: p.prompt, say: p.say,
-    hint: `Watch the blue water rise or drop until it aligns with the red Goal line at ${p.target} ${p.unit}!`,
-    why: `Perfect pour — right at ${p.target} ${p.unit}!`,
-  }));
+  // The goal is said in words and numbers; the red Goal line only appears as a hint.
+  const pourItems = POURS.slice(0, 3).map((p) => {
+    const up = p.target > p.start;
+    const say = up
+      ? `The pitcher holds ${sayAmount(p.start, p.unit)}. Tap Pour In until it holds ${sayAmount(p.target, p.unit)}.`
+      : `The pitcher holds ${sayAmount(p.start, p.unit)}. Tap Pour Out until it holds only ${sayAmount(p.target, p.unit)}.`;
+    return {
+      type: "pour-jug", capacity: p.cap, start: p.start, step: p.step, target: p.target, unit: p.unit,
+      prompt: up
+        ? `It holds ${plural(p.start, p.unit)}. Pour until the pitcher holds ${plural(p.target, p.unit)}!`
+        : `Too much water! Pour out until the pitcher holds ${plural(p.target, p.unit)}.`,
+      say,
+      hint: `The red Goal line shows ${plural(p.target, p.unit)}. ${up ? "Pour in" : "Pour out"} until the blue water touches it!`,
+      why: `Perfect pour: the pitcher holds ${plural(p.target, p.unit)}!`,
+    };
+  });
 
   const WEIGH = [
     {
@@ -939,6 +962,7 @@ function genG4Schedules(rand) {
   ];
   const chooseItems = shuffle(CHALLENGES, rand).map((ch, i) => ({
     type: "choose", clock: { hour: ch.sh, minute: ch.sm }, text: ch.text,
+    elapsed: { sh: ch.sh, sm: ch.sm, add: ch.add ?? (ch.eh * 60 + ch.em) - (ch.sh * 60 + ch.sm) },
     prompt: ch.q, say: `${ch.text.replace(/[^\w\s.,:?!'()-]/g, "")} ${ch.q}`,
     choices: uniqueChoices(ch.ans, ch.foils, rand, 3),
     answer: ch.ans,
@@ -1024,6 +1048,7 @@ function genG5FracLinePlot(rand) {
     {
       type: "choose",
       chart: { kind: "lineplot", title: p.title, unit: p.unit, range: p.range, step: p.step, points: p.points },
+      focus: [Math.min(...p.points), Math.max(...p.points)],
       prompt: "Find the difference between the longest and shortest measurements!",
       say: "Look at the rightmost X minus the leftmost X on the line plot. What is the difference?",
       choices: uniqueChoices(p.diffAns, p.diffFoils, rand, 3),
@@ -1032,6 +1057,7 @@ function genG5FracLinePlot(rand) {
     {
       type: "choose",
       chart: { kind: "lineplot", title: p.title, unit: p.unit, range: p.range, step: p.step, points: p.points },
+      focus: [p.sumTarget],
       prompt: `What is the TOTAL of all ${p.sumCount} measurements at ${fracLabel(p.sumTarget)} in?`,
       say: `Add together every X stacked above ${fracLabel(p.sumTarget)} inches!`,
       choices: uniqueChoices(p.sumAns, p.sumFoils, rand, 3),
@@ -1040,6 +1066,7 @@ function genG5FracLinePlot(rand) {
     {
       type: "choose",
       chart: { kind: "lineplot", title: p.title, unit: p.unit, range: p.range, step: p.step, points: p.points },
+      focus: [...new Set(p.points.filter((v) => v > p.gtVal))],
       prompt: `How many measurements are GREATER than ${fracLabel(p.gtVal)} in?`,
       say: `Count all X marks strictly to the right of ${fracLabel(p.gtVal)} inches.`,
       choices: uniqueChoices(p.gtAns, p.gtFoils, rand, 3),
@@ -1058,6 +1085,7 @@ function genG5FracLinePlot(rand) {
     {
       type: "choose",
       chart: { kind: "lineplot", title: "Bead Sizes", unit: "in", range: [0, 1], step: 0.125, points: [0.125, 0.25, 0.375, 0.375, 0.625, 0.75] },
+      focus: [0.375],
       prompt: "Look at the eighths plot (⅛..1). Which size occurred twice?",
       say: "Look for two stacked X marks on this eighth-inch line plot!",
       choices: shuffle(["⅜ in", "⅝ in", "¼ in"], rand),
@@ -1068,6 +1096,7 @@ function genG5FracLinePlot(rand) {
     {
       type: "choose",
       chart: { kind: "lineplot", title: "Seed Sprouts", unit: "in", range: [1, 3], step: 0.25, points: [1.25, 1.5, 1.5, 2.25, 2.25, 2.25] },
+      focus: [2.25],
       prompt: "Add ALL three 2¼-inch sprouts together!",
       say: "Three X marks sit at 2 and one quarter inches. Add them all together!",
       choices: shuffle(["6¾ in", "6¼ in", "7 in"], rand),
@@ -1205,7 +1234,7 @@ export const LEVELS = [
   },
   {
     id: "g3-pour-weigh", grade: 3, level: 2, title: "Pour, Weigh & Solve", emoji: "⚖️",
-    teach: "Add or pour out liquid to hit the exact <b>Goal line</b>, and solve balanced mass problems in <b>g</b> and <b>kg</b>!",
+    teach: "Add or pour out liquid until the pitcher holds the exact amount, and solve balanced mass problems in <b>g</b> and <b>kg</b>!",
     say: "Pour water to match the target amount in the pitcher, and solve balance-scale mass puzzles!",
     example: `<div class="ex-line">500 g + 500 g = 1,000 g (1 kg)</div>`,
     gen: genG3PourWeigh,
@@ -1266,3 +1295,13 @@ export function makeLevel(level, seed = Date.now()) {
 
 // 3 stars only with no mistakes (matches giant sticker); any mistake: mini sticker.
 export const starsFor = (mistakes) => (mistakes === 0 ? 3 : mistakes <= 3 ? 2 : 1);
+
+/** Levels where every question has numbers to work out (money, time, conversion, multi-step): the ✏️ scratchpad is always offered. */
+const SCRATCH_LEVELS = new Set(["g2-coins-dollar", "g3-elapsed-time", "g3-money-change", "g3-pour-weigh", "g3-perimeter-area", "g4-convert-units", "g4-schedules", "g5-budget-change", "g5-frac-lineplot"]);
+
+/** Does this question get the ✏️ scratchpad? Grades 2-5 only (never the Montessori intros) and only with numbers to work with. */
+export function wantsScratch(level, q) {
+  if (!level || !q || level.grade < 2 || level.introCards || q.type === "intro-match") return false;
+  if (SCRATCH_LEVELS.has(level.id)) return true;
+  return /\d/.test(`${q.prompt} ${q.text ?? ""} ${q.say ?? ""}`);
+}
