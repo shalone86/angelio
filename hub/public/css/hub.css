@@ -129,7 +129,11 @@ footer { text-align: center; color: var(--muted); font-size: .85rem; margin-top:
 .tile-go b { font: 800 1.15rem/1.15 "Baloo 2", sans-serif; margin-top: 4px; }
 .tile-go small { background: color-mix(in srgb, var(--c) 16%, #fff); color: color-mix(in srgb, var(--c) 70%, #000); font-weight: 800; font-size: .74rem; padding: 1px 9px; border-radius: 999px; }
 .tile-go p { display: none; margin: 4px 0 0; color: var(--muted); font-size: .86rem; line-height: 1.3; }
-@media (min-width: 720px) { .tiles { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); } .tile-go p { display: block; } }
+@media (min-width: 720px) {
+  .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  #faith .tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .tile-go p { display: block; }
+}
 .tile-say { position: absolute; top: 8px; right: 8px; width: 44px; height: 44px; border-radius: 50%; border: 0; font-size: 1.15rem; cursor: pointer;
   background: color-mix(in srgb, var(--c) 18%, #fff); box-shadow: 0 3px 0 color-mix(in srgb, var(--c) 35%, #fff); }
 .tile-say.saying { animation: say-pulse .8s ease-in-out infinite; }
