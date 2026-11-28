@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { newGame, tick, welcome, sendAway, ringBell, waiting, brotherInGate, speedOf, starsFor, pool, multOf, DOG_POINTS } from "../public/js/porter.js";
 import { STAGES, isOpen } from "../public/js/stages.js";
 import { VISITORS, ANIMALS, OUTGOING, BUMP_LINES, hintFor, WELCOMES } from "../public/js/visitors.js";
+import { variantsOf, ANIMAL_VARIANTS } from "../public/js/animals.js";
 import { PORTERS, porterById, porterOpen } from "../public/js/porters.js";
 
 // A pretend porter. After `delay` seconds of seeing someone at the gate it does `strat`'s action; when `waitOut` is on,
@@ -321,4 +322,17 @@ test("you can answer as soon as a visitor appears, even while they're still step
 test("special guests carry a short name for reminders", () => {
   for (const v of VISITORS) if (Object.values(v.answers).includes("greet")) assert.ok(v.who, v.id);
   const g = at(porterById("porter"), MIX.greet); assert.ok(g.front.who);
+});
+
+test("sculpted animal variants match Shalone's 26 approved designs across all 10 gate animals", () => {
+  assert.equal(ANIMAL_VARIANTS.length, 26);
+  const expected = {
+    goat: ["A", "B", "C"], sheep: ["A", "B"], cow: ["A", "B"], pig: ["A", "B", "C"],
+    dog: ["A", "B", "C"], cat: ["A", "B"], chicken: ["A", "B", "C"], duck: ["A", "B", "C"],
+    rabbit: ["A", "B", "C"], horse: ["B", "C"],
+  };
+  for (const kind of ANIMALS) {
+    assert.deepEqual(variantsOf(kind).map((v) => v.variant), expected[kind], kind);
+    for (const v of variantsOf(kind)) assert.ok(v.boxes.length >= 6 && v.porterScale > 0.7, v.id);
+  }
 });

@@ -50,7 +50,14 @@ const sfx = {
     }
   },
   sheep: () => { blip(290, { to: 260, dur: 0.24, type: "sawtooth", vol: 0.06 }); },
+  goat: () => { blip(350, { to: 310, dur: 0.14, type: "sawtooth", vol: 0.06 }); blip(360, { to: 320, dur: 0.12, type: "sawtooth", vol: 0.05, delay: 0.14 }); },
+  cow: () => { blip(155, { to: 120, dur: 0.34, type: "sawtooth", vol: 0.07 }); },
+  pig: () => { blip(220, { to: 300, dur: 0.09, type: "sawtooth", vol: 0.06 }); blip(240, { to: 320, dur: 0.09, type: "sawtooth", vol: 0.06, delay: 0.1 }); },
   dog: () => { blip(460, { to: 320, dur: 0.09, vol: 0.11 }); blip(520, { to: 360, dur: 0.1, vol: 0.11, delay: 0.12 }); },
+  cat: () => { blip(660, { to: 880, dur: 0.14, type: "triangle", vol: 0.09 }); blip(880, { to: 620, dur: 0.16, type: "triangle", vol: 0.08, delay: 0.12 }); },
+  bird: () => { blip(980, { to: 1320, dur: 0.07, type: "sine", vol: 0.09 }); blip(1140, { to: 1480, dur: 0.08, type: "sine", vol: 0.08, delay: 0.09 }); },
+  duck: () => { blip(390, { to: 280, dur: 0.1, type: "sawtooth", vol: 0.06 }); blip(410, { to: 290, dur: 0.1, type: "sawtooth", vol: 0.06, delay: 0.11 }); },
+  horse: () => { blip(520, { to: 680, dur: 0.1, type: "triangle", vol: 0.09 }); blip(640, { to: 420, dur: 0.18, type: "triangle", vol: 0.09, delay: 0.1 }); },
   fanfare: () => { [523, 659, 784, 1046].forEach((f, i) => blip(f, { dur: 0.28, vol: 0.11, delay: i * 0.09 })); },
 };
 

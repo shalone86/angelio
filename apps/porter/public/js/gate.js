@@ -6,6 +6,7 @@
 import { readVox, toScene } from "./vox.js";
 import { randomLook, recolor } from "./looks.js";
 import { ANIMALS, VISITORS } from "./visitors.js";
+import { variantsOf, buildAnimalGroup } from "./animals.js";
 import { stepAgents } from "./steer.js";
 
 const ART = /(^|\.)angelio\.org$/.test(location.hostname) ? "" : "https://angelio.org";
@@ -49,6 +50,7 @@ export function createGate(canvas, { models = {}, night = false, porter: who = {
   const box = new THREE.BoxGeometry(1, 1, 1);
   const mats = new Map();
   const mat = (hex) => { if (!mats.has(hex)) mats.set(hex, new THREE.MeshLambertMaterial({ color: hex })); return mats.get(hex); };
+  const basicMat = (hex) => { const k = "basic:" + hex; if (!mats.has(k)) mats.set(k, new THREE.MeshBasicMaterial({ color: hex })); return mats.get(k); };
   const block = (w, h, d, x, y, z, m, parent = scene) => { const o = new THREE.Mesh(box, m); o.scale.set(w, h, d); o.position.set(x, y + h / 2, z); parent.add(o); return o; };
   let time = 0, disposed = false;
 
@@ -146,41 +148,21 @@ export function createGate(canvas, { models = {}, night = false, porter: who = {
     return g;
   };
   const standIn = (hex) => { const g = new THREE.Group(); block(3, 5, 2, 0, 0, 0, mat(hex), g); block(2.4, 2.4, 2.2, 0, 5, 0, mat("#e9c4a0"), g); g.userData.frames = []; return g; };
-  // an animal of boxes (faces +z) until he draws it: a table of how each one is put together
-  const CRITTERS = {
-    goat: { body: [3, 3, 5.5], color: "#f1ece0", legs: "#8a8478", horns: "#8a8478", beard: true },
-    sheep: { body: [4.2, 3.6, 5.5], color: "#f4f1ea", legs: "#3a3a3a", head: "#3a3a3a", ears: "#3a3a3a" },
-    cow: { body: [4.6, 4.6, 8], color: "#f4f4f4", spots: "#232323", legs: "#d9d2c4", horns: "#e8e0d0", ears: "#232323", leg: 2.4, scale: 1.15 },
-    pig: { body: [3.8, 3.2, 5.5], color: "#f2a8b8", legs: "#e58fa3", snout: "#e58fa3", ears: "#e58fa3", leg: 1.2 },
-    dog: { body: [2.4, 2.8, 5], color: "#a8692f", legs: "#8a5522", ears: "#6b4226", tail: "#a8692f" },
-    cat: { body: [2, 2.2, 4], color: "#e07a2e", legs: "#c9651e", pointEars: "#e07a2e", tail: "#e07a2e", leg: 1.2 },
-    chicken: { body: [2.4, 2.6, 3], color: "#f4efe2", legs: "#e3b341", comb: "#c8262f", beak: "#e3b341", leg: 1.4 },
-    duck: { body: [2.4, 2, 3.6], color: "#f4efe2", legs: "#e07a2e", head: "#2f8a4c", beak: "#e3b341", leg: 1.0 },
-    rabbit: { body: [2.4, 2.4, 3.6], color: "#cfc7b8", legs: "#b3ab9c", longEars: "#cfc7b8", tail: "#ffffff", leg: 1.0 },
-    horse: { body: [3.4, 4.6, 8.5], color: "#8a5a2e", legs: "#6a4020", neck: true, mane: "#2e1d12", ears: "#6a4020", tail: "#2e1d12", leg: 3.4, scale: 1.2 },
-  };
-  const critter = (kind) => {
-    const c = CRITTERS[kind] ?? CRITTERS.goat, g = new THREE.Group(), [w, h, l] = c.body, lh = c.leg ?? 1.8, col = mat(c.color), head = mat(c.head ?? c.color);
-    block(w, h, l, 0, lh, 0, col, g);
-    if (c.spots) { block(w + 0.1, h * 0.5, l * 0.3, 0, lh + h * 0.3, -l * 0.15, mat(c.spots), g); block(w + 0.1, h * 0.35, l * 0.2, 0, lh + h * 0.4, l * 0.2, mat(c.spots), g); }
-    for (const [x, z] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) block(0.7, lh, 0.7, x * (w / 2 - 0.5), 0, z * (l / 2 - 0.7), mat(c.legs), g);
-    const hy = lh + h * 0.55 + (c.neck ? h * 0.7 : 0), hz = l / 2 + 0.6;
-    if (c.neck) block(1.5, h * 0.9, 1.5, 0, lh + h * 0.55, l / 2 - 0.3, col, g);
-    if (c.mane) block(0.5, h * 0.9, 1.8, 0, lh + h * 0.7, l / 2 - 0.9, mat(c.mane), g);
-    block(Math.max(1.4, w * 0.7), h * 0.7, 2, 0, hy, hz, head, g);                 // head
-    for (const sx of [-1, 1]) {
-      if (c.horns) block(0.5, 1.4, 0.5, sx * 0.8, hy + h * 0.7, hz, mat(c.horns), g);
-      if (c.ears) block(0.4, 1.1, 1, sx * (w * 0.4), hy + h * 0.3, hz - 0.6, mat(c.ears), g);
-      if (c.pointEars) block(0.5, 1, 0.5, sx * 0.7, hy + h * 0.7, hz - 0.3, mat(c.pointEars), g);
-      if (c.longEars) block(0.5, 2.4, 0.6, sx * 0.6, hy + h * 0.7, hz - 0.4, mat(c.longEars), g);
+  // Sculpted voxel critters shared with Diorama; cycle each species cleanly through Shalone's approved variants per stage
+  const variantBags = new Map();
+  const pickAnimalVariant = (kind) => {
+    let bag = variantBags.get(kind);
+    if (!bag || !bag.length) {
+      bag = [...variantsOf(kind)];
+      for (let i = bag.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [bag[i], bag[j]] = [bag[j], bag[i]];
+      }
+      variantBags.set(kind, bag);
     }
-    if (c.snout) block(1.4, 0.9, 0.8, 0, hy + 0.1, hz + 1.2, mat(c.snout), g);
-    if (c.beard) block(0.6, 1.4, 0.6, 0, hy - 1.2, hz + 0.8, mat("#8a8478"), g);
-    if (c.comb) block(0.5, 0.9, 1.2, 0, hy + h * 0.7, hz - 0.2, mat(c.comb), g);
-    if (c.beak) block(0.9, 0.5, 0.9, 0, hy + 0.2, hz + 1.1, mat(c.beak), g);
-    if (c.tail) block(0.7, 0.9, 1.4, 0, lh + h * 0.8, -l / 2 - 0.6, mat(c.tail), g);
-    g.userData.frames = []; g.userData.scale = c.scale ?? 1; return g;
+    return bag.pop();
   };
+  const critter = (kind, chosen = null) => buildAnimalGroup(THREE, chosen ?? pickAnimalVariant(kind), { box, mat, basicMat });
   const animate = (g, t) => { const fr = g.userData.frames; if (fr?.length > 1) { const k = Math.floor(t * g.userData.fps) % fr.length; fr.forEach((m, i) => { m.visible = i === k; }); } };
 
   // An actor: a person with a few poses (each the first of his models that exists), who walks and stands.
@@ -217,7 +199,8 @@ export function createGate(canvas, { models = {}, night = false, porter: who = {
   porter.place(PORTER_AT.x, PORTER_AT.z, "idle", Math.PI);
   // Brother with the Dog: his big dog sits beside him, and runs to the gate when an animal comes
   const dogHome = { x: PORTER_AT.x + 5, z: PORTER_AT.z + 3 };
-  const dog = who.dog ? actor({ walk: ["dog-walk"], idle: ["dog-idle", "dog-walk"] }, randomLook(), 1.3, "#a8692f", () => critter("dog")) : null;
+  const companionDog = pickAnimalVariant("dog");
+  const dog = who.dog ? actor({ walk: ["dog-walk"], idle: ["dog-idle", "dog-walk"] }, randomLook(), 1.3, "#a8692f", () => critter("dog", companionDog)) : null;
   dog?.place(dogHome.x, dogHome.z, "idle", Math.PI);
   if (dog) dog.g.scale.setScalar(1.3 * (dog.poses.idle.userData.scale ?? 1));
   async function dogChase() {
@@ -261,7 +244,8 @@ export function createGate(canvas, { models = {}, night = false, porter: who = {
       : v.def === "abbot" ? { ...robed("#2b2830"), hair: "#d8d4cc" }
       : v.robe ? robed(v.robe)
       : randomLook(Math.random, { older: /grand/.test(v.kind), clothes: true });
-    const a = animal ? actor({ walk: [`${v.kind}-walk`], idle: [`${v.kind}-idle`, `${v.kind}-walk`] }, randomLook(), 1.05, "#f1ece0", () => critter(v.kind))
+    const animalVariant = animal ? pickAnimalVariant(v.kind) : null;
+    const a = animal ? actor({ walk: [`${v.kind}-walk`], idle: [`${v.kind}-idle`, `${v.kind}-walk`] }, randomLook(), 1.05, "#f1ece0", () => critter(v.kind, animalVariant))
       : actor(peoplePoses(v.kind, extra), look, SIZE[v.kind] ?? 1, "#7d8a96");
     if (animal) a.g.scale.setScalar(1.05 * (a.poses.walk.userData.scale ?? 1));
     if (who.glow && (v.answer === "in" || v.answer === "greet")) { const halo = new THREE.Sprite(haloMat()); halo.position.set(0, 6, 0); halo.scale.set(9, 9, 1); halo.userData.glow = true; a.g.add(halo); } // Sister Portress sees who belongs

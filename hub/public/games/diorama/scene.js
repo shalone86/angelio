@@ -4,6 +4,7 @@
 
 import { readVox, toScene } from "/js/vox.js";
 import { GRID, BASES, pieceById, baseById } from "./catalog.js";
+import { animalVariantById, buildAnimalGroup } from "./animals.js";
 
 const CELL = 10;
 const BOARD_W = GRID * CELL;
@@ -105,6 +106,11 @@ function createInstancedBuilder(mats) {
     if (!mats.has(k)) mats.set(k, new THREE.MeshLambertMaterial({ color: hex, ...(opts ?? {}) }));
     return mats.get(k);
   };
+  const basicMat = (hex) => {
+    const k = `basic:${hex}`;
+    if (!mats.has(k)) mats.set(k, new THREE.MeshBasicMaterial({ color: hex }));
+    return mats.get(k);
+  };
   const vox = (parent, w, h, d, x, y, z, hex, opts = null) => {
     const m = new THREE.Mesh(getBox(), mat(hex, opts));
     m.scale.set(w, h, d);
@@ -112,7 +118,7 @@ function createInstancedBuilder(mats) {
     parent.add(m);
     return m;
   };
-  return { mat, vox };
+  return { mat, basicMat, vox };
 }
 
 function meshFromVox(slug, model, piece, mats) {
@@ -402,6 +408,13 @@ export function buildPieceObject(piece, models = {}, mats = new Map()) {
     if (models[slug]) {
       inner = meshFromVox(slug, models[slug], piece, mats);
       if (inner) break;
+    }
+  }
+  if (!inner && piece.animal) {
+    const av = animalVariantById(piece.animal);
+    if (av) {
+      const b = createInstancedBuilder(mats);
+      inner = buildAnimalGroup(THREE, av, { box: getBox(), mat: b.mat, basicMat: b.basicMat, fit: 7.8 });
     }
   }
   if (!inner && piece.procedural) inner = buildProcedural(piece.procedural, mats);

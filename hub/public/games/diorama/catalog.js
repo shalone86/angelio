@@ -1,5 +1,7 @@
 // Catalog for the 3D Voxel Diorama & Prize Box (angelio.org/games/diorama/).
-// Pure data module: 30 collectible figurines/props, 14 unlockable 3D worlds, and Studio scene merge helpers.
+// Pure data module: 54 collectible figurines/props, 14 unlockable 3D worlds, and Studio scene merge helpers.
+
+import { ANIMAL_VARIANTS } from "./animals.js";
 
 export const GRID = 8;
 export const BOX_COST = 100;
@@ -10,6 +12,7 @@ export const CATEGORIES = [
   { id: "people", label: "People", emoji: "👨‍👩‍👧" },
   { id: "props", label: "Church", emoji: "🪑" },
   { id: "nature", label: "Garden", emoji: "🌿" },
+  { id: "animals", label: "Animals", emoji: "🐾" },
 ];
 
 export const STYLE_OPTIONS = [
@@ -311,20 +314,32 @@ export const PIECES = [
     blurb: "A wooden planter bursting with colorful blossoms.", sound: "pop",
   },
   {
-    id: "prop-sheep", name: "Woolly Lamb", category: "nature", rarity: "common",
-    vox: ["sheep-idle"], procedural: "sheep",
-    blurb: "A woolly little lamb wandering the meadow.", sound: "sheep",
-  },
-  {
-    id: "prop-dog", name: "Parish Pup", category: "nature", rarity: "rare",
-    vox: ["dog-idle"], procedural: "dog",
-    blurb: "The friendly monastery pup with a wagging tail!", sound: "dog",
-  },
-  {
     id: "prop-wagon", name: "Harvest Wagon", category: "nature", rarity: "special",
     vox: ["garden-foodbank"], procedural: "wagon",
     blurb: "A harvest cart piled high for the food bank.", sound: "pop",
   },
+
+  // ── Parish & Monastery Animals (26 sculpted variants) ──
+  {
+    id: "prop-sheep", name: "Woolly Lamb", category: "animals", rarity: "common",
+    vox: ["sheep-idle"], animal: "sheep-a", procedural: "sheep",
+    blurb: "A woolly little lamb wandering the meadow.", sound: "sheep",
+  },
+  {
+    id: "prop-dog", name: "Parish Pup", category: "animals", rarity: "rare",
+    vox: ["dog-idle"], animal: "dog-a", procedural: "dog",
+    blurb: "The friendly monastery pup with floppy ears and a wagging tail!", sound: "dog",
+  },
+  ...ANIMAL_VARIANTS.filter((a) => a.id !== "sheep-a" && a.id !== "dog-a").map((a) => ({
+    id: `animal-${a.id}`,
+    name: a.name,
+    category: "animals",
+    rarity: a.rarity,
+    vox: [`${a.kind}-idle`],
+    animal: a.id,
+    blurb: a.blurb,
+    sound: a.sound,
+  })),
 ];
 
 export const STARTER_IDS = PIECES.filter((p) => p.starter).map((p) => p.id);

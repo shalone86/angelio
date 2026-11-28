@@ -2,7 +2,7 @@
 // Navigations: network first, falling back to the saved page. Everything else: show what is saved,
 // refresh it in the background. Bump VERSION when you change files, and list new files in ASSETS.
 
-const VERSION = "v12";
+const VERSION = "v13";
 const CACHE = `games-shell-${VERSION}`;
 const RUNTIME = "games-runtime-v1";
 
@@ -11,7 +11,7 @@ const ASSETS = [
   "/games/icons/icon-192.png", "/games/icons/icon-512.png", "/games/icons/maskable-192.png", "/games/icons/maskable-512.png",
   "/games/icons/apple-touch-icon.png", "/icon.svg", "/css/hub.css", "/fonts/fonts.css", "/js/apps.js", "/js/jingle.js",
   "/games/diorama/", "/games/diorama/index.html", "/games/diorama/diorama.css",
-  "/games/diorama/catalog.js", "/games/diorama/store.js", "/games/diorama/scene.js", "/games/diorama/app.js",
+  "/games/diorama/animals.js", "/games/diorama/catalog.js", "/games/diorama/store.js", "/games/diorama/scene.js", "/games/diorama/app.js",
   "/js/vox.js", "/vendor/three-r128.min.js",
 ];
 

@@ -13,3 +13,4 @@ test("three.js is the same pinned copy as Candle Rack's", () => {
   assert.ok(fs.readFileSync(new URL("../public/vendor/three-r128.min.js", import.meta.url)).equals(fs.readFileSync(new URL("../../candles/public/vendor/three-r128.min.js", import.meta.url))));
 });
 test("the steering (people walking around each other) is Angelio's (hub/public/js/steer.js)", () => same("../public/js/steer.js", "../../../hub/public/js/steer.js"));
+test("the sculpted animals are Angelio's (hub/public/games/diorama/animals.js)", () => same("../public/js/animals.js", "../../../hub/public/games/diorama/animals.js"));

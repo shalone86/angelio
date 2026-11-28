@@ -5,6 +5,7 @@ import {
   GRID, BOX_COST, CATEGORIES, BASES, DEFAULT_BASES, STARTER_BASE_IDS, PIECES, STARTER_IDS,
   pieceById, baseById, cleanScene, mergeBases,
 } from "../public/games/diorama/catalog.js";
+import { ANIMAL_VARIANTS, animalVariantById } from "../public/games/diorama/animals.js";
 import {
   BELLS_KEY, DIORAMA_KEY, loadBells, saveBells, defaultDiorama, loadDiorama, saveDiorama,
   demoDiorama, topWorldTabs, canOpenBox, openPrizeBox, placePiece, movePiece, rotatePiece, removePiece, clearBase, setBase,
@@ -16,7 +17,7 @@ const memStore = (init = {}) => {
   return { m, getItem: (k) => m[k] ?? null, setItem: (k, v) => { m[k] = String(v); } };
 };
 
-test("diorama catalog has 30 pieces, 14 worlds (only chapel starter), valid categories, and clean merge", () => {
+test("diorama catalog has 54 pieces (including 26 animal variants), 14 worlds (only chapel starter), valid categories, and clean merge", () => {
   assert.equal(GRID, 8);
   assert.equal(BOX_COST, 100);
   assert.equal(BASES.length, 14);
@@ -27,16 +28,20 @@ test("diorama catalog has 30 pieces, 14 worlds (only chapel starter), valid cate
     assert.ok(b.name && b.short && b.emoji && b.backdropSlug && b.style && b.palette?.sky && b.palette?.tileA);
   }
 
-  assert.equal(PIECES.length, 30);
+  assert.equal(PIECES.length, 54);
   assert.equal(STARTER_IDS.length, 4);
-  assert.equal(new Set(PIECES.map((p) => p.id)).size, 30);
+  assert.equal(new Set(PIECES.map((p) => p.id)).size, 54);
   const catIds = new Set(CATEGORIES.map((c) => c.id).filter((id) => id !== "all"));
   for (const p of PIECES) {
     assert.ok(catIds.has(p.category), `${p.id} category ${p.category}`);
     assert.ok(["common", "special", "rare"].includes(p.rarity), `${p.id} rarity ${p.rarity}`);
     assert.ok(p.name && p.blurb && Array.isArray(p.vox) && p.vox.length > 0, `${p.id} metadata`);
+    if (p.animal) assert.ok(animalVariantById(p.animal), `${p.id} links valid animal ${p.animal}`);
     assert.equal(pieceById(p.id), p);
   }
+  const catalogAnimals = new Set(PIECES.filter((p) => p.animal).map((p) => p.animal));
+  assert.equal(catalogAnimals.size, 26);
+  for (const av of ANIMAL_VARIANTS) assert.ok(catalogAnimals.has(av.id), `catalog missing animal ${av.id}`);
 
   const custom = cleanScene({ id: "My Forest!", name: "Secret Woods", emoji: "🌲", style: "cabin", palette: { sky: "#123456" } });
   assert.equal(custom.id, "my-forest");
@@ -60,7 +65,7 @@ test("shared kit bellsForRound and awardBells accumulate cleanly across arcade r
   assert.deepEqual(loadBells(store), { bells: 100, earned: 100, spent: 0 });
 });
 
-test("Prize Box unlocks both figurines (26) and worlds (13) with zero duplicates until complete", () => {
+test("Prize Box unlocks both figurines (50) and worlds (13) with zero duplicates until complete", () => {
   let bells = { bells: 0, earned: 0, spent: 0 };
   let dio = defaultDiorama();
   assert.deepEqual(dio.unlockedBases, ["chapel"]);
@@ -69,7 +74,7 @@ test("Prize Box unlocks both figurines (26) and worlds (13) with zero duplicates
   assert.equal(wCheck.ok, true);
   assert.equal(wCheck.free, true);
   assert.equal(wCheck.reason, "welcome");
-  assert.equal(wCheck.remaining, 39);
+  assert.equal(wCheck.remaining, 63);
 
   const wOpen = openPrizeBox(bells, dio, () => 0.2);
   assert.equal(wOpen.ok, true);
@@ -83,8 +88,8 @@ test("Prize Box unlocks both figurines (26) and worlds (13) with zero duplicates
   assert.equal(canOpenBox(bells, dio).reason, "need-bells");
   assert.equal(canOpenBox(bells, dio).need, BOX_COST);
 
-  // Give enough bells for all remaining 38 boxes (pieces + worlds)
-  bells = { bells: 38 * BOX_COST, earned: 38 * BOX_COST, spent: 0 };
+  // Give enough bells for all remaining 62 boxes (pieces + worlds)
+  bells = { bells: 62 * BOX_COST, earned: 62 * BOX_COST, spent: 0 };
   let step = 0;
   let sawBase = false, sawPiece = false;
   while (dio.unlocked.length < PIECES.length || dio.unlockedBases.length < BASES.length) {
@@ -99,8 +104,8 @@ test("Prize Box unlocks both figurines (26) and worlds (13) with zero duplicates
 
   assert.ok(sawBase && sawPiece, "boxes unbox both bases and figurines");
   assert.equal(bells.bells, 0);
-  assert.equal(bells.spent, 38 * BOX_COST);
-  assert.equal(new Set(dio.unlocked).size, 30);
+  assert.equal(bells.spent, 62 * BOX_COST);
+  assert.equal(new Set(dio.unlocked).size, 54);
   assert.equal(new Set(dio.unlockedBases).size, 14);
   assert.equal(canOpenBox({ bells: 500, earned: 500, spent: 0 }, dio).reason, "complete");
   assert.equal(openPrizeBox({ bells: 500, earned: 500, spent: 0 }, dio).ok, false);
@@ -234,9 +239,9 @@ test("topWorldTabs prioritizes populated and most-viewed unlocked worlds while k
   assert.equal(tabs.length, 3);
 });
 
-test("demoDiorama unlocks all 30 pieces and 14 worlds with valid seeded builds", () => {
+test("demoDiorama unlocks all 54 pieces and 14 worlds with valid seeded builds", () => {
   const demo = demoDiorama(BASES);
-  assert.equal(demo.unlocked.length, 30);
+  assert.equal(demo.unlocked.length, 54);
   assert.equal(demo.unlockedBases.length, 14);
   assert.equal(demo.welcomeClaimed, true);
   assert.deepEqual(topWorldTabs(demo, BASES, 3).map((b) => b.id), ["chapel", "fuji", "moon"]);
