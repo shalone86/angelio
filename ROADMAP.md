@@ -127,8 +127,47 @@ comics and seasons are a welcome "bonus shelf", not required.
 generated art, some robot voice): Pico Parish pixel style throughout, his face in each one (the kids love it), East and West
 together, up to date. The old scripts are a head start. The video set is finished when every pillar lesson (~45) and every
 church history stop (~25) has its new video and quiz: about 70 in all. Old videos stay up until their new one replaces them;
-saints, popes and seasonal extras beyond that are a bonus shelf. Music stays open-ended.
+saints, popes and seasonal extras beyond that are a bonus shelf. Music stays open-ended beyond the 24-song Catechism Music Series below.
 - **Lesson Studio Procedural VFX (`workshop/video/`):** Reserve MagicaVoxel VFX marker hexes (e.g., flame tip, smoke/incense emitter) and render deterministic per-frame flickering radial candle glow, curling rising smoke puffs, and halo shimmer directly in `workshop/video/voxel-draw.js` and `Voxel.tsx` (zero external 3D software required).
+
+## Catechism Music Series (24 Songs)
+Companion songs paired with `workshop/plan/videos.yml` and procedural voxel music videos (`voxel-draw.js` / `Voxel.tsx`):
+
+### 1. The Creed — What We Believe (`believe`, 7 songs)
+Upbeat, storytelling-style tracks walking through salvation history:
+1. **Maker of Heaven and Earth** (`who-is-god`)
+2. **Three in One** (`what-is-the-trinity`)
+3. **Messengers & Warriors** (`what-are-angels`, `who-is-saint-michael-the-archangel`)
+4. **From Adam to Jesus** (`the-story-of-salvation`)
+5. **God Became Man** (`why-did-god-become-man`, `the-life-of-jesus`, `who-is-mary`)
+6. **Cross, Tomb & Sky** (`why-did-jesus-die-on-the-cross`, `what-is-the-resurrection-of-christ`, `what-is-the-ascension`)
+7. **Fire, One Church & Heaven** (`who-is-the-holy-spirit`, `what-is-the-church`, `why-are-there-bad-people-in-the-church`, `what-is-heaven`, `what-is-infallibility`)
+
+### 2. The Sacraments — How We Worship (`celebrate`, 6 songs)
+Concrete, visual voxel tracks (with East/West side-by-side and Schoolhouse Rock!-style list):
+8. **Water & Light** (`what-is-baptism`)
+9. **Bread & Wine** (`what-is-the-eucharist`, `what-happens-at-mass`)
+10. **Clean Slate** (`what-is-confession`)
+11. **The Other Four** (`what-is-confirmation`, `what-is-anointing-of-the-sick`, `what-is-marriage`, `what-is-holy-orders`)
+12. **Inside God's House** (`why-are-there-statues-and-paintings-in-churches`, `what-is-the-byzantine-rite`, `what-does-byzantine-mean`, `inside-a-byzantine-church`)
+13. **Seasons of the Year** (`what-is-advent`, `what-is-christmas`, `what-is-lent`, `what-is-holy-week`, `what-does-pascha-mean`)
+
+### 3. The Commandments & Beatitudes — How We Live (`live`, 5 songs)
+Call-and-response grooves and two-chord vamps:
+14. **Love God, Love Neighbor** (`what-is-the-golden-rule-moral-lesson`, `what-are-virtues`)
+15. **Ten Ways to Love** (`the-ten-commandments-loving-god`, `the-ten-commandments-loving-others`)
+16. **Sunday Is for Rest** (`when-and-why-should-we-stay-home-from-mass`)
+17. **Blessed Are...** (`what-are-the-beatitudes`)
+18. **Hands & Heart** (`what-are-the-works-of-mercy`, `what-is-penance`)
+
+### 4. Prayer — How We Talk to God (`pray`, 6 songs)
+Slower, melodic, lullaby-adjacent tracks for morning and bedtime routines:
+19. **Talking to God** (`an-introduction-to-prayer`, `what-is-vocal-prayer`, `why-should-we-make-the-sign-of-the-cross`, `the-sign-of-the-cross`)
+20. **Our Father** (`the-our-father`)
+21. **Hail Mary** (`the-hail-mary`)
+22. **Glory Be** (`the-glory-be`)
+23. **Beads & Breath** (`the-jesus-prayer`, `the-rosary`)
+24. **Morning & Night** (`morning-and-night-prayers`, `what-are-the-stations-of-the-cross`)
 
 **Church history, East and West, very short** (owner, Nov 18): one walk from Pentecost to today, joined to the salvation
 history timeline, so parents have it in one place. Fenced: about 25 stops, a couple per few centuries; each stop is one short
