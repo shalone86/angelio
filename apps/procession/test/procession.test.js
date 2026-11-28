@@ -219,3 +219,23 @@ test("timed stages end at the parish church while Endless never spawns a finish 
   assert.equal(gEnd.churchZ, null);
   assert.equal(gEnd.arriving, false);
 });
+
+import { CHURCH, CREW_R, outOfChurch } from "../public/js/procession.js";
+test("the runner bumps into the church instead of walking through it, and ends on the steps in front of the doors", () => {
+  const g = newGame(stageById("town"), { rng: () => 0.5 });
+  const inside = () => g.churchZ != null && Math.abs(g.crew.x) < CHURCH.halfW && g.crew.z < g.churchZ + CHURCH.front && g.crew.z > g.churchZ - CHURCH.back;
+  let worst = 0, sawChurch = false;
+  while (!g.over && g.t < 400) {
+    // hold the stick straight up the road (into the church) the whole time
+    setStick(g, 0, -1);
+    tick(g, 0.05);
+    if (g.churchZ != null) sawChurch = true;
+    if (inside()) worst++;
+  }
+  assert.ok(sawChurch, "the church came into view");
+  assert.equal(worst, 0, "never inside its walls");
+  assert.ok(g.crew.z >= g.churchZ + CHURCH.front + CREW_R - 0.01, "standing in front of the doors at the end");
+  // pushed out the nearest way
+  g.churchZ = 0; g.crew.x = 17; g.crew.z = -10; outOfChurch(g); assert.equal(g.crew.x, CHURCH.halfW + CREW_R);
+  g.crew.x = 2; g.crew.z = -1; outOfChurch(g); assert.equal(g.crew.z, CHURCH.front + CREW_R);
+});

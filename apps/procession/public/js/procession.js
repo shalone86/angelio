@@ -9,6 +9,10 @@ export const SIDEWALK_X = 34.5;
 export const SPAWN_Z = -100;
 export const FRONT_Z = 34;
 export const CHURCH_STOP_Z = FRONT_Z - 20;
+// The parish church's solid walls (road.js draws it with its doors at the church's z): 19 to each side of the road's
+// middle, from just in front of the doors (pillars) back 26. The runner can't walk into it; the steps in front are fine.
+export const CHURCH = { halfW: 19, front: 0.7, back: 26 };
+export const CREW_R = 2.2;
 export const PROC_HALF_W = 8.2;
 export const CREW_BOUNDS = { minX: -35, maxX: 35, minZ: -86, maxZ: 22 };
 export const MAX_CANDLES = 7;
@@ -291,7 +295,7 @@ export function tick(g, dt) {
     const maxProcStep = 56 * step;
     g.procX = Math.abs(pdx) <= maxProcStep ? LANE_X[1] : g.procX + Math.sign(pdx) * maxProcStep;
     const dx = 0 - g.crew.x;
-    const dz = CHURCH_STOP_Z - 1 - g.crew.z;
+    const dz = CHURCH_STOP_Z + CHURCH.front + CREW_R + 1 - g.crew.z; // on the steps in front of the doors
     const d = Math.hypot(dx, dz);
     if (d > 1) {
       const mv = Math.min(d, 36 * step);
@@ -299,6 +303,7 @@ export function tick(g, dt) {
       g.crew.z += (dz / d) * mv;
       g.crew.moving = true;
       g.crew.dir = Math.atan2(dx, dz);
+      outOfChurch(g);
     } else {
       g.crew.moving = false;
       g.crew.dir = Math.PI;
@@ -478,6 +483,7 @@ export function tick(g, dt) {
   }
   crew.x = Math.max(CREW_BOUNDS.minX, Math.min(CREW_BOUNDS.maxX, crew.x));
   crew.z = Math.max(CREW_BOUNDS.minZ, Math.min(CREW_BOUNDS.maxZ, crew.z));
+  outOfChurch(g);
 
   // Check obstacle fixing progress & procession collisions
   const fixRate = g.crewInfo.perk === "fastFix" ? 1.5 : 1.0;
@@ -582,4 +588,14 @@ export function tick(g, dt) {
   }
 
   return events;
+}
+
+/** The runner bumps into the church instead of walking through its walls: pushed out the nearest way (its sides or its
+ * front; as the church rolls in toward the procession, its front pushes the runner along). */
+export function outOfChurch(g) {
+  if (g.churchZ == null) return;
+  const c = g.crew, zFront = g.churchZ + CHURCH.front + CREW_R, zBack = g.churchZ - CHURCH.back - CREW_R, half = CHURCH.halfW + CREW_R;
+  if (c.z <= zBack || c.z >= zFront || Math.abs(c.x) >= half) return;
+  const toFront = zFront - c.z, toSide = half - Math.abs(c.x);
+  if (toSide < toFront) c.x = Math.sign(c.x || 1) * half; else c.z = zFront;
 }
