@@ -141,6 +141,7 @@ body.proc-game .topbar { display: none; }
   box-shadow: 0 2px 0 rgb(0 0 0 / .24);
 }
 .opin.boss .opin-tag { border-color: #c8262f; background: #fff0f0; color: #7a1419; }
+.opin.urgent .opin-tag { border-color: #e09a00; background: #fff6d6; color: #5c3a00; }
 .opin-bar { width: 46px; height: 6px; border-radius: 99px; background: rgb(15 26 44 / .55); overflow: hidden; border: 1px solid #fff; }
 .opin-bar i { display: block; height: 100%; background: #30d174; }
 

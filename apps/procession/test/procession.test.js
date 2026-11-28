@@ -3,7 +3,8 @@ import assert from "node:assert/strict";
 import { STAGES, stageById, isOpen } from "../public/js/stages.js";
 import { CREW, crewById, crewOpen } from "../public/js/crew.js";
 import {
-  LANE_X, FRONT_Z, SPAWN_Z,
+  LANE_X, ROAD_HALF, FRONT_Z, SPAWN_Z, SIDEWALK_X,
+  KINDS, MOVING_KINDS,
   newGame, tick, steerProcession, setTarget, setStick,
   starsFor, multiplierOf,
 } from "../public/js/procession.js";
@@ -133,4 +134,56 @@ test("unlockable crew passive perks work (Monsignor Church Bell auto-fix, Choir 
   gChoir.streak = 25;
   assert.equal(multiplierOf(gChoir), 3);
   assert.ok(SPAWN_Z < 0 && FRONT_Z > 0);
+});
+
+test("stationary bossBridge locks 1:1 with road scroll and dynamic moving/expanding hazards behave correctly", () => {
+  assert.equal(KINDS.bossBridge.slow ?? 1, 1);
+  assert.ok(MOVING_KINDS.has("dog") && MOVING_KINDS.has("cat") && MOVING_KINDS.has("wanderer"));
+
+  const gRiver = newGame(stageById("river"));
+  const z0 = -80;
+  gRiver.obs.push({
+    id: 300, kind: "bossBridge", cat: "hole", x: 0, z: z0,
+    halfW: KINDS.bossBridge.halfW, halfZ: KINDS.bossBridge.halfZ, need: KINDS.bossBridge.need,
+    pts: 500, hz: true, slow: 1, boss: true, moveOut: 0, pr: 0, done: false, miss: false, dodged: false, vx: 0, targetX: null, tintIdx: 0,
+  });
+  const dist0 = gRiver.dist;
+  for (let i = 0; i < 20; i++) tick(gRiver, 0.05);
+  const bridge = gRiver.obs.find((o) => o.id === 300);
+  assert.ok(bridge && Math.abs((bridge.z - z0) - (gRiver.dist - dist0)) < 0.01, "bridge travels at exact road speed (zero drift)");
+
+  // Wanderer paces & bounces off road edge; cat alternates dashing & pausing; puddle widens across lanes inside curbs
+  const gDyn = newGame(stageById("market"), { rng: () => 0.1 });
+  gDyn.obs = [
+    { id: 301, kind: "wanderer", cat: "crowd", x: ROAD_HALF - 5.1, z: -40, halfW: 5, halfZ: 5, need: 0.7, pts: 25, hz: true, slow: 1, boss: false, moveOut: 18, pr: 0, done: false, miss: false, dodged: false, vx: 12, targetX: null, tintIdx: 0 },
+    { id: 302, kind: "cat", cat: "crowd", x: 0, z: -50, halfW: 4.6, halfZ: 4.2, need: 0.6, pts: 35, hz: true, slow: 1, boss: false, moveOut: 28, pr: 0, done: false, miss: false, dodged: false, vx: 0, dashDir: 1, dashPause: 0.1, dashRun: 0, targetX: null, tintIdx: 0 },
+    { id: 303, kind: "puddle", cat: "hole", x: -LANE_X[2], z: -60, halfW: 6.5, halfZ: 5.5, need: 1.05, pts: 25, hz: true, slow: 1, boss: false, moveOut: 0, pr: 0, done: false, miss: false, dodged: false, vx: 0, targetX: null, tintIdx: 0 },
+  ];
+  // Sidewalk puddle starting at x = -20 grows past 18 halfW and shifts inward to stay within [-ROAD_HALF, ROAD_HALF]
+  for (let i = 0; i < 10; i++) tick(gDyn, 0.05);
+  const wand1 = gDyn.obs.find((o) => o.id === 301);
+  assert.ok(wand1.vx < 0 && Math.abs(wand1.x) <= ROAD_HALF - wand1.halfW + 0.01, "wanderer bounces off right curb");
+  for (let i = 0; i < 110; i++) tick(gDyn, 0.05);
+  const wand2 = gDyn.obs.find((o) => o.id === 301);
+  const cat = gDyn.obs.find((o) => o.id === 302);
+  const pud = gDyn.obs.find((o) => o.id === 303);
+  assert.ok(wand2.vx > 0 && Math.abs(wand2.x) <= ROAD_HALF - wand2.halfW + 0.01, "wanderer paces back after bouncing off left curb");
+  assert.ok(cat.x !== 0, "cat dashes horizontally");
+  assert.ok(pud.halfW > 18 && pud.x - pud.halfW >= -ROAD_HALF - 0.01 && pud.x + pud.halfW <= ROAD_HALF + 0.01, "puddle spreads across adjacent lanes inside curbs");
+});
+
+test("Candlelight Vigil has fair lamp intervals and wind gust blows out at most one far lamp", () => {
+  const g = newGame(stageById("night"));
+  assert.ok(KINDS.lamp.need <= 0.5);
+  g.obs = [
+    { id: 401, kind: "lamp", cat: "lamp", x: SIDEWALK_X, z: -40, halfW: 4.5, halfZ: 4.5, need: KINDS.lamp.need, pts: 20, hz: false, slow: 1, boss: false, moveOut: 0, pr: KINDS.lamp.need, done: true, miss: false, dodged: false, vx: 0, targetX: null, tintIdx: 0 },
+    { id: 402, kind: "lamp", cat: "lamp", x: -SIDEWALK_X, z: -20, halfW: 4.5, halfZ: 4.5, need: KINDS.lamp.need, pts: 20, hz: false, slow: 1, boss: false, moveOut: 0, pr: KINDS.lamp.need, done: true, miss: false, dodged: false, vx: 0, targetX: null, tintIdx: 0 },
+  ];
+  g.windTimer = 0.02;
+  const ev = tick(g, 0.05);
+  const windEv = ev.find((e) => e.type === "wind");
+  assert.ok(windEv);
+  assert.equal(windEv.count, 1, "at most 1 far lamp blown dark per gust");
+  assert.equal(g.obs.find((o) => o.id === 401).done, false, "further up-road lamp blown dark");
+  assert.equal(g.obs.find((o) => o.id === 402).done, true, "closer lamp stays lit");
 });

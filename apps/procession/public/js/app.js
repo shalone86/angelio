@@ -13,7 +13,7 @@ import { STAGES, stageById, isOpen } from "./stages.js";
 import { CREW, crewById, crewOpen } from "./crew.js";
 import {
   newGame, tick, steerProcession, setTarget, setStick,
-  starsFor, multiplierOf, FRONT_Z, SPAWN_Z,
+  starsFor, multiplierOf, KINDS, MOVING_KINDS, isNight, FRONT_Z, SPAWN_Z,
 } from "./procession.js";
 import { createRoad, loadModels, MODELS } from "./road.js";
 
@@ -208,7 +208,7 @@ function viewPlay(stageId) {
           const d = Math.hypot(o.x - pt.x, o.z - pt.z);
           return d < Math.max(10, o.halfW + 4) && (!best || d < best.d) ? { o, d } : best;
         }, null)?.o;
-        const lockOb = nearOb && nearOb.kind !== "dog" ? nearOb : null;
+        const lockOb = nearOb && !MOVING_KINDS.has(nearOb.kind) ? nearOb : null;
         setTarget(g, lockOb ? lockOb.x : pt.x, lockOb ? lockOb.z : pt.z, lockOb?.id ?? null);
       }
     }
@@ -228,7 +228,7 @@ function viewPlay(stageId) {
     const btn = e.target.closest("[data-ob]");
     if (!btn || !road || g.over) return;
     const ob = g.obs.find((o) => o.id === Number(btn.dataset.ob) && !o.done);
-    if (ob) { sfx.tap(); setTarget(g, ob.x, ob.z, ob.kind === "dog" ? null : ob.id); }
+    if (ob) { sfx.tap(); setTarget(g, ob.x, ob.z, MOVING_KINDS.has(ob.kind) ? null : ob.id); }
   });
 
   function updateKeyMove() {
@@ -286,10 +286,12 @@ function viewPlay(stageId) {
       if (!btn) {
         btn = document.createElement("button");
         btn.type = "button";
-        btn.className = `opin${o.boss ? " boss" : ""}`;
+        const urgentLamp = o.kind === "lamp" && isNight(g);
+        btn.className = `opin${o.boss ? " boss" : ""}${urgentLamp ? " urgent" : ""}`;
         btn.dataset.ob = String(o.id);
-        const lbl = o.kind === "pothole" ? "🕳️" : o.kind === "lamp" ? "💡" : o.kind === "person" ? "🚶"
-          : o.kind === "car" ? "🚗" : o.kind === "truck" ? "🚚" : o.kind === "dog" ? "🐕"
+        const lbl = o.kind === "pothole" ? "🕳️" : o.kind === "lamp" ? (urgentLamp ? "💡!" : "💡")
+          : o.kind === "person" ? "🚶" : o.kind === "wanderer" ? "🚶↔"
+          : o.kind === "car" ? "🚗" : o.kind === "truck" ? "🚚" : o.kind === "dog" ? "🐕" : o.kind === "cat" ? "🐱"
           : o.kind === "puddle" ? "💧" : o.kind === "brokenBridge" ? "🪵"
           : o.kind === "bossBridge" ? "🌉 Bridge!" : "🎺 Band!";
         btn.innerHTML = `<span class="opin-tag">${lbl}</span><div class="opin-bar" hidden><i></i></div>`;
@@ -361,19 +363,22 @@ function viewPlay(stageId) {
     if (g.score > prevBest) S.setSetting(bestKey(stage), g.score);
     const dailyRec = daily ? S.saveDaily(dateKey, g.score, stars) : null;
     const dailyNote = daily ? (dailyRec.newBest ? `New Today's Challenge best: ${g.score}!` : `Today's best: ${dailyRec.best}`) : "";
-    const newlyOpen = CREW.filter((c) => !unlockedBefore.has(c.id) && crewOpen(c, starsById));
+    const starsAfter = (st) => (!daily && st.id === stage.id) ? Math.max(starsOf(st), stars) : starsOf(st);
+    const nextStage = !daily && STAGES[si + 1] && isOpen(si + 1, starsAfter) ? STAGES[si + 1] : null;
 
     document.body.classList.remove("proc-game");
     showFinish(app, {
-      id: progressId(stage),
+      id: daily ? `daily-${dateKey}` : progressId(stage),
       stars,
       mistakes: g.candles < 5 ? 5 - g.candles : 0,
       byStars: true,
       title: g.won ? `Way Cleared! ${g.score}` : `Procession Ended · ${g.score}`,
       done: `${g.fixes} hazards cleared · ${g.dodges} dodged · ${g.candles}🕯️ left`,
+      again: `#/play/${daily ? "daily" : stage.id}`,
       onAgain: () => viewPlay(daily ? "daily" : stage.id),
-      next: STAGES[si + 1] && isOpen(si + 1, starsById) ? { label: `Play ${STAGES[si + 1].name} →`, to: `#/play/${STAGES[si + 1].id}` } : null,
+      next: nextStage ? { label: `Play ${nextStage.name} →`, href: `#/play/${nextStage.id}` } : null,
     });
+    const newlyOpen = CREW.filter((c) => !unlockedBefore.has(c.id) && crewOpen(c, starsById));
     if (dailyNote) app.querySelector(".finish h1")?.insertAdjacentHTML("afterend", `<p class="muted">${esc(dailyNote)}</p>`);
     if (newlyOpen.length) app.querySelector(".finish h1")?.insertAdjacentHTML("afterend", `<p class="finish-unlock">${newlyOpen.map((c) => `${c.icon} ${esc(c.name)} joined!`).join(" · ")}</p>`);
 
@@ -414,6 +419,17 @@ function viewPlay(stageId) {
     }),
     steer: (d, r = true) => doSteer(d, r),
     walkTo: (x, z) => setTarget(g, x, z, null),
+    finish: (score = g.score) => { g.score = score; g.won = true; g.over = true; finishRound(); },
+    spawnTest: (kind, x = 0, z = -42) => {
+      const q = KINDS[kind];
+      if (!q) return;
+      g.obs.push({
+        id: g.nextId++, kind, cat: q.cat, x, z, halfW: q.halfW, halfZ: q.halfZ,
+        need: q.need, pts: q.pts, hz: q.hz, slow: q.slow ?? 1, boss: !!q.boss,
+        moveOut: q.moveOut ?? 0, pr: 0, done: false, miss: false, dodged: false,
+        vx: kind === "wanderer" ? 10.5 : kind === "cat" ? 20 : 0, targetX: null, tintIdx: 0,
+      });
+    },
   };
 
   syncHud();

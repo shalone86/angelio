@@ -11,18 +11,21 @@ export const FRONT_Z = 34;
 export const PROC_HALF_W = 8.2;
 export const CREW_BOUNDS = { minX: -35, maxX: 35, minZ: -86, maxZ: 22 };
 export const MAX_CANDLES = 7;
+export const MOVING_KINDS = new Set(["dog", "cat", "wanderer"]);
 
 export const KINDS = {
   pothole:      { halfW: 7.2, halfZ: 5.2, need: 1.20, pts: 10,  hz: true,  cat: "hole",  msg: "They tripped in a pothole!" },
-  lamp:         { halfW: 4.5, halfZ: 4.5, need: 0.70, pts: 20,  hz: false, cat: "lamp",  msg: "It was too dark to see the way!" },
+  lamp:         { halfW: 4.5, halfZ: 4.5, need: 0.45, pts: 20,  hz: false, cat: "lamp",  msg: "It was too dark to see the way!" },
   person:       { halfW: 5.0, halfZ: 5.0, need: 0.70, pts: 20,  hz: true,  cat: "crowd", moveOut: 18, msg: "They bumped into someone on the road!" },
+  wanderer:     { halfW: 5.0, halfZ: 5.0, need: 0.70, pts: 25,  hz: true,  cat: "crowd", moveOut: 18, msg: "They bumped into a wandering neighbor!" },
   car:          { halfW: 8.2, halfZ: 8.5, need: 2.00, pts: 40,  hz: true,  cat: "crowd", moveOut: 14, msg: "A parked car blocked the lane!" },
   brokenBridge: { halfW: 9.2, halfZ: 6.5, need: 1.40, pts: 25,  hz: true,  cat: "hole",  msg: "Watch out — a broken bridge!" },
   dog:          { halfW: 5.0, halfZ: 4.5, need: 0.65, pts: 30,  hz: true,  cat: "crowd", moveOut: 28, msg: "A playful pup ran right across the path!" },
+  cat:          { halfW: 4.6, halfZ: 4.2, need: 0.60, pts: 35,  hz: true,  cat: "crowd", moveOut: 28, msg: "A darting parish cat crossed the path!" },
   truck:        { halfW: 9.2, halfZ: 11.5,need: 2.65, pts: 100, hz: true,  cat: "crowd", moveOut: 13, msg: "A delivery truck blocked the way!" },
-  puddle:       { halfW: 6.2, halfZ: 5.5, need: 1.15, pts: 20,  hz: true,  cat: "hole",  msg: "They splashed in a growing puddle!" },
-  bossBridge:   { halfW: 30,  halfZ: 8.5, need: 4.30, pts: 500, hz: true,  cat: "hole",  slow: 0.52, boss: true, msg: "They had to wade through the river!" },
-  bossBand:     { halfW: 17.5,halfZ: 6.5, need: 3.10, pts: 400, hz: true,  cat: "crowd", slow: 0.55, boss: true, moveOut: 26, msg: "A marching band marched into the procession!" },
+  puddle:       { halfW: 6.5, halfZ: 5.5, need: 1.05, pts: 25,  hz: true,  cat: "hole",  msg: "They splashed in a spreading puddle!" },
+  bossBridge:   { halfW: 30,  halfZ: 8.5, need: 3.00, pts: 500, hz: true,  cat: "hole",  boss: true, msg: "They had to wade through the river!" },
+  bossBand:     { halfW: 17.5,halfZ: 6.5, need: 3.10, pts: 400, hz: true,  cat: "crowd", slow: 0.68, boss: true, moveOut: 26, msg: "A marching band marched into the procession!" },
 };
 
 const STRETCHES = [
@@ -94,7 +97,7 @@ export function newGame(stage, { crewId = "sacristan", rng = Math.random } = {})
     speedNow: stage.speedStart ?? 11.0,
     gap: [...(stage.gap ?? [2.6, 1.5])],
     spawnTimer: 1.5,
-    lampTimer: 2.2,
+    lampTimer: stage.night ? 3.2 : 2.2,
     bridgeTimer: stage.bridgeEvery ? stage.bridgeEvery * 0.65 : Infinity,
     windTimer: stage.windEvery ? stage.windEvery * 0.8 : Infinity,
     nextBossAt: stage.bossEvery ?? Infinity,
@@ -253,8 +256,13 @@ function spawnNextWave(g) {
   if (kind === "person") {
     const side = g.rng() < 0.5 ? -SIDEWALK_X : SIDEWALK_X;
     spawnOb(g, "person", side, SPAWN_Z + 12 + g.rng() * 14, { targetX: x });
+  } else if (kind === "wanderer") {
+    spawnOb(g, "wanderer", x, SPAWN_Z, { vx: (g.rng() < 0.5 ? -1 : 1) * 10.5 });
   } else if (kind === "dog") {
     spawnOb(g, "dog", x, SPAWN_Z, { vx: (g.rng() < 0.5 ? -1 : 1) * 19 });
+  } else if (kind === "cat") {
+    const dashDir = laneIdx === 0 ? 1 : laneIdx === 2 ? -1 : (g.rng() < 0.5 ? -1 : 1);
+    spawnOb(g, "cat", x, SPAWN_Z, { dashDir, vx: 0, dashPause: 0.35, dashRun: 0 });
   } else {
     const crowded = g.obs.some((o) => !o.done && Math.abs(o.x - x) < 12 && o.z < SPAWN_Z + 16);
     const altX = crowded ? LANE_X[(laneIdx + 1) % 3] : x;
@@ -332,7 +340,7 @@ export function tick(g, dt) {
     }
   }
 
-  // Advance obstacles, puddles, and patrolling dogs/band first so tracked targets land cleanly on (x, z)
+  // Advance obstacles, puddles, and moving/patrolling hazards first so tracked targets land cleanly on (x, z)
   for (const o of g.obs) {
     o.z += targetRoadSpeed * o.slow * step;
 
@@ -344,17 +352,36 @@ export function tick(g, dt) {
         if (Math.abs(dx) <= m) o.targetX = null;
       }
       if (o.kind === "puddle") {
-        o.halfW = Math.min(22, o.halfW + 0.9 * step);
-        o.need = Math.min(3.4, o.halfW * 0.16);
+        o.halfW = Math.min(28.5, o.halfW + 2.3 * step);
+        if (o.x - o.halfW < -ROAD_HALF) o.x = -ROAD_HALF + o.halfW;
+        if (o.x + o.halfW > ROAD_HALF) o.x = ROAD_HALF - o.halfW;
+        o.need = Math.min(2.2, 1.05 + (o.halfW - 6.5) * 0.052);
+      }
+      if (o.kind === "cat") {
+        if ((o.dashPause ?? 0) > 0) {
+          o.dashPause -= step;
+          o.vx = 0;
+          if (o.dashPause <= 0) {
+            o.dashDir = o.x < -12 ? 1 : o.x > 12 ? -1 : (g.rng() < 0.5 ? -1 : 1);
+            o.vx = o.dashDir * 24;
+            o.dashRun = 0.85 + g.rng() * 0.45;
+          }
+        } else {
+          o.dashRun = (o.dashRun ?? 0.9) - step;
+          if (o.dashRun <= 0) {
+            o.vx = 0;
+            o.dashPause = 0.65;
+          }
+        }
       }
     }
 
     if (o.vx !== 0) {
       o.x += o.vx * step;
-      if (!o.done && (o.kind === "dog" || o.kind === "bossBand")) {
+      if (!o.done && (MOVING_KINDS.has(o.kind) || o.kind === "bossBand")) {
         const bound = ROAD_HALF - o.halfW;
-        if (o.x < -bound) { o.x = -bound; o.vx = Math.abs(o.vx); }
-        else if (o.x > bound) { o.x = bound; o.vx = -Math.abs(o.vx); }
+        if (o.x < -bound) { o.x = -bound; o.vx = Math.abs(o.vx); if (o.kind === "cat") o.dashDir = 1; }
+        else if (o.x > bound) { o.x = bound; o.vx = -Math.abs(o.vx); if (o.kind === "cat") o.dashDir = -1; }
       }
     }
   }
@@ -452,9 +479,9 @@ export function tick(g, dt) {
   }
 
   // Street lamps along sidewalks
-  g.lampTimer -= step * (targetRoadSpeed / 10.5);
+  g.lampTimer -= step;
   if (g.lampTimer <= 0 && !g.over) {
-    g.lampTimer = (2.6 + g.rng() * 2.4) / (isNight(g) ? 1.85 : 1);
+    g.lampTimer = isNight(g) ? (4.4 + g.rng() * 1.8) : (3.4 + g.rng() * 2.2);
     const lx = g.rng() < 0.5 ? -SIDEWALK_X : SIDEWALK_X;
     spawnOb(g, "lamp", lx, SPAWN_Z);
   }
@@ -472,20 +499,18 @@ export function tick(g, dt) {
     }
   }
 
-  // Wind gusts blow lit lamps back out
+  // Wind gusts extinguish at most one lit lamp well up the road so night runs stay readable & fair
   if (g.stage.windEvery || stretchOf(g) === "wind" || stretchOf(g) === "night") {
     g.windTimer -= step;
     if (g.windTimer <= 0 && !g.over) {
-      g.windTimer = (g.stage.windEvery || 20) + g.rng() * 7;
-      let blew = 0;
-      for (const o of g.obs) {
-        if (o.kind === "lamp" && o.done && !o.miss && o.z < FRONT_Z - 14) {
-          o.done = false;
-          o.pr = 0;
-          blew++;
-        }
+      g.windTimer = (g.stage.windEvery || 24) + g.rng() * 7;
+      const lit = g.obs.filter((o) => o.kind === "lamp" && o.done && !o.miss && o.z < FRONT_Z - 26)
+        .sort((a, b) => a.z - b.z);
+      if (lit[0]) {
+        lit[0].done = false;
+        lit[0].pr = 0;
+        events.push({ type: "wind", count: 1, msg: "A gust of wind blew a street lamp dark!" });
       }
-      if (blew > 0) events.push({ type: "wind", count: blew, msg: "A gust of wind blew street lamps dark!" });
     }
   }
 

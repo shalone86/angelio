@@ -34,6 +34,7 @@ export async function loadModels(names = MODELS) {
 
 const SEASON_VESTMENT = "#2f8a4c";
 const CAR_COLORS = ["#d9403a", "#2b6cb0", "#e39c1e", "#2d9354", "#7b5ca8"];
+const CAT_COLORS = ["#e08a38", "#32353d", "#b8afa4", "#d9c2a3", "#4c433b"];
 const BAND_ROBES = ["#c8262f", "#e3b341", "#2e5fa8", "#e3b341", "#c8262f"];
 const FOLK_SLUGS = ["child-walk", "child-girl-walk", "man-walk", "woman-walk", "grandfather-walk", "grandmother-walk"];
 
@@ -44,7 +45,7 @@ export function createRoad(canvas, { models = {}, crewInfo }) {
 
   const scene = new THREE.Scene();
   const skyDay = new THREE.Color("#7ac8ff");
-  const skyNight = new THREE.Color("#141e38");
+  const skyNight = new THREE.Color("#1b2948");
   const skyMarket = new THREE.Color("#bce4b8");
   const skyRiver = new THREE.Color("#8fd8f8");
   const skyWind = new THREE.Color("#b8cee0");
@@ -129,7 +130,8 @@ export function createRoad(canvas, { models = {}, crewInfo }) {
     sceneries.push(g);
   }
 
-  // .vox helper
+  // .vox helper (lights held candle tips like apps/candles)
+  const candleHalos = [];
   const meshFor = (name, look, vestment = null) => {
     const m = models[name];
     if (!m) return null;
@@ -138,20 +140,49 @@ export function createRoad(canvas, { models = {}, crewInfo }) {
     if (!all.length) return null;
     const mid = (k) => (Math.min(...all.map((c) => c[k])) + Math.max(...all.map((c) => c[k]))) / 2;
     const cx = mid(0), cz = mid(2);
+    const isCandle = /-(light|candle)/.test(name);
+    const base = isCandle ? models[name.replace(/-(light|candle)(-walk|-idle)?$/, "-idle")] : null;
+    const plain = base ? new Set(base.vox.frames.flatMap((_, f) => toScene(base.vox, f).map((c) => c[3]))) : null;
     g.userData.frames = m.vox.frames.map((_, f) => {
-      const cells = toScene(m.vox, f);
-      const im = new THREE.InstancedMesh(box, new THREE.MeshLambertMaterial(), cells.length);
+      const cells = toScene(m.vox, f).map(([x, y, z, c]) => [x - cx, y, z - cz, c]);
+      const held = plain ? cells.filter((c) => !plain.has(c[3])) : [];
+      const top = held.length ? Math.max(...held.map((c) => c[1])) : -Infinity;
+      let tips = held.filter((c) => c[1] === top);
+      if (isCandle && !tips.length) {
+        const embers = cells.filter((c) => c[3].toLowerCase() === "#ff6666");
+        const my = embers.length ? Math.max(...embers.map((c) => c[1])) : -Infinity;
+        tips = embers.filter((c) => c[1] === my);
+      }
+      const tipSet = new Set(tips);
+      const body = cells.filter((c) => !tipSet.has(c));
+      const fr = new THREE.Group();
+      const im = new THREE.InstancedMesh(box, new THREE.MeshLambertMaterial(), body.length);
       im.frustumCulled = false;
       const o = new THREE.Object3D(), col = new THREE.Color();
-      cells.forEach(([x, y, z, c], i) => {
-        o.position.set(x - cx, y, z - cz);
+      body.forEach(([x, y, z, c], i) => {
+        o.position.set(x, y, z);
         o.updateMatrix();
         im.setMatrixAt(i, o.matrix);
         im.setColorAt(i, col.set(recolor(c, look, vestment)));
       });
-      im.visible = f === 0;
-      g.add(im);
-      return im;
+      fr.add(im);
+      for (const [x, y, z, c] of tips) {
+        const flameCol = new THREE.Color(c).lerp(new THREE.Color("#ffd452"), 0.8);
+        const tip = new THREE.Mesh(box, new THREE.MeshBasicMaterial({ color: flameCol }));
+        tip.scale.set(1.05, 1.35, 1.05);
+        tip.position.set(x, y + 0.1, z);
+        fr.add(tip);
+        const halo = new THREE.Sprite(new THREE.SpriteMaterial({
+          map: getHaloTex(), blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: 0.95,
+        }));
+        halo.position.set(x, y + 0.55, z);
+        halo.scale.set(4.0, 4.0, 1);
+        fr.add(halo);
+        candleHalos.push({ sprite: halo, phase: Math.random() * Math.PI * 2 });
+      }
+      fr.visible = f === 0;
+      g.add(fr);
+      return fr;
     });
     g.userData.fps = m.fps;
     return g;
@@ -194,6 +225,11 @@ export function createRoad(canvas, { models = {}, crewInfo }) {
   const procGroup = new THREE.Group();
   procGroup.position.set(0, 0, FRONT_Z);
   scene.add(procGroup);
+
+  // Warm golden candlelight cast ahead of the candle bearers
+  const procLight = new THREE.PointLight("#ffbe5c", 0.75, 42, 1.4);
+  procLight.position.set(0, 7.5, 2.2);
+  procGroup.add(procLight);
 
   // Subtle glowing lane guide directly under the procession front (above road y=0.18)
   const laneGuide = new THREE.Mesh(
@@ -269,7 +305,7 @@ export function createRoad(canvas, { models = {}, crewInfo }) {
       halo.visible = false;
       g.add(halo);
       g.userData = { bulb, halo };
-    } else if (o.kind === "person") {
+    } else if (o.kind === "person" || o.kind === "wanderer") {
       const slug = FOLK_SLUGS[o.tintIdx % FOLK_SLUGS.length];
       const p = makePerson([slug, "man-idle"], randomLook(Math.random, { clothes: true }), 1.0);
       g.add(p.g);
@@ -303,12 +339,33 @@ export function createRoad(canvas, { models = {}, crewInfo }) {
         g.add(pup);
         g.userData = { pup };
       }
+    } else if (o.kind === "cat") {
+      const coat = CAT_COLORS[o.tintIdx % CAT_COLORS.length];
+      const cat = new THREE.Group();
+      block(4.4, 2.0, 2.3, 0, 0.9, 0, mat(coat), cat);
+      for (const lx of [-1.5, 1.5]) for (const lz of [-0.7, 0.7]) block(0.7, 1.0, 0.7, lx, 0, lz, mat("#f4efe2"), cat);
+      block(2.3, 2.1, 2.3, 2.1, 2.1, 0, mat(coat), cat);
+      block(0.7, 1.1, 0.7, 2.0, 4.0, 0.85, mat(coat), cat);
+      block(0.7, 1.1, 0.7, 2.0, 4.0, -0.85, mat(coat), cat);
+      const eyeMat = new THREE.MeshBasicMaterial({ color: "#fff08a" });
+      block(0.3, 0.55, 0.55, 3.2, 2.9, 0.55, eyeMat, cat);
+      block(0.3, 0.55, 0.55, 3.2, 2.9, -0.55, eyeMat, cat);
+      const tail = new THREE.Group();
+      tail.position.set(-2.1, 2.1, 0);
+      block(0.7, 2.5, 0.7, 0, 0, 0, mat(coat), tail);
+      block(0.7, 0.8, 0.7, -0.4, 2.2, 0, mat("#f4efe2"), tail);
+      cat.add(tail);
+      g.add(cat);
+      g.userData = { cat, tail };
     } else if (o.kind === "puddle") {
-      const water = block(12.4, 0.18, 10.5, 0, 0.18, 0, mat("#3a98ee"), g);
-      const gleam = block(7.5, 0.20, 4.5, -1, 0.20, -0.5, mat("#a8dcff"), g);
+      const water = block(13.0, 0.18, 10.6, 0, 0.18, 0, mat("#3294ec"), g);
+      const gleam = block(8.0, 0.20, 4.0, -1, 0.20, -0.5, mat("#a8dcff"), g);
       g.userData = { water, gleam };
     } else if (o.kind === "brokenBridge") {
-      block(18.5, 0.24, 12.0, 0, 0.19, 0, mat("#2a88c8"), g);
+      block(18.8, 0.24, 12.2, 0, 0.19, 0, mat("#1f74b3"), g);
+      block(14.5, 0.26, 2.4, 0, 0.21, 0, mat("#69c2f7"), g);
+      for (const sz of [-6.1, 6.1]) block(19.4, 0.45, 1.2, 0, 0.18, sz, mat("#7d766b"), g);
+      for (const sx of [-9.3, 9.3]) block(0.9, 0.65, 12.4, sx, 0.20, 0, mat("#5c3a1d"), g);
       const planks = [];
       for (let i = 0; i < 4; i++) {
         const pl = block(4.0, 0.45, 11.4, -6.8 + i * 4.5, 0.43, 0, mat("#a8703b"), g);
@@ -317,7 +374,14 @@ export function createRoad(canvas, { models = {}, crewInfo }) {
       }
       g.userData = { planks };
     } else if (o.kind === "bossBridge") {
-      block(ROAD_HALF * 2 + 4, 0.26, 15.0, 0, 0.19, 0, mat("#2782bf"), g);
+      block(360, 0.24, 15.6, 0, 0.19, 0, mat("#1f74b3"), g);
+      for (const rz of [-3.0, 3.0]) block(360, 0.26, 2.0, 0, 0.21, rz, mat("#58b8f0"), g);
+      for (const sz of [-7.8, 7.8]) block(86, 0.58, 1.6, 0, 0.18, sz, mat("#8c857a"), g);
+      for (const sx of [-31, 31]) block(1.2, 1.9, 16.0, sx, 0.20, 0, mat("#6b4423"), g);
+      for (const sx of [-34.5, 34.5]) {
+        block(1.4, 4.2, 1.4, sx, 0.20, 7.2, mat("#f4efe2"), g);
+        block(1.8, 1.2, 1.8, sx, 4.4, 7.2, mat("#d9403a"), g);
+      }
       const planks = [];
       for (let i = 0; i < 10; i++) {
         const pl = block(5.4, 0.55, 14.2, -27 + i * 6.0, 0.45, 0, mat("#b5783f"), g);
@@ -394,10 +458,10 @@ export function createRoad(canvas, { models = {}, crewInfo }) {
     const targetSky = night ? skyNight : stId === "market" ? skyMarket : stId === "river" ? skyRiver : stId === "wind" ? skyWind : skyDay;
     scene.background.lerp(targetSky, 0.08);
     scene.fog.color.copy(scene.background);
-    hemi.intensity = night ? 0.42 : 0.96;
-    sun.intensity = night ? 0.25 : 0.58;
-    grassMat.color.setHex(night ? 0x22362a : stId === "wind" ? 0x5c8b4e : 0x68ac52);
-    roadMat.color.setHex(night ? 0x2d3544 : 0x4e5766);
+    hemi.intensity = night ? 0.62 : 0.96;
+    sun.intensity = night ? 0.36 : 0.58;
+    grassMat.color.setHex(night ? 0x2d4a3a : stId === "wind" ? 0x5c8b4e : 0x68ac52);
+    roadMat.color.setHex(night ? 0x3b4559 : 0x4e5766);
 
     // Scroll lane dashes & roadside trees smoothly
     const dashSpan = dashes.length * DASH_STEP;
@@ -424,6 +488,16 @@ export function createRoad(canvas, { models = {}, crewInfo }) {
       pm.setWalk(walkingProc);
       if (walkingProc) animFrames(pm.walkMesh, time);
     }
+    const litProc = g.candles > 0;
+    for (const ch of candleHalos) {
+      ch.sprite.visible = litProc;
+      if (litProc) {
+        const baseS = night ? 5.8 : 3.8;
+        const s = baseS + Math.sin(time * 9 + ch.phase) * 0.45;
+        ch.sprite.scale.set(s, s, 1);
+      }
+    }
+    procLight.intensity = litProc ? (night ? 1.85 : 0.75) + Math.sin(time * 10) * 0.12 : 0;
 
     // Crew position, smooth facing rotation, & reach ring
     crewActor.g.position.set(g.crew.x, 0, g.crew.z);
@@ -464,14 +538,15 @@ export function createRoad(canvas, { models = {}, crewInfo }) {
         mesh.userData.bulb.material.color.setHex(lit ? 0xffe46b : 0x4d5669);
         mesh.userData.halo.visible = lit;
       } else if (o.kind === "puddle") {
-        const sx = o.halfW / 6.2;
+        const sx = o.halfW / 6.5;
         mesh.scale.set(sx, o.done ? 0.2 : 1, 1);
         mesh.visible = !o.done;
+        mesh.userData.gleam.position.z = Math.sin(time * 3 + o.id) * 0.6;
       } else if (o.kind === "brokenBridge" || o.kind === "bossBridge") {
         const planks = mesh.userData.planks;
         const shown = o.done ? planks.length : Math.floor(frac * planks.length);
         planks.forEach((p, i) => { p.visible = i < shown; });
-      } else if (o.kind === "person" || o.kind === "dog") {
+      } else if (o.kind === "person" || o.kind === "wanderer" || o.kind === "dog") {
         const a = mesh.userData.actor;
         const pup = mesh.userData.pup;
         const facing = o.vx !== 0 ? (o.vx > 0 ? Math.PI / 2 : -Math.PI / 2) : o.targetX != null ? Math.sign(o.targetX - o.x) * (Math.PI / 2) : 0;
@@ -483,6 +558,12 @@ export function createRoad(canvas, { models = {}, crewInfo }) {
           pup.rotation.y = o.vx < 0 ? Math.PI : 0;
           pup.position.y = Math.abs(Math.sin(time * 14)) * 0.45;
         }
+      } else if (o.kind === "cat") {
+        const { cat, tail } = mesh.userData;
+        cat.rotation.y = (o.vx !== 0 ? o.vx : o.dashDir ?? 1) < 0 ? Math.PI : 0;
+        const dashing = Math.abs(o.vx) > 1;
+        cat.position.y = dashing ? Math.abs(Math.sin(time * 16)) * 0.45 : 0;
+        tail.rotation.z = Math.sin(time * (dashing ? 14 : 6) + o.id) * 0.25;
       } else if (o.kind === "bossBand") {
         const w = Math.sin(time * 12) * 0.14;
         mesh.userData.members?.forEach((m, i) => { m.position.y = Math.abs(Math.sin(time * 10 + i)) * 0.6; m.rotation.z = w; });
