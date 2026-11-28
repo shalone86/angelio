@@ -15,6 +15,18 @@ voice; donations welcome; a paid Pro voice (natural Cloudflare voice) with an ac
 | Read Aloud | /read/ | 1–3 | shalone86/readaloud |
 | Articulate | /articulate/ (and articulate.shalonely.com, kept on purpose: a friend uses it) | All ages | shalone86/articulation |
 
+## Direction Update: Consolidating Pico Parish into Angelio (Nov 2026)
+
+* **Sunsetting Standalone Pico Parish:** Pausing standalone PICO-8 pixel-art games, comics, and merch for Pico Parish to prevent double duty across separate art pipelines and focus on finishing Angelio for immediate family use.
+* **Unified 3D Voxel Pipeline:** Standardizing kids' content on Angelio's 3D voxel style (MagicaVoxel / Blender / Three.js), which bridges web games, videos, and future picture books or physical merch without rebuilding assets.
+* **San Pico Integration:**
+    * **Game Hub Concept:** Evolve the Angelio games page into a lightweight San Pico parish town map where tapping buildings launches specific activities (schoolhouse for math/grammar, church for saints/catechism, library for reading).
+    * **Saint of the Day Shorts:** Produce 1-minute Three.js voxel videos hosted by a parish character (e.g., Father Felix or Sister Sophia) using reusable town/chapel sets and personal voiceovers.
+* **Video Format Split:**
+    * **Lessons & Catechism Songs:** Full-screen personal intro/outro + selective picture-in-picture camera bubble during key teaching moments, dropping out during dense voxel action.
+    * **Saint of the Day Videos:** Character-hosted (no on-camera setup required) for fast, sustainable production.
+* **Back-Burner / Future:** Physical books, card games, and character plushies remain parked until the digital catalog and Angelio core suite are complete.
+
 ## Family voices (Nov 21, 2026)
 
 Family and friends record the lines every game says most (the 48 shared ones first; more per game if they like), and
